@@ -1,0 +1,31 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "esModuleInterop": true,
+        "sourceMap": true,
+        "declaration": true,
+        "pretty": true,
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "lib": ["esnext"],
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "downlevelIteration": true,
+        "strict": true,
+        "strictPropertyInitialization": false,
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["./src/*"]
+        }
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "**/*.test.ts", "**/*.typegen.ts"],
+    "types": ["node", "vitest/importMeta"]
+}

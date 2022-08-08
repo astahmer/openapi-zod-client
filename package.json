@@ -1,0 +1,39 @@
+{
+    "name": "openapi-zod-client",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "tsx src/main.ts",
+        "test": "vitest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@apidevtools/swagger-parser": "^10.1.0",
+        "@types/prettier": "^2.7.0",
+        "@zodios/core": "^7.1.5",
+        "case": "^1.6.3",
+        "handlebars": "^4.7.7",
+        "js-yaml": "^4.1.0",
+        "openapi3-ts": "^2.0.2",
+        "pastable": "^2.0.11",
+        "ts-morph": "^15.1.0",
+        "ts-pattern": "^4.0.5",
+        "ts-poet": "^4.15.0",
+        "tsutils": "^3.21.0",
+        "typeconv": "^1.8.0",
+        "zod": "^3.17.10"
+    },
+    "devDependencies": {
+        "@trivago/prettier-plugin-sort-imports": "^3.3.0",
+        "@types/js-yaml": "^4.0.5",
+        "@types/node": "^18.6.4",
+        "nodemon": "^2.0.19",
+        "prettier": "^2.7.1",
+        "tsx": "^3.8.0",
+        "typescript": "^4.7.4",
+        "vitest": "^0.21.0"
+    }
+}

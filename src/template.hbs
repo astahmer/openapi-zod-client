@@ -1,0 +1,69 @@
+import { Zodios } from "@zodios/core";
+import { z } from "zod";
+
+{{schemasVariables}}
+
+export const {{namespaceVarName}} = {
+    paths: {
+        "/users": "getUsers",
+        {{namespacePaths}}
+    },
+    schemas: {
+        getUsersSuccess: usersSchema,
+        genericInputError: errorSchema,
+        {{namespaceSchemas}}
+    },
+    operations: {
+        getUsers: {
+            path: "/users",
+            description: "Get all users",
+            responses: {
+                200: "#/components/schemas/getUsersSuccess",
+                400: "#/components/schemas/genericInputError",
+            },
+        },
+        {{namespaceOperations}}
+    },
+};
+
+const apiRoutes = [
+    {{apiRoutes}}
+    {
+        method: "get",
+        path: "/users",
+        description: "Get all users",
+        parameters: [
+            {
+                name: "q",
+                type: "Query",
+                schema: z.string(),
+            },
+            {
+                name: "page",
+                type: "Query",
+                schema: z.string().optional(),
+            },
+        ],
+        response: usersSchema,
+    },
+    {
+        method: "get",
+        path: "/users/:id",
+        description: "Get a user",
+        response: userSchema,
+    },
+    {
+        method: "post",
+        path: "/users",
+        description: "Create a user",
+        parameters: [
+            {
+                name: "body",
+                type: "Body",
+                schema: createUserSchema,
+            },
+        ],
+        response: userSchema,
+    },
+] as const;
+export const api = new Zodios({{baseUrl}}, apiRoutes);
