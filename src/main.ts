@@ -1,227 +1,130 @@
+import { ZodiosEndpointDescription } from "@zodios/core";
+import Handlebars from "handlebars";
 import { load as loadYaml } from "js-yaml";
 import fs from "node:fs/promises";
-import { getPath, OpenAPIObject, SchemaObject } from "openapi3-ts";
-import { get } from "pastable/server";
-import { getZodiosEndpointDescriptionFromOpenApiDoc, openApiSchemaToZodSchemaCodeString } from "./openApiToZod";
+import { OpenAPIObject, SchemaObject } from "openapi3-ts";
+import { sortBy, sortObjectKeys } from "pastable/server";
+import prettier, { resolveConfig } from "prettier";
+import parserTypescript from "prettier/parser-typescript";
+import { getZodiosEndpointDescriptionFromOpenApiDoc, getZodSchema } from "./openApiToZod";
 
-const main1 = async () => {
-    const doc = (await loadYaml(await fs.readFile("./src/bff.yaml", "utf-8"))) as OpenAPIObject;
-    console.log(doc);
-
-    // const getStockValueExport = getPath(doc.paths, "/api/v1/stock-value/search/export")!;
-
-    const getSchemaFromRef = (ref: string) => get(doc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
-
-    const pathItem = getPath(doc.paths, "/api/v1/stock-pictures/search")!;
-    const schema = getSchemaFromRef(pathItem.post?.responses["200"]["content"]["application/json"].schema["$ref"]);
-
-    // console.log(data);
-    // const result = generate({ sourceText: getTransformedTs(ts) });
-    // // console.log(result.getZodSchemasFile("./schema"));
-    // const variables = [...result.statements.keys()];
-    // console.log(variables);
-    // console.log(generateZodSchemaVariableStatement({}));
-};
-
-const main2 = async () => {
-    // const yaml = await loadYaml(await fs.readFile("./src/bff.yaml", "utf-8"))
-    const code = openApiSchemaToZodSchemaCodeString({
-        type: "object",
-        properties: {
-            content: {
-                type: "array",
-                items: {
-                    type: "object",
-                    properties: {
-                        id: {
-                            type: "string",
-                        },
-                        namespace: {
-                            type: "string",
-                        },
-                        data: {
-                            type: "object",
-                            properties: {
-                                requestId: {
-                                    type: "string",
-                                },
-                                apiRequestId: {
-                                    type: "string",
-                                },
-                                apiId: {
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__PERFECO"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__PARAMETHOR"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__MASTERDATA"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__MASTERFI"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__MASTERPRICE"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__DEPORTED_STOCK"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STOCK_REPORTING"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STORES_RETURN"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STORES_WRITEDOWN"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STORES_INTERNAL_CONSUMPTION"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STORES_PACKAGE"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STOCK_INTERSTORE"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STOCK_RECEPTION"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__DECASTORE"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__MYOFFER"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__OMS_STORE"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__VOLGA"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__STOCK_PICTURE"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__ABNORMAL_MARGIN"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__IDENTITY"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__IDENTITY_DELEGATED"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["APIS__ADDRESS"],
-                                        },
-                                    ],
-                                },
-                                method: {
-                                    oneOf: [
-                                        {
-                                            type: "string",
-                                            enum: ["get"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["post"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["put"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["delete"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["patch"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["options"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["head"],
-                                        },
-                                        {
-                                            type: "string",
-                                            enum: ["all"],
-                                        },
-                                    ],
-                                },
-                                url: {
-                                    type: "string",
-                                },
-                                lang: {
-                                    type: "string",
-                                },
-                                data: {
-                                    nullable: true,
-                                },
-                                params: {
-                                    nullable: true,
-                                },
-                                queryParams: {
-                                    nullable: true,
+const schema = {
+    type: "object",
+    properties: {
+        content: {
+            type: "array",
+            items: {
+                type: "object",
+                properties: {
+                    id: {
+                        type: "string",
+                    },
+                    namespace: {
+                        type: "string",
+                    },
+                    data: {
+                        type: "object",
+                        properties: {
+                            sixth: {
+                                type: "object",
+                                properties: {
+                                    seventh: {
+                                        type: "number",
+                                    },
                                 },
                             },
-                            required: ["requestId", "apiRequestId", "apiId", "method", "url", "lang"],
-                        },
-                        time: {
-                            type: "string",
                         },
                     },
-                    required: ["id", "namespace", "data", "time"],
                 },
-            },
-            totalElements: {
-                type: "number",
-            },
-            totalPages: {
-                type: "number",
+                required: ["id", "namespace", "data", "time"],
             },
         },
-        required: ["content", "totalElements", "totalPages"],
-    });
+    },
+    required: ["content", "totalElements", "totalPages"],
+} as SchemaObject;
+
+const main2 = async () => {
+    const code = getZodSchema({ schema });
     console.log(code);
+    console.log(code.toString());
 };
 
-const main = async () => {
+const main3 = async () => {
     const doc = (await loadYaml(await fs.readFile("./src/bff.yaml", "utf-8"))) as OpenAPIObject;
     // console.log(doc);
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(doc);
-    console.log(result);
+    // console.log(result);
     await fs.writeFile("./src/output-zodios-withRefs.json", JSON.stringify(result, null, 4));
 };
 
-main();
+const main4 = async () => {
+    const oui = getZodSchema({
+        schema: {
+            type: "object",
+            properties: {
+                nested: {
+                    type: "object",
+                    properties: {
+                        aaa: {
+                            type: "string",
+                        },
+                    },
+                },
+            },
+        },
+    });
+};
+
+const main5 = async () => {
+    const doc = (await loadYaml(await fs.readFile("./src/bff.yaml", "utf-8"))) as OpenAPIObject;
+
+    // console.log(doc);
+    const result = getZodiosEndpointDescriptionFromOpenApiDoc(doc);
+    // console.log(result);
+
+    interface TemplateContext {
+        schemas: Record<string, string>;
+        endpoints: ZodiosEndpointDescription<any>[];
+    }
+
+    const data: TemplateContext = {
+        schemas: {},
+        endpoints: [],
+    };
+    for (const variableRef in result.variables) {
+        const value = result.variables[variableRef];
+        data.schemas[variableRef.replace("@var/", "")] = value[0] === "#" ? result.refs[value] : value;
+    }
+    data.schemas = sortObjectKeys(data.schemas);
+
+    result.endpoints.forEach((endpoint) => {
+        data.endpoints.push({
+            ...endpoint,
+            parameters: endpoint.parameters.map((param) => ({
+                ...param,
+                schema: param.schema.startsWith("@var/")
+                    ? `schemas["${param.schema.replace("@var/", "")}"]`
+                    : param.schema,
+            })),
+            response: `schemas["${endpoint.response.replace("@var/", "")}"]`,
+        } as any);
+    });
+    data.endpoints = sortBy(data.endpoints, "path");
+
+    console.log(data.endpoints);
+    await fs.writeFile("./src/output-template.json", JSON.stringify(data, null, 4));
+    const source = await fs.readFile("./src/template.hbs", "utf-8");
+    const template = Handlebars.compile(source);
+    const output = template(data);
+    const prettierConfig = await resolveConfig?.("./");
+
+    await fs.writeFile(
+        "./src/output-client.ts",
+        prettier.format(output.trim(), { parser: "typescript", plugins: [parserTypescript], ...prettierConfig })
+    );
+};
+
+main5();
 
 // const writeJson = <Data = any>(filePath: string, data: Data) =>
 //   fs.writeFile(filePath, JSON.stringify(data, null, 4));

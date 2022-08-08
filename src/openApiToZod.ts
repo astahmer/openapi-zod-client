@@ -1,7 +1,6 @@
+import { ZodiosEndpointDescription } from "@zodios/core";
 import {
     isReferenceObject,
-    isSchemaObject,
-    MediaTypeObject,
     OpenAPIObject,
     OperationObject,
     ParameterObject,
@@ -11,79 +10,89 @@ import {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { ZodiosEndpointDescription } from "@zodios/core";
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
 
-export const openApiSchemaToZodSchemaCodeString = (schema: SchemaObject, ctx?: ConversionTypeContext) =>
-    getZodSchemaWithChainable(schema, ctx).toString();
+interface ConversionArgs {
+    schema: SchemaObject;
+    ctx?: ConversionTypeContext;
+    meta?: CodeMetaData;
+}
 
-export const getZodSchemaWithChainable = (schema: SchemaObject, ctx?: ConversionTypeContext) =>
-    `${getZodSchema(schema)}${getZodChainablePresence(schema, ctx)}`;
-export const getZodTypeWithChainableAsString = (schema: SchemaObject, ctx?: ConversionTypeContext) =>
-    getZodSchemaWithChainable(schema, ctx).toString();
-
-export const getZodSchemaAsString = (schema: SchemaObject, ctx?: ConversionTypeContext) =>
-    getZodSchema(schema, ctx).toString();
+export const getZodSchemaWithChainable = (args: ConversionArgs) =>
+    `${getZodSchema(args)}${getZodChainablePresence(args.schema, args.meta)}`;
 
 /**
  * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
  * @see https://github.com/colinhacks/zod
  */
-export function getZodSchema(schema: SchemaObject | ReferenceObject, ctx?: ConversionTypeContext): string {
+export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArgs): CodeMeta {
+    const nestingLevel = (inheritedMeta?.nestingLevel || 0) + 1;
+    const code = new CodeMeta(schema, ctx, { ...inheritedMeta, nestingLevel });
+    const meta = { nestingLevel, parent: code.inherit(inheritedMeta?.parent), name: inheritedMeta?.name };
+
     if (isReferenceObject(schema)) {
         if (!ctx?.getSchemaByRef || !ctx?.refs) throw new Error("Context is required");
 
-        const result = ctx.refs[schema.$ref] || getZodSchemaWithChainable(ctx.getSchemaByRef(schema.$ref), ctx);
+        const result =
+            ctx.refs[schema.$ref] || getZodSchemaWithChainable({ schema: ctx.getSchemaByRef(schema.$ref), ctx, meta });
         ctx.refs[schema.$ref] = result;
 
         // return result;
-        return schema.$ref;
+        return code.reference(schema.$ref);
     }
 
     if (schema.oneOf) {
-        return `z.union([${schema.oneOf.map((prop) => getZodSchema(prop, ctx)).join(", ")}])`;
+        return code.assign(
+            `z.union([${schema.oneOf.map((prop) => getZodSchema({ schema: prop, ctx, meta })).join(", ")}])`
+        );
     }
 
     // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
     if (schema.anyOf) {
-        const types = schema.anyOf.map((prop) => getZodSchema(prop, ctx)).join(", ");
+        const types = schema.anyOf.map((prop) => getZodSchema({ schema: prop, ctx, meta })).join(", ");
         const oneOf = `z.union([${types}])`;
-        return `z.union([${oneOf}, z.array(${oneOf})])`;
+        return code.assign(`z.union([${oneOf}, z.array(${oneOf})])`);
     }
 
     if (schema.allOf) {
-        const types = schema.allOf.map((prop) => getZodSchema(prop, ctx));
-        const first = types.at(0);
-        return `${first}.${types
-            .slice(1)
-            .map((type) => `and(${type})`)
-            .join("")}`;
+        const types = schema.allOf.map((prop) => getZodSchema({ schema: prop, ctx, meta }));
+        const first = types.at(0)!;
+        return code.assign(
+            `${first.toString()}.${types
+                .slice(1)
+                .map((type) => `and(${type})`)
+                .join("")}`
+        );
     }
 
-    if (!schema.type) return `z.unknown()`;
+    if (!schema.type) return code.assign(`z.unknown()`);
 
     if (isPrimitiveType(schema.type)) {
         if (schema.enum) {
             if (schema.type === "string") {
-                return `z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`;
+                return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
             }
 
-            return `z.union([${schema.enum
-                .map((value) => `z.literal(${value === null ? "null" : `"${value}"`})`)
-                .join(", ")}])`;
+            return code.assign(
+                `z.union([${schema.enum
+                    .map((value) => `z.literal(${value === null ? "null" : `"${value}"`})`)
+                    .join(", ")}])`
+            );
         }
 
-        return match(schema.type)
-            .with("integer", () => `z.bigint()`)
-            .otherwise(() => `z.${schema.type}()`);
+        return code.assign(
+            match(schema.type)
+                .with("integer", () => `z.bigint()`)
+                .otherwise(() => `z.${schema.type}()`)
+        );
     }
 
     if (schema.type === "array") {
         if (schema.items) {
-            return `z.array(${getZodSchema(schema.items).toString()})`;
+            return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta }).toString()})`);
         }
-        return `z.array(z.any())`;
+        return code.assign(`z.array(z.any())`);
     }
 
     if (schema.type === "object") {
@@ -94,7 +103,7 @@ export function getZodSchema(schema: SchemaObject | ReferenceObject, ctx?: Conve
         ) {
             additionalProps = ".passthrough()";
         } else if (typeof schema.additionalProperties === "object") {
-            additionalProps = `.record(${getZodSchema(schema.additionalProperties).toString()})`;
+            additionalProps = `.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta }).toString()})`;
         }
 
         const isPartial = !schema.required?.length;
@@ -102,30 +111,41 @@ export function getZodSchema(schema: SchemaObject | ReferenceObject, ctx?: Conve
         if (schema.properties) {
             const propsMap = Object.entries(schema.properties).map(([prop, propSchema]) => [
                 prop,
-                getZodSchemaWithChainable(propSchema, {
-                    ...ctx,
-                    isRequired: isPartial ? true : schema.required?.includes(prop),
-                }),
+                getZodSchemaWithChainable({
+                    schema: propSchema,
+                    ctx,
+                    meta: {
+                        ...meta,
+                        isRequired: isPartial ? true : schema.required?.includes(prop),
+                        name: prop,
+                    },
+                }).toString(),
             ]);
 
             properties = "{ " + propsMap.map(([prop, propSchema]) => `${prop}: ${propSchema}`).join(", ") + " }";
         }
 
-        return `z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`;
+        return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
 
     throw new Error(`Unsupported schema type: ${schema.type}`);
 }
 
 interface ConversionTypeContext {
-    isRequired?: boolean;
     getSchemaByRef?: ($ref: string) => SchemaObject;
     refs?: Record<string, string>;
     variables?: Record<string, string>;
 }
 
-const getZodChainablePresence = (schema: SchemaObject, ctx?: ConversionTypeContext) => {
-    if (schema.nullable && !ctx?.isRequired) {
+export interface CodeMetaData {
+    isRequired?: boolean;
+    nestingLevel?: number;
+    name?: string;
+    parent?: CodeMeta;
+}
+
+const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
+    if (schema.nullable && !meta?.isRequired) {
         return `.nullish()`;
     }
 
@@ -133,7 +153,7 @@ const getZodChainablePresence = (schema: SchemaObject, ctx?: ConversionTypeConte
         return `.nullable()`;
     }
 
-    if (!ctx?.isRequired) {
+    if (!meta?.isRequired) {
         return `.optional()`;
     }
 
@@ -147,27 +167,50 @@ const getZodChainableNumberConditions = (schema: SchemaObject, meta?: Conversion
     // TODO gt gte lt lte int positive nonnegative negative nonpositive multipleOf
 };
 
-// TODO z.enum = union of literal
+const makeVarRef = (name: string) => "@var/" + normalizeString(name);
+const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
 
 export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) => {
     const getSchemaByRef = (ref: string) => get(doc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
 
     const endpoints = [];
-    const endpointsByOperationId = {} as Record<string, ZodiosEndpointDescription<any>>;
-    const responsesByOperationid = {} as Record<string, Record<string, string>>;
+    const endpointsByOperationId = {} as Record<string, EndpointDescriptionWithRefs>;
+    const responsesByOperationId = {} as Record<string, Record<string, string>>;
 
-    const context: ConversionTypeContext = { getSchemaByRef, refs: {}, variables: {} };
-    const getZodVarName = (name: string, result: string) => {
-        if (result.startsWith("z.")) {
-            const formatedName = normalizeString(name);
-            context.variables![formatedName] = result;
+    const ctx: ConversionTypeContext = { getSchemaByRef, refs: {}, variables: {} };
+    const getZodVarName = (input: CodeMeta | string, fallbackName?: string) => {
+        const result = input instanceof CodeMeta ? input.toString() : input;
+        if (result.startsWith("z.") && fallbackName) {
+            // result is simple enough that it doesn't need to be assigned to a variable
+            if (!complexType.some((type) => result.startsWith(type))) {
+                return result;
+            }
+
+            // TODO opti:
+            // z.union([z.string(), z.number()])
+            // factoriser ça dans une seule var
+            // OU ne pas mettre ça dans une variable
+            // (alors que z.union([z.object(xxx), z.object(yyy)])) oui (vu que complex)
+
+            // result is complex and would benefit from being re-used
+            let formatedName = makeVarRef(fallbackName);
+            const isAlreadyUsed = Boolean(ctx.variables![formatedName]);
+            if (isAlreadyUsed) {
+                if (ctx.variables![formatedName] === result) {
+                    return formatedName;
+                } else {
+                    formatedName += "__2";
+                }
+            }
+
+            ctx.variables![formatedName] = result;
             return formatedName;
         }
 
         // $ref like #/components/xxx/name
-        const refName = name.replace("#/", "").split("/")[3];
-        const formatedName = normalizeString(refName);
-        context.variables![formatedName] = result;
+        const refName = result.split("/")[3];
+        const formatedName = makeVarRef(refName);
+        ctx.variables![formatedName] = result;
 
         return formatedName;
     };
@@ -186,7 +229,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                 description: operation.description,
                 requestFormat: "json",
                 parameters: [] as any,
-            } as Required<ZodiosEndpointDescription<any>>;
+            } as EndpointDescriptionWithRefs;
 
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
@@ -197,9 +240,9 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                         type: "Body",
                         description: requestBody.description,
                         schema: getZodVarName(
-                            isReferenceObject(bodySchema) ? bodySchema.$ref : operation.operationId + "-Body",
-                            getZodSchema(bodySchema, context)
-                        ) as any,
+                            getZodSchema({ schema: bodySchema, ctx, meta: {} }),
+                            operation.operationId + "-Body"
+                        ),
                     });
                 }
             }
@@ -213,10 +256,16 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                             .with("header", () => "Header")
                             .with("query", () => "Query")
                             .run() as "Header" | "Query",
-                        schema: getZodSchema(param?.$ref ? param.$ref : (param as ParameterObject).schema, {
-                            ...context,
-                            isRequired: paramItem.required,
-                        }) as any,
+                        schema: getZodVarName(
+                            getZodSchema({
+                                schema: param?.$ref ? param.$ref : (param as ParameterObject).schema,
+                                ctx,
+                                meta: {
+                                    isRequired: paramItem.required,
+                                },
+                            }),
+                            paramItem.name
+                        ),
                     });
                 }
             }
@@ -231,13 +280,16 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                         // const schema = isSchemaObject(maybeSchema) ? maybeSchema : getSchemaByRef(maybeSchema.$ref);
 
                         if (isSuccess) {
-                            endpointDescription.response = getZodSchema(maybeSchema, context) as any;
+                            endpointDescription.response = getZodVarName(getZodSchema({ schema: maybeSchema, ctx }));
                         }
 
                         if (endpointDescription.alias) {
-                            responsesByOperationid[endpointDescription.alias] = {
-                                ...responsesByOperationid[endpointDescription.alias],
-                                [statusCode]: getZodSchema(maybeSchema, context),
+                            responsesByOperationId[endpointDescription.alias] = {
+                                ...responsesByOperationId[endpointDescription.alias],
+                                [statusCode]: getZodVarName(
+                                    getZodSchema({ schema: maybeSchema, ctx }),
+                                    endpointDescription.alias
+                                ),
                             };
                         }
                     }
@@ -250,10 +302,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
     }
 
     return {
+        ...(ctx as Required<ConversionTypeContext>),
         endpoints,
         // endpointsByOperationId,
-        responsesByOperationid,
-        refs: context.refs,
+        responsesByOperationId,
     };
 };
 
@@ -266,19 +318,6 @@ export const singleTypes = ["string", "number", "integer", "boolean", "null"] as
 // type SingleType = typeof singleTypes[number]
 type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 
-function stringify(obj_from_json: Record<string, any>): string {
-    if (typeof obj_from_json !== "object" || Array.isArray(obj_from_json)) {
-        // not an object, stringify using native function
-        return JSON.stringify(obj_from_json);
-    }
-    // Implements recursive object serialization according to JSON spec
-    // but without quotes around the keys.
-    let props = Object.keys(obj_from_json)
-        .map((key) => `${key}:${stringify(obj_from_json[key])}`)
-        .join(",");
-    return `{${props}}`;
-}
-
 function normalizeString(text: string) {
     // console.log(text);
     return text
@@ -289,3 +328,54 @@ function normalizeString(text: string) {
         .replace(/[^\w\-]+/g, "") // Remove all non-word chars
         .replace(/\-\-+/g, "-"); // Replace multiple - with single -
 }
+
+// TODO parents CodeMeta + check if it is a complex type via this.type
+
+export class CodeMeta {
+    code?: string;
+    ref?: string;
+
+    type: string;
+    children: CodeMeta[] = [];
+    parent: CodeMeta;
+
+    constructor(
+        public schema: SchemaObject | ReferenceObject,
+        public ctx?: ConversionTypeContext,
+        public meta?: CodeMetaData
+    ) {}
+
+    assign(code: string) {
+        this.code = code;
+        this.type = this.code.split("(")[0].slice(2);
+        return this;
+    }
+
+    reference(ref: string) {
+        this.ref = ref;
+        return this;
+    }
+
+    inherit(parent?: CodeMeta) {
+        if (parent) {
+            this.parent = parent;
+            parent.children.push(this);
+        }
+
+        return this;
+    }
+
+    toString() {
+        return (this.code || this.ref) as string;
+    }
+    toJSON() {
+        return (this.code || this.ref) as string;
+    }
+}
+
+type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDescription<any>, "response" | "parameters">> & {
+    response: string;
+    parameters: Array<
+        Omit<Required<ZodiosEndpointDescription<any>>["parameters"][number], "schema"> & { schema: string }
+    >;
+};
