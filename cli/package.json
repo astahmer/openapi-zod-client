@@ -1,0 +1,4 @@
+{
+    "main": "dist/openapi-zod-client-cli.cjs.js",
+    "module": "dist/openapi-zod-client-cli.esm.js"
+}

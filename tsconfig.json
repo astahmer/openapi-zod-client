@@ -25,7 +25,7 @@
             "@/*": ["./src/*"]
         }
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "**/*.test.ts", "**/*.typegen.ts"],
+    "include": ["src", "example"],
+    "exclude": ["node_modules", "**/*.test.ts", "**/*.typegen.ts", "example"],
     "types": ["node", "vitest/importMeta"]
 }

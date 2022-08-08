@@ -13,9 +13,11 @@ const endpoints = [
 	{
 		method: "{{method}}",
 		path: "{{path}}",
-		{{!-- {{#if alias}}
+		{{#if @root.withAlias}}
+		{{#if alias}}
 		alias: "{{alias}}",
-		{{/if}} --}}
+		{{/if}}
+		{{/if}}
 		{{#if description}}
 		description: `{{description}}`,
 		{{/if}}
