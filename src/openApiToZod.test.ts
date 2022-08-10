@@ -1,6 +1,6 @@
 import { SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
-import { CodeMetaData, getZodSchema, getZodSchemaWithChainable } from "./openApiToZod";
+import { CodeMeta, CodeMetaData, ConversionTypeContext, getZodSchema, getZodSchemaWithChainable } from "./openApiToZod";
 
 const makeSchema = (schema: SchemaObject) => schema;
 const getSchemaAsZodString = (schema: SchemaObject) => getZodSchema({ schema: makeSchema(schema) }).toString();
@@ -17,7 +17,7 @@ test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot(
         '"z.array(z.string())"'
     );
-    expect(getSchemaAsZodString({ type: "object" })).toMatchInlineSnapshot('"z.object(z.any()).partial()"');
+    expect(getSchemaAsZodString({ type: "object" })).toMatchInlineSnapshot('"z.object({}).partial()"');
     expect(getSchemaAsZodString({ type: "object", properties: { str: { type: "string" } } })).toMatchInlineSnapshot(
         '"z.object({ str: z.string() }).partial()"'
     );
@@ -118,4 +118,61 @@ test("getSchemaWithChainableAsZodString", () => {
     expect(
         getSchemaWithChainableAsZodString({ type: "string", nullable: true }, { isRequired: true })
     ).toMatchInlineSnapshot('"z.string().nullable()"');
+});
+
+test("CodeMeta", () => {
+    const schemas = {
+        Example: {
+            type: "object",
+            properties: {
+                exampleProp: { type: "string" },
+                another: { type: "number" },
+            },
+        },
+    };
+    const ctx: ConversionTypeContext = {
+        getSchemaByRef: (ref) => schemas[ref],
+        zodSchemaByHash: {},
+        schemaHashByRef: {},
+        hashByVariableName: {},
+        variableByHash: {},
+    };
+
+    const code = getZodSchema({
+        schema: makeSchema({
+            type: "object",
+            properties: {
+                str: { type: "string" },
+                reference: {
+                    $ref: "Example",
+                },
+                inline: {
+                    type: "object",
+                    properties: {
+                        nested_prop: { type: "boolean" },
+                    },
+                },
+            },
+        }),
+        ctx,
+    });
+    expect(code.toString()).toMatchInlineSnapshot(
+        '"z.object({ str: z.string(), reference: @ref__PLOvhOYyFZ__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial()"'
+    );
+    expect(code.traverse()).toMatchInlineSnapshot(
+        '"z.object({ str: z.string(), reference: z.object({ exampleProp: z.string(), another: z.number() }).partial().optional(), inline: z.object({ nested_prop: z.boolean() }).partial() }).partial()"'
+    );
+    expect(ctx).toMatchInlineSnapshot(`
+      {
+          "getSchemaByRef": [Function],
+          "hashByVariableName": {},
+          "schemaHashByRef": {
+              "Example": "@ref__PLOvhOYyFZ__",
+          },
+          "variableByHash": {},
+          "zodSchemaByHash": {
+              "@ref__PLOvhOYyFZ__": "z.object({ exampleProp: z.string(), another: z.number() }).partial().optional()",
+          },
+      }
+    `);
 });

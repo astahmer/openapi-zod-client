@@ -14,6 +14,7 @@ specifiers:
   cac: ^6.7.12
   handlebars: ^4.7.7
   nodemon: ^2.0.19
+  ohash: ^0.1.5
   openapi3-ts: ^2.0.2
   pastable: ^2.0.11
   prettier: ^2.7.1
@@ -29,6 +30,7 @@ dependencies:
   '@zodios/core': 7.1.5_zod@3.17.10
   cac: 6.7.12
   handlebars: 4.7.7
+  ohash: 0.1.5
   openapi3-ts: 2.0.2
   pastable: 2.0.11
   prettier: 2.7.1
@@ -2759,6 +2761,10 @@ packages:
       has-symbols: 1.0.3
       object-keys: 1.1.1
     dev: true
+
+  /ohash/0.1.5:
+    resolution: {integrity: sha512-qynly1AFIpGWEAW88p6DhMNqok/Swb52/KsiU+Toi7er058Ptvno3tkfTML6wYcEgFgp2GsUziW4Nqn62ciuyw==}
+    dev: false
 
   /once/1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}

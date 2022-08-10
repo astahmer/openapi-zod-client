@@ -4,31 +4,38 @@ import { OpenAPIObject } from "openapi3-ts";
 import { sortBy, sortObjectKeys } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
-import { isVarAlias, rmVarAlias } from "./openApiToZod";
 import {
     EndpointDescriptionWithRefs,
     getZodiosEndpointDescriptionFromOpenApiDoc,
 } from "./getZodiosEndpointDescriptionFromOpenApiDoc";
+import { tokens } from "./tokens";
 
 export const getZodClientTemplateContext = ({ openApiDoc }: Pick<GenerateZodClientFromOpenApiArgs, "openApiDoc">) => {
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
-
     const data = { ...initialContext };
 
-    for (const variableRef in result.variables) {
-        const value = result.variables[variableRef];
-        data.schemas[rmVarAlias(variableRef)] = value[0] === "#" ? result.refs[value] : value;
+    for (const variableRef in result.hashByVariableName) {
+        const value = result.hashByVariableName[variableRef];
+        data.schemas[tokens.rmTokenAlias(variableRef, tokens.varAlias)] =
+            value[0] === "#" ? result.schemaHashByRef[value] : value;
     }
     data.schemas = sortObjectKeys(data.schemas);
 
     result.endpoints.forEach((endpoint) => {
+        if (!endpoint.response) return;
         data.endpoints.push({
             ...endpoint,
             parameters: endpoint.parameters.map((param) => ({
                 ...param,
-                schema: isVarAlias(param.schema) ? `schemas["${rmVarAlias(param.schema)}"]` : param.schema,
+                schema: tokens.isTokenAlias(param.schema, tokens.varAlias)
+                    ? `schemas["${tokens.rmTokenAlias(param.schema, tokens.varAlias)}"]`
+                    : param.schema,
             })),
-            response: `schemas["${rmVarAlias(endpoint.response)}"]`,
+            response: tokens.isTokenAlias(endpoint.response, tokens.varAlias)
+                ? `schemas["${tokens.rmTokenAlias(endpoint.response, tokens.varAlias)}"]`
+                : endpoint.response[0] === "#"
+                ? result.schemaHashByRef[endpoint.response]
+                : endpoint.response,
         });
     });
     data.endpoints = sortBy(data.endpoints, "path");

@@ -1,5 +1,6 @@
 import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 import { match } from "ts-pattern";
+import { tokens } from "./tokens";
 
 interface ConversionArgs {
     schema: SchemaObject;
@@ -15,16 +16,35 @@ export const getZodSchemaWithChainable = (args: ConversionArgs) =>
  * @see https://github.com/colinhacks/zod
  */
 export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArgs): CodeMeta {
+    if (!schema) {
+        throw new Error("Schema is required");
+    }
+
     const nestingLevel = (inheritedMeta?.nestingLevel || 0) + 1;
-    const code = new CodeMeta(schema, ctx, { ...inheritedMeta, nestingLevel });
+    const code = new CodeMeta(schema, ctx);
     const meta = { nestingLevel, parent: code.inherit(inheritedMeta?.parent), name: inheritedMeta?.name };
 
     if (isReferenceObject(schema)) {
-        if (!ctx?.getSchemaByRef || !ctx?.refs) throw new Error("Context is required");
+        if (!ctx) throw new Error("Context is required");
+        // if (!ctx.getSchemaByRef || !ctx.schemaHashByRef || !ctx.zodSchemaByHash) throw new Error("Context is invalid");
 
-        const result =
-            ctx.refs[schema.$ref] || getZodSchemaWithChainable({ schema: ctx.getSchemaByRef(schema.$ref), ctx, meta });
-        ctx.refs[schema.$ref] = result;
+        let result = ctx.zodSchemaByHash[schema.$ref];
+        if (!result) {
+            const actualSchema = ctx.getSchemaByRef(schema.$ref);
+            if (!actualSchema) {
+                throw new Error(`Schema ${schema.$ref} not found`);
+            }
+
+            result = getZodSchemaWithChainable({ schema: actualSchema, ctx, meta });
+        }
+
+        const hashed = tokens.makeRefAlias(result);
+        ctx.schemaHashByRef[schema.$ref] = hashed;
+        ctx.zodSchemaByHash[hashed] = result;
+
+        if (ctx.schemaHashByRef) {
+            ctx.schemaHashByRef[schema.$ref] = hashed;
+        }
 
         // return result;
         return code.reference(schema.$ref);
@@ -91,11 +111,13 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         ) {
             additionalProps = ".passthrough()";
         } else if (typeof schema.additionalProperties === "object") {
-            additionalProps = `.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta }).toString()})`;
+            return code.assign(
+                `z.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta }).toString()})`
+            );
         }
 
         const isPartial = !schema.required?.length;
-        let properties = "z.any()";
+        let properties = "{}";
         if (schema.properties) {
             const propsMap = Object.entries(schema.properties).map(([prop, propSchema]) => [
                 prop,
@@ -120,9 +142,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
 }
 
 export interface ConversionTypeContext {
-    getSchemaByRef?: ($ref: string) => SchemaObject;
-    refs?: Record<string, string>;
-    variables?: Record<string, string>;
+    getSchemaByRef: ($ref: string) => SchemaObject;
+    zodSchemaByHash: Record<string, string>;
+    schemaHashByRef: Record<string, string>;
+    hashByVariableName: Record<string, string>;
+    variableByHash: Record<string, string>;
 }
 
 export interface CodeMetaData {
@@ -155,28 +179,11 @@ const getZodChainableNumberConditions = (schema: SchemaObject, meta?: Conversion
     // TODO gt gte lt lte int positive nonnegative negative nonpositive multipleOf
 };
 
-const varAlias = "@var/";
-export const isVarAlias = (name: string) => name.startsWith(varAlias);
-export const rmVarAlias = (name: string) => name.replace(varAlias, "");
-export const makeVarRef = (name: string) => varAlias + normalizeString(name);
-
-export const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
-
 type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
 
 const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as const;
 type PrimitiveType = typeof primitiveTypeList[number];
-
-function normalizeString(text: string) {
-    return text
-        .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
-        .trim() // Remove whitespace from both sides of a string (optional)
-        .replace(/\s+/g, "_") // Replace spaces with _
-        .replace(/-+/g, "_") // Replace - with _
-        .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-        .replace(/\-\-+/g, "-"); // Replace multiple - with single -
-}
 
 export class CodeMeta {
     code?: string;
@@ -186,11 +193,7 @@ export class CodeMeta {
     children: CodeMeta[] = [];
     parent: CodeMeta;
 
-    constructor(
-        public schema: SchemaObject | ReferenceObject,
-        public ctx?: ConversionTypeContext,
-        public meta?: CodeMetaData
-    ) {}
+    constructor(public schema: SchemaObject | ReferenceObject, public ctx?: ConversionTypeContext) {}
 
     assign(code: string) {
         this.code = code;
@@ -212,10 +215,26 @@ export class CodeMeta {
         return this;
     }
 
+    traverse() {
+        if (!this.ctx) throw new Error("Context is required");
+        if (!this.code?.includes(tokens.refAlias)) return this.code;
+
+        return this.code.replaceAll(tokens.refAliasRegex, (match) => this.ctx?.zodSchemaByHash[match] || match);
+    }
+
+    stringify(): string {
+        if (this.code) return this.code;
+        if (!this.ctx) return this.ref as string;
+
+        const refAlias = this.ctx.schemaHashByRef![this.ref!];
+
+        return refAlias;
+    }
+
     toString() {
-        return (this.code || this.ref) as string;
+        return this.stringify();
     }
     toJSON() {
-        return (this.code || this.ref) as string;
+        return this.stringify();
     }
 }

@@ -11,7 +11,8 @@ import {
 } from "openapi3-ts";
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
-import { ConversionTypeContext, CodeMeta, complexType, makeVarRef, getZodSchema } from "./openApiToZod";
+import { ConversionTypeContext, CodeMeta, getZodSchema } from "./openApiToZod";
+import { tokens } from "./tokens";
 
 export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) => {
     const getSchemaByRef = (ref: string) => get(doc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
@@ -20,7 +21,13 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
     const endpointsByOperationId = {} as Record<string, EndpointDescriptionWithRefs>;
     const responsesByOperationId = {} as Record<string, Record<string, string>>;
 
-    const ctx: ConversionTypeContext = { getSchemaByRef, refs: {}, variables: {} };
+    const ctx: ConversionTypeContext = {
+        getSchemaByRef,
+        zodSchemaByHash: {},
+        schemaHashByRef: {},
+        hashByVariableName: {},
+        variableByHash: {},
+    };
     const getZodVarName = (input: CodeMeta | string, fallbackName?: string) => {
         const result = input instanceof CodeMeta ? input.toString() : input;
         if (result.startsWith("z.") && fallbackName) {
@@ -29,30 +36,43 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                 return result;
             }
 
+            const hashed = tokens.makeRefAlias(result);
+
             // TODO opti:
             // z.union([z.string(), z.number()])
             // factoriser ça dans une seule var
             // OU ne pas mettre ça dans une variable
             // (alors que z.union([z.object(xxx), z.object(yyy)])) oui (vu que complex)
+
             // result is complex and would benefit from being re-used
-            let formatedName = makeVarRef(fallbackName);
-            const isAlreadyUsed = Boolean(ctx.variables![formatedName]);
-            if (isAlreadyUsed) {
-                if (ctx.variables![formatedName] === result) {
+            let formatedName = tokens.makeVarAlias(fallbackName);
+            const isVarNameAlreadyUsed = Boolean(ctx.hashByVariableName[formatedName]);
+            if (isVarNameAlreadyUsed) {
+                if (ctx.hashByVariableName[formatedName] === hashed) {
                     return formatedName;
                 } else {
                     formatedName += "__2";
                 }
             }
 
-            ctx.variables![formatedName] = result;
+            ctx.hashByVariableName[formatedName] = hashed;
+            ctx.zodSchemaByHash[hashed] = result;
             return formatedName;
         }
 
         // $ref like #/components/xxx/name
-        const refName = result.split("/")[3];
-        const formatedName = makeVarRef(refName);
-        ctx.variables![formatedName] = result;
+        if (fallbackName) {
+            const formatedName = tokens.makeVarAlias(fallbackName);
+            ctx.hashByVariableName[formatedName] = result;
+
+            return formatedName;
+        }
+
+        const ref = (input as CodeMeta)?.ref!;
+        const refName = ref.split("/")[3];
+        const formatedName = tokens.makeVarAlias(refName);
+
+        ctx.hashByVariableName[formatedName] = result;
 
         return formatedName;
     };
@@ -119,9 +139,9 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
 
                     const maybeSchema = responseItem.content["application/json"].schema!;
                     if (maybeSchema) {
-                        // const schema = isSchemaObject(maybeSchema) ? maybeSchema : getSchemaByRef(maybeSchema.$ref);
+                        const schema = getZodSchema({ schema: maybeSchema, ctx });
                         if (isSuccess) {
-                            endpointDescription.response = getZodVarName(getZodSchema({ schema: maybeSchema, ctx }));
+                            endpointDescription.response = schema.ref ? getZodVarName(schema) : schema.toString();
                         }
 
                         if (endpointDescription.alias) {
@@ -158,3 +178,5 @@ export type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDescriptio
         Omit<Required<ZodiosEndpointDescription<any>>["parameters"][number], "schema"> & { schema: string }
     >;
 };
+
+const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
