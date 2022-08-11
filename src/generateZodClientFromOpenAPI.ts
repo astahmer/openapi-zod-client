@@ -14,7 +14,7 @@ import { topologicalSort } from "./topologicalSort";
 
 export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"]) => {
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
-    const data = { ...initialContext };
+    const data = makeInitialContext();
 
     const replaceRefTokenWithVariableRef = (code: string) =>
         code.replaceAll(tokens.refTokenHashRegex, (match) => tokens.rmToken(match, tokens.refToken));
@@ -105,7 +105,7 @@ export const generateZodClientFromOpenAPI = async ({
 };
 
 /** @see https://github.dev/stephenh/ts-poet/blob/5ea0dbb3c9f1f4b0ee51a54abb2d758102eda4a2/src/Code.ts#L231 */
-function maybePretty(input: string, options?: Options | null): string {
+export function maybePretty(input: string, options?: Options | null): string {
     try {
         return prettier.format(input.trim(), { parser: "typescript", plugins: [parserTypescript], ...options });
     } catch (e) {
@@ -113,14 +113,15 @@ function maybePretty(input: string, options?: Options | null): string {
     }
 }
 
-const initialContext: TemplateContext = {
-    variables: {},
-    schemas: {},
-    endpoints: [],
-    options: {
-        withAlias: false,
-    },
-};
+const makeInitialContext = () =>
+    ({
+        variables: {},
+        schemas: {},
+        endpoints: [],
+        options: {
+            withAlias: false,
+        },
+    } as TemplateContext);
 
 interface TemplateContext {
     variables: Record<string, string>;
