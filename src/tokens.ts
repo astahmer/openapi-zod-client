@@ -1,18 +1,21 @@
 import { hash } from "ohash";
 
-const varAlias = "@var/" as const;
-const refAlias = "@ref" as const;
-type TokenAlias = typeof varAlias | typeof refAlias;
+const varPrefix = "@var/" as const;
+const refToken = "@ref" as const;
+type TokenAlias = typeof varPrefix | typeof refToken;
 
 export const tokens = {
-    varAlias,
-    refAlias,
-    refAliasRegex: new RegExp(`${refAlias}__\\w{10}__`, "g"),
-    isTokenAlias: (name: string, token: TokenAlias) => name.startsWith(token),
-    rmTokenAlias: (name: string, token: TokenAlias) =>
+    varPrefix,
+    refToken,
+    refTokenHashRegex: new RegExp(`${refToken}__\\w{10}__`, "g"),
+    isToken: (name: string, token: TokenAlias) => name.startsWith(token),
+    rmToken: (name: string, token: TokenAlias) =>
         token === "@var/" ? name.replace(token, "") : name.replace(token, "").slice(2, -2),
-    makeVarAlias: (name: string) => varAlias + normalizeString(name),
-    makeRefAlias: (zodSchemaString: string) => refAlias + `__${hash(zodSchemaString)}__`,
+    makeVar: (name: string) => varPrefix + normalizeString(name),
+    makeRefHash: (zodSchemaString: string) => {
+        if (!zodSchemaString) throw new Error("zodSchemaString is required");
+        return refToken + `__${hash(zodSchemaString)}__`;
+    },
 };
 
 function normalizeString(text: string) {

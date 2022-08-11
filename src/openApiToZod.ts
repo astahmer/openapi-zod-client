@@ -8,9 +8,6 @@ interface ConversionArgs {
     meta?: CodeMetaData;
 }
 
-export const getZodSchemaWithChainable = (args: ConversionArgs) =>
-    `${getZodSchema(args)}${getZodChainablePresence(args.schema, args.meta)}`;
-
 /**
  * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
  * @see https://github.com/colinhacks/zod
@@ -20,9 +17,12 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         throw new Error("Schema is required");
     }
 
-    const nestingLevel = (inheritedMeta?.nestingLevel || 0) + 1;
-    const code = new CodeMeta(schema, ctx);
-    const meta = { nestingLevel, parent: code.inherit(inheritedMeta?.parent), name: inheritedMeta?.name };
+    const code = new CodeMeta(schema, ctx, inheritedMeta);
+    const meta = {
+        nestingLevel: code.meta.nestingLevel,
+        parent: code.inherit(inheritedMeta?.parent),
+        referencedBy: [...code.meta.referencedBy],
+    };
 
     if (isReferenceObject(schema)) {
         if (!ctx) throw new Error("Context is required");
@@ -35,19 +35,16 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
                 throw new Error(`Schema ${schema.$ref} not found`);
             }
 
-            result = getZodSchemaWithChainable({ schema: actualSchema, ctx, meta });
+            result = getZodSchema({ schema: actualSchema, ctx, meta }).toString();
         }
 
-        const hashed = tokens.makeRefAlias(result);
+        const hashed = tokens.makeRefHash(result);
         ctx.schemaHashByRef[schema.$ref] = hashed;
         ctx.zodSchemaByHash[hashed] = result;
 
-        if (ctx.schemaHashByRef) {
-            ctx.schemaHashByRef[schema.$ref] = hashed;
-        }
+        code.ref = schema.$ref;
 
-        // return result;
-        return code.reference(schema.$ref);
+        return code;
     }
 
     if (schema.oneOf) {
@@ -119,18 +116,15 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         const isPartial = !schema.required?.length;
         let properties = "{}";
         if (schema.properties) {
-            const propsMap = Object.entries(schema.properties).map(([prop, propSchema]) => [
-                prop,
-                getZodSchemaWithChainable({
-                    schema: propSchema,
-                    ctx,
-                    meta: {
-                        ...meta,
-                        isRequired: isPartial ? true : schema.required?.includes(prop),
-                        name: prop,
-                    },
-                }).toString(),
-            ]);
+            const propsMap = Object.entries(schema.properties).map(([prop, propSchema]) => {
+                const propMeta = {
+                    ...meta,
+                    isRequired: isPartial ? true : schema.required?.includes(prop),
+                    name: prop,
+                };
+
+                return [prop, getZodSchema({ schema: propSchema, ctx, meta: propMeta }).toString()];
+            });
 
             properties = "{ " + propsMap.map(([prop, propSchema]) => `${prop}: ${propSchema}`).join(", ") + " }";
         }
@@ -146,7 +140,7 @@ export interface ConversionTypeContext {
     zodSchemaByHash: Record<string, string>;
     schemaHashByRef: Record<string, string>;
     hashByVariableName: Record<string, string>;
-    variableByHash: Record<string, string>;
+    dependenciesByHashRef: Record<string, Set<string>>;
 }
 
 export interface CodeMetaData {
@@ -154,7 +148,12 @@ export interface CodeMetaData {
     nestingLevel?: number;
     name?: string;
     parent?: CodeMeta;
+    referencedBy?: CodeMeta[];
 }
+
+type DefinedCodeMetaProps = "referencedBy" | "nestingLevel";
+type DefinedCodeMetaData = Pick<Required<CodeMetaData>, DefinedCodeMetaProps> &
+    Omit<CodeMetaData, DefinedCodeMetaProps>;
 
 const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
     if (schema.nullable && !meta?.isRequired) {
@@ -171,6 +170,12 @@ const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
 
     return "";
 };
+
+// TODO z.default()
+// TODO OA format: date-time -> z.date() / preprocess ?
+// TODO z.nonempty min max length
+// TODO OA prefixItems -> z.zuple
+// TODO recursive = z.lazy() ?
 
 const getZodChainableStringConditions = (schema: SchemaObject, meta?: ConversionTypeContext) => {
     // TODO min max length email url uuid startsWith endsWith regex trim nonempty
@@ -189,40 +194,26 @@ export class CodeMeta {
     code?: string;
     ref?: string;
 
-    type: string;
     children: CodeMeta[] = [];
-    parent: CodeMeta;
 
-    constructor(public schema: SchemaObject | ReferenceObject, public ctx?: ConversionTypeContext) {}
+    hash?: string;
+    meta: DefinedCodeMetaData;
 
-    assign(code: string) {
-        this.code = code;
-        this.type = this.code.split("(")[0].slice(2);
-        return this;
-    }
-
-    reference(ref: string) {
-        this.ref = ref;
-        return this;
-    }
-
-    inherit(parent?: CodeMeta) {
-        if (parent) {
-            this.parent = parent;
-            parent.children.push(this);
+    constructor(
+        public schema: SchemaObject | ReferenceObject,
+        public ctx?: ConversionTypeContext,
+        meta: CodeMetaData = {}
+    ) {
+        // @ts-ignore
+        this.meta = { ...meta };
+        this.meta.nestingLevel = (meta?.nestingLevel || 0) + 1;
+        this.meta.referencedBy = [...(meta?.referencedBy || [])];
+        if (this.meta.name) {
+            this.meta.referencedBy.push(this);
         }
-
-        return this;
     }
 
-    traverse() {
-        if (!this.ctx) throw new Error("Context is required");
-        if (!this.code?.includes(tokens.refAlias)) return this.code;
-
-        return this.code.replaceAll(tokens.refAliasRegex, (match) => this.ctx?.zodSchemaByHash[match] || match);
-    }
-
-    stringify(): string {
+    get codeString(): string {
         if (this.code) return this.code;
         if (!this.ctx) return this.ref as string;
 
@@ -231,10 +222,58 @@ export class CodeMeta {
         return refAlias;
     }
 
+    get hasDependencies() {
+        return this.codeString?.includes(tokens.refToken);
+    }
+
+    assign(code: string) {
+        const chainable = getZodChainablePresence(this.schema, this.meta);
+        this.code = code + chainable;
+
+        return this;
+    }
+
+    inherit(parent?: CodeMeta) {
+        if (parent) {
+            parent.children.push(this);
+        }
+
+        return this;
+    }
+
+    traverse() {
+        if (!this.ctx) throw new Error("Context is required");
+        if (!this.code?.includes(tokens.refToken)) return { code: this.code, dependencies: [] };
+
+        const dependencies = new Set();
+        const visit = (code: string, schemaRef: string | null): string => {
+            // const refBySchemaHash = reverse(this.ctx!.schemaHashByRef) as Record<string, string>;
+            return code.replaceAll(tokens.refTokenHashRegex, (match) => {
+                if (schemaRef) {
+                    if (!this.ctx!.dependenciesByHashRef[schemaRef]) {
+                        this.ctx!.dependenciesByHashRef[schemaRef] = new Set();
+                    }
+                    this.ctx!.dependenciesByHashRef[schemaRef].add(match);
+                }
+                dependencies.add(match);
+
+                const code = this.ctx!.zodSchemaByHash[match];
+                if (code) {
+                    return visit(code, match);
+                    // return visit(code, refBySchemaHash[match]);
+                }
+
+                return match;
+            });
+        };
+
+        return { code: visit(this.code, null), dependencies };
+    }
+
     toString() {
-        return this.stringify();
+        return this.codeString;
     }
     toJSON() {
-        return this.stringify();
+        return this.codeString;
     }
 }

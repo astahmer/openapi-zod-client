@@ -1,25 +1,67 @@
 import Handlebars from "handlebars";
 import fs from "node:fs/promises";
 import { OpenAPIObject } from "openapi3-ts";
-import { sortBy, sortObjectKeys } from "pastable/server";
+import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray, uniques } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
+import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import {
     EndpointDescriptionWithRefs,
     getZodiosEndpointDescriptionFromOpenApiDoc,
 } from "./getZodiosEndpointDescriptionFromOpenApiDoc";
 import { tokens } from "./tokens";
+import { topologicalSort } from "./topologicalSort";
 
-export const getZodClientTemplateContext = ({ openApiDoc }: Pick<GenerateZodClientFromOpenApiArgs, "openApiDoc">) => {
+export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"]) => {
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
     const data = { ...initialContext };
 
-    for (const variableRef in result.hashByVariableName) {
-        const value = result.hashByVariableName[variableRef];
-        data.schemas[tokens.rmTokenAlias(variableRef, tokens.varAlias)] =
-            value[0] === "#" ? result.schemaHashByRef[value] : value;
+    const replaceRefTokenWithVariableRef = (code: string) =>
+        code.replaceAll(tokens.refTokenHashRegex, (match) => tokens.rmToken(match, tokens.refToken));
+
+    const varNameByHashRef = reverse(result.hashByVariableName) as Record<string, string>;
+    const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string) => {
+        if (unknownRef.includes(tokens.refToken)) {
+            // replaceRefTokenWithVariableRef(unknownRef);
+            return unknownRef.replaceAll(
+                tokens.refTokenHashRegex,
+                (match) => `variables["${tokens.rmToken(varNameByHashRef[match], tokens.varPrefix)}"]`
+            );
+        }
+        if (tokens.isToken(unknownRef, tokens.varPrefix)) {
+            return `variables["${tokens.rmToken(unknownRef, tokens.varPrefix)}"]`;
+        }
+
+        if (unknownRef[0] === "#") {
+            return result.schemaHashByRef[unknownRef];
+        }
+
+        return unknownRef;
+    };
+
+    for (const refHash in result.zodSchemaByHash) {
+        data.schemas[tokens.rmToken(refHash, tokens.refToken)] = replaceRefTokenWithVariableRef(
+            result.zodSchemaByHash[refHash]
+        );
     }
-    data.schemas = sortObjectKeys(data.schemas);
+    const dependencyGraph = getOpenApiDependencyGraph(
+        Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),
+        result.getSchemaByRef
+    );
+    const schemaOrderedByDependencies = uniques(
+        topologicalSort(dependencyGraph)
+            .filter((ref) => result.zodSchemaByHash[result.schemaHashByRef[ref]])
+            .map((ref) => tokens.rmToken(result.schemaHashByRef[ref], tokens.refToken))
+    );
+    data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
+
+    for (const variableRef in result.hashByVariableName) {
+        data.variables[tokens.rmToken(variableRef, tokens.varPrefix)] = tokens.rmToken(
+            result.hashByVariableName[variableRef],
+            tokens.refToken
+        );
+    }
+    data.variables = sortObjectKeys(data.variables);
 
     result.endpoints.forEach((endpoint) => {
         if (!endpoint.response) return;
@@ -27,15 +69,9 @@ export const getZodClientTemplateContext = ({ openApiDoc }: Pick<GenerateZodClie
             ...endpoint,
             parameters: endpoint.parameters.map((param) => ({
                 ...param,
-                schema: tokens.isTokenAlias(param.schema, tokens.varAlias)
-                    ? `schemas["${tokens.rmTokenAlias(param.schema, tokens.varAlias)}"]`
-                    : param.schema,
+                schema: maybeReplaceTokenOrVarnameWithRef(param.schema),
             })),
-            response: tokens.isTokenAlias(endpoint.response, tokens.varAlias)
-                ? `schemas["${tokens.rmTokenAlias(endpoint.response, tokens.varAlias)}"]`
-                : endpoint.response[0] === "#"
-                ? result.schemaHashByRef[endpoint.response]
-                : endpoint.response,
+            response: maybeReplaceTokenOrVarnameWithRef(endpoint.response),
         });
     });
     data.endpoints = sortBy(data.endpoints, "path");
@@ -56,7 +92,7 @@ export const generateZodClientFromOpenAPI = async ({
     templatePath = "./src/template.hbs",
     prettierConfig,
 }: GenerateZodClientFromOpenApiArgs) => {
-    const data = getZodClientTemplateContext({ openApiDoc });
+    const data = getZodClientTemplateContext(openApiDoc);
 
     const source = await fs.readFile(templatePath, "utf-8");
     const template = Handlebars.compile(source);
@@ -79,6 +115,7 @@ function maybePretty(input: string, options?: Options | null): string {
 }
 
 const initialContext: TemplateContext = {
+    variables: {},
     schemas: {},
     endpoints: [],
     options: {
@@ -87,6 +124,7 @@ const initialContext: TemplateContext = {
 };
 
 interface TemplateContext {
+    variables: Record<string, string>;
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
     options?: {

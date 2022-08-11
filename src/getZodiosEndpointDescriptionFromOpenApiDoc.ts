@@ -11,7 +11,8 @@ import {
 } from "openapi3-ts";
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
-import { ConversionTypeContext, CodeMeta, getZodSchema } from "./openApiToZod";
+import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
+import { CodeMeta, ConversionTypeContext, getZodSchema } from "./openApiToZod";
 import { tokens } from "./tokens";
 
 export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) => {
@@ -26,26 +27,21 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        variableByHash: {},
+        dependenciesByHashRef: {},
     };
-    const getZodVarName = (input: CodeMeta | string, fallbackName?: string) => {
-        const result = input instanceof CodeMeta ? input.toString() : input;
+    const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
+        const result = input.toString();
+
         if (result.startsWith("z.") && fallbackName) {
             // result is simple enough that it doesn't need to be assigned to a variable
             if (!complexType.some((type) => result.startsWith(type))) {
                 return result;
             }
 
-            const hashed = tokens.makeRefAlias(result);
-
-            // TODO opti:
-            // z.union([z.string(), z.number()])
-            // factoriser ça dans une seule var
-            // OU ne pas mettre ça dans une variable
-            // (alors que z.union([z.object(xxx), z.object(yyy)])) oui (vu que complex)
+            const hashed = tokens.makeRefHash(result);
 
             // result is complex and would benefit from being re-used
-            let formatedName = tokens.makeVarAlias(fallbackName);
+            let formatedName = tokens.makeVar(fallbackName);
             const isVarNameAlreadyUsed = Boolean(ctx.hashByVariableName[formatedName]);
             if (isVarNameAlreadyUsed) {
                 if (ctx.hashByVariableName[formatedName] === hashed) {
@@ -62,15 +58,14 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
 
         // $ref like #/components/xxx/name
         if (fallbackName) {
-            const formatedName = tokens.makeVarAlias(fallbackName);
+            const formatedName = tokens.makeVar(fallbackName);
             ctx.hashByVariableName[formatedName] = result;
 
             return formatedName;
         }
 
-        const ref = (input as CodeMeta)?.ref!;
-        const refName = ref.split("/")[3];
-        const formatedName = tokens.makeVarAlias(refName);
+        const refName = input.ref!.split("/")[3];
+        const formatedName = tokens.makeVar(refName);
 
         ctx.hashByVariableName[formatedName] = result;
 
@@ -102,7 +97,11 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                         type: "Body",
                         description: requestBody.description,
                         schema: getZodVarName(
-                            getZodSchema({ schema: bodySchema, ctx, meta: {} }),
+                            getZodSchema({
+                                schema: bodySchema,
+                                ctx,
+                                meta: { isRequired: requestBody.required || true },
+                            }),
                             operation.operationId + "-Body"
                         ),
                     });
@@ -123,7 +122,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                                 schema: param?.$ref ? param.$ref : (param as ParameterObject).schema,
                                 ctx,
                                 meta: {
-                                    isRequired: paramItem.required,
+                                    isRequired: paramItem.in === "path" ? true : paramItem.required || false,
                                 },
                             }),
                             paramItem.name
@@ -139,7 +138,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
 
                     const maybeSchema = responseItem.content["application/json"].schema!;
                     if (maybeSchema) {
-                        const schema = getZodSchema({ schema: maybeSchema, ctx });
+                        const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
                         if (isSuccess) {
                             endpointDescription.response = schema.ref ? getZodVarName(schema) : schema.toString();
                         }
@@ -148,7 +147,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                             responsesByOperationId[endpointDescription.alias] = {
                                 ...responsesByOperationId[endpointDescription.alias],
                                 [statusCode]: getZodVarName(
-                                    getZodSchema({ schema: maybeSchema, ctx }),
+                                    getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } }),
                                     endpointDescription.alias
                                 ),
                             };
@@ -162,11 +161,14 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         }
     }
 
+    const refsDependencyGraph = getOpenApiDependencyGraph(Object.keys(ctx.schemaHashByRef), ctx.getSchemaByRef);
+
     return {
         ...(ctx as Required<ConversionTypeContext>),
         endpoints,
         // endpointsByOperationId,
         responsesByOperationId,
+        refsDependencyGraph,
     };
 };
 

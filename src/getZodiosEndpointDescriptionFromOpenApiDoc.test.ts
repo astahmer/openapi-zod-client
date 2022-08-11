@@ -3,8 +3,6 @@ import { OpenAPIObject, SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
 import { getZodiosEndpointDescriptionFromOpenApiDoc } from "./getZodiosEndpointDescriptionFromOpenApiDoc";
 
-const makeSchema = (schema: SchemaObject) => schema;
-
 // TODO test with missing schema -> should throw
 
 const baseDoc = {
@@ -100,6 +98,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "dependenciesByHashRef": {},
           "endpoints": [
               {
                   "alias": "placeOrder",
@@ -124,6 +123,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
               "@var/placeOrder": "@ref__dqJo8eOFaZ__",
               "@var/placeOrder_Body": "@ref__dqJo8eOFaZ__",
           },
+          "refsDependencyGraph": {},
           "responsesByOperationId": {
               "placeOrder": {
                   "200": "@var/placeOrder",
@@ -132,7 +132,6 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
           "schemaHashByRef": {
               "#/components/schemas/Order": "@ref__dqJo8eOFaZ__",
           },
-          "variableByHash": {},
           "zodSchemaByHash": {
               "@ref__dqJo8eOFaZ__": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
           },
@@ -206,6 +205,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "dependenciesByHashRef": {},
           "endpoints": [
               {
                   "alias": "updatePet",
@@ -242,11 +242,17 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/Pet": "@ref__rwvsH7pS8q__",
-              "@var/addPet": "@ref__rwvsH7pS8q__",
-              "@var/addPet_Body": "@ref__rwvsH7pS8q__",
-              "@var/updatePet": "@ref__rwvsH7pS8q__",
-              "@var/updatePet_Body": "@ref__rwvsH7pS8q__",
+              "@var/Pet": "@ref__KyXfnTjbWz__",
+              "@var/addPet": "@ref__KyXfnTjbWz__",
+              "@var/addPet_Body": "@ref__KyXfnTjbWz__",
+              "@var/updatePet": "@ref__KyXfnTjbWz__",
+              "@var/updatePet_Body": "@ref__KyXfnTjbWz__",
+          },
+          "refsDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
           },
           "responsesByOperationId": {
               "addPet": {
@@ -258,13 +264,12 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
           },
           "schemaHashByRef": {
               "#/components/schemas/Category": "@ref__hu8VM64CQw__",
-              "#/components/schemas/Pet": "@ref__rwvsH7pS8q__",
+              "#/components/schemas/Pet": "@ref__KyXfnTjbWz__",
               "#/components/schemas/Tag": "@ref__hu8VM64CQw__",
           },
-          "variableByHash": {},
           "zodSchemaByHash": {
+              "@ref__KyXfnTjbWz__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__hu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__hu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
               "@ref__hu8VM64CQw__": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "@ref__rwvsH7pS8q__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__hu8VM64CQw__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__hu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
           },
       }
     `);
@@ -388,6 +393,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "dependenciesByHashRef": {},
           "endpoints": [
               {
                   "alias": "findPetsByStatus",
@@ -402,7 +408,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__rwvsH7pS8q__)",
+                  "response": "z.array(@ref__KyXfnTjbWz__)",
               },
               {
                   "alias": "findPetsByTags",
@@ -417,15 +423,21 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__rwvsH7pS8q__)",
+                  "response": "z.array(@ref__KyXfnTjbWz__)",
               },
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/findPetsByStatus": "@ref__HELdNCseX9__",
-              "@var/findPetsByTags": "@ref__HELdNCseX9__",
-              "@var/status": "@ref__hviClCZdpb__",
-              "@var/tags": "@ref__IAC6RjL5i9__",
+              "@var/findPetsByStatus": "@ref__3tXnrjZr7t__",
+              "@var/findPetsByTags": "@ref__3tXnrjZr7t__",
+              "@var/status": "@ref__lh4E1pXYTG__",
+              "@var/tags": "@ref__lBJyXSdkxV__",
+          },
+          "refsDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
           },
           "responsesByOperationId": {
               "findPetsByStatus": {
@@ -437,16 +449,15 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
           },
           "schemaHashByRef": {
               "#/components/schemas/Category": "@ref__hu8VM64CQw__",
-              "#/components/schemas/Pet": "@ref__rwvsH7pS8q__",
+              "#/components/schemas/Pet": "@ref__KyXfnTjbWz__",
               "#/components/schemas/Tag": "@ref__hu8VM64CQw__",
           },
-          "variableByHash": {},
           "zodSchemaByHash": {
-              "@ref__HELdNCseX9__": "z.array(@ref__rwvsH7pS8q__)",
-              "@ref__IAC6RjL5i9__": "z.array(z.string())",
+              "@ref__3tXnrjZr7t__": "z.array(@ref__KyXfnTjbWz__)",
+              "@ref__KyXfnTjbWz__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__hu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__hu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
               "@ref__hu8VM64CQw__": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "@ref__hviClCZdpb__": "z.enum(["available", "pending", "sold"])",
-              "@ref__rwvsH7pS8q__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__hu8VM64CQw__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__hu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
+              "@ref__lBJyXSdkxV__": "z.array(z.string().optional()).optional()",
+              "@ref__lh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
           },
       }
     `);
@@ -457,6 +468,7 @@ test("petstore.yaml", async () => {
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
+          "dependenciesByHashRef": {},
           "endpoints": [
               {
                   "alias": "updatePet",
@@ -503,7 +515,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__rwvsH7pS8q__)",
+                  "response": "z.array(@ref__KyXfnTjbWz__)",
               },
               {
                   "alias": "findPetsByTags",
@@ -518,7 +530,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__rwvsH7pS8q__)",
+                  "response": "z.array(@ref__KyXfnTjbWz__)",
               },
               {
                   "alias": "getPetById",
@@ -536,12 +548,12 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "name",
-                          "schema": "z.string()",
+                          "schema": "z.string().optional()",
                           "type": "Query",
                       },
                       {
                           "name": "status",
-                          "schema": "z.string()",
+                          "schema": "z.string().optional()",
                           "type": "Query",
                       },
                   ],
@@ -555,7 +567,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "api_key",
-                          "schema": "z.string()",
+                          "schema": "z.string().optional()",
                           "type": "Header",
                       },
                   ],
@@ -569,7 +581,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "additionalMetadata",
-                          "schema": "z.string()",
+                          "schema": "z.string().optional()",
                           "type": "Query",
                       },
                   ],
@@ -584,7 +596,7 @@ test("petstore.yaml", async () => {
                   "parameters": [],
                   "path": "/store/inventory",
                   "requestFormat": "json",
-                  "response": "z.record(z.bigint())",
+                  "response": "z.record(z.bigint().optional())",
               },
               {
                   "alias": "placeOrder",
@@ -657,12 +669,12 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "username",
-                          "schema": "z.string()",
+                          "schema": "z.string().optional()",
                           "type": "Query",
                       },
                       {
                           "name": "password",
-                          "schema": "z.string()",
+                          "schema": "z.string().optional()",
                           "type": "Query",
                       },
                   ],
@@ -715,27 +727,33 @@ test("petstore.yaml", async () => {
           "hashByVariableName": {
               "@var/ApiResponse": "@ref__oE4gkLXxTn__",
               "@var/Order": "@ref__dqJo8eOFaZ__",
-              "@var/Pet": "@ref__rwvsH7pS8q__",
+              "@var/Pet": "@ref__KyXfnTjbWz__",
               "@var/User": "@ref__dkmtDx9IhK__",
-              "@var/addPet": "@ref__rwvsH7pS8q__",
-              "@var/addPet_Body": "@ref__rwvsH7pS8q__",
+              "@var/addPet": "@ref__KyXfnTjbWz__",
+              "@var/addPet_Body": "@ref__KyXfnTjbWz__",
               "@var/createUser": "@ref__dkmtDx9IhK__",
               "@var/createUser_Body": "@ref__dkmtDx9IhK__",
               "@var/createUsersWithListInput": "@ref__dkmtDx9IhK__",
               "@var/createUsersWithListInput_Body": "@ref__YgP96SZsFk__",
-              "@var/findPetsByStatus": "@ref__HELdNCseX9__",
-              "@var/findPetsByTags": "@ref__HELdNCseX9__",
+              "@var/findPetsByStatus": "@ref__3tXnrjZr7t__",
+              "@var/findPetsByTags": "@ref__3tXnrjZr7t__",
               "@var/getOrderById": "@ref__dqJo8eOFaZ__",
-              "@var/getPetById": "@ref__rwvsH7pS8q__",
+              "@var/getPetById": "@ref__KyXfnTjbWz__",
               "@var/getUserByName": "@ref__dkmtDx9IhK__",
               "@var/placeOrder": "@ref__dqJo8eOFaZ__",
               "@var/placeOrder_Body": "@ref__dqJo8eOFaZ__",
-              "@var/status": "@ref__hviClCZdpb__",
-              "@var/tags": "@ref__IAC6RjL5i9__",
-              "@var/updatePet": "@ref__rwvsH7pS8q__",
-              "@var/updatePet_Body": "@ref__rwvsH7pS8q__",
+              "@var/status": "@ref__lh4E1pXYTG__",
+              "@var/tags": "@ref__lBJyXSdkxV__",
+              "@var/updatePet": "@ref__KyXfnTjbWz__",
+              "@var/updatePet_Body": "@ref__KyXfnTjbWz__",
               "@var/updateUser_Body": "@ref__dkmtDx9IhK__",
               "@var/uploadFile": "@ref__oE4gkLXxTn__",
+          },
+          "refsDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
           },
           "responsesByOperationId": {
               "addPet": {
@@ -754,7 +772,7 @@ test("petstore.yaml", async () => {
                   "200": "@var/findPetsByTags",
               },
               "getInventory": {
-                  "200": "z.record(z.bigint())",
+                  "200": "z.record(z.bigint().optional())",
               },
               "getOrderById": {
                   "200": "@var/getOrderById",
@@ -782,21 +800,20 @@ test("petstore.yaml", async () => {
               "#/components/schemas/ApiResponse": "@ref__oE4gkLXxTn__",
               "#/components/schemas/Category": "@ref__hu8VM64CQw__",
               "#/components/schemas/Order": "@ref__dqJo8eOFaZ__",
-              "#/components/schemas/Pet": "@ref__rwvsH7pS8q__",
+              "#/components/schemas/Pet": "@ref__KyXfnTjbWz__",
               "#/components/schemas/Tag": "@ref__hu8VM64CQw__",
               "#/components/schemas/User": "@ref__dkmtDx9IhK__",
           },
-          "variableByHash": {},
           "zodSchemaByHash": {
-              "@ref__HELdNCseX9__": "z.array(@ref__rwvsH7pS8q__)",
-              "@ref__IAC6RjL5i9__": "z.array(z.string())",
+              "@ref__3tXnrjZr7t__": "z.array(@ref__KyXfnTjbWz__)",
+              "@ref__KyXfnTjbWz__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__hu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__hu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
               "@ref__YgP96SZsFk__": "z.array(@ref__dkmtDx9IhK__)",
               "@ref__dkmtDx9IhK__": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial().optional()",
               "@ref__dqJo8eOFaZ__": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
               "@ref__hu8VM64CQw__": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "@ref__hviClCZdpb__": "z.enum(["available", "pending", "sold"])",
+              "@ref__lBJyXSdkxV__": "z.array(z.string().optional()).optional()",
+              "@ref__lh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
               "@ref__oE4gkLXxTn__": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional()",
-              "@ref__rwvsH7pS8q__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__hu8VM64CQw__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__hu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
           },
       }
     `);

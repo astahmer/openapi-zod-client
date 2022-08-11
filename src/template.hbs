@@ -1,8 +1,12 @@
 import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-export const schemas = {
 {{#each schemas}}
+const {{@key}} = {{{this}}};
+{{/each}}
+
+const variables = {
+{{#each variables}}
 	{{@key}}:
 	{{{this}}},
 {{/each}}

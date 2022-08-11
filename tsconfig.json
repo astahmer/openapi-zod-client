@@ -26,6 +26,6 @@
         }
     },
     "include": ["src", "example"],
-    "exclude": ["node_modules", "**/*.test.ts", "**/*.typegen.ts", "example"],
+    "exclude": ["node_modules", "**/*.typegen.ts", "example"],
     "types": ["node", "vitest/importMeta"]
 }
