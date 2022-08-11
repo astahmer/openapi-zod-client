@@ -1,22 +1,22 @@
 import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const hu8VM64CQw = z.object({ id: z.bigint(), name: z.string() }).partial().optional();
-const KyXfnTjbWz = z
+const vhu8VM64CQw = z.object({ id: z.bigint(), name: z.string() }).partial().optional();
+const vV4HVBDOhfv = z
     .object({
         id: z.bigint().optional(),
         name: z.string(),
-        category: hu8VM64CQw,
+        category: vhu8VM64CQw,
         photoUrls: z.array(z.string().optional()),
-        tags: z.array(hu8VM64CQw).optional(),
+        tags: z.array(vhu8VM64CQw).optional(),
         status: z.enum(["available", "pending", "sold"]).optional(),
     })
     .optional();
-const lh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-const YUe5LGqDxm = z.array(KyXfnTjbWz).optional();
-const lBJyXSdkxV = z.array(z.string().optional()).optional();
-const oE4gkLXxTn = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional();
-const dqJo8eOFaZ = z
+const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
+const vR4bF4K0wxQ = z.array(vV4HVBDOhfv);
+const vlBJyXSdkxV = z.array(z.string().optional()).optional();
+const voE4gkLXxTn = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional();
+const vdqJo8eOFaZ = z
     .object({
         id: z.bigint(),
         petId: z.bigint(),
@@ -27,7 +27,7 @@ const dqJo8eOFaZ = z
     })
     .partial()
     .optional();
-const dkmtDx9IhK = z
+const vdkmtDx9IhK = z
     .object({
         id: z.bigint(),
         username: z.string(),
@@ -40,32 +40,32 @@ const dkmtDx9IhK = z
     })
     .partial()
     .optional();
-const HsMylbbc7I = z.array(dkmtDx9IhK).optional();
+const vGKbZVOSWPT = z.array(vdkmtDx9IhK);
 
 const variables = {
-    ApiResponse: oE4gkLXxTn,
-    Order: dqJo8eOFaZ,
-    Pet: KyXfnTjbWz,
-    User: dkmtDx9IhK,
-    addPet: KyXfnTjbWz,
-    addPet_Body: KyXfnTjbWz,
-    createUser: dkmtDx9IhK,
-    createUser_Body: dkmtDx9IhK,
-    createUsersWithListInput: dkmtDx9IhK,
-    createUsersWithListInput_Body: HsMylbbc7I,
-    findPetsByStatus: YUe5LGqDxm,
-    findPetsByTags: YUe5LGqDxm,
-    getOrderById: dqJo8eOFaZ,
-    getPetById: KyXfnTjbWz,
-    getUserByName: dkmtDx9IhK,
-    placeOrder: dqJo8eOFaZ,
-    placeOrder_Body: dqJo8eOFaZ,
-    status: lh4E1pXYTG,
-    tags: lBJyXSdkxV,
-    updatePet: KyXfnTjbWz,
-    updatePet_Body: KyXfnTjbWz,
-    updateUser_Body: dkmtDx9IhK,
-    uploadFile: oE4gkLXxTn,
+    ApiResponse: voE4gkLXxTn,
+    Order: vdqJo8eOFaZ,
+    Pet: vV4HVBDOhfv,
+    User: vdkmtDx9IhK,
+    addPet: vV4HVBDOhfv,
+    addPet_Body: vV4HVBDOhfv,
+    createUser: vdkmtDx9IhK,
+    createUser_Body: vdkmtDx9IhK,
+    createUsersWithListInput: vdkmtDx9IhK,
+    createUsersWithListInput_Body: vGKbZVOSWPT,
+    findPetsByStatus: vR4bF4K0wxQ,
+    findPetsByTags: vR4bF4K0wxQ,
+    getOrderById: vdqJo8eOFaZ,
+    getPetById: vV4HVBDOhfv,
+    getUserByName: vdkmtDx9IhK,
+    placeOrder: vdqJo8eOFaZ,
+    placeOrder_Body: vdqJo8eOFaZ,
+    status: vlh4E1pXYTG,
+    tags: vlBJyXSdkxV,
+    updatePet: vV4HVBDOhfv,
+    updatePet_Body: vV4HVBDOhfv,
+    updateUser_Body: vdkmtDx9IhK,
+    uploadFile: voE4gkLXxTn,
 };
 
 const endpoints = [
@@ -131,7 +131,7 @@ const endpoints = [
                 schema: variables["status"],
             },
         ],
-        response: z.array(variables["getPetById"]).optional(),
+        response: z.array(variables["getPetById"]),
     },
     {
         method: "get",
@@ -145,14 +145,14 @@ const endpoints = [
                 schema: variables["tags"],
             },
         ],
-        response: z.array(variables["getPetById"]).optional(),
+        response: z.array(variables["getPetById"]),
     },
     {
         method: "get",
         path: "/store/inventory",
         description: `Returns a map of status codes to quantities`,
         requestFormat: "json",
-        response: z.record(z.bigint().optional()).optional(),
+        response: z.record(z.bigint().optional()),
     },
     {
         method: "post",
@@ -211,7 +211,7 @@ const endpoints = [
                 schema: z.string().optional(),
             },
         ],
-        response: z.string().optional(),
+        response: z.string(),
     },
 ] as const;
 

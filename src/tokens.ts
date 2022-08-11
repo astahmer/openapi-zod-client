@@ -7,14 +7,14 @@ type TokenAlias = typeof varPrefix | typeof refToken;
 export const tokens = {
     varPrefix,
     refToken,
-    refTokenHashRegex: new RegExp(`${refToken}__\\w{10}__`, "g"),
+    refTokenHashRegex: new RegExp(`${refToken}__v\\w{10}__`, "g"),
     isToken: (name: string, token: TokenAlias) => name.startsWith(token),
     rmToken: (name: string, token: TokenAlias) =>
         token === "@var/" ? name.replace(token, "") : name.replace(token, "").slice(2, -2),
     makeVar: (name: string) => varPrefix + normalizeString(name),
     makeRefHash: (zodSchemaString: string) => {
         if (!zodSchemaString) throw new Error("zodSchemaString is required");
-        return refToken + `__${hash(zodSchemaString)}__`;
+        return refToken + `__v${hash(zodSchemaString)}__`;
     },
 };
 

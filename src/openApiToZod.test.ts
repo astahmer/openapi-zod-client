@@ -1,7 +1,6 @@
 import { SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
 import { CodeMetaData, ConversionTypeContext, getZodSchema } from "./openApiToZod";
-import { tokens } from "./tokens";
 
 const makeSchema = (schema: SchemaObject) => schema;
 const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData) =>
@@ -121,6 +120,37 @@ test("getSchemaWithChainableAsZodString", () => {
 });
 
 test("CodeMeta with ref", () => {
+    const ctx: ConversionTypeContext = {
+        getSchemaByRef: (ref) => null as any,
+        zodSchemaByHash: {},
+        schemaHashByRef: {},
+        hashByVariableName: {},
+        dependenciesByHashRef: {},
+    };
+
+    expect(() =>
+        getZodSchema({
+            schema: makeSchema({
+                type: "object",
+                properties: {
+                    str: { type: "string" },
+                    reference: {
+                        $ref: "Example",
+                    },
+                    inline: {
+                        type: "object",
+                        properties: {
+                            nested_prop: { type: "boolean" },
+                        },
+                    },
+                },
+            }),
+            ctx,
+        })
+    ).toThrowErrorMatchingInlineSnapshot('"Schema Example not found"');
+});
+
+test("CodeMeta with missing ref", () => {
     const schemas = {
         Example: {
             type: "object",
@@ -157,14 +187,14 @@ test("CodeMeta with ref", () => {
         ctx,
     });
     expect(code.toString()).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), reference: @ref__PLOvhOYyFZ__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()"'
+        '"z.object({ str: z.string(), reference: @ref__vPLOvhOYyFZ__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()"'
     );
     expect(code.traverse()).toMatchInlineSnapshot(
         `
       {
           "code": "z.object({ str: z.string(), reference: z.object({ exampleProp: z.string(), another: z.number() }).partial().optional(), inline: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()",
           "dependencies": Set {
-              "@ref__PLOvhOYyFZ__",
+              "@ref__vPLOvhOYyFZ__",
           },
       }
     `
@@ -172,13 +202,11 @@ test("CodeMeta with ref", () => {
     expect(code.children).toMatchInlineSnapshot(`
       [
           "z.string()",
-          "@ref__PLOvhOYyFZ__",
+          "@ref__vPLOvhOYyFZ__",
           "z.object({ nested_prop: z.boolean() }).partial()",
       ]
     `);
 });
-
-// TODO with missing ref
 
 test("CodeMeta with nested refs", () => {
     const schemas = {
@@ -225,16 +253,16 @@ test("CodeMeta with nested refs", () => {
         ctx,
     });
     expect(code.toString()).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), reference: @ref__D9UIlTHmtD__, inline: z.object({ nested_prop: z.boolean() }).partial(), another: @ref__Ra9NlD29H1__, basic: @ref__7Yf0oeOD7p__, differentPropSameRef: @ref__7Yf0oeOD7p__ }).partial().optional()"'
+        '"z.object({ str: z.string(), reference: @ref__vzBf6Wcc4wG__, inline: z.object({ nested_prop: z.boolean() }).partial(), another: @ref__v1LOGJ1r17E__, basic: @ref__v7Yf0oeOD7p__, differentPropSameRef: @ref__v7Yf0oeOD7p__ }).partial().optional()"'
     );
     expect(code.children).toMatchInlineSnapshot(`
       [
           "z.string()",
-          "@ref__D9UIlTHmtD__",
+          "@ref__vzBf6Wcc4wG__",
           "z.object({ nested_prop: z.boolean() }).partial()",
-          "@ref__Ra9NlD29H1__",
-          "@ref__7Yf0oeOD7p__",
-          "@ref__7Yf0oeOD7p__",
+          "@ref__v1LOGJ1r17E__",
+          "@ref__v7Yf0oeOD7p__",
+          "@ref__v7Yf0oeOD7p__",
       ]
     `);
     expect(code.traverse()).toMatchInlineSnapshot(
@@ -242,10 +270,10 @@ test("CodeMeta with nested refs", () => {
       {
           "code": "z.object({ str: z.string(), reference: z.object({ exampleProp: z.string(), another: z.number(), link: z.array(z.object({ nested: z.string(), nestedRef: z.object({ deep: z.boolean() }).partial().optional() }).partial().optional()), someReference: z.object({ prop: z.string(), second: z.number() }).partial().optional() }).partial().optional(), inline: z.object({ nested_prop: z.boolean() }).partial(), another: z.object({ nested: z.string(), nestedRef: z.object({ deep: z.boolean() }).partial().optional() }).partial().optional(), basic: z.object({ prop: z.string(), second: z.number() }).partial().optional(), differentPropSameRef: z.object({ prop: z.string(), second: z.number() }).partial().optional() }).partial().optional()",
           "dependencies": Set {
-              "@ref__D9UIlTHmtD__",
-              "@ref__Ra9NlD29H1__",
-              "@ref__dmzyCFsyxL__",
-              "@ref__7Yf0oeOD7p__",
+              "@ref__vzBf6Wcc4wG__",
+              "@ref__v1LOGJ1r17E__",
+              "@ref__vdmzyCFsyxL__",
+              "@ref__v7Yf0oeOD7p__",
           },
       }
     `
@@ -253,27 +281,27 @@ test("CodeMeta with nested refs", () => {
     expect(ctx).toMatchInlineSnapshot(`
       {
           "dependenciesByHashRef": {
-              "@ref__D9UIlTHmtD__": Set {
-                  "@ref__Ra9NlD29H1__",
-                  "@ref__7Yf0oeOD7p__",
+              "@ref__v1LOGJ1r17E__": Set {
+                  "@ref__vdmzyCFsyxL__",
               },
-              "@ref__Ra9NlD29H1__": Set {
-                  "@ref__dmzyCFsyxL__",
+              "@ref__vzBf6Wcc4wG__": Set {
+                  "@ref__v1LOGJ1r17E__",
+                  "@ref__v7Yf0oeOD7p__",
               },
           },
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "schemaHashByRef": {
-              "Basic": "@ref__7Yf0oeOD7p__",
-              "DeepNested": "@ref__dmzyCFsyxL__",
-              "ObjectWithArrayOfRef": "@ref__D9UIlTHmtD__",
-              "WithNested": "@ref__Ra9NlD29H1__",
+              "Basic": "@ref__v7Yf0oeOD7p__",
+              "DeepNested": "@ref__vdmzyCFsyxL__",
+              "ObjectWithArrayOfRef": "@ref__vzBf6Wcc4wG__",
+              "WithNested": "@ref__v1LOGJ1r17E__",
           },
           "zodSchemaByHash": {
-              "@ref__7Yf0oeOD7p__": "z.object({ prop: z.string(), second: z.number() }).partial().optional()",
-              "@ref__D9UIlTHmtD__": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__Ra9NlD29H1__), someReference: @ref__7Yf0oeOD7p__ }).partial().optional()",
-              "@ref__Ra9NlD29H1__": "z.object({ nested: z.string(), nestedRef: @ref__dmzyCFsyxL__ }).partial().optional()",
-              "@ref__dmzyCFsyxL__": "z.object({ deep: z.boolean() }).partial().optional()",
+              "@ref__v1LOGJ1r17E__": "z.object({ nested: z.string(), nestedRef: @ref__vdmzyCFsyxL__ }).partial().optional()",
+              "@ref__v7Yf0oeOD7p__": "z.object({ prop: z.string(), second: z.number() }).partial().optional()",
+              "@ref__vdmzyCFsyxL__": "z.object({ deep: z.boolean() }).partial().optional()",
+              "@ref__vzBf6Wcc4wG__": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__v1LOGJ1r17E__), someReference: @ref__v7Yf0oeOD7p__ }).partial().optional()",
           },
       }
     `);

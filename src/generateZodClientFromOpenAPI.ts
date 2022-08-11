@@ -22,7 +22,6 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
     const varNameByHashRef = reverse(result.hashByVariableName) as Record<string, string>;
     const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string) => {
         if (unknownRef.includes(tokens.refToken)) {
-            // replaceRefTokenWithVariableRef(unknownRef);
             return unknownRef.replaceAll(
                 tokens.refTokenHashRegex,
                 (match) => `variables["${tokens.rmToken(varNameByHashRef[match], tokens.varPrefix)}"]`
