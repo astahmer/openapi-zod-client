@@ -130,6 +130,22 @@ test("getZodClientTemplateContext", async () => {
                   "response": "variables["Order"]",
               },
               {
+                  "alias": "createUser",
+                  "description": "This can only be done by the logged in user.",
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "description": "Created user object",
+                          "name": "body",
+                          "schema": "variables["createUser_Body"]",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/user",
+                  "requestFormat": "json",
+                  "response": "variables["User"]",
+              },
+              {
                   "alias": "getUserByName",
                   "description": "",
                   "method": "get",

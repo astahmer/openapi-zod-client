@@ -643,6 +643,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user",
                   "requestFormat": "json",
+                  "response": "@var/User",
               },
               {
                   "alias": "createUsersWithListInput",

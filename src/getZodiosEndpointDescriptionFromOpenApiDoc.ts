@@ -134,7 +134,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             for (const statusCode in operation.responses) {
                 const responseItem = operation.responses[statusCode] as ResponseObject;
                 if (responseItem.content) {
-                    const isSuccess = statusCode === "200";
+                    const isSuccess = statusCode === "200" || "default";
 
                     const maybeSchema = responseItem.content["application/json"].schema!;
                     if (maybeSchema) {
