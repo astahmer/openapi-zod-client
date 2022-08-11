@@ -7,11 +7,14 @@ specifiers:
   '@babel/preset-typescript': ^7.18.6
   '@preconstruct/cli': ^2.2.1
   '@trivago/prettier-plugin-sort-imports': ^3.3.0
+  '@types/degit': ^2.8.3
   '@types/js-yaml': ^4.0.5
   '@types/node': ^18.6.4
   '@types/prettier': ^2.7.0
   '@zodios/core': ^7.1.5
   cac: ^6.7.12
+  degit: ^2.8.4
+  fast-glob: ^3.2.11
   handlebars: ^4.7.7
   nodemon: ^2.0.19
   ohash: ^0.1.5
@@ -42,9 +45,12 @@ devDependencies:
   '@babel/preset-typescript': 7.18.6_@babel+core@7.18.10
   '@preconstruct/cli': 2.2.1
   '@trivago/prettier-plugin-sort-imports': 3.3.0_prettier@2.7.1
+  '@types/degit': 2.8.3
   '@types/js-yaml': 4.0.5
   '@types/node': 18.6.4
   '@types/prettier': 2.7.0
+  degit: 2.8.4
+  fast-glob: 3.2.11
   nodemon: 2.0.19
   tsx: 3.8.0
   typescript: 4.7.4
@@ -1574,6 +1580,10 @@ packages:
     resolution: {integrity: sha512-/zPMqDkzSZ8t3VtxOa4KPq7uzzW978M9Tvh+j7GHKuo6k6GTLxPJ4J5gE5cjfJ26pnXst0N5Hax8Sr0T2Mi9zQ==}
     dev: true
 
+  /@types/degit/2.8.3:
+    resolution: {integrity: sha512-CL7y71j2zaDmtPLD5Xq5S1Gv2dFoHl0/GBZm6s39Mj/ls28L3NzAOqf7H4H0/2TNVMgMjMVf9CAFYSjmXhi3bw==}
+    dev: true
+
   /@types/estree/0.0.39:
     resolution: {integrity: sha512-EYNwp3bU+98cpU4lAWYYL7Zz+2gryWH1qbdDTidVd6hkiR6weksdbMadyXKXNPEkQFhXM+hVO9ZygomHXp+AIw==}
     dev: true
@@ -1963,6 +1973,12 @@ packages:
     dependencies:
       has-property-descriptors: 1.0.0
       object-keys: 1.1.1
+    dev: true
+
+  /degit/2.8.4:
+    resolution: {integrity: sha512-vqYuzmSA5I50J882jd+AbAhQtgK6bdKUJIex1JNfEUPENCgYsxugzKVZlFyMwV4i06MmnV47/Iqi5Io86zf3Ng==}
+    engines: {node: '>=8.0.0'}
+    hasBin: true
     dev: true
 
   /detect-indent/6.1.0:
