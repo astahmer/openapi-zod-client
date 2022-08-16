@@ -19,6 +19,14 @@ or directly
 
 -   `pnpx openapi-zod-client "./input/file.yaml" -o "./output/client.ts"`
 
+# Example
+
+-   You can check an example [input](./example/petstore.yaml) (the petstore example when you open/reset [editor.swagger.io](https://editor.swagger.io/)) and [output](./example/petstore-client.ts)
+
+-   there's also [an example of a programmatic usage](./example/petstore-generator.ts)
+
+-   or you can check the tests in the `src` folder which are mostly just inline snapshots of the outputs
+
 ## Contributing:
 
 -   `pnpm i && pnpm gen`
