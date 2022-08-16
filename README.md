@@ -1,6 +1,6 @@
 # openapi-zod-client
 
-Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client with zod validation_) from a (json/yaml) [OpenAPI spec](https://github.com/OAI/OpenAPI-Specification)
+Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client with zod validation_) from a (json/yaml) [OpenAPI spec](https://github.com/OAI/OpenAPI-Specification) (or just make your own output template and do w/e you want with the generated schemas/endpoints/etc !)
 
 -   can be used programmatically _(do w/e you want with the computed schemas/endpoints)_
 -   or used as a CLI _(generates a prettier .ts file with deduplicated variables when pointing to the same schema/$ref)_
@@ -18,6 +18,8 @@ with local install:
 or directly
 
 -   `pnpx openapi-zod-client "./input/file.yaml" -o "./output/client.ts"`
+
+you can pass a custom handlebars template and/or a custom prettier config with something like `pnpm openapi-zod-client ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json`, there is an example [here](./example/)
 
 # Example
 

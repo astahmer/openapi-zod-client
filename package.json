@@ -14,6 +14,7 @@
     "scripts": {
         "gen:petstore": "tsx example/petstore-generator.ts",
         "gen:samples": "rm -rf ./samples && tsx ./samples-generator.ts",
+        "gen:example": "node ./bin.js ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json",
         "gen": "pnpm gen:petstore && pnpm gen:samples",
         "dev": "preconstruct watch",
         "build": "preconstruct build",
