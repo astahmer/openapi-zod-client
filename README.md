@@ -1,6 +1,6 @@
 # openapi-zod-client
 
-Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client with zod validation_) from a (json/yaml) [OpenAPI spec](https://github.com/OAI/OpenAPI-Specification) (or just use the generated schemas/endpoints/etc !)
+Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client with zod validation_) from a (json/yaml) [OpenAPI spec](https://github.com/OAI/OpenAPI-Specification) **(or just use the generated schemas/endpoints/etc !)**
 
 -   can be used programmatically _(do w/e you want with the computed schemas/endpoints)_
 -   or used as a CLI _(generates a prettier .ts file with deduplicated variables when pointing to the same schema/$ref)_
@@ -26,7 +26,7 @@ You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a 
 
 ## Tips
 
--   Since internally we're making use of [swagger-parser](https://github.com/APIDevTools/swagger-parser), you should be able to use directly using an input URL like this:
+-   Since internally we're using [swagger-parser](https://github.com/APIDevTools/swagger-parser), you should be able to use an URL as input like this:
     `pnpx openapi-zod-client https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml -o ./petstore.ts`
 
 -   Also, multiple-files-documents ($ref pointing to another file) should work out-of-the-box as well, but if it doesn't, maybe [dereferencing](https://apitools.dev/swagger-parser/docs/swagger-parser.html#dereferenceapi-options-callback) your document before passing it to `openapi-zod-client` could help
