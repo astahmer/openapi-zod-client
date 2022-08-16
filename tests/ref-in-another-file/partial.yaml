@@ -1,0 +1,16 @@
+openapi: 3.0.0
+info:
+  version: 0.0.1
+  title: Partial document
+
+paths:
+  /robots.txt:
+    get:
+      description: Gets robots.txt
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: ./single-schema.yaml

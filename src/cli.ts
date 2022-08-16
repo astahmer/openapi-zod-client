@@ -15,7 +15,7 @@ cli.command("<input> path", "OpenAPI/Swagger document as json/yaml")
     .option("-p, --prettier <path>", "Prettier config path that will be used to format the output client file")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
-        const openApiDoc = (await SwaggerParser.parse(input)) as OpenAPIObject;
+        const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
         const prettierConfig = await resolveConfig(options.prettier || "./");
         await generateZodClientFromOpenAPI({
             openApiDoc,
