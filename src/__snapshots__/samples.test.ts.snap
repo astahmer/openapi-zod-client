@@ -18,22 +18,7 @@ import { z } from "zod";
 
 const variables = {};
 
-const endpoints = [
-    {
-        method: "post",
-        path: "/streams",
-        description: \`subscribes a client to receive out-of-band data\`,
-        requestFormat: "json",
-        parameters: [
-            {
-                name: "callbackUrl",
-                type: "Query",
-                schema: z.string(),
-            },
-        ],
-        response: z.unknown(),
-    },
-] as const;
+const endpoints = [] as const;
 
 export const api = new Zodios("baseurl", endpoints);
 "
@@ -138,7 +123,7 @@ const endpoints = [
                 schema: z.bigint().optional(),
             },
         ],
-        response: variables["Error"],
+        response: variables["Pets"],
     },
     {
         method: "post",
@@ -150,7 +135,7 @@ const endpoints = [
         method: "get",
         path: "/pets/{petId}",
         requestFormat: "json",
-        response: variables["Error"],
+        response: variables["Pet"],
     },
 ] as const;
 
@@ -201,7 +186,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 schema: z.bigint().optional(),
             },
         ],
-        response: variables["Error"],
+        response: z.array(variables["Pet"]),
     },
     {
         method: "post",
@@ -216,14 +201,14 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 schema: variables["addPet_Body"],
             },
         ],
-        response: variables["Error"],
+        response: variables["Pet"],
     },
     {
         method: "get",
         path: "/pets/{id}",
         description: \`Returns a user based on a single ID, if the user does not have access to the pet\`,
         requestFormat: "json",
-        response: variables["Error"],
+        response: variables["Pet"],
     },
     {
         method: "delete",
