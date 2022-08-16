@@ -12,8 +12,9 @@
         "openapi-zod-client": "./bin.js"
     },
     "scripts": {
-        "gen": "tsx example/petstore-generator.ts",
-        "gen:fixtures": "rm -rf ./samples && tsx ./samples-generator.ts",
+        "gen:petstore": "tsx example/petstore-generator.ts",
+        "gen:samples": "rm -rf ./samples && tsx ./samples-generator.ts",
+        "gen": "pnpm gen:petstore && pnpm gen:samples",
         "dev": "preconstruct watch",
         "build": "preconstruct build",
         "test": "vitest",

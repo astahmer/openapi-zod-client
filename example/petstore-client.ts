@@ -176,6 +176,21 @@ const endpoints = [
         response: variables["Order"],
     },
     {
+        method: "post",
+        path: "/user",
+        description: `This can only be done by the logged in user.`,
+        requestFormat: "json",
+        parameters: [
+            {
+                name: "body",
+                description: `Created user object`,
+                type: "Body",
+                schema: variables["createUser_Body"],
+            },
+        ],
+        response: variables["User"],
+    },
+    {
         method: "get",
         path: "/user/{username}",
         requestFormat: "json",
