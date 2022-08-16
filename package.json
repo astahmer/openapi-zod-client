@@ -19,7 +19,7 @@
         "dev": "preconstruct watch",
         "build": "preconstruct build",
         "test": "vitest",
-        "release": "pnpm build && pnpm publish && git push"
+        "release": "pnpm test && pnpm build && pnpm publish && git push"
     },
     "license": "ISC",
     "dependencies": {
