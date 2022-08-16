@@ -48,6 +48,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
     }
 
     if (schema.oneOf) {
+        if (schema.oneOf.length === 1) {
+            return getZodSchema({ schema: schema.oneOf[0], ctx, meta });
+        }
+
         return code.assign(
             `z.union([${schema.oneOf.map((prop) => getZodSchema({ schema: prop, ctx, meta })).join(", ")}])`
         );
@@ -55,12 +59,20 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
 
     // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
     if (schema.anyOf) {
+        if (schema.anyOf.length === 1) {
+            return getZodSchema({ schema: schema.anyOf[0], ctx, meta });
+        }
+
         const types = schema.anyOf.map((prop) => getZodSchema({ schema: prop, ctx, meta })).join(", ");
         const oneOf = `z.union([${types}])`;
         return code.assign(`z.union([${oneOf}, z.array(${oneOf})])`);
     }
 
     if (schema.allOf) {
+        if (schema.allOf.length === 1) {
+            return getZodSchema({ schema: schema.allOf[0], ctx, meta });
+        }
+
         const types = schema.allOf.map((prop) => getZodSchema({ schema: prop, ctx, meta }));
         const first = types.at(0)!;
         return code.assign(
