@@ -18,7 +18,7 @@ export const tokens = {
     },
 };
 
-function normalizeString(text: string) {
+export function normalizeString(text: string) {
     return text
         .normalize("NFKD") // The normalize() using NFKD method returns the Unicode Normalization Form of a given string.
         .trim() // Remove whitespace from both sides of a string (optional)

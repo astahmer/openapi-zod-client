@@ -20,12 +20,9 @@
         "downlevelIteration": true,
         "strict": true,
         "strictPropertyInitialization": false,
-        "baseUrl": "./",
-        "paths": {
-            "@/*": ["./src/*"]
-        }
+        "baseUrl": "./"
     },
-    "include": ["src", "example"],
+    "include": ["src", "example", "tests"],
     "exclude": ["node_modules", "**/*.typegen.ts", "example"],
     "types": ["node", "vitest/importMeta"]
 }

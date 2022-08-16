@@ -1,6 +1,6 @@
 import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 import { match } from "ts-pattern";
-import { tokens } from "./tokens";
+import { normalizeString, tokens } from "./tokens";
 
 interface ConversionArgs {
     schema: SchemaObject;
@@ -126,7 +126,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
                 return [prop, getZodSchema({ schema: propSchema, ctx, meta: propMeta }).toString()];
             });
 
-            properties = "{ " + propsMap.map(([prop, propSchema]) => `${prop}: ${propSchema}`).join(", ") + " }";
+            properties =
+                "{ " +
+                propsMap.map(([prop, propSchema]) => `${normalizeString(prop)}: ${propSchema}`).join(", ") +
+                " }";
         }
 
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
