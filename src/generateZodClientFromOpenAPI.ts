@@ -20,12 +20,16 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
         code.replaceAll(tokens.refTokenHashRegex, (match) => tokens.rmToken(match, tokens.refToken));
 
     const varNameByHashRef = reverse(result.hashByVariableName) as Record<string, string>;
-    const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string) => {
+    const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string, fallbackVarName?: string): string => {
         if (unknownRef.includes(tokens.refToken)) {
-            return unknownRef.replaceAll(
-                tokens.refTokenHashRegex,
-                (match) => `variables["${tokens.rmToken(varNameByHashRef[match], tokens.varPrefix)}"]`
-            );
+            return unknownRef.replaceAll(tokens.refTokenHashRegex, (match) => {
+                const varNameWithToken = varNameByHashRef[match];
+                if (!varNameWithToken) {
+                    return `variables["${fallbackVarName}"]`;
+                }
+
+                return `variables["${tokens.rmToken(varNameByHashRef[match], tokens.varPrefix)}"]`;
+            });
         }
         if (tokens.isToken(unknownRef, tokens.varPrefix)) {
             return `variables["${tokens.rmToken(unknownRef, tokens.varPrefix)}"]`;
@@ -70,7 +74,7 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
                 ...param,
                 schema: maybeReplaceTokenOrVarnameWithRef(param.schema),
             })),
-            response: maybeReplaceTokenOrVarnameWithRef(endpoint.response),
+            response: maybeReplaceTokenOrVarnameWithRef(endpoint.response, endpoint.alias),
         });
     });
     data.endpoints = sortBy(data.endpoints, "path");
