@@ -174,7 +174,7 @@ const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
 // TODO z.default()
 // TODO OA format: date-time -> z.date() / preprocess ?
 // TODO z.nonempty min max length
-// TODO OA prefixItems -> z.zuple
+// TODO OA prefixItems -> z.tuple
 // TODO recursive = z.lazy() ?
 
 const getZodChainableStringConditions = (schema: SchemaObject, meta?: ConversionTypeContext) => {
