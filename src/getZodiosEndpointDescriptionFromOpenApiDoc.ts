@@ -16,7 +16,8 @@ import { CodeMeta, ConversionTypeContext, getZodSchema } from "./openApiToZod";
 import { tokens } from "./tokens";
 
 export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) => {
-    const getSchemaByRef = (ref: string) => get(doc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
+    const getSchemaByRef = (ref: string) =>
+        get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", ".")) as SchemaObject;
 
     const endpoints = [];
     const endpointsByOperationId = {} as Record<string, EndpointDescriptionWithRefs>;
@@ -64,7 +65,13 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             return formatedName;
         }
 
-        const refName = input.ref!.split("/")[3];
+        const split = input.ref!.split("/");
+        const refName = split.at(-1);
+        if (!refName) {
+            console.log({ ref: input.ref, refName, fallbackName, result });
+            throw new Error("Invalid ref: " + input.ref);
+        }
+
         const formatedName = tokens.makeVar(refName);
 
         ctx.hashByVariableName[formatedName] = result;
@@ -133,8 +140,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
 
             for (const statusCode in operation.responses) {
                 const responseItem = operation.responses[statusCode] as ResponseObject;
+
                 if (responseItem.content) {
                     const maybeSchema = responseItem.content["application/json"]?.schema;
+
                     if (maybeSchema) {
                         const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
                         if (statusCode === "200" || (statusCode === "default" && !endpointDescription.response)) {
