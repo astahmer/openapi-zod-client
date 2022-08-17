@@ -17,12 +17,12 @@
         "skipLibCheck": true,
         "allowSyntheticDefaultImports": true,
         "forceConsistentCasingInFileNames": true,
-        "downlevelIteration": true,
         "strict": true,
         "strictPropertyInitialization": false,
-        "baseUrl": "./"
+        "baseUrl": "./",
+        "isolatedModules": true // https://preconstruct.tools/guides/building-typescript-packages
     },
-    "include": ["src", "example", "tests"],
-    "exclude": ["node_modules", "**/*.typegen.ts", "example"],
+    "include": ["src"],
+    "exclude": ["node_modules", "**/*.typegen.ts", "example", "tests"],
     "types": ["node", "vitest/importMeta"]
 }
