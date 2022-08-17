@@ -8,6 +8,16 @@ Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client 
 -   client typesafety using [zodios](https://github.com/ecyrbe/zodios)
 -   tested (using [vitest](https://vitest.dev/)) against official [OpenAPI specs samples](https://github.com/OAI/OpenAPI-Specification/tree/main/schemas)
 
+# Why this exists
+
+sometimes you don't have control on your API, maybe you need to consume APIs from other teams (who might each use a different language/framework), you only have their Open API spec as source of truth, then this might help 😇
+
+you could use `openapi-zod-client` to automate the API integration part (doesn't matter if you consume it in your front or back-end, zodios is agnostic) on your CI and just import the generated `api` client
+
+## Comparison vs tRPC etc
+
+please just use [tRPC](https://github.com/trpc/trpc) or alternatives if you do have control on your API/back-end
+
 # Usage
 
 with local install:
@@ -214,6 +224,10 @@ export const api = new Zodios("baseurl", endpoints);
 -   handle recursive schemas -> output `z.lazy()`
 -   add an argument to control which response should be added (currently by status code === "200" or when there is a "default")
 -   rm unused (=never referenced) variables from output
+
+# Caveats
+
+NOT tested/expected to work with OpenAPI before v3, please migrate your specs to v3+ if you want to use this
 
 ## Contributing:
 
