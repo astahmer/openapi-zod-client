@@ -88,7 +88,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             const parameters = operation.parameters || [];
             const endpointDescription = {
                 method,
-                path,
+                path: path.replaceAll(pathParamRegex, ":$1"),
                 alias: operation.operationId,
                 description: operation.description,
                 requestFormat: "json",
@@ -189,3 +189,4 @@ export type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDescriptio
 };
 
 const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
+const pathParamRegex = /{(\w+)}/g;

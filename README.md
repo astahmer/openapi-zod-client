@@ -49,7 +49,7 @@ You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a 
 
 # tl;dr
 
-input:
+[input](./samples/v3.0/petstore.yaml):
 
 ```yaml
 openapi: "3.0.0"
@@ -206,7 +206,7 @@ const endpoints = [
     },
     {
         method: "get",
-        path: "/pets/{petId}",
+        path: "/pets/:petId",
         requestFormat: "json",
         response: variables["Pet"],
     },
