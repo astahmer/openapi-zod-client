@@ -10,11 +10,13 @@ export function topologicalSort(graph: Record<string, Set<string>>) {
 
         if (graph[name]) {
             graph[name].forEach((dep) => {
-                if (ancestors.indexOf(dep) >= 0)
-                    // if already in ancestors, a closed chain exists.
-                    throw new Error(
-                        'Circular dependency "' + dep + '" is required by "' + name + '": ' + ancestors.join(" -> ")
-                    );
+                if (ancestors.indexOf(dep) >= 0) {
+                    // if already in ancestors, a closed chain (recursive relation) exists
+                    return;
+                    // throw new Error(
+                    //     'Circular dependency "' + dep + '" is required by "' + name + '": ' + ancestors.join(" -> ")
+                    // );
+                }
 
                 // if already exists, do nothing
                 if (visited[dep]) return;

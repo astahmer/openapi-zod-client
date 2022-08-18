@@ -24,9 +24,35 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         referencedBy: [...code.meta.referencedBy],
     };
 
+    const nestingPath = code.meta.referencedBy
+        .slice(0, -1)
+        .map((prev) => tokens.getRefName(prev.ref!))
+        .join("_|_");
+
+    const fromRef = inheritedMeta?.parent?.ref;
+    if (fromRef && ctx) {
+        if (!ctx.codeMetaByRef[fromRef]) {
+            ctx.codeMetaByRef[fromRef] = code;
+            ctx.codeMetaByRef[fromRef].meta.circularSchemaRef = fromRef;
+        }
+    }
+
+    // safety net for circular(=recursive) references
+    if (meta.nestingLevel > 50) {
+        throw new Error("Nesting level exceeded, probably a circular reference: " + nestingPath);
+    }
+
     if (isReferenceObject(schema)) {
         if (!ctx) throw new Error("Context is required");
-        // if (!ctx.getSchemaByRef || !ctx.schemaHashByRef || !ctx.zodSchemaByHash) throw new Error("Context is invalid");
+
+        // circular(=recursive) reference
+        if (
+            nestingPath.split("_|_").length > 1 &&
+            nestingPath.includes("_|_" + tokens.getRefName(code.ref!)) &&
+            ctx.codeMetaByRef[schema.$ref]
+        ) {
+            return ctx.codeMetaByRef[schema.$ref];
+        }
 
         let result = ctx.zodSchemaByHash[schema.$ref];
         if (!result) {
@@ -38,11 +64,14 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
             result = getZodSchema({ schema: actualSchema, ctx, meta }).toString();
         }
 
+        // const hashed = ctx.codeMetaByRef[schema.$ref].meta.circularSchemaRef && ctx.schemaHashByRef[schema.$ref] ? ctx.schemaHashByRef[schema.$ref] : tokens.makeRefHash(result);
         const hashed = tokens.makeRefHash(result);
+        if (ctx.codeMetaByRef[schema.$ref].meta.circularSchemaRef && ctx.schemaHashByRef[schema.$ref]) {
+            return code;
+        }
+
         ctx.schemaHashByRef[schema.$ref] = hashed;
         ctx.zodSchemaByHash[hashed] = result;
-
-        code.ref = schema.$ref;
 
         return code;
     }
@@ -107,6 +136,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
 
     if (schema.type === "array") {
         if (schema.items) {
+            // TODO maybe z.lazy
             return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta }).toString()})`);
         }
         return code.assign(`z.array(z.any())`);
@@ -120,6 +150,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         ) {
             additionalProps = ".passthrough()";
         } else if (typeof schema.additionalProperties === "object") {
+            // TODO maybe z.lazy
             return code.assign(
                 `z.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta }).toString()})`
             );
@@ -129,13 +160,14 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         let properties = "{}";
         if (schema.properties) {
             const propsMap = Object.entries(schema.properties).map(([prop, propSchema]) => {
-                const propMeta = {
+                const propMetadata = {
                     ...meta,
                     isRequired: isPartial ? true : schema.required?.includes(prop),
                     name: prop,
-                };
+                } as CodeMetaData;
+                const propCode = getZodSchema({ schema: propSchema, ctx, meta: propMetadata });
 
-                return [prop, getZodSchema({ schema: propSchema, ctx, meta: propMeta }).toString()];
+                return [prop, propCode.toString()];
             });
 
             properties =
@@ -144,6 +176,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
                 " }";
         }
 
+        // TODO maybe z.lazy
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
 
@@ -156,6 +189,7 @@ export interface ConversionTypeContext {
     schemaHashByRef: Record<string, string>;
     hashByVariableName: Record<string, string>;
     dependenciesByHashRef: Record<string, Set<string>>;
+    codeMetaByRef: Record<string, CodeMeta>;
 }
 
 export interface CodeMetaData {
@@ -164,6 +198,7 @@ export interface CodeMetaData {
     name?: string;
     parent?: CodeMeta;
     referencedBy?: CodeMeta[];
+    circularSchemaRef?: string;
 }
 
 type DefinedCodeMetaProps = "referencedBy" | "nestingLevel";
@@ -210,8 +245,6 @@ export class CodeMeta {
     ref?: string;
 
     children: CodeMeta[] = [];
-
-    hash?: string;
     meta: DefinedCodeMetaData;
 
     constructor(
@@ -219,11 +252,16 @@ export class CodeMeta {
         public ctx?: ConversionTypeContext,
         meta: CodeMetaData = {}
     ) {
+        if (schema.$ref) {
+            this.ref = schema.$ref;
+        }
+
         // @ts-ignore
         this.meta = { ...meta };
         this.meta.nestingLevel = (meta?.nestingLevel || 0) + 1;
         this.meta.referencedBy = [...(meta?.referencedBy || [])];
-        if (this.meta.name) {
+
+        if (this.ref) {
             this.meta.referencedBy.push(this);
         }
     }
@@ -233,12 +271,13 @@ export class CodeMeta {
         if (!this.ctx) return this.ref as string;
 
         const refAlias = this.ctx.schemaHashByRef![this.ref!];
+        if (!refAlias) {
+            const fromRef = this.meta!.parent!.ref!;
+
+            return tokens.makeCircularRef(fromRef);
+        }
 
         return refAlias;
-    }
-
-    get hasDependencies() {
-        return this.codeString?.includes(tokens.refToken);
     }
 
     assign(code: string) {

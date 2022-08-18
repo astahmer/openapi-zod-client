@@ -2,11 +2,13 @@ import { hash } from "ohash";
 
 const varPrefix = "@var/" as const;
 const refToken = "@ref" as const;
+const circularRefToken = "@circular__" as const;
 type TokenAlias = typeof varPrefix | typeof refToken;
 
 export const tokens = {
     varPrefix,
     refToken,
+    circularRefToken,
     refTokenHashRegex: new RegExp(`${refToken}__v\\w{10}__`, "g"),
     isToken: (name: string, token: TokenAlias) => name.startsWith(token),
     rmToken: (name: string, token: TokenAlias) =>
@@ -16,6 +18,8 @@ export const tokens = {
         if (!zodSchemaString) throw new Error("zodSchemaString is required");
         return refToken + `__v${hash(zodSchemaString)}__`;
     },
+    makeCircularRef: (ref: string) => circularRefToken + ref,
+    getRefName: (ref: string) => ref.split("/").at(-1)!,
 };
 
 export function normalizeString(text: string) {

@@ -36,6 +36,10 @@ test("autofix-unusual-ref-format", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "codeMetaByRef": {
+              "#/components/schemas/Basic": "z.string().optional()",
+              "#components/schemas/Basic": "z.string().optional()",
+          },
           "dependenciesByHashRef": {},
           "endpoints": [
               {

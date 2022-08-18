@@ -126,6 +126,7 @@ test("CodeMeta with ref", () => {
         schemaHashByRef: {},
         hashByVariableName: {},
         dependenciesByHashRef: {},
+        codeMetaByRef: {},
     };
 
     expect(() =>
@@ -166,6 +167,7 @@ test("CodeMeta with missing ref", () => {
         schemaHashByRef: {},
         hashByVariableName: {},
         dependenciesByHashRef: {},
+        codeMetaByRef: {},
     };
 
     const code = getZodSchema({
@@ -229,6 +231,7 @@ test("CodeMeta with nested refs", () => {
         schemaHashByRef: {},
         hashByVariableName: {},
         dependenciesByHashRef: {},
+        codeMetaByRef: {},
     };
 
     const code = getZodSchema({
@@ -280,6 +283,12 @@ test("CodeMeta with nested refs", () => {
     );
     expect(ctx).toMatchInlineSnapshot(`
       {
+          "codeMetaByRef": {
+              "Basic": "z.object({ prop: z.string(), second: z.number() }).partial().optional()",
+              "DeepNested": "z.object({ deep: z.boolean() }).partial().optional()",
+              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__v1LOGJ1r17E__), someReference: @ref__v7Yf0oeOD7p__ }).partial().optional()",
+              "WithNested": "z.object({ nested: z.string(), nestedRef: @ref__vdmzyCFsyxL__ }).partial().optional()",
+          },
           "dependenciesByHashRef": {
               "@ref__v1LOGJ1r17E__": Set {
                   "@ref__vdmzyCFsyxL__",
