@@ -8,7 +8,7 @@ const variables = {};
 
 const endpoints = [] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -20,7 +20,7 @@ const variables = {};
 
 const endpoints = [] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -90,7 +90,7 @@ const endpoints = [
     },
 ] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -139,7 +139,7 @@ const endpoints = [
     },
 ] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -219,7 +219,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
     },
 ] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -275,7 +275,7 @@ const endpoints = [
     },
 ] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -287,7 +287,7 @@ const variables = {};
 
 const endpoints = [] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;
 
@@ -299,6 +299,6 @@ const variables = {};
 
 const endpoints = [] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 "
 `;

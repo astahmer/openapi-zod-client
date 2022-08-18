@@ -1,4 +1,4 @@
-import { getZodClientTemplateContext } from "src";
+import { getZodClientTemplateContext } from "../src";
 import { expect, test } from "vitest";
 
 test("handle-refs-without-var-name", () => {
@@ -42,6 +42,7 @@ test("handle-refs-without-var-name", () => {
               },
           ],
           "options": {
+              "baseUrl": "__baseurl__",
               "withAlias": false,
           },
           "schemas": {

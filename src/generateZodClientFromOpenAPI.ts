@@ -1,4 +1,4 @@
-import Handlebars from "handlebars";
+import { compile } from "handlebars";
 import fs from "node:fs/promises";
 import { OpenAPIObject } from "openapi3-ts";
 import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray, uniques } from "pastable/server";
@@ -87,6 +87,7 @@ interface GenerateZodClientFromOpenApiArgs {
     distPath: string;
     templatePath?: string;
     prettierConfig?: Options | null;
+    options?: TemplateContext["options"];
 }
 
 export const generateZodClientFromOpenAPI = async ({
@@ -94,13 +95,14 @@ export const generateZodClientFromOpenAPI = async ({
     distPath,
     templatePath = "./src/template.hbs",
     prettierConfig,
+    options,
 }: GenerateZodClientFromOpenApiArgs) => {
     const data = getZodClientTemplateContext(openApiDoc);
 
     const source = await fs.readFile(templatePath, "utf-8");
-    const template = Handlebars.compile(source);
+    const template = compile(source);
 
-    const output = template(data);
+    const output = template({ ...data, options });
     const prettyOutput = maybePretty(output, prettierConfig);
 
     await fs.writeFile(distPath, prettyOutput);
@@ -124,14 +126,16 @@ const makeInitialContext = () =>
         endpoints: [],
         options: {
             withAlias: false,
+            baseUrl: "__baseurl__",
         },
     } as TemplateContext);
 
-interface TemplateContext {
+export interface TemplateContext {
     variables: Record<string, string>;
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
     options?: {
+        baseUrl?: string;
         withAlias?: boolean;
     };
 }

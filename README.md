@@ -29,6 +29,28 @@ or directly
 
 -   `pnpx openapi-zod-client "./input/file.yaml" -o "./output/client.ts"`
 
+## CLI
+
+```sh
+Usage:
+  $ openapi-zod-client <input>
+
+Commands:
+  <input>  path/url to OpenAPI/Swagger document as json/yaml (defaults to `<input>.ts`)
+
+For more info, run any command with the `--help` flag:
+  $ openapi-zod-client --help
+
+Options:
+  -o, --output <path>    Output path for the zodios api client ts file
+  -t, --template <path>  Template path for the handlebars template that will be used to generate the output
+  -p, --prettier <path>  Prettier config path that will be used to format the output client file
+  -b, --base-url <url>   Base url for the api
+  -a, --with-alias       With alias as api client methods
+  -v, --version          Display version number
+  -h, --help             Display this message
+```
+
 ## Customization
 
 You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a [custom prettier config](https://prettier.io/docs/en/configuration.html) with something like:
@@ -212,7 +234,7 @@ const endpoints = [
     },
 ] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
 ```
 
 # TODO

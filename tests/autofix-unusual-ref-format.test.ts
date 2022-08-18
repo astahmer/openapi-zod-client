@@ -1,4 +1,4 @@
-import { getZodiosEndpointDescriptionFromOpenApiDoc } from "src";
+import { getZodiosEndpointDescriptionFromOpenApiDoc } from "../src";
 import { expect, test } from "vitest";
 
 test("autofix-unusual-ref-format", () => {
