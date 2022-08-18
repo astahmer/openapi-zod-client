@@ -23,6 +23,7 @@ specifiers:
   prettier: ^2.7.1
   ts-pattern: ^4.0.5
   tsx: ^3.8.0
+  type-fest: ^2.18.0
   typescript: ^4.7.4
   vitest: ^0.21.0
   zod: ^3.17.10
@@ -53,6 +54,7 @@ devDependencies:
   fast-glob: 3.2.11
   nodemon: 2.0.19
   tsx: 3.8.0
+  type-fest: 2.18.0
   typescript: 4.7.4
   vitest: 0.21.0
 
@@ -3237,7 +3239,6 @@ packages:
   /type-fest/2.18.0:
     resolution: {integrity: sha512-pRS+/yrW5TjPPHNOvxhbNZexr2bS63WjrMU8a+VzEBhUi9Tz1pZeD+vQz3ut0svZ46P+SRqMEPnJmk2XnvNzTw==}
     engines: {node: '>=12.20'}
-    dev: false
 
   /typescript/4.7.4:
     resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}

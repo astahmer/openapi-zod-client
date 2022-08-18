@@ -230,4 +230,4 @@ const endpoints = [
     },
 ] as const;
 
-export const api = new Zodios("baseurl", endpoints);
+export const api = new Zodios("__baseurl__", endpoints);
