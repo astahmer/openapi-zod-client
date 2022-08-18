@@ -20,7 +20,6 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", ".")) as SchemaObject;
 
     const endpoints = [];
-    const endpointsByOperationId = {} as Record<string, EndpointDescriptionWithRefs>;
     const responsesByOperationId = {} as Record<string, Record<string, string>>;
 
     const ctx: ConversionTypeContext = {
@@ -29,6 +28,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         schemaHashByRef: {},
         hashByVariableName: {},
         dependenciesByHashRef: {},
+        codeMetaByRef: {},
     };
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
@@ -65,8 +65,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             return formatedName;
         }
 
-        const split = input.ref!.split("/");
-        const refName = split.at(-1);
+        const refName = tokens.getRefName(input.ref!);
         if (!refName) {
             console.log({ ref: input.ref, refName, fallbackName, result });
             throw new Error("Invalid ref: " + input.ref);
@@ -147,6 +146,8 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                     if (maybeSchema) {
                         const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
                         if (statusCode === "200" || (statusCode === "default" && !endpointDescription.response)) {
+                            // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
+                            // getZodVarName should use operation.operationId as fallbackName
                             endpointDescription.response = schema.ref ? getZodVarName(schema) : schema.toString();
                         }
 
@@ -164,7 +165,6 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             }
 
             endpoints.push(endpointDescription);
-            endpointsByOperationId[endpointDescription.alias] = endpointDescription;
         }
     }
 
@@ -173,7 +173,6 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
     return {
         ...(ctx as Required<ConversionTypeContext>),
         endpoints,
-        // endpointsByOperationId,
         responsesByOperationId,
         refsDependencyGraph,
     };
