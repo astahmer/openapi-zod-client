@@ -125,7 +125,6 @@ test("CodeMeta with ref", () => {
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        dependenciesByHashRef: {},
         codeMetaByRef: {},
     };
 
@@ -166,7 +165,6 @@ test("CodeMeta with missing ref", () => {
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        dependenciesByHashRef: {},
         codeMetaByRef: {},
     };
 
@@ -190,16 +188,6 @@ test("CodeMeta with missing ref", () => {
     });
     expect(code.toString()).toMatchInlineSnapshot(
         '"z.object({ str: z.string(), reference: @ref__vPLOvhOYyFZ__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()"'
-    );
-    expect(code.traverse()).toMatchInlineSnapshot(
-        `
-      {
-          "code": "z.object({ str: z.string(), reference: z.object({ exampleProp: z.string(), another: z.number() }).partial().optional(), inline: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()",
-          "dependencies": Set {
-              "@ref__vPLOvhOYyFZ__",
-          },
-      }
-    `
     );
     expect(code.children).toMatchInlineSnapshot(`
       [
@@ -230,7 +218,6 @@ test("CodeMeta with nested refs", () => {
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        dependenciesByHashRef: {},
         codeMetaByRef: {},
     };
 
@@ -268,19 +255,6 @@ test("CodeMeta with nested refs", () => {
           "@ref__v7Yf0oeOD7p__",
       ]
     `);
-    expect(code.traverse()).toMatchInlineSnapshot(
-        `
-      {
-          "code": "z.object({ str: z.string(), reference: z.object({ exampleProp: z.string(), another: z.number(), link: z.array(z.object({ nested: z.string(), nestedRef: z.object({ deep: z.boolean() }).partial().optional() }).partial().optional()), someReference: z.object({ prop: z.string(), second: z.number() }).partial().optional() }).partial().optional(), inline: z.object({ nested_prop: z.boolean() }).partial(), another: z.object({ nested: z.string(), nestedRef: z.object({ deep: z.boolean() }).partial().optional() }).partial().optional(), basic: z.object({ prop: z.string(), second: z.number() }).partial().optional(), differentPropSameRef: z.object({ prop: z.string(), second: z.number() }).partial().optional() }).partial().optional()",
-          "dependencies": Set {
-              "@ref__vzBf6Wcc4wG__",
-              "@ref__v1LOGJ1r17E__",
-              "@ref__vdmzyCFsyxL__",
-              "@ref__v7Yf0oeOD7p__",
-          },
-      }
-    `
-    );
     expect(ctx).toMatchInlineSnapshot(`
       {
           "codeMetaByRef": {
@@ -288,15 +262,6 @@ test("CodeMeta with nested refs", () => {
               "DeepNested": "z.object({ deep: z.boolean() }).partial().optional()",
               "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__v1LOGJ1r17E__), someReference: @ref__v7Yf0oeOD7p__ }).partial().optional()",
               "WithNested": "z.object({ nested: z.string(), nestedRef: @ref__vdmzyCFsyxL__ }).partial().optional()",
-          },
-          "dependenciesByHashRef": {
-              "@ref__v1LOGJ1r17E__": Set {
-                  "@ref__vdmzyCFsyxL__",
-              },
-              "@ref__vzBf6Wcc4wG__": Set {
-                  "@ref__v1LOGJ1r17E__",
-                  "@ref__v7Yf0oeOD7p__",
-              },
           },
           "getSchemaByRef": [Function],
           "hashByVariableName": {},

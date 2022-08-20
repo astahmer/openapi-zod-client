@@ -188,7 +188,6 @@ export interface ConversionTypeContext {
     zodSchemaByHash: Record<string, string>;
     schemaHashByRef: Record<string, string>;
     hashByVariableName: Record<string, string>;
-    dependenciesByHashRef: Record<string, Set<string>>;
     codeMetaByRef: Record<string, CodeMeta>;
 }
 
@@ -293,35 +292,6 @@ export class CodeMeta {
         }
 
         return this;
-    }
-
-    traverse() {
-        if (!this.ctx) throw new Error("Context is required");
-        if (!this.code?.includes(tokens.refToken)) return { code: this.code, dependencies: [] };
-
-        const dependencies = new Set();
-        const visit = (code: string, schemaRef: string | null): string => {
-            // const refBySchemaHash = reverse(this.ctx!.schemaHashByRef) as Record<string, string>;
-            return code.replaceAll(tokens.refTokenHashRegex, (match) => {
-                if (schemaRef) {
-                    if (!this.ctx!.dependenciesByHashRef[schemaRef]) {
-                        this.ctx!.dependenciesByHashRef[schemaRef] = new Set();
-                    }
-                    this.ctx!.dependenciesByHashRef[schemaRef].add(match);
-                }
-                dependencies.add(match);
-
-                const code = this.ctx!.zodSchemaByHash[match];
-                if (code) {
-                    return visit(code, match);
-                    // return visit(code, refBySchemaHash[match]);
-                }
-
-                return match;
-            });
-        };
-
-        return { code: visit(this.code, null), dependencies };
     }
 
     toString() {
