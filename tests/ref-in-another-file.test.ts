@@ -11,7 +11,6 @@ test("ref-in-another-file", async () => {
     expect(getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
       {
           "codeMetaByRef": {},
-          "dependenciesByHashRef": {},
           "endpoints": [
               {
                   "alias": undefined,

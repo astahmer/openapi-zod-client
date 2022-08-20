@@ -40,7 +40,6 @@ test("autofix-unusual-ref-format", () => {
               "#/components/schemas/Basic": "z.string().optional()",
               "#components/schemas/Basic": "z.string().optional()",
           },
-          "dependenciesByHashRef": {},
           "endpoints": [
               {
                   "alias": "getWithUsualRefFormat",

@@ -13,7 +13,6 @@ describe("recursive-schema", () => {
 
     test("indirect single recursive", () => {
         const ctx = {
-            dependenciesByHashRef: {},
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
@@ -41,7 +40,6 @@ describe("recursive-schema", () => {
               "codeMetaByRef": {
                   "#/components/schemas/User": "z.object({ name: z.string(), parent: @ref__vhbrYSISkDY__ }).partial().optional()",
               },
-              "dependenciesByHashRef": {},
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
@@ -56,7 +54,6 @@ describe("recursive-schema", () => {
 
     test("direct recursive", () => {
         const ctx = {
-            dependenciesByHashRef: {},
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
@@ -71,7 +68,6 @@ describe("recursive-schema", () => {
               "codeMetaByRef": {
                   "#/components/schemas/User": "z.object({ name: z.string(), parent: @ref__vhbrYSISkDY__ }).partial().optional()",
               },
-              "dependenciesByHashRef": {},
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
@@ -106,7 +102,6 @@ describe("recursive-schema", () => {
 
     test("multiple recursive in one root schema", () => {
         const ctx = {
-            dependenciesByHashRef: {},
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
@@ -136,7 +131,6 @@ describe("recursive-schema", () => {
                   "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: @circular__#/components/schemas/UserWithFriends, friends: z.array(@ref__v2St8s4oWft__), bestFriend: @ref__v2St8s4oWft__ }).partial().optional()",
                   "UserWithFriends": "z.object({ name: z.string(), parent: @ref__vMGi8roYpAx__, friends: z.array(@ref__v2St8s4oWft__), bestFriend: @ref__v2St8s4oWft__ }).partial().optional()",
               },
-              "dependenciesByHashRef": {},
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
@@ -202,7 +196,6 @@ describe("recursive-schema", () => {
                   "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__#/components/schemas/UserWithFriends, circle: z.array(@circular__#/components/schemas/Friend) }).partial().optional()",
                   "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: @ref__vMGi8roYpAx__, friends: z.array(@ref__v2St8s4oWft__), bestFriend: @ref__v2St8s4oWft__ }).partial().optional()",
               },
-              "dependenciesByHashRef": {},
               "endpoints": [
                   {
                       "alias": "getExample",
