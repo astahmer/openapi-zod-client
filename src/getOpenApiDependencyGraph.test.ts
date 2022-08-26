@@ -8,7 +8,7 @@ import { topologicalSort } from "./topologicalSort";
 test("petstore.yaml", async () => {
     const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
     const getSchemaByRef = (ref: string) => get(openApiDoc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
-    const result = getOpenApiDependencyGraph(
+    const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
         Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),
         getSchemaByRef
     );
@@ -24,6 +24,26 @@ test("petstore.yaml", async () => {
       }
     `);
     expect(topologicalSort(result)).toMatchInlineSnapshot(`
+      [
+          "#/components/schemas/Address",
+          "#/components/schemas/Customer",
+          "#/components/schemas/Category",
+          "#/components/schemas/Tag",
+          "#/components/schemas/Pet",
+      ]
+    `);
+    expect(deepDependencyGraph).toMatchInlineSnapshot(`
+      {
+          "#/components/schemas/Customer": Set {
+              "#/components/schemas/Address",
+          },
+          "#/components/schemas/Pet": Set {
+              "#/components/schemas/Category",
+              "#/components/schemas/Tag",
+          },
+      }
+    `);
+    expect(topologicalSort(deepDependencyGraph)).toMatchInlineSnapshot(`
       [
           "#/components/schemas/Address",
           "#/components/schemas/Customer",
@@ -69,7 +89,10 @@ test("complex relations", () => {
     } as Record<string, SchemaObject>;
 
     const getSchemaByRef = (ref: string) => schemas[ref];
-    const result = getOpenApiDependencyGraph(Object.keys(schemas), getSchemaByRef);
+    const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
+        Object.keys(schemas),
+        getSchemaByRef
+    );
     expect(result).toMatchInlineSnapshot(`
       {
           "ObjectWithArrayOfRef": Set {
@@ -87,6 +110,33 @@ test("complex relations", () => {
       }
     `);
     expect(topologicalSort(result)).toMatchInlineSnapshot(`
+      [
+          "DeepNested",
+          "WithNested",
+          "Basic",
+          "ObjectWithArrayOfRef",
+          "Root",
+      ]
+    `);
+    expect(deepDependencyGraph).toMatchInlineSnapshot(`
+      {
+          "ObjectWithArrayOfRef": Set {
+              "WithNested",
+              "DeepNested",
+              "Basic",
+          },
+          "Root": Set {
+              "ObjectWithArrayOfRef",
+              "WithNested",
+              "DeepNested",
+              "Basic",
+          },
+          "WithNested": Set {
+              "DeepNested",
+          },
+      }
+    `);
+    expect(topologicalSort(deepDependencyGraph)).toMatchInlineSnapshot(`
       [
           "DeepNested",
           "WithNested",
@@ -119,7 +169,10 @@ test("recursive relations", () => {
     const schemas = { UserWithFriends, Friend } as Record<string, SchemaObject>;
 
     const getSchemaByRef = (ref: string) => schemas[ref];
-    const result = getOpenApiDependencyGraph(Object.keys(schemas), getSchemaByRef);
+    const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
+        Object.keys(schemas),
+        getSchemaByRef
+    );
     expect(result).toMatchInlineSnapshot(`
       {
           "Friend": Set {
@@ -133,6 +186,24 @@ test("recursive relations", () => {
       }
     `);
     expect(topologicalSort(result)).toMatchInlineSnapshot(`
+      [
+          "Friend",
+          "UserWithFriends",
+      ]
+    `);
+    expect(deepDependencyGraph).toMatchInlineSnapshot(`
+      {
+          "Friend": Set {
+              "UserWithFriends",
+              "Friend",
+          },
+          "UserWithFriends": Set {
+              "UserWithFriends",
+              "Friend",
+          },
+      }
+    `);
+    expect(topologicalSort(deepDependencyGraph)).toMatchInlineSnapshot(`
       [
           "Friend",
           "UserWithFriends",
@@ -194,7 +265,10 @@ test("recursive relations along with some basics schemas", () => {
     } as Record<string, SchemaObject>;
 
     const getSchemaByRef = (ref: string) => schemas[ref];
-    const result = getOpenApiDependencyGraph(Object.keys(schemas), getSchemaByRef);
+    const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
+        Object.keys(schemas),
+        getSchemaByRef
+    );
     expect(result).toMatchInlineSnapshot(`
       {
           "Friend": Set {
@@ -227,6 +301,49 @@ test("recursive relations along with some basics schemas", () => {
           "Friend",
           "DeepNested",
           "WithNested",
+          "UserWithFriends",
+          "ObjectWithArrayOfRef",
+          "Root",
+      ]
+    `);
+    expect(deepDependencyGraph).toMatchInlineSnapshot(`
+      {
+          "Friend": Set {
+              "UserWithFriends",
+              "Friend",
+              "WithNested",
+              "DeepNested",
+              "Basic",
+          },
+          "ObjectWithArrayOfRef": Set {
+              "WithNested",
+              "DeepNested",
+              "Basic",
+          },
+          "Root": Set {
+              "ObjectWithArrayOfRef",
+              "WithNested",
+              "DeepNested",
+              "Basic",
+          },
+          "UserWithFriends": Set {
+              "UserWithFriends",
+              "Friend",
+              "Basic",
+              "WithNested",
+              "DeepNested",
+          },
+          "WithNested": Set {
+              "DeepNested",
+          },
+      }
+    `);
+    expect(topologicalSort(deepDependencyGraph)).toMatchInlineSnapshot(`
+      [
+          "DeepNested",
+          "WithNested",
+          "Basic",
+          "Friend",
           "UserWithFriends",
           "ObjectWithArrayOfRef",
           "Root",

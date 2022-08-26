@@ -20,16 +20,14 @@ test("getSchemaAsTsString", () => {
     expect(getSchemaAsTsString({ type: "integer" })).toMatchInlineSnapshot('"number"');
 
     expect(getSchemaAsTsString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot('"Array<string>"');
-    expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" })).toMatchInlineSnapshot(`
-      "export interface EmptyObject {
-      }"
-    `);
+    expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" })).toMatchInlineSnapshot(
+        '"export type EmptyObject = {};"'
+    );
     expect(getSchemaAsTsString({ type: "object", properties: { str: { type: "string" } } }, { name: "BasicObject" }))
         .toMatchInlineSnapshot(`
-          "interface BasicObject extends Partial<{
+          "export type BasicObject = Partial<{
               str: string;
-          }> {
-          }"
+          }>;"
         `);
     expect(
         getSchemaAsTsString(
@@ -37,11 +35,10 @@ test("getSchemaAsTsString", () => {
             { name: "BasicObject2" }
         )
     ).toMatchInlineSnapshot(`
-      "interface BasicObject2 extends Partial<{
+      "export type BasicObject2 = Partial<{
           str: string;
           nb: number;
-      }> {
-      }"
+      }>;"
     `);
 
     expect(
@@ -54,10 +51,10 @@ test("getSchemaAsTsString", () => {
             { name: "AllPropertiesRequired" }
         )
     ).toMatchInlineSnapshot(`
-      "export interface AllPropertiesRequired {
+      "export type AllPropertiesRequired = {
           str: string;
           nb: number;
-      }"
+      };"
     `);
     expect(
         getSchemaAsTsString(
@@ -65,10 +62,10 @@ test("getSchemaAsTsString", () => {
             { name: "SomeOptionalProps" }
         )
     ).toMatchInlineSnapshot(`
-      "export interface SomeOptionalProps {
+      "export type SomeOptionalProps = {
           str: string;
           nb?: number | undefined;
-      }"
+      };"
     `);
 
     expect(
@@ -89,14 +86,13 @@ test("getSchemaAsTsString", () => {
             { name: "ObjectWithNestedProp" }
         )
     ).toMatchInlineSnapshot(`
-      "interface ObjectWithNestedProp extends Partial<{
+      "export type ObjectWithNestedProp = Partial<{
           str: string;
           nb: number;
           nested: Partial<{
               nested_prop: boolean;
           }>;
-      }> {
-      }"
+      }>;"
     `);
 
     expect(
@@ -138,10 +134,9 @@ test("getSchemaAsTsString", () => {
             { name: "ObjectWithUnion" }
         )
     ).toMatchInlineSnapshot(`
-      "interface ObjectWithUnion extends Partial<{
+      "export type ObjectWithUnion = Partial<{
           union: string | number;
-      }> {
-      }"
+      }>;"
     `);
 
     expect(
@@ -155,10 +150,9 @@ test("getSchemaAsTsString", () => {
             { name: "ObjectWithArrayUnion" }
         )
     ).toMatchInlineSnapshot(`
-      "interface ObjectWithArrayUnion extends Partial<{
+      "export type ObjectWithArrayUnion = Partial<{
           unionOrArrayOfUnion: (string | number) | Array<string | number>;
-      }> {
-      }"
+      }>;"
     `);
 
     expect(
@@ -172,10 +166,9 @@ test("getSchemaAsTsString", () => {
             { name: "ObjectWithIntersection" }
         )
     ).toMatchInlineSnapshot(`
-      "interface ObjectWithIntersection extends Partial<{
+      "export type ObjectWithIntersection = Partial<{
           intersection: string & number;
-      }> {
-      }"
+      }>;"
     `);
 
     expect(getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] })).toMatchInlineSnapshot(
@@ -205,18 +198,16 @@ describe("getSchemaAsTsString with context", () => {
 
         const ctx: TsConversionContext = {
             nodeByRef: {},
+            visitedsRefs: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
         expect(printTs(getTypescriptFromOpenApi({ schema: schemas.Root, meta: { name: "Root" }, ctx }) as ts.Node))
             .toMatchInlineSnapshot(`
-              "interface Root extends Partial<{
+              "export type Root = Partial<{
                   str: string;
                   nb: number;
-                  nested: Partial<{
-                      nested_prop: boolean;
-                  }>;
-              }> {
-              }"
+                  nested: Nested;
+              }>;"
             `);
     });
 
@@ -249,19 +240,16 @@ describe("getSchemaAsTsString with context", () => {
 
         const ctx: TsConversionContext = {
             nodeByRef: {},
+            visitedsRefs: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
         expect(printTs(getTypescriptFromOpenApi({ schema: schemas.Root2, meta: { name: "Root2" }, ctx }) as ts.Node))
             .toMatchInlineSnapshot(`
-              "interface Root2 extends Partial<{
+              "export type Root2 = Partial<{
                   str: string;
                   nb: number;
-                  nested: Partial<{
-                      nested_prop: boolean;
-                      deeplyNested: Array<"aaa" | "bbb" | "ccc">;
-                  }>;
-              }> {
-              }"
+                  nested: Nested2;
+              }>;"
             `);
     });
 
@@ -287,6 +275,7 @@ describe("getSchemaAsTsString with context", () => {
 
         const ctx: TsConversionContext = {
             nodeByRef: {},
+            visitedsRefs: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
 
@@ -299,63 +288,12 @@ describe("getSchemaAsTsString with context", () => {
                 }) as ts.Node
             )
         ).toMatchInlineSnapshot(`
-          "interface Root3 extends Partial<{
+          "export type Root3 = Partial<{
               str: string;
               nb: number;
-              nested: Partial<{
-                  nested_prop: boolean;
-                  backToRoot: Root3;
-              }>;
-              arrayOfNested: Array<Partial<{
-                  nested_prop: boolean;
-                  backToRoot: Root3;
-              }>>;
-          }> {
-          }"
-        `);
-    });
-
-    test("with recursive & type refs", () => {
-        const schemas = {
-            Root32: {
-                type: "object",
-                properties: {
-                    str: { type: "string" },
-                    nb: { type: "number" },
-                    nested: { $ref: "#/components/schemas/Nested32" },
-                    arrayOfNested: { type: "array", items: { $ref: "#/components/schemas/Nested32" } },
-                },
-            },
-            Nested32: {
-                type: "object",
-                properties: {
-                    nested_prop: { type: "boolean" },
-                    backToRoot: { $ref: "#/components/schemas/Root3" },
-                },
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
-            shouldUseTypeRefs: true,
-        };
-        expect(
-            printTs(
-                getTypescriptFromOpenApi({
-                    schema: schemas.Root32,
-                    meta: { name: "Root32", $ref: "#/components/schemas/Root32" },
-                    ctx,
-                }) as ts.Node
-            )
-        ).toMatchInlineSnapshot(`
-          "interface Root32 extends Partial<{
-              str: string;
-              nb: number;
-              nested: Nested32;
-              arrayOfNested: Array<Nested32>;
-          }> {
-          }"
+              nested: Nested3;
+              arrayOfNested: Array<Nested3>;
+          }>;"
         `);
     });
 
@@ -382,6 +320,7 @@ describe("getSchemaAsTsString with context", () => {
 
         const ctx: TsConversionContext = {
             nodeByRef: {},
+            visitedsRefs: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
         const result = getTypescriptFromOpenApi({
@@ -391,17 +330,58 @@ describe("getSchemaAsTsString with context", () => {
         }) as ts.Node;
 
         expect(printTs(result)).toMatchInlineSnapshot(`
-          "interface Root4 extends Partial<{
+          "export type Root4 = Partial<{
               str: string;
               nb: number;
               self: Root4;
-              nested: Partial<{
-                  nested_prop: boolean;
-                  backToRoot: Root4;
-              }>;
+              nested: Nested4;
               arrayOfSelf: Array<Root4>;
-          }> {
-          }"
+          }>;"
+        `);
+    });
+
+    test("same schemas as openApiToZod", () => {
+        const schemas = {
+            User: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                    middle: { $ref: "#/components/schemas/Middle" },
+                },
+            },
+            Middle: {
+                type: "object",
+                properties: {
+                    user: { $ref: "#/components/schemas/User" },
+                },
+            },
+            Root: {
+                type: "object",
+                properties: {
+                    recursive: {
+                        $ref: "#/components/schemas/User",
+                    },
+                    basic: { type: "number" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+        };
+        const result = getTypescriptFromOpenApi({
+            schema: schemas.Root,
+            meta: { name: "Root", $ref: "#/components/schemas/Root" },
+            ctx,
+        }) as ts.Node;
+
+        expect(printTs(result)).toMatchInlineSnapshot(`
+          "export type Root = Partial<{
+              recursive: User;
+              basic: number;
+          }>;"
         `);
     });
 });

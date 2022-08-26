@@ -36,10 +36,15 @@ test("autofix-unusual-ref-format", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "circularTokenByRef": {
+              "#/components/schemas/Basic": "@circular__Dx47XJAfat",
+              "#components/schemas/Basic": "@circular__FEo0hW6EyR",
+          },
           "codeMetaByRef": {
               "#/components/schemas/Basic": "z.string().optional()",
               "#components/schemas/Basic": "z.string().optional()",
           },
+          "deepDependencyGraph": {},
           "endpoints": [
               {
                   "alias": "getWithUsualRefFormat",

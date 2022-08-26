@@ -13,7 +13,7 @@ export interface TsConversionContext {
     nodeByRef: Record<string, ts.Node>;
     getSchemaByRef: (ref: string) => SchemaObject | ReferenceObject;
     rootRef?: string;
-    shouldUseTypeRefs?: boolean;
+    visitedsRefs?: Record<string, boolean>;
 }
 
 export const getTypescriptFromOpenApi = ({
@@ -24,8 +24,9 @@ export const getTypescriptFromOpenApi = ({
     const meta = {} as TsConversionArgs["meta"];
     const isInline = !inheritedMeta?.name;
 
-    if (ctx && inheritedMeta?.$ref) {
+    if (ctx?.visitedsRefs && inheritedMeta?.$ref) {
         ctx.rootRef = inheritedMeta.$ref;
+        ctx.visitedsRefs[inheritedMeta.$ref] = true;
     }
 
     if (!schema) {
@@ -33,19 +34,12 @@ export const getTypescriptFromOpenApi = ({
     }
 
     if (isReferenceObject(schema)) {
-        if (!ctx) throw new Error("Context is required for OpenAPI $ref");
+        if (!ctx?.visitedsRefs) throw new Error("Context is required for OpenAPI $ref");
 
         let result = ctx.nodeByRef[schema.$ref];
-        if (ctx.shouldUseTypeRefs ? true : schema.$ref === ctx.rootRef) {
-            // with SomeType = { prop: string }
-            //
-            // when ctx.shouldUseTypeRefs === true
-            // this will output Array<@type__#/components/schemas/SomeType>
-            // which will then be replaced later with Array<SomeType>
-            //
-            // when ctx.shouldUseTypeRefs == falsy
-            // this will output: Array<{ prop: string }>
-            return `@type__${schema.$ref}`;
+        const typeRefToken = `@type__${schema.$ref}`;
+        if (ctx.visitedsRefs[schema.$ref]) {
+            return typeRefToken;
         }
 
         if (!result) {
@@ -54,12 +48,11 @@ export const getTypescriptFromOpenApi = ({
                 throw new Error(`Schema ${schema.$ref} not found`);
             }
 
+            ctx.visitedsRefs[schema.$ref] = true;
             result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
         }
 
-        ctx.nodeByRef[schema.$ref] = result;
-
-        return result;
+        return typeRefToken;
     }
 
     if (schema.oneOf) {
@@ -131,7 +124,7 @@ export const getTypescriptFromOpenApi = ({
                 throw new Error("Name is required to convert an empty object schema to an interface");
             }
 
-            return t.interface(inheritedMeta.name, {});
+            return t.type(inheritedMeta.name, {});
         }
 
         const isPartial = !schema.required?.length;
@@ -140,6 +133,7 @@ export const getTypescriptFromOpenApi = ({
                 let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta }) as TypeDefinition;
                 if (typeof propType === "string") {
                     if (!ctx) throw new Error("Context is required for circular $ref");
+                    // TODO Partial ?
                     propType = t.reference(propType.replace("@type__", "").split("/").at(-1)!);
                 }
 
@@ -170,18 +164,10 @@ export const getTypescriptFromOpenApi = ({
         //     );
         // }
 
-        const base = t.interface(inheritedMeta.name, props);
+        const base = t.type(inheritedMeta.name, props);
         if (!isPartial) return base;
 
-        const partial = ts.factory.createInterfaceDeclaration(
-            undefined,
-            undefined,
-            ts.factory.createIdentifier(inheritedMeta.name),
-            undefined,
-            [ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [t.reference("Partial", [props]) as any])],
-            []
-        );
-        return partial;
+        return t.type(inheritedMeta.name, t.reference("Partial", [props]));
     }
 
     throw new Error(`Unsupported schema type: ${schema.type}`);
