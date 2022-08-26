@@ -28,6 +28,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         schemaHashByRef: {},
         hashByVariableName: {},
         codeMetaByRef: {},
+        circularTokenByRef: {},
     };
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
@@ -167,13 +168,17 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         }
     }
 
-    const refsDependencyGraph = getOpenApiDependencyGraph(Object.keys(ctx.schemaHashByRef), ctx.getSchemaByRef);
+    const { refsDependencyGraph, deepDependencyGraph } = getOpenApiDependencyGraph(
+        Object.keys(ctx.schemaHashByRef),
+        ctx.getSchemaByRef
+    );
 
     return {
         ...(ctx as Required<ConversionTypeContext>),
         endpoints,
         responsesByOperationId,
         refsDependencyGraph,
+        deepDependencyGraph,
     };
 };
 

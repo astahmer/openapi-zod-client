@@ -209,6 +209,8 @@ test("getZodClientTemplateContext", async () => {
               "vlh4E1pXYTG": "z.enum(["available", "pending", "sold"]).optional()",
               "voE4gkLXxTn": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional()",
           },
+          "typeNameByRefHash": {},
+          "types": {},
           "variables": {
               "ApiResponse": "voE4gkLXxTn",
               "Order": "vdqJo8eOFaZ",

@@ -5,18 +5,50 @@ import { OpenAPIObject } from "openapi3-ts";
 import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray, uniques } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
+import { ts } from "tanu";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import {
     EndpointDescriptionWithRefs,
     getZodiosEndpointDescriptionFromOpenApiDoc,
 } from "./getZodiosEndpointDescriptionFromOpenApiDoc";
+import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 import { tokens } from "./tokens";
 import { topologicalSort } from "./topologicalSort";
+
+const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
+const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
+const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
 
 export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"]) => {
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
     const data = makeInitialContext();
 
+    const refsByCircularToken = reverse(result.circularTokenByRef) as Record<string, string>;
+    const depsGraphs = getOpenApiDependencyGraph(
+        Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),
+        result.getSchemaByRef
+    );
+
+    const replaceCircularTokenWithRefToken = (refHash: string) => {
+        const [code, ref] = [result.zodSchemaByHash[refHash], refByHash[refHash]];
+        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
+        const actualCode = isCircular ? `z.lazy(() => ${code})` : code;
+        const ctx: TsConversionContext = { nodeByRef: {}, getSchemaByRef: result.getSchemaByRef, visitedsRefs: {} };
+
+        if (isCircular) {
+            const refName = tokens.getRefName(ref);
+            const node = getTypescriptFromOpenApi({
+                schema: result.getSchemaByRef(ref),
+                ctx,
+                meta: { name: refName },
+            }) as ts.Node;
+            data.types[refName] = printTs(node).replace("export ", "");
+            data.typeNameByRefHash[tokens.rmToken(refHash, tokens.refToken)] = refName;
+        }
+        return actualCode.replaceAll(tokens.circularRefRegex, (match) => {
+            return result.schemaHashByRef[refsByCircularToken[match]];
+        });
+    };
     const replaceRefTokenWithVariableRef = (code: string) =>
         code.replaceAll(tokens.refTokenHashRegex, (match) => tokens.rmToken(match, tokens.refToken));
 
@@ -43,20 +75,16 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
         return unknownRef;
     };
 
+    const refByHash = reverse(result.schemaHashByRef) as Record<string, string>;
     for (const refHash in result.zodSchemaByHash) {
         data.schemas[tokens.rmToken(refHash, tokens.refToken)] = replaceRefTokenWithVariableRef(
-            result.zodSchemaByHash[refHash]
+            replaceCircularTokenWithRefToken(refHash)
         );
     }
-    const dependencyGraph = getOpenApiDependencyGraph(
-        Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),
-        result.getSchemaByRef
-    );
-    const schemaOrderedByDependencies = uniques(
-        topologicalSort(dependencyGraph)
-            .filter((ref) => result.zodSchemaByHash[result.schemaHashByRef[ref]])
-            .map((ref) => tokens.rmToken(result.schemaHashByRef[ref], tokens.refToken))
-    );
+
+    const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph)
+        .filter((ref) => result.zodSchemaByHash[result.schemaHashByRef[ref]])
+        .map((ref) => tokens.rmToken(result.schemaHashByRef[ref], tokens.refToken));
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
     for (const variableRef in result.hashByVariableName) {
@@ -128,6 +156,8 @@ const makeInitialContext = () =>
         variables: {},
         schemas: {},
         endpoints: [],
+        types: {},
+        typeNameByRefHash: {},
         options: {
             withAlias: false,
             baseUrl: "__baseurl__",
@@ -138,6 +168,8 @@ export interface TemplateContext {
     variables: Record<string, string>;
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
+    types: Record<string, string>;
+    typeNameByRefHash: Record<string, string>;
     options?: {
         baseUrl?: string;
         withAlias?: boolean;

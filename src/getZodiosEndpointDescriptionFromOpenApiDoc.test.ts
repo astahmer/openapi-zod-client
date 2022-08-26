@@ -96,9 +96,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "circularTokenByRef": {
+              "#/components/schemas/Order": "@circular__wK9RiJx7oC",
+          },
           "codeMetaByRef": {
               "#/components/schemas/Order": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
           },
+          "deepDependencyGraph": {},
           "endpoints": [
               {
                   "alias": "placeOrder",
@@ -205,10 +209,21 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "circularTokenByRef": {
+              "#/components/schemas/Category": "@circular__xzXS1LrlKn",
+              "#/components/schemas/Pet": "@circular__nUVh3ER5kL",
+              "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
+          },
           "codeMetaByRef": {
               "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
               "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
               "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
+          },
+          "deepDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
           },
           "endpoints": [
               {
@@ -397,10 +412,21 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "circularTokenByRef": {
+              "#/components/schemas/Category": "@circular__xzXS1LrlKn",
+              "#/components/schemas/Pet": "@circular__nUVh3ER5kL",
+              "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
+          },
           "codeMetaByRef": {
               "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
               "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
               "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
+          },
+          "deepDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
           },
           "endpoints": [
               {
@@ -476,6 +502,14 @@ test("petstore.yaml", async () => {
     const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
+          "circularTokenByRef": {
+              "#/components/schemas/ApiResponse": "@circular__UW2sXbIQK7",
+              "#/components/schemas/Category": "@circular__xzXS1LrlKn",
+              "#/components/schemas/Order": "@circular__wK9RiJx7oC",
+              "#/components/schemas/Pet": "@circular__nUVh3ER5kL",
+              "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
+              "#/components/schemas/User": "@circular__9Dvq68jEoU",
+          },
           "codeMetaByRef": {
               "#/components/schemas/ApiResponse": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional()",
               "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
@@ -483,6 +517,12 @@ test("petstore.yaml", async () => {
               "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
               "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
               "#/components/schemas/User": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial().optional()",
+          },
+          "deepDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
           },
           "endpoints": [
               {

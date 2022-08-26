@@ -3,7 +3,7 @@ import { match } from "ts-pattern";
 import { normalizeString, tokens } from "./tokens";
 
 interface ConversionArgs {
-    schema: SchemaObject;
+    schema: SchemaObject | ReferenceObject;
     ctx?: ConversionTypeContext;
     meta?: CodeMetaData;
 }
@@ -34,6 +34,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         if (!ctx.codeMetaByRef[fromRef]) {
             ctx.codeMetaByRef[fromRef] = code;
             ctx.codeMetaByRef[fromRef].meta.circularSchemaRef = fromRef;
+            if (!ctx.circularTokenByRef[fromRef]) {
+                ctx.circularTokenByRef[fromRef] = tokens.makeCircularRef(fromRef);
+            }
         }
     }
 
@@ -64,12 +67,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
             result = getZodSchema({ schema: actualSchema, ctx, meta }).toString();
         }
 
-        // const hashed = ctx.codeMetaByRef[schema.$ref].meta.circularSchemaRef && ctx.schemaHashByRef[schema.$ref] ? ctx.schemaHashByRef[schema.$ref] : tokens.makeRefHash(result);
-        const hashed = tokens.makeRefHash(result);
         if (ctx.codeMetaByRef[schema.$ref].meta.circularSchemaRef && ctx.schemaHashByRef[schema.$ref]) {
             return code;
         }
 
+        const hashed = tokens.makeRefHash(result);
         ctx.schemaHashByRef[schema.$ref] = hashed;
         ctx.zodSchemaByHash[hashed] = result;
 
@@ -136,7 +138,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
 
     if (schema.type === "array") {
         if (schema.items) {
-            // TODO maybe z.lazy
             return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta }).toString()})`);
         }
         return code.assign(`z.array(z.any())`);
@@ -150,7 +151,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         ) {
             additionalProps = ".passthrough()";
         } else if (typeof schema.additionalProperties === "object") {
-            // TODO maybe z.lazy
             return code.assign(
                 `z.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta }).toString()})`
             );
@@ -176,7 +176,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
                 " }";
         }
 
-        // TODO maybe z.lazy
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
 
@@ -189,6 +188,7 @@ export interface ConversionTypeContext {
     schemaHashByRef: Record<string, string>;
     hashByVariableName: Record<string, string>;
     codeMetaByRef: Record<string, CodeMeta>;
+    circularTokenByRef: Record<string, string>;
 }
 
 export interface CodeMetaData {

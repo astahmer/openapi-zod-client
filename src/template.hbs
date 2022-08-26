@@ -1,14 +1,19 @@
 import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
+{{#if types}}
+{{#each types}}
+{{{this}}};
+{{/each}}
+{{/if}}
+
 {{#each schemas}}
-const {{@key}} = {{{this}}};
+const {{@key}}{{#if (lookup ../typeNameByRefHash @key)}}: z.ZodType<{{lookup ../typeNameByRefHash @key}}>{{/if}} = {{{this}}};
 {{/each}}
 
 const variables = {
 {{#each variables}}
-	{{@key}}:
-	{{{this}}},
+	{{@key}}: {{{this}}},
 {{/each}}
 };
 

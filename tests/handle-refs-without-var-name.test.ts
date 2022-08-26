@@ -49,6 +49,8 @@ test("handle-refs-without-var-name", () => {
               "vIufVqrVmtM": "z.array(vpjM3iK32LY)",
               "vpjM3iK32LY": "z.object({}).partial().optional()",
           },
+          "typeNameByRefHash": {},
+          "types": {},
           "variables": {
               "getSomething": "vIufVqrVmtM",
           },
