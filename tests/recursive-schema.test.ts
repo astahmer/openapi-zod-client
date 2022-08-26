@@ -548,4 +548,136 @@ describe("recursive-schema", () => {
           "
         `);
     });
+
+    test("recursive schema with $ref to another simple schema should still generate and output that simple schema", async () => {
+        const Playlist = {
+            type: "object",
+            properties: {
+                name: { type: "string" },
+                author: { $ref: "#/components/schemas/Author" },
+                songs: { type: "array", items: { $ref: "#/components/schemas/Song" } },
+            },
+        } as SchemaObject;
+
+        const Song = {
+            type: "object",
+            properties: {
+                name: { type: "string" },
+                duration: { type: "number" },
+                in_playlists: { type: "array", items: { $ref: "#/components/schemas/Playlist" } },
+            },
+        } as SchemaObject;
+
+        const Author = {
+            type: "object",
+            properties: {
+                name: { type: "string" },
+                mail: { type: "string" },
+            },
+        } as SchemaObject;
+        const schemas = { Playlist, Song, Author };
+
+        const ctx: ConversionTypeContext = {
+            hashByVariableName: {},
+            schemaHashByRef: {},
+            zodSchemaByHash: {},
+            codeMetaByRef: {},
+            circularTokenByRef: {},
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+        };
+
+        const RootSchema = {
+            type: "object",
+            properties: {
+                playlist: { $ref: "#/components/schemas/Playlist" },
+                by_author: { $ref: "#/components/schemas/Author" },
+            },
+        } as SchemaObject;
+        expect(getZodSchema({ schema: RootSchema, ctx })).toMatchInlineSnapshot(
+            '"z.object({ playlist: @ref__vvdEIOPNtYR__, by_author: @ref__vbNKPmzYCsd__ }).partial().optional()"'
+        );
+        expect(ctx).toMatchInlineSnapshot(`
+          {
+              "circularTokenByRef": {
+                  "#/components/schemas/Author": "@circular__AtBhSdDVi2",
+                  "#/components/schemas/Playlist": "@circular__HCGhm3ASad",
+                  "#/components/schemas/Song": "@circular__XRX5ZO2W35",
+              },
+              "codeMetaByRef": {
+                  "#/components/schemas/Author": "z.object({ name: z.string(), mail: z.string() }).partial().optional()",
+                  "#/components/schemas/Playlist": "z.object({ name: z.string(), author: @ref__vbNKPmzYCsd__, songs: z.array(@ref__vS5mDm4DrmX__) }).partial().optional()",
+                  "#/components/schemas/Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vvdEIOPNtYR__) }).partial().optional()",
+              },
+              "getSchemaByRef": [Function],
+              "hashByVariableName": {},
+              "schemaHashByRef": {
+                  "#/components/schemas/Author": "@ref__vbNKPmzYCsd__",
+                  "#/components/schemas/Playlist": "@ref__vvdEIOPNtYR__",
+                  "#/components/schemas/Song": "@ref__vS5mDm4DrmX__",
+              },
+              "zodSchemaByHash": {
+                  "@ref__vS5mDm4DrmX__": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vvdEIOPNtYR__) }).partial().optional()",
+                  "@ref__vbNKPmzYCsd__": "z.object({ name: z.string(), mail: z.string() }).partial().optional()",
+                  "@ref__vvdEIOPNtYR__": "z.object({ name: z.string(), author: @ref__vbNKPmzYCsd__, songs: z.array(@circular__XRX5ZO2W35) }).partial().optional()",
+              },
+          }
+        `);
+
+        const openApiDoc = makeOpenApiDoc(schemas, RootSchema);
+        const data = getZodClientTemplateContext(openApiDoc);
+        const prettierConfig = await resolveConfig("./");
+        const template = compile(readFileSync("./src/template.hbs", "utf-8"));
+        const output = template(data);
+        const prettyOutput = maybePretty(output, prettierConfig);
+        expect(prettyOutput).toMatchInlineSnapshot(`
+          "import { Zodios } from "@zodios/core";
+          import { z } from "zod";
+
+          type Playlist = Partial<{
+              name: string;
+              author: Author;
+              songs: Array<Song>;
+          }>;
+          type Author = Partial<{
+              name: string;
+              mail: string;
+          }>;
+          type Song = Partial<{
+              name: string;
+              duration: number;
+              in_playlists: Array<Playlist>;
+          }>;
+
+          const vbNKPmzYCsd = z.object({ name: z.string(), mail: z.string() }).partial().optional();
+          const vS5mDm4DrmX: z.ZodType<Song> = z.lazy(() =>
+              z
+                  .object({ name: z.string(), duration: z.number(), in_playlists: z.array(vvdEIOPNtYR) })
+                  .partial()
+                  .optional()
+          );
+          const vvdEIOPNtYR: z.ZodType<Playlist> = z.lazy(() =>
+              z
+                  .object({ name: z.string(), author: vbNKPmzYCsd, songs: z.array(vS5mDm4DrmX) })
+                  .partial()
+                  .optional()
+          );
+          const vnD0pVmOPss = z.object({ playlist: vvdEIOPNtYR, by_author: vbNKPmzYCsd }).partial();
+
+          const variables = {
+              getExample: vnD0pVmOPss,
+          };
+
+          const endpoints = [
+              {
+                  method: "get",
+                  path: "/example",
+                  requestFormat: "json",
+                  response: z.object({ playlist: variables["getExample"], by_author: variables["getExample"] }).partial(),
+              },
+          ] as const;
+
+          export const api = new Zodios("__baseurl__", endpoints);
+          "
+        `);
+    });
 });
