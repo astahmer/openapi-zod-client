@@ -92,7 +92,16 @@ export const getTypescriptFromOpenApi = ({
 
     if (isPrimitiveType(schema.type)) {
         if (schema.enum) {
-            return t.union(schema.enum);
+            const enumUnion = t.union(schema.enum);
+            if (!isInline) {
+                if (!inheritedMeta?.name) {
+                    throw new Error("Name is required to convert an empty object schema to an interface");
+                }
+
+                return t.type(inheritedMeta.name, enumUnion);
+            }
+
+            return enumUnion;
         }
 
         if (schema.type === "string") return t.string();

@@ -128,6 +128,25 @@ test("getSchemaAsTsString", () => {
             {
                 type: "object",
                 properties: {
+                    enumprop: { type: "string", enum: ["aaa", "bbb", "ccc"] },
+                },
+            },
+            { name: "ObjectWithEnum" }
+        )
+    ).toMatchInlineSnapshot(`
+      "export type ObjectWithEnum = Partial<{
+          enumprop: "aaa" | "bbb" | "ccc";
+      }>;"
+    `);
+
+    expect(getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] }, { name: "StringENum" }))
+        .toMatchInlineSnapshot('"export type StringENum = "aaa" | "bbb" | "ccc";"');
+
+    expect(
+        getSchemaAsTsString(
+            {
+                type: "object",
+                properties: {
                     union: { oneOf: [{ type: "string" }, { type: "number" }] },
                 },
             },
