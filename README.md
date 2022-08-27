@@ -36,19 +36,20 @@ Usage:
   $ openapi-zod-client <input>
 
 Commands:
-  <input>  path/url to OpenAPI/Swagger document as json/yaml (defaults to `<input>.ts`)
+  <input>  path/url to OpenAPI/Swagger document as json/yaml
 
 For more info, run any command with the `--help` flag:
   $ openapi-zod-client --help
 
 Options:
-  -o, --output <path>    Output path for the zodios api client ts file
+  -o, --output <path>    Output path for the zodios api client ts file (defaults to `<input>.ts`)
   -t, --template <path>  Template path for the handlebars template that will be used to generate the output
   -p, --prettier <path>  Prettier config path that will be used to format the output client file
   -b, --base-url <url>   Base url for the api
   -a, --with-alias       With alias as api client methods
   -v, --version          Display version number
   -h, --help             Display this message
+
 ```
 
 ## Customization
@@ -58,6 +59,7 @@ You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a 
 
 ## Tips
 
+-   You can omit the `-o` (output path) argument if you want and it will default to the input path with a `.ts` extension: `pnpm openapi-zod-client ./input.yaml` will generate a `./input.yaml.ts` file
 -   Since internally we're using [swagger-parser](https://github.com/APIDevTools/swagger-parser), you should be able to use an URL as input like this:
     `pnpx openapi-zod-client https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml -o ./petstore.ts`
 
@@ -234,7 +236,7 @@ const endpoints = [
     },
 ] as const;
 
-export const api = new Zodios("__baseurl__", endpoints);
+export const api = new Zodios(endpoints);
 ```
 
 # TODO
