@@ -1,5 +1,6 @@
 import { compile } from "handlebars";
 import fs from "node:fs/promises";
+import path from "node:path";
 import { OpenAPIObject } from "openapi3-ts";
 import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray, uniques } from "pastable/server";
 import prettier, { Options } from "prettier";
@@ -93,12 +94,15 @@ interface GenerateZodClientFromOpenApiArgs {
 export const generateZodClientFromOpenAPI = async ({
     openApiDoc,
     distPath,
-    templatePath = "./src/template.hbs",
+    templatePath,
     prettierConfig,
     options,
 }: GenerateZodClientFromOpenApiArgs) => {
     const data = getZodClientTemplateContext(openApiDoc);
 
+    if (!templatePath) {
+        templatePath = path.join(__dirname, "../src/template.hbs");
+    }
     const source = await fs.readFile(templatePath, "utf-8");
     const template = compile(source);
 
