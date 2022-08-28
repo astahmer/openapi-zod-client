@@ -46,13 +46,13 @@ test("handle-refs-without-var-name", () => {
               "withAlias": false,
           },
           "schemas": {
-              "vIufVqrVmtM": "z.array(vpjM3iK32LY)",
-              "vpjM3iK32LY": "z.object({}).partial().optional()",
+              "v8qB08Q3UVq": "z.object({}).partial()",
+              "vbGTEfr1PUp": "z.array(v8qB08Q3UVq)",
           },
           "typeNameByRefHash": {},
           "types": {},
           "variables": {
-              "getSomething": "vIufVqrVmtM",
+              "getSomething": "vbGTEfr1PUp",
           },
       }
     `);

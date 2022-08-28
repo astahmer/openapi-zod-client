@@ -33,160 +33,173 @@ export const getTypescriptFromOpenApi = ({
         throw new Error("Schema is required");
     }
 
-    if (isReferenceObject(schema)) {
-        if (!ctx?.visitedsRefs) throw new Error("Context is required for OpenAPI $ref");
+    let canBeWrapped = !isInline;
+    const getTs = (): ts.Node | TypeDefinitionObject | (string | ({} & `@type__${string}`)) => {
+        if (isReferenceObject(schema)) {
+            if (!ctx?.visitedsRefs) throw new Error("Context is required for OpenAPI $ref");
 
-        let result = ctx.nodeByRef[schema.$ref];
-        const typeRefToken = `@type__${schema.$ref}`;
-        if (ctx.visitedsRefs[schema.$ref]) {
+            let result = ctx.nodeByRef[schema.$ref];
+            const typeRefToken = `@type__${schema.$ref}`;
+            if (ctx.visitedsRefs[schema.$ref]) {
+                return typeRefToken;
+            }
+
+            if (!result) {
+                const actualSchema = ctx.getSchemaByRef(schema.$ref);
+                if (!actualSchema) {
+                    throw new Error(`Schema ${schema.$ref} not found`);
+                }
+
+                ctx.visitedsRefs[schema.$ref] = true;
+                result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
+            }
+
             return typeRefToken;
         }
 
-        if (!result) {
-            const actualSchema = ctx.getSchemaByRef(schema.$ref);
-            if (!actualSchema) {
-                throw new Error(`Schema ${schema.$ref} not found`);
+        if (schema.oneOf) {
+            if (schema.oneOf.length === 1) {
+                return getTypescriptFromOpenApi({ schema: schema.oneOf[0], ctx, meta });
             }
 
-            ctx.visitedsRefs[schema.$ref] = true;
-            result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
+            return t.union(
+                schema.oneOf.map((prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition)
+            );
         }
 
-        return typeRefToken;
-    }
+        // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
+        if (schema.anyOf) {
+            if (schema.anyOf.length === 1) {
+                return getTypescriptFromOpenApi({ schema: schema.anyOf[0], ctx, meta });
+            }
 
-    if (schema.oneOf) {
-        if (schema.oneOf.length === 1) {
-            return getTypescriptFromOpenApi({ schema: schema.oneOf[0], ctx, meta });
+            const oneOf = t.union(
+                schema.anyOf.map((prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition)
+            );
+            return t.union([oneOf, t.array(oneOf)]);
         }
 
-        return t.union(
-            schema.oneOf.map((prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition)
-        );
-    }
+        if (schema.allOf) {
+            if (schema.allOf.length === 1) {
+                return getTypescriptFromOpenApi({ schema: schema.allOf[0], ctx, meta });
+            }
 
-    // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
-    if (schema.anyOf) {
-        if (schema.anyOf.length === 1) {
-            return getTypescriptFromOpenApi({ schema: schema.anyOf[0], ctx, meta });
+            const types = schema.allOf.map(
+                (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition
+            );
+            return t.intersection(types);
         }
 
-        const oneOf = t.union(
-            schema.anyOf.map((prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition)
-        );
-        return t.union([oneOf, t.array(oneOf)]);
-    }
+        if (!schema.type) return t.unknown();
 
-    if (schema.allOf) {
-        if (schema.allOf.length === 1) {
-            return getTypescriptFromOpenApi({ schema: schema.allOf[0], ctx, meta });
+        if (isPrimitiveType(schema.type)) {
+            if (schema.enum) {
+                return t.union(schema.enum);
+            }
+
+            if (schema.type === "string") return t.string();
+            if (schema.type === "boolean") return t.boolean();
+            if (schema.type === "number") return t.number();
+            if (schema.type === "integer") return t.bigint();
+            if (schema.type === "null") return t.reference("null");
         }
 
-        const types = schema.allOf.map(
-            (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition
-        );
-        return t.intersection(types);
-    }
-
-    if (!schema.type) return t.unknown();
-
-    if (isPrimitiveType(schema.type)) {
-        if (schema.enum) {
-            const enumUnion = t.union(schema.enum);
-            if (!isInline) {
-                if (!inheritedMeta?.name) {
-                    throw new Error("Name is required to convert an empty object schema to an interface");
+        if (schema.type === "array") {
+            if (schema.items) {
+                let arrayOfType = getTypescriptFromOpenApi({ schema: schema.items, ctx, meta }) as TypeDefinition;
+                if (typeof arrayOfType === "string") {
+                    if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
+                    arrayOfType = t.reference(arrayOfType.replace("@type__", "").split("/").at(-1)!);
                 }
 
-                return t.type(inheritedMeta.name, enumUnion);
+                return t.array(arrayOfType);
             }
-
-            return enumUnion;
+            return t.array(t.any());
         }
 
-        if (schema.type === "string") return t.string();
-        if (schema.type === "boolean") return t.boolean();
-        if (schema.type === "number") return t.number();
-        if (schema.type === "integer") return t.bigint();
-        if (schema.type === "null") return ts.factory.createNull();
-    }
-
-    if (schema.type === "array") {
-        if (schema.items) {
-            let arrayOfType = getTypescriptFromOpenApi({ schema: schema.items, ctx, meta }) as TypeDefinition;
-            if (typeof arrayOfType === "string") {
-                if (!ctx) throw new Error("Context is required for circular $ref");
-                arrayOfType = t.reference(arrayOfType.replace("@type__", "").split("/").at(-1)!);
-            }
-
-            return t.array(arrayOfType);
-        }
-        return t.array(t.any());
-    }
-
-    if (schema.type === "object") {
-        if (!schema.properties) {
-            if (isInline) {
+        if (schema.type === "object") {
+            if (!schema.properties) {
                 return {};
             }
 
-            if (!inheritedMeta?.name) {
-                throw new Error("Name is required to convert an empty object schema to an interface");
+            canBeWrapped = false;
+
+            const isPartial = !schema.required?.length;
+            const props = Object.fromEntries(
+                Object.entries(schema.properties!).map(([prop, propSchema]) => {
+                    let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta }) as TypeDefinition;
+                    if (typeof propType === "string") {
+                        if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
+                        // TODO Partial ?
+                        propType = t.reference(propType.replace("@type__", "").split("/").at(-1)!);
+                    }
+
+                    const isRequired = isPartial ? true : schema.required?.includes(prop);
+                    return [normalizeString(prop), isRequired ? propType : t.optional(propType)];
+                })
+            );
+
+            if (isInline) {
+                return isPartial ? t.reference("Partial", [props]) : props;
             }
 
-            return t.type(inheritedMeta.name, {});
+            if (!inheritedMeta?.name) {
+                throw new Error("Name is required to convert an object schema to a type reference");
+            }
+
+            // let additionalProps = "";
+            // TODO
+            // if (
+            //     (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
+            //     (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length === 0)
+            // ) {
+            //     additionalProps = ".passthrough()";
+            // } else if (typeof schema.additionalProperties === "object") {
+            //     // TODO maybe z.lazy
+            //     return (
+            //         `z.record(${getTypescriptFromOpenApi(schema.additionalProperties)})`
+            //     );
+            // }
+
+            const base = t.type(inheritedMeta.name, props);
+            if (!isPartial) return base;
+
+            return t.type(inheritedMeta.name, t.reference("Partial", [props]));
         }
 
-        const isPartial = !schema.required?.length;
-        const props = Object.fromEntries(
-            Object.entries(schema.properties!).map(([prop, propSchema]) => {
-                let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta }) as TypeDefinition;
-                if (typeof propType === "string") {
-                    if (!ctx) throw new Error("Context is required for circular $ref");
-                    // TODO Partial ?
-                    propType = t.reference(propType.replace("@type__", "").split("/").at(-1)!);
-                }
+        throw new Error(`Unsupported schema type: ${schema.type}`);
+    };
 
-                const isRequired = isPartial ? true : schema.required?.includes(prop);
-                return [normalizeString(prop), isRequired ? propType : t.optional(propType)];
-            })
-        );
-
-        if (isInline) {
-            return isPartial ? t.reference("Partial", [props]) : props;
-        }
-
-        if (!inheritedMeta?.name) {
-            throw new Error("Name is required to convert an object schema to an interface");
-        }
-
-        // let additionalProps = "";
-        // TODO
-        // if (
-        //     (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
-        //     (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length === 0)
-        // ) {
-        //     additionalProps = ".passthrough()";
-        // } else if (typeof schema.additionalProperties === "object") {
-        //     // TODO maybe z.lazy
-        //     return (
-        //         `z.record(${getTypescriptFromOpenApi(schema.additionalProperties)})`
-        //     );
-        // }
-
-        const base = t.type(inheritedMeta.name, props);
-        if (!isPartial) return base;
-
-        return t.type(inheritedMeta.name, t.reference("Partial", [props]));
-    }
-
-    throw new Error(`Unsupported schema type: ${schema.type}`);
+    const tsResult = getTs();
+    return canBeWrapped
+        ? wrapTypeIfInline({ isInline, name: inheritedMeta?.name, typeDef: tsResult as TypeDefinition })
+        : tsResult;
 };
 type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
 
 const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as const;
 type PrimitiveType = typeof primitiveTypeList[number];
+
+const wrapTypeIfInline = ({
+    isInline,
+    name,
+    typeDef,
+}: {
+    isInline: boolean;
+    name: string | undefined;
+    typeDef: t.TypeDefinition;
+}) => {
+    if (!isInline) {
+        if (!name) {
+            throw new Error("Name is required to convert a schema to a type reference");
+        }
+
+        return t.type(name, typeDef);
+    }
+
+    return typeDef as ts.Node;
+};
 
 // https://cs.github.com/leancodepl/contractsgenerator-typescript/blob/c897eaab9dfa3bc0c08a67322759c94b3b0326b0/src/typesGeneration/types/GeneratorKnownType.ts?q=createIdentifier%28%22Partial%22%29#L14
 // t.reference(ts.factory.createIdentifier("Partial"), [

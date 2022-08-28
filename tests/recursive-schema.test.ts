@@ -74,7 +74,7 @@ describe("recursive-schema", () => {
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
         expect(getZodSchema({ schema: schemas.Root, ctx })).toMatchInlineSnapshot(
-            '"z.object({ recursive: @ref__vPFevjJ7LUI__, basic: z.number() }).partial().optional()"'
+            '"z.object({ recursive: @ref__vykJ2VkPu6T__, basic: z.number() }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
@@ -83,18 +83,18 @@ describe("recursive-schema", () => {
                   "#/components/schemas/User": "@circular__9Dvq68jEoU",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/Middle": "z.object({ user: @ref__vPFevjJ7LUI__ }).partial().optional()",
-                  "#/components/schemas/User": "z.object({ name: z.string(), middle: @ref__vnviF02o8Tu__ }).partial().optional()",
+                  "#/components/schemas/Middle": "z.object({ user: @ref__vykJ2VkPu6T__ }).partial()",
+                  "#/components/schemas/User": "z.object({ name: z.string(), middle: @ref__vmxC2x9xozY__ }).partial()",
               },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
-                  "#/components/schemas/Middle": "@ref__vnviF02o8Tu__",
-                  "#/components/schemas/User": "@ref__vPFevjJ7LUI__",
+                  "#/components/schemas/Middle": "@ref__vmxC2x9xozY__",
+                  "#/components/schemas/User": "@ref__vykJ2VkPu6T__",
               },
               "zodSchemaByHash": {
-                  "@ref__vPFevjJ7LUI__": "z.object({ name: z.string(), middle: @circular__WRZ2lBGFuo }).partial().optional()",
-                  "@ref__vnviF02o8Tu__": "z.object({ user: @ref__vPFevjJ7LUI__ }).partial().optional()",
+                  "@ref__vmxC2x9xozY__": "z.object({ user: @ref__vykJ2VkPu6T__ }).partial()",
+                  "@ref__vykJ2VkPu6T__": "z.object({ name: z.string(), middle: @circular__WRZ2lBGFuo }).partial()",
               },
           }
         `);
@@ -149,14 +149,12 @@ describe("recursive-schema", () => {
               user: User;
           }>;
 
-          const vnviF02o8Tu: z.ZodType<Middle> = z.lazy(() => z.object({ user: vPFevjJ7LUI }).partial().optional());
-          const vPFevjJ7LUI: z.ZodType<User> = z.lazy(() =>
-              z.object({ name: z.string(), middle: vnviF02o8Tu }).partial().optional()
-          );
-          const v6rtFDPUihu = z.object({ recursive: vPFevjJ7LUI, basic: z.number() }).partial();
+          const vmxC2x9xozY: z.ZodType<Middle> = z.lazy(() => z.object({ user: vykJ2VkPu6T }).partial());
+          const vykJ2VkPu6T: z.ZodType<User> = z.lazy(() => z.object({ name: z.string(), middle: vmxC2x9xozY }).partial());
+          const vpPUiHrnAPA = z.object({ recursive: vykJ2VkPu6T, basic: z.number() }).partial();
 
           const variables = {
-              getExample: v6rtFDPUihu,
+              getExample: vpPUiHrnAPA,
           };
 
           const endpoints = [
@@ -206,7 +204,7 @@ describe("recursive-schema", () => {
             getSchemaByRef: (ref) => schemas2[ref.split("/").at(-1)!],
         };
         expect(getZodSchema({ schema: ResponseSchema, ctx })).toMatchInlineSnapshot(
-            '"z.object({ recursiveRef: @ref__vH6ZnJ3y9YI__, basic: z.number() }).partial().optional()"'
+            '"z.object({ recursiveRef: @ref__vn7L9W2t8wc__, basic: z.number() }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
@@ -214,15 +212,15 @@ describe("recursive-schema", () => {
                   "#/components/schemas/ObjectWithRecursiveArray": "@circular__CGhYUyblqx",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@ref__vH6ZnJ3y9YI__) }).partial().optional()",
+                  "#/components/schemas/ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@ref__vn7L9W2t8wc__) }).partial()",
               },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
-                  "#/components/schemas/ObjectWithRecursiveArray": "@ref__vH6ZnJ3y9YI__",
+                  "#/components/schemas/ObjectWithRecursiveArray": "@ref__vn7L9W2t8wc__",
               },
               "zodSchemaByHash": {
-                  "@ref__vH6ZnJ3y9YI__": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@circular__CGhYUyblqx) }).partial().optional()",
+                  "@ref__vn7L9W2t8wc__": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@circular__CGhYUyblqx) }).partial()",
               },
           }
         `);
@@ -234,7 +232,7 @@ describe("recursive-schema", () => {
                       "#/components/schemas/ObjectWithRecursiveArray": "@circular__CGhYUyblqx",
                   },
                   "codeMetaByRef": {
-                      "#/components/schemas/ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@ref__vH6ZnJ3y9YI__) }).partial().optional()",
+                      "#/components/schemas/ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@ref__vn7L9W2t8wc__) }).partial()",
                   },
                   "deepDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
@@ -249,12 +247,12 @@ describe("recursive-schema", () => {
                           "parameters": [],
                           "path": "/example",
                           "requestFormat": "json",
-                          "response": "z.object({ recursiveRef: @ref__vH6ZnJ3y9YI__, basic: z.number() }).partial()",
+                          "response": "z.object({ recursiveRef: @ref__vn7L9W2t8wc__, basic: z.number() }).partial()",
                       },
                   ],
                   "getSchemaByRef": [Function],
                   "hashByVariableName": {
-                      "@var/getExample": "@ref__vxYMP91oHSP__",
+                      "@var/getExample": "@ref__vSafhiM9uzK__",
                   },
                   "refsDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
@@ -267,11 +265,11 @@ describe("recursive-schema", () => {
                       },
                   },
                   "schemaHashByRef": {
-                      "#/components/schemas/ObjectWithRecursiveArray": "@ref__vH6ZnJ3y9YI__",
+                      "#/components/schemas/ObjectWithRecursiveArray": "@ref__vn7L9W2t8wc__",
                   },
                   "zodSchemaByHash": {
-                      "@ref__vH6ZnJ3y9YI__": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@circular__CGhYUyblqx) }).partial().optional()",
-                      "@ref__vxYMP91oHSP__": "z.object({ recursiveRef: @ref__vH6ZnJ3y9YI__, basic: z.number() }).partial()",
+                      "@ref__vSafhiM9uzK__": "z.object({ recursiveRef: @ref__vn7L9W2t8wc__, basic: z.number() }).partial()",
+                      "@ref__vn7L9W2t8wc__": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@circular__CGhYUyblqx) }).partial()",
                   },
               }
             `);
@@ -287,7 +285,7 @@ describe("recursive-schema", () => {
             getSchemaByRef: (ref) => UserSchema,
         };
         expect(getZodSchema({ schema: UserSchema, ctx })).toMatchInlineSnapshot(
-            '"z.object({ name: z.string(), parent: @ref__vX0WTO35546__ }).partial().optional()"'
+            '"z.object({ name: z.string(), parent: @ref__vp9wPnKpGO4__ }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
@@ -295,15 +293,15 @@ describe("recursive-schema", () => {
                   "#/components/schemas/User": "@circular__9Dvq68jEoU",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/User": "z.object({ name: z.string(), parent: @ref__vX0WTO35546__ }).partial().optional()",
+                  "#/components/schemas/User": "z.object({ name: z.string(), parent: @ref__vp9wPnKpGO4__ }).partial()",
               },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
-                  "#/components/schemas/User": "@ref__vX0WTO35546__",
+                  "#/components/schemas/User": "@ref__vp9wPnKpGO4__",
               },
               "zodSchemaByHash": {
-                  "@ref__vX0WTO35546__": "z.object({ name: z.string(), parent: @circular__9Dvq68jEoU }).partial().optional()",
+                  "@ref__vp9wPnKpGO4__": "z.object({ name: z.string(), parent: @circular__9Dvq68jEoU }).partial()",
               },
           }
         `);
@@ -352,7 +350,7 @@ describe("recursive-schema", () => {
                 ctx,
             })
         ).toMatchInlineSnapshot(
-            '"z.object({ recursiveUser: @ref__vVy9xRe4NBJ__, basic: z.number() }).partial().optional()"'
+            '"z.object({ recursiveUser: @ref__vI2n3cIMAsJ__, basic: z.number() }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
@@ -361,18 +359,18 @@ describe("recursive-schema", () => {
                   "#/components/schemas/UserWithFriends": "@circular__HOpnp24BWM",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial().optional()",
-                  "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: @ref__vVy9xRe4NBJ__, friends: z.array(@ref__v1B6qfw6kVo__), bestFriend: @ref__v1B6qfw6kVo__ }).partial().optional()",
+                  "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
+                  "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: @ref__vI2n3cIMAsJ__, friends: z.array(@ref__vhJSpwkcvXK__), bestFriend: @ref__vhJSpwkcvXK__ }).partial()",
               },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
-                  "#/components/schemas/Friend": "@ref__v1B6qfw6kVo__",
-                  "#/components/schemas/UserWithFriends": "@ref__vVy9xRe4NBJ__",
+                  "#/components/schemas/Friend": "@ref__vhJSpwkcvXK__",
+                  "#/components/schemas/UserWithFriends": "@ref__vI2n3cIMAsJ__",
               },
               "zodSchemaByHash": {
-                  "@ref__v1B6qfw6kVo__": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial().optional()",
-                  "@ref__vVy9xRe4NBJ__": "z.object({ name: z.string(), parent: @circular__HOpnp24BWM, friends: z.array(@ref__v1B6qfw6kVo__), bestFriend: @ref__v1B6qfw6kVo__ }).partial().optional()",
+                  "@ref__vI2n3cIMAsJ__": "z.object({ name: z.string(), parent: @circular__HOpnp24BWM, friends: z.array(@ref__vhJSpwkcvXK__), bestFriend: @ref__vhJSpwkcvXK__ }).partial()",
+                  "@ref__vhJSpwkcvXK__": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
               },
           }
         `);
@@ -394,8 +392,8 @@ describe("recursive-schema", () => {
                   "#/components/schemas/UserWithFriends": "@circular__HOpnp24BWM",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial().optional()",
-                  "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: @ref__vVy9xRe4NBJ__, friends: z.array(@ref__v1B6qfw6kVo__), bestFriend: @ref__v1B6qfw6kVo__ }).partial().optional()",
+                  "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
+                  "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: @ref__vI2n3cIMAsJ__, friends: z.array(@ref__vhJSpwkcvXK__), bestFriend: @ref__vhJSpwkcvXK__ }).partial()",
               },
               "deepDependencyGraph": {
                   "#/components/schemas/Friend": Set {
@@ -415,12 +413,12 @@ describe("recursive-schema", () => {
                       "parameters": [],
                       "path": "/example",
                       "requestFormat": "json",
-                      "response": "z.object({ someUser: @ref__vVy9xRe4NBJ__, someProp: z.boolean() }).partial()",
+                      "response": "z.object({ someUser: @ref__vI2n3cIMAsJ__, someProp: z.boolean() }).partial()",
                   },
               ],
               "getSchemaByRef": [Function],
               "hashByVariableName": {
-                  "@var/getExample": "@ref__v3bU393Z54W__",
+                  "@var/getExample": "@ref__vJxvA6FpTFS__",
               },
               "refsDependencyGraph": {
                   "#/components/schemas/Friend": Set {
@@ -438,13 +436,13 @@ describe("recursive-schema", () => {
                   },
               },
               "schemaHashByRef": {
-                  "#/components/schemas/Friend": "@ref__v1B6qfw6kVo__",
-                  "#/components/schemas/UserWithFriends": "@ref__vVy9xRe4NBJ__",
+                  "#/components/schemas/Friend": "@ref__vhJSpwkcvXK__",
+                  "#/components/schemas/UserWithFriends": "@ref__vI2n3cIMAsJ__",
               },
               "zodSchemaByHash": {
-                  "@ref__v1B6qfw6kVo__": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial().optional()",
-                  "@ref__v3bU393Z54W__": "z.object({ someUser: @ref__vVy9xRe4NBJ__, someProp: z.boolean() }).partial()",
-                  "@ref__vVy9xRe4NBJ__": "z.object({ name: z.string(), parent: @circular__HOpnp24BWM, friends: z.array(@ref__v1B6qfw6kVo__), bestFriend: @ref__v1B6qfw6kVo__ }).partial().optional()",
+                  "@ref__vI2n3cIMAsJ__": "z.object({ name: z.string(), parent: @circular__HOpnp24BWM, friends: z.array(@ref__vhJSpwkcvXK__), bestFriend: @ref__vhJSpwkcvXK__ }).partial()",
+                  "@ref__vJxvA6FpTFS__": "z.object({ someUser: @ref__vI2n3cIMAsJ__, someProp: z.boolean() }).partial()",
+                  "@ref__vhJSpwkcvXK__": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
               },
           }
         `);
@@ -468,13 +466,13 @@ describe("recursive-schema", () => {
                   "withAlias": false,
               },
               "schemas": {
-                  "v1B6qfw6kVo": "z.lazy(() => z.object({ nickname: z.string(), user: vVy9xRe4NBJ, circle: z.array(v1B6qfw6kVo) }).partial().optional())",
-                  "v3bU393Z54W": "z.object({ someUser: vVy9xRe4NBJ, someProp: z.boolean() }).partial()",
-                  "vVy9xRe4NBJ": "z.lazy(() => z.object({ name: z.string(), parent: vVy9xRe4NBJ, friends: z.array(v1B6qfw6kVo), bestFriend: v1B6qfw6kVo }).partial().optional())",
+                  "vI2n3cIMAsJ": "z.lazy(() => z.object({ name: z.string(), parent: vI2n3cIMAsJ, friends: z.array(vhJSpwkcvXK), bestFriend: vhJSpwkcvXK }).partial())",
+                  "vJxvA6FpTFS": "z.object({ someUser: vI2n3cIMAsJ, someProp: z.boolean() }).partial()",
+                  "vhJSpwkcvXK": "z.lazy(() => z.object({ nickname: z.string(), user: vI2n3cIMAsJ, circle: z.array(vhJSpwkcvXK) }).partial())",
               },
               "typeNameByRefHash": {
-                  "v1B6qfw6kVo": "Friend",
-                  "vVy9xRe4NBJ": "UserWithFriends",
+                  "vI2n3cIMAsJ": "UserWithFriends",
+                  "vhJSpwkcvXK": "Friend",
               },
               "types": {
                   "Friend": "type Friend = Partial<{
@@ -490,7 +488,7 @@ describe("recursive-schema", () => {
           }>;",
               },
               "variables": {
-                  "getExample": "v3bU393Z54W",
+                  "getExample": "vJxvA6FpTFS",
               },
           }
         `);
@@ -517,22 +515,18 @@ describe("recursive-schema", () => {
               circle: Array<Friend>;
           }>;
 
-          const v1B6qfw6kVo: z.ZodType<Friend> = z.lazy(() =>
-              z
-                  .object({ nickname: z.string(), user: vVy9xRe4NBJ, circle: z.array(v1B6qfw6kVo) })
-                  .partial()
-                  .optional()
+          const vhJSpwkcvXK: z.ZodType<Friend> = z.lazy(() =>
+              z.object({ nickname: z.string(), user: vI2n3cIMAsJ, circle: z.array(vhJSpwkcvXK) }).partial()
           );
-          const vVy9xRe4NBJ: z.ZodType<UserWithFriends> = z.lazy(() =>
+          const vI2n3cIMAsJ: z.ZodType<UserWithFriends> = z.lazy(() =>
               z
-                  .object({ name: z.string(), parent: vVy9xRe4NBJ, friends: z.array(v1B6qfw6kVo), bestFriend: v1B6qfw6kVo })
+                  .object({ name: z.string(), parent: vI2n3cIMAsJ, friends: z.array(vhJSpwkcvXK), bestFriend: vhJSpwkcvXK })
                   .partial()
-                  .optional()
           );
-          const v3bU393Z54W = z.object({ someUser: vVy9xRe4NBJ, someProp: z.boolean() }).partial();
+          const vJxvA6FpTFS = z.object({ someUser: vI2n3cIMAsJ, someProp: z.boolean() }).partial();
 
           const variables = {
-              getExample: v3bU393Z54W,
+              getExample: vJxvA6FpTFS,
           };
 
           const endpoints = [
@@ -601,7 +595,7 @@ describe("recursive-schema", () => {
             },
         } as SchemaObject;
         expect(getZodSchema({ schema: RootSchema, ctx })).toMatchInlineSnapshot(
-            '"z.object({ playlist: @ref__vxZEqq8fd13__, by_author: @ref__vInc2fO1Pnj__ }).partial().optional()"'
+            '"z.object({ playlist: @ref__viFjc1kNoYx__, by_author: @ref__vNcCnlCKe5S__ }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
@@ -612,24 +606,24 @@ describe("recursive-schema", () => {
                   "#/components/schemas/Song": "@circular__XRX5ZO2W35",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/Author": "z.object({ name: z.string(), mail: z.string(), settings: @ref__vZa4k3EGBuF__ }).partial().optional()",
-                  "#/components/schemas/Playlist": "z.object({ name: z.string(), author: @ref__vInc2fO1Pnj__, songs: z.array(@ref__v6Klqv8RwCG__) }).partial().optional()",
-                  "#/components/schemas/Settings": "z.object({ theme_color: z.string() }).partial().optional()",
-                  "#/components/schemas/Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vxZEqq8fd13__) }).partial().optional()",
+                  "#/components/schemas/Author": "z.object({ name: z.string(), mail: z.string(), settings: @ref__v2H3fS1mWG5__ }).partial()",
+                  "#/components/schemas/Playlist": "z.object({ name: z.string(), author: @ref__vNcCnlCKe5S__, songs: z.array(@ref__vJI3dWF2fZS__) }).partial()",
+                  "#/components/schemas/Settings": "z.object({ theme_color: z.string() }).partial()",
+                  "#/components/schemas/Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__viFjc1kNoYx__) }).partial()",
               },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
-                  "#/components/schemas/Author": "@ref__vInc2fO1Pnj__",
-                  "#/components/schemas/Playlist": "@ref__vxZEqq8fd13__",
-                  "#/components/schemas/Settings": "@ref__vZa4k3EGBuF__",
-                  "#/components/schemas/Song": "@ref__v6Klqv8RwCG__",
+                  "#/components/schemas/Author": "@ref__vNcCnlCKe5S__",
+                  "#/components/schemas/Playlist": "@ref__viFjc1kNoYx__",
+                  "#/components/schemas/Settings": "@ref__v2H3fS1mWG5__",
+                  "#/components/schemas/Song": "@ref__vJI3dWF2fZS__",
               },
               "zodSchemaByHash": {
-                  "@ref__v6Klqv8RwCG__": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vxZEqq8fd13__) }).partial().optional()",
-                  "@ref__vInc2fO1Pnj__": "z.object({ name: z.string(), mail: z.string(), settings: @ref__vZa4k3EGBuF__ }).partial().optional()",
-                  "@ref__vZa4k3EGBuF__": "z.object({ theme_color: z.string() }).partial().optional()",
-                  "@ref__vxZEqq8fd13__": "z.object({ name: z.string(), author: @ref__vInc2fO1Pnj__, songs: z.array(@circular__XRX5ZO2W35) }).partial().optional()",
+                  "@ref__v2H3fS1mWG5__": "z.object({ theme_color: z.string() }).partial()",
+                  "@ref__vJI3dWF2fZS__": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__viFjc1kNoYx__) }).partial()",
+                  "@ref__vNcCnlCKe5S__": "z.object({ name: z.string(), mail: z.string(), settings: @ref__v2H3fS1mWG5__ }).partial()",
+                  "@ref__viFjc1kNoYx__": "z.object({ name: z.string(), author: @ref__vNcCnlCKe5S__, songs: z.array(@circular__XRX5ZO2W35) }).partial()",
               },
           }
         `);
@@ -663,24 +657,18 @@ describe("recursive-schema", () => {
               in_playlists: Array<Playlist>;
           }>;
 
-          const vZa4k3EGBuF = z.object({ theme_color: z.string() }).partial().optional();
-          const vInc2fO1Pnj = z.object({ name: z.string(), mail: z.string(), settings: vZa4k3EGBuF }).partial().optional();
-          const v6Klqv8RwCG: z.ZodType<Song> = z.lazy(() =>
-              z
-                  .object({ name: z.string(), duration: z.number(), in_playlists: z.array(vxZEqq8fd13) })
-                  .partial()
-                  .optional()
+          const v2H3fS1mWG5 = z.object({ theme_color: z.string() }).partial();
+          const vNcCnlCKe5S = z.object({ name: z.string(), mail: z.string(), settings: v2H3fS1mWG5 }).partial();
+          const vJI3dWF2fZS: z.ZodType<Song> = z.lazy(() =>
+              z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(viFjc1kNoYx) }).partial()
           );
-          const vxZEqq8fd13: z.ZodType<Playlist> = z.lazy(() =>
-              z
-                  .object({ name: z.string(), author: vInc2fO1Pnj, songs: z.array(v6Klqv8RwCG) })
-                  .partial()
-                  .optional()
+          const viFjc1kNoYx: z.ZodType<Playlist> = z.lazy(() =>
+              z.object({ name: z.string(), author: vNcCnlCKe5S, songs: z.array(vJI3dWF2fZS) }).partial()
           );
-          const vXlVgeQYVO9 = z.object({ playlist: vxZEqq8fd13, by_author: vInc2fO1Pnj }).partial();
+          const vDYmM7qpXBP = z.object({ playlist: viFjc1kNoYx, by_author: vNcCnlCKe5S }).partial();
 
           const variables = {
-              getExample: vXlVgeQYVO9,
+              getExample: vDYmM7qpXBP,
           };
 
           const endpoints = [

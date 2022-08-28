@@ -41,8 +41,8 @@ test("autofix-unusual-ref-format", () => {
               "#components/schemas/Basic": "@circular__FEo0hW6EyR",
           },
           "codeMetaByRef": {
-              "#/components/schemas/Basic": "z.string().optional()",
-              "#components/schemas/Basic": "z.string().optional()",
+              "#/components/schemas/Basic": "z.string()",
+              "#components/schemas/Basic": "z.string()",
           },
           "deepDependencyGraph": {},
           "endpoints": [
@@ -67,9 +67,9 @@ test("autofix-unusual-ref-format", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/Basic": "@ref__vJAv5J1oLvr__",
-              "@var/getWithUnusualRefFormat": "@ref__vJAv5J1oLvr__",
-              "@var/getWithUsualRefFormat": "@ref__vJAv5J1oLvr__",
+              "@var/Basic": "@ref__vZwdCSvA9Xq__",
+              "@var/getWithUnusualRefFormat": "@ref__vZwdCSvA9Xq__",
+              "@var/getWithUsualRefFormat": "@ref__vZwdCSvA9Xq__",
           },
           "refsDependencyGraph": {},
           "responsesByOperationId": {
@@ -81,11 +81,11 @@ test("autofix-unusual-ref-format", () => {
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Basic": "@ref__vJAv5J1oLvr__",
-              "#components/schemas/Basic": "@ref__vJAv5J1oLvr__",
+              "#/components/schemas/Basic": "@ref__vZwdCSvA9Xq__",
+              "#components/schemas/Basic": "@ref__vZwdCSvA9Xq__",
           },
           "zodSchemaByHash": {
-              "@ref__vJAv5J1oLvr__": "z.string().optional()",
+              "@ref__vZwdCSvA9Xq__": "z.string()",
           },
       }
     `);

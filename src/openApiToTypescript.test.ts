@@ -18,6 +18,24 @@ test("getSchemaAsTsString", () => {
     expect(getSchemaAsTsString({ type: "string" })).toMatchInlineSnapshot('"string"');
     expect(getSchemaAsTsString({ type: "number" })).toMatchInlineSnapshot('"number"');
     expect(getSchemaAsTsString({ type: "integer" })).toMatchInlineSnapshot('"bigint"');
+    expect(getSchemaAsTsString({})).toMatchInlineSnapshot('"unknown"');
+
+    expect(getSchemaAsTsString({ type: "null" }, { name: "nullType" })).toMatchInlineSnapshot(
+        '"export type nullType = null;"'
+    );
+    expect(getSchemaAsTsString({ type: "boolean" }, { name: "booleanType" })).toMatchInlineSnapshot(
+        '"export type booleanType = boolean;"'
+    );
+    expect(getSchemaAsTsString({ type: "string" }, { name: "stringType" })).toMatchInlineSnapshot(
+        '"export type stringType = string;"'
+    );
+    expect(getSchemaAsTsString({ type: "number" }, { name: "numberType" })).toMatchInlineSnapshot(
+        '"export type numberType = number;"'
+    );
+    expect(getSchemaAsTsString({ type: "integer" }, { name: "integerType" })).toMatchInlineSnapshot(
+        '"export type integerType = bigint;"'
+    );
+    expect(getSchemaAsTsString({}, { name: "unknownType" })).toMatchInlineSnapshot('"export type unknownType = unknown;"');
 
     expect(getSchemaAsTsString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot('"Array<string>"');
     expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" })).toMatchInlineSnapshot(
@@ -139,8 +157,12 @@ test("getSchemaAsTsString", () => {
       }>;"
     `);
 
-    expect(getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] }, { name: "StringENum" }))
-        .toMatchInlineSnapshot('"export type StringENum = "aaa" | "bbb" | "ccc";"');
+    expect(getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] })).toMatchInlineSnapshot(
+        '""aaa" | "bbb" | "ccc""'
+    );
+    expect(
+        getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] }, { name: "StringENum" })
+    ).toMatchInlineSnapshot('"export type StringENum = "aaa" | "bbb" | "ccc";"');
 
     expect(
         getSchemaAsTsString(
@@ -157,6 +179,29 @@ test("getSchemaAsTsString", () => {
           union: string | number;
       }>;"
     `);
+    expect(getSchemaAsTsString({ oneOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"string | number"'
+    );
+    expect(
+        getSchemaAsTsString({ oneOf: [{ type: "string" }, { type: "number" }] }, { name: "StringOrNumber" })
+    ).toMatchInlineSnapshot('"export type StringOrNumber = string | number;"');
+
+    expect(getSchemaAsTsString({ allOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"string & number"'
+    );
+    expect(
+        getSchemaAsTsString({ allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" })
+    ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
+
+    expect(getSchemaAsTsString({ anyOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"(string | number) | Array<string | number>"'
+    );
+    expect(
+        getSchemaAsTsString(
+            { anyOf: [{ type: "string" }, { type: "number" }] },
+            { name: "StringAndNumberMaybeMultiple" }
+        )
+    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | Array<string | number>;"');
 
     expect(
         getSchemaAsTsString(
