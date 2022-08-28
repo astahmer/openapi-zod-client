@@ -17,7 +17,7 @@ test("getSchemaAsTsString", () => {
     expect(getSchemaAsTsString({ type: "boolean" })).toMatchInlineSnapshot('"boolean"');
     expect(getSchemaAsTsString({ type: "string" })).toMatchInlineSnapshot('"string"');
     expect(getSchemaAsTsString({ type: "number" })).toMatchInlineSnapshot('"number"');
-    expect(getSchemaAsTsString({ type: "integer" })).toMatchInlineSnapshot('"number"');
+    expect(getSchemaAsTsString({ type: "integer" })).toMatchInlineSnapshot('"bigint"');
 
     expect(getSchemaAsTsString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot('"Array<string>"');
     expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" })).toMatchInlineSnapshot(
