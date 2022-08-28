@@ -11,7 +11,7 @@ test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "boolean" })).toMatchInlineSnapshot('"z.boolean()"');
     expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
     expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number()"');
-    expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.bigint()"');
+    expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.number()"');
 
     expect(getSchemaAsZodString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot(
         '"z.array(z.string())"'
@@ -73,9 +73,7 @@ test("getSchemaAsZodString", () => {
                 union: { oneOf: [{ type: "string" }, { type: "number" }] },
             },
         })
-    ).toMatchInlineSnapshot(
-        '"z.object({ union: z.union([z.string(), z.number()]) }).partial()"'
-    );
+    ).toMatchInlineSnapshot('"z.object({ union: z.union([z.string(), z.number()]) }).partial()"');
 
     expect(
         getSchemaAsZodString({
@@ -95,9 +93,7 @@ test("getSchemaAsZodString", () => {
                 intersection: { allOf: [{ type: "string" }, { type: "number" }] },
             },
         })
-    ).toMatchInlineSnapshot(
-        '"z.object({ intersection: z.string().and(z.number()) }).partial()"'
-    );
+    ).toMatchInlineSnapshot('"z.object({ intersection: z.string().and(z.number()) }).partial()"');
 
     expect(getSchemaAsZodString({ type: "string", enum: ["aaa", "bbb", "ccc"] })).toMatchInlineSnapshot(
         '"z.enum(["aaa", "bbb", "ccc"])"'

@@ -131,7 +131,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
 
         return code.assign(
             match(schema.type)
-                .with("integer", () => `z.bigint()`)
+                .with("integer", () => `z.number()`)
                 .otherwise(() => `z.${schema.type}()`)
         );
     }

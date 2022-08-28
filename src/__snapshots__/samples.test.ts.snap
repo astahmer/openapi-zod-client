@@ -30,20 +30,20 @@ import { z } from "zod";
 
 const vObntp1skbx = z.object({ username: z.string(), uuid: z.string() }).partial();
 const vZj8Kquc5yX = z.object({ slug: z.string(), owner: vObntp1skbx }).partial();
-const vSVDEGcbL5d = z
-    .object({ id: z.bigint(), title: z.string(), repository: vZj8Kquc5yX, author: vObntp1skbx })
+const vDuiOz9DMZ7 = z
+    .object({ id: z.number(), title: z.string(), repository: vZj8Kquc5yX, author: vObntp1skbx })
     .partial();
 const vKMFj5kanr5 = z.array(vZj8Kquc5yX);
 const vt4Y3jGvjMM = z.enum(["open", "merged", "declined"]).optional();
-const vID2hHkgVJD = z.array(vSVDEGcbL5d);
+const vSgadMZDVXI = z.array(vDuiOz9DMZ7);
 
 const variables = {
-    getPullRequestsById: vSVDEGcbL5d,
-    getPullRequestsByRepository: vID2hHkgVJD,
+    getPullRequestsById: vDuiOz9DMZ7,
+    getPullRequestsByRepository: vSgadMZDVXI,
     getRepositoriesByOwner: vKMFj5kanr5,
     getRepository: vZj8Kquc5yX,
     getUserByName: vObntp1skbx,
-    pullrequest: vSVDEGcbL5d,
+    pullrequest: vDuiOz9DMZ7,
     repository: vZj8Kquc5yX,
     state: vt4Y3jGvjMM,
     user: vObntp1skbx,
@@ -97,17 +97,17 @@ exports[`samples-generator > ./samples/v3.0/petstore.yaml 1`] = `
 "import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vA5phPF1XN0 = z.object({ id: z.bigint(), name: z.string(), tag: z.string().optional() });
-const vvyrAzqIevM = z.array(vA5phPF1XN0);
-const vtNuPz7NRv2 = z.object({ code: z.bigint(), message: z.string() });
+const vz089ZHJr6H = z.object({ id: z.number(), name: z.string(), tag: z.string().optional() });
+const vvHrKrAZzfP = z.array(vz089ZHJr6H);
+const vusbpdVpqWm = z.object({ code: z.number(), message: z.string() });
 
 const variables = {
-    Error: vtNuPz7NRv2,
-    Pet: vA5phPF1XN0,
-    Pets: vvyrAzqIevM,
-    createPets: vtNuPz7NRv2,
-    listPets: vtNuPz7NRv2,
-    showPetById: vtNuPz7NRv2,
+    Error: vusbpdVpqWm,
+    Pet: vz089ZHJr6H,
+    Pets: vvHrKrAZzfP,
+    createPets: vusbpdVpqWm,
+    listPets: vusbpdVpqWm,
+    showPetById: vusbpdVpqWm,
 };
 
 const endpoints = [
@@ -119,7 +119,7 @@ const endpoints = [
             {
                 name: "limit",
                 type: "Query",
-                schema: z.bigint().optional(),
+                schema: z.number().optional(),
             },
         ],
         response: variables["Pets"],
@@ -147,19 +147,19 @@ exports[`samples-generator > ./samples/v3.0/petstore-expanded.yaml 1`] = `
 import { z } from "zod";
 
 const vPXNN6VHlNv = z.object({ name: z.string(), tag: z.string().optional() });
-const vwx4hLsQgSR = vPXNN6VHlNv.and(z.object({ id: z.bigint() }));
+const vwtihe8QpJQ = vPXNN6VHlNv.and(z.object({ id: z.number() }));
 const vGqL1kemtHF = z.array(z.string()).optional();
-const vIQgTKHlH8s = z.array(vwx4hLsQgSR);
-const vtNuPz7NRv2 = z.object({ code: z.bigint(), message: z.string() });
+const vDdKrvyZ9gt = z.array(vwtihe8QpJQ);
+const vusbpdVpqWm = z.object({ code: z.number(), message: z.string() });
 
 const variables = {
-    Error: vtNuPz7NRv2,
-    Pet: vwx4hLsQgSR,
-    addPet: vtNuPz7NRv2,
+    Error: vusbpdVpqWm,
+    Pet: vwtihe8QpJQ,
+    addPet: vusbpdVpqWm,
     addPet_Body: vPXNN6VHlNv,
-    deletePet: vtNuPz7NRv2,
-    findPets: vtNuPz7NRv2,
-    find_pet_by_id: vtNuPz7NRv2,
+    deletePet: vusbpdVpqWm,
+    findPets: vusbpdVpqWm,
+    find_pet_by_id: vusbpdVpqWm,
     tags: vGqL1kemtHF,
 };
 
@@ -182,7 +182,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             {
                 name: "limit",
                 type: "Query",
-                schema: z.bigint().optional(),
+                schema: z.number().optional(),
             },
         ],
         response: z.array(variables["Pet"]),
@@ -226,9 +226,9 @@ exports[`samples-generator > ./samples/v3.0/uspto.yaml 1`] = `
 "import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vPdkWyLlwq1 = z
+const vIEeBL2OSmC = z
     .object({
-        total: z.bigint(),
+        total: z.number(),
         apis: z.array(
             z
                 .object({
@@ -244,8 +244,8 @@ const vPdkWyLlwq1 = z
 const vlyQvttKNVV = z.array(z.record(z.object({}).partial()));
 
 const variables = {
-    dataSetList: vPdkWyLlwq1,
-    list_data_sets: vPdkWyLlwq1,
+    dataSetList: vIEeBL2OSmC,
+    list_data_sets: vIEeBL2OSmC,
     perform_search: vlyQvttKNVV,
 };
 

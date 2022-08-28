@@ -17,7 +17,7 @@ test("getSchemaAsTsString", () => {
     expect(getSchemaAsTsString({ type: "boolean" })).toMatchInlineSnapshot('"boolean"');
     expect(getSchemaAsTsString({ type: "string" })).toMatchInlineSnapshot('"string"');
     expect(getSchemaAsTsString({ type: "number" })).toMatchInlineSnapshot('"number"');
-    expect(getSchemaAsTsString({ type: "integer" })).toMatchInlineSnapshot('"bigint"');
+    expect(getSchemaAsTsString({ type: "integer" })).toMatchInlineSnapshot('"number"');
     expect(getSchemaAsTsString({})).toMatchInlineSnapshot('"unknown"');
 
     expect(getSchemaAsTsString({ type: "null" }, { name: "nullType" })).toMatchInlineSnapshot(
@@ -33,9 +33,11 @@ test("getSchemaAsTsString", () => {
         '"export type numberType = number;"'
     );
     expect(getSchemaAsTsString({ type: "integer" }, { name: "integerType" })).toMatchInlineSnapshot(
-        '"export type integerType = bigint;"'
+        '"export type integerType = number;"'
     );
-    expect(getSchemaAsTsString({}, { name: "unknownType" })).toMatchInlineSnapshot('"export type unknownType = unknown;"');
+    expect(getSchemaAsTsString({}, { name: "unknownType" })).toMatchInlineSnapshot(
+        '"export type unknownType = unknown;"'
+    );
 
     expect(getSchemaAsTsString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot('"Array<string>"');
     expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" })).toMatchInlineSnapshot(
