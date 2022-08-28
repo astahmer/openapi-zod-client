@@ -2,7 +2,7 @@ import { compile } from "handlebars";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { OpenAPIObject } from "openapi3-ts";
-import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray, uniques } from "pastable/server";
+import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
 import { ts } from "tanu";
@@ -33,32 +33,12 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
         const [code, ref] = [result.zodSchemaByHash[refHash], refByHash[refHash]];
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         const actualCode = isCircular ? `z.lazy(() => ${code})` : code;
-        const ctx: TsConversionContext = { nodeByRef: {}, getSchemaByRef: result.getSchemaByRef, visitedsRefs: {} };
 
-        const refName = isCircular ? tokens.getRefName(ref) : undefined;
-        if (isCircular && refName && !data.types[refName]) {
-            const node = getTypescriptFromOpenApi({
-                schema: result.getSchemaByRef(ref),
-                ctx,
-                meta: { name: refName },
-            }) as ts.Node;
-            data.types[refName] = printTs(node).replace("export ", "");
+        if (isCircular) {
+            const refName = tokens.getRefName(ref);
             data.typeNameByRefHash[tokens.rmToken(refHash, tokens.refToken)] = refName;
-
-            for (const depRef of depsGraphs.deepDependencyGraph[ref] || []) {
-                const depRefName = tokens.getRefName(depRef);
-                const isDepCircular = depsGraphs.deepDependencyGraph[depRef]?.has(depRef);
-
-                if (!isDepCircular && !data.types[depRefName]) {
-                    const node = getTypescriptFromOpenApi({
-                        schema: result.getSchemaByRef(depRef),
-                        ctx,
-                        meta: { name: depRefName },
-                    }) as ts.Node;
-                    data.types[depRefName] = printTs(node).replace("export ", "");
-                }
-            }
         }
+
         return actualCode.replaceAll(tokens.circularRefRegex, (match) => {
             return result.schemaHashByRef[refsByCircularToken[match]];
         });
@@ -94,6 +74,35 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
         data.schemas[tokens.rmToken(refHash, tokens.refToken)] = replaceRefTokenWithVariableRef(
             replaceCircularTokenWithRefToken(refHash)
         );
+    }
+
+    for (const ref in result.circularTokenByRef) {
+        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
+        const ctx: TsConversionContext = { nodeByRef: {}, getSchemaByRef: result.getSchemaByRef, visitedsRefs: {} };
+
+        const refName = isCircular ? tokens.getRefName(ref) : undefined;
+        if (isCircular && refName && !data.types[refName]) {
+            const node = getTypescriptFromOpenApi({
+                schema: result.getSchemaByRef(ref),
+                ctx,
+                meta: { name: refName },
+            }) as ts.Node;
+            data.types[refName] = printTs(node).replace("export ", "");
+
+            for (const depRef of depsGraphs.deepDependencyGraph[ref] || []) {
+                const depRefName = tokens.getRefName(depRef);
+                const isDepCircular = depsGraphs.deepDependencyGraph[depRef]?.has(depRef);
+
+                if (!isDepCircular && !data.types[depRefName]) {
+                    const node = getTypescriptFromOpenApi({
+                        schema: result.getSchemaByRef(depRef),
+                        ctx,
+                        meta: { name: depRefName },
+                    }) as ts.Node;
+                    data.types[depRefName] = printTs(node).replace("export ", "");
+                }
+            }
+        }
     }
 
     const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph)

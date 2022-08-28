@@ -505,16 +505,16 @@ describe("recursive-schema", () => {
           "import { Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          type Friend = Partial<{
-              nickname: string;
-              user: UserWithFriends;
-              circle: Array<Friend>;
-          }>;
           type UserWithFriends = Partial<{
               name: string;
               parent: UserWithFriends;
               friends: Array<Friend>;
               bestFriend: Friend;
+          }>;
+          type Friend = Partial<{
+              nickname: string;
+              user: UserWithFriends;
+              circle: Array<Friend>;
           }>;
 
           const v1B6qfw6kVo: z.ZodType<Friend> = z.lazy(() =>
@@ -549,7 +549,7 @@ describe("recursive-schema", () => {
         `);
     });
 
-    test("recursive schema with $ref to another simple schema should still generate and output that simple schema", async () => {
+    test("recursive schema with $ref to another simple schema should still generate and output that simple schema and its dependencies", async () => {
         const Playlist = {
             type: "object",
             properties: {
@@ -573,9 +573,16 @@ describe("recursive-schema", () => {
             properties: {
                 name: { type: "string" },
                 mail: { type: "string" },
+                settings: { $ref: "#/components/schemas/Settings" },
             },
         } as SchemaObject;
-        const schemas = { Playlist, Song, Author };
+        const Settings = {
+            type: "object",
+            properties: {
+                theme_color: { type: "string" },
+            },
+        } as SchemaObject;
+        const schemas = { Playlist, Song, Author, Settings };
 
         const ctx: ConversionTypeContext = {
             hashByVariableName: {},
@@ -594,31 +601,35 @@ describe("recursive-schema", () => {
             },
         } as SchemaObject;
         expect(getZodSchema({ schema: RootSchema, ctx })).toMatchInlineSnapshot(
-            '"z.object({ playlist: @ref__vvdEIOPNtYR__, by_author: @ref__vbNKPmzYCsd__ }).partial().optional()"'
+            '"z.object({ playlist: @ref__vxZEqq8fd13__, by_author: @ref__vInc2fO1Pnj__ }).partial().optional()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
               "circularTokenByRef": {
                   "#/components/schemas/Author": "@circular__AtBhSdDVi2",
                   "#/components/schemas/Playlist": "@circular__HCGhm3ASad",
+                  "#/components/schemas/Settings": "@circular__3CW414XqWI",
                   "#/components/schemas/Song": "@circular__XRX5ZO2W35",
               },
               "codeMetaByRef": {
-                  "#/components/schemas/Author": "z.object({ name: z.string(), mail: z.string() }).partial().optional()",
-                  "#/components/schemas/Playlist": "z.object({ name: z.string(), author: @ref__vbNKPmzYCsd__, songs: z.array(@ref__vS5mDm4DrmX__) }).partial().optional()",
-                  "#/components/schemas/Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vvdEIOPNtYR__) }).partial().optional()",
+                  "#/components/schemas/Author": "z.object({ name: z.string(), mail: z.string(), settings: @ref__vZa4k3EGBuF__ }).partial().optional()",
+                  "#/components/schemas/Playlist": "z.object({ name: z.string(), author: @ref__vInc2fO1Pnj__, songs: z.array(@ref__v6Klqv8RwCG__) }).partial().optional()",
+                  "#/components/schemas/Settings": "z.object({ theme_color: z.string() }).partial().optional()",
+                  "#/components/schemas/Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vxZEqq8fd13__) }).partial().optional()",
               },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
-                  "#/components/schemas/Author": "@ref__vbNKPmzYCsd__",
-                  "#/components/schemas/Playlist": "@ref__vvdEIOPNtYR__",
-                  "#/components/schemas/Song": "@ref__vS5mDm4DrmX__",
+                  "#/components/schemas/Author": "@ref__vInc2fO1Pnj__",
+                  "#/components/schemas/Playlist": "@ref__vxZEqq8fd13__",
+                  "#/components/schemas/Settings": "@ref__vZa4k3EGBuF__",
+                  "#/components/schemas/Song": "@ref__v6Klqv8RwCG__",
               },
               "zodSchemaByHash": {
-                  "@ref__vS5mDm4DrmX__": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vvdEIOPNtYR__) }).partial().optional()",
-                  "@ref__vbNKPmzYCsd__": "z.object({ name: z.string(), mail: z.string() }).partial().optional()",
-                  "@ref__vvdEIOPNtYR__": "z.object({ name: z.string(), author: @ref__vbNKPmzYCsd__, songs: z.array(@circular__XRX5ZO2W35) }).partial().optional()",
+                  "@ref__v6Klqv8RwCG__": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(@ref__vxZEqq8fd13__) }).partial().optional()",
+                  "@ref__vInc2fO1Pnj__": "z.object({ name: z.string(), mail: z.string(), settings: @ref__vZa4k3EGBuF__ }).partial().optional()",
+                  "@ref__vZa4k3EGBuF__": "z.object({ theme_color: z.string() }).partial().optional()",
+                  "@ref__vxZEqq8fd13__": "z.object({ name: z.string(), author: @ref__vInc2fO1Pnj__, songs: z.array(@circular__XRX5ZO2W35) }).partial().optional()",
               },
           }
         `);
@@ -641,6 +652,10 @@ describe("recursive-schema", () => {
           type Author = Partial<{
               name: string;
               mail: string;
+              settings: Settings;
+          }>;
+          type Settings = Partial<{
+              theme_color: string;
           }>;
           type Song = Partial<{
               name: string;
@@ -648,23 +663,24 @@ describe("recursive-schema", () => {
               in_playlists: Array<Playlist>;
           }>;
 
-          const vbNKPmzYCsd = z.object({ name: z.string(), mail: z.string() }).partial().optional();
-          const vS5mDm4DrmX: z.ZodType<Song> = z.lazy(() =>
+          const vZa4k3EGBuF = z.object({ theme_color: z.string() }).partial().optional();
+          const vInc2fO1Pnj = z.object({ name: z.string(), mail: z.string(), settings: vZa4k3EGBuF }).partial().optional();
+          const v6Klqv8RwCG: z.ZodType<Song> = z.lazy(() =>
               z
-                  .object({ name: z.string(), duration: z.number(), in_playlists: z.array(vvdEIOPNtYR) })
+                  .object({ name: z.string(), duration: z.number(), in_playlists: z.array(vxZEqq8fd13) })
                   .partial()
                   .optional()
           );
-          const vvdEIOPNtYR: z.ZodType<Playlist> = z.lazy(() =>
+          const vxZEqq8fd13: z.ZodType<Playlist> = z.lazy(() =>
               z
-                  .object({ name: z.string(), author: vbNKPmzYCsd, songs: z.array(vS5mDm4DrmX) })
+                  .object({ name: z.string(), author: vInc2fO1Pnj, songs: z.array(v6Klqv8RwCG) })
                   .partial()
                   .optional()
           );
-          const vnD0pVmOPss = z.object({ playlist: vvdEIOPNtYR, by_author: vbNKPmzYCsd }).partial();
+          const vXlVgeQYVO9 = z.object({ playlist: vxZEqq8fd13, by_author: vInc2fO1Pnj }).partial();
 
           const variables = {
-              getExample: vnD0pVmOPss,
+              getExample: vXlVgeQYVO9,
           };
 
           const endpoints = [
