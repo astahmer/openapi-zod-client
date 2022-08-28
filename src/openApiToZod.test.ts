@@ -7,22 +7,22 @@ const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData) =>
     getZodSchema({ schema: makeSchema(schema), meta }).toString();
 
 test("getSchemaAsZodString", () => {
-    expect(getSchemaAsZodString({ type: "null" })).toMatchInlineSnapshot('"z.null().optional()"');
-    expect(getSchemaAsZodString({ type: "boolean" })).toMatchInlineSnapshot('"z.boolean().optional()"');
-    expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string().optional()"');
-    expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number().optional()"');
-    expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.bigint().optional()"');
+    expect(getSchemaAsZodString({ type: "null" })).toMatchInlineSnapshot('"z.null()"');
+    expect(getSchemaAsZodString({ type: "boolean" })).toMatchInlineSnapshot('"z.boolean()"');
+    expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
+    expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number()"');
+    expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.bigint()"');
 
     expect(getSchemaAsZodString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot(
-        '"z.array(z.string().optional()).optional()"'
+        '"z.array(z.string())"'
     );
-    expect(getSchemaAsZodString({ type: "object" })).toMatchInlineSnapshot('"z.object({}).partial().optional()"');
+    expect(getSchemaAsZodString({ type: "object" })).toMatchInlineSnapshot('"z.object({}).partial()"');
     expect(getSchemaAsZodString({ type: "object", properties: { str: { type: "string" } } })).toMatchInlineSnapshot(
-        '"z.object({ str: z.string() }).partial().optional()"'
+        '"z.object({ str: z.string() }).partial()"'
     );
     expect(
         getSchemaAsZodString({ type: "object", properties: { str: { type: "string" }, nb: { type: "number" } } })
-    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nb: z.number() }).partial().optional()"');
+    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nb: z.number() }).partial()"');
 
     expect(
         getSchemaAsZodString({
@@ -39,7 +39,7 @@ test("getSchemaAsZodString", () => {
             },
         })
     ).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), nb: z.number(), nested: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()"'
+        '"z.object({ str: z.string(), nb: z.number(), nested: z.object({ nested_prop: z.boolean() }).partial() }).partial()"'
     );
 
     expect(
@@ -52,7 +52,7 @@ test("getSchemaAsZodString", () => {
                 },
             },
         })
-    ).toMatchInlineSnapshot('"z.array(z.object({ str: z.string() }).partial().optional()).optional()"');
+    ).toMatchInlineSnapshot('"z.array(z.object({ str: z.string() }).partial())"');
 
     expect(
         getSchemaAsZodString({
@@ -64,7 +64,7 @@ test("getSchemaAsZodString", () => {
                 },
             },
         })
-    ).toMatchInlineSnapshot('"z.array(z.array(z.string().optional()).optional()).optional()"');
+    ).toMatchInlineSnapshot('"z.array(z.array(z.string()))"');
 
     expect(
         getSchemaAsZodString({
@@ -74,7 +74,7 @@ test("getSchemaAsZodString", () => {
             },
         })
     ).toMatchInlineSnapshot(
-        '"z.object({ union: z.union([z.string().optional(), z.number().optional()]) }).partial().optional()"'
+        '"z.object({ union: z.union([z.string(), z.number()]) }).partial()"'
     );
 
     expect(
@@ -85,7 +85,7 @@ test("getSchemaAsZodString", () => {
             },
         })
     ).toMatchInlineSnapshot(
-        '"z.object({ unionOrArrayOfUnion: z.union([z.union([z.string().optional(), z.number().optional()]), z.array(z.union([z.string().optional(), z.number().optional()]))]) }).partial().optional()"'
+        '"z.object({ unionOrArrayOfUnion: z.union([z.union([z.string(), z.number()]), z.array(z.union([z.string(), z.number()]))]) }).partial()"'
     );
 
     expect(
@@ -96,26 +96,26 @@ test("getSchemaAsZodString", () => {
             },
         })
     ).toMatchInlineSnapshot(
-        '"z.object({ intersection: z.string().optional().and(z.number().optional()) }).partial().optional()"'
+        '"z.object({ intersection: z.string().and(z.number()) }).partial()"'
     );
 
     expect(getSchemaAsZodString({ type: "string", enum: ["aaa", "bbb", "ccc"] })).toMatchInlineSnapshot(
-        '"z.enum(["aaa", "bbb", "ccc"]).optional()"'
+        '"z.enum(["aaa", "bbb", "ccc"])"'
     );
     expect(getSchemaAsZodString({ type: "number", enum: [1, 2, 3, null] })).toMatchInlineSnapshot(
-        '"z.union([z.literal("1"), z.literal("2"), z.literal("3"), z.literal(null)]).optional()"'
+        '"z.union([z.literal("1"), z.literal("2"), z.literal("3"), z.literal(null)])"'
     );
 });
 
 test("getSchemaWithChainableAsZodString", () => {
-    expect(getSchemaAsZodString({ type: "string", nullable: true })).toMatchInlineSnapshot('"z.string().nullish()"');
-    expect(getSchemaAsZodString({ type: "string", nullable: false })).toMatchInlineSnapshot('"z.string().optional()"');
+    expect(getSchemaAsZodString({ type: "string", nullable: true })).toMatchInlineSnapshot('"z.string()"');
+    expect(getSchemaAsZodString({ type: "string", nullable: false })).toMatchInlineSnapshot('"z.string()"');
 
     expect(getSchemaAsZodString({ type: "string", nullable: false }, { isRequired: true })).toMatchInlineSnapshot(
         '"z.string()"'
     );
     expect(getSchemaAsZodString({ type: "string", nullable: true }, { isRequired: true })).toMatchInlineSnapshot(
-        '"z.string().nullable()"'
+        '"z.string()"'
     );
 });
 
@@ -189,12 +189,12 @@ test("CodeMeta with missing ref", () => {
         ctx,
     });
     expect(code.toString()).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), reference: @ref__vPLOvhOYyFZ__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial().optional()"'
+        '"z.object({ str: z.string(), reference: @ref__vIxl2qZdKNR__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial()"'
     );
     expect(code.children).toMatchInlineSnapshot(`
       [
           "z.string()",
-          "@ref__vPLOvhOYyFZ__",
+          "@ref__vIxl2qZdKNR__",
           "z.object({ nested_prop: z.boolean() }).partial()",
       ]
     `);
@@ -246,16 +246,16 @@ test("CodeMeta with nested refs", () => {
         ctx,
     });
     expect(code.toString()).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), reference: @ref__vzBf6Wcc4wG__, inline: z.object({ nested_prop: z.boolean() }).partial(), another: @ref__v1LOGJ1r17E__, basic: @ref__v7Yf0oeOD7p__, differentPropSameRef: @ref__v7Yf0oeOD7p__ }).partial().optional()"'
+        '"z.object({ str: z.string(), reference: @ref__vYgSV7U5VdD__, inline: z.object({ nested_prop: z.boolean() }).partial(), another: @ref__vYEGOMAPsCq__, basic: @ref__vltcwuCNPqv__, differentPropSameRef: @ref__vltcwuCNPqv__ }).partial()"'
     );
     expect(code.children).toMatchInlineSnapshot(`
       [
           "z.string()",
-          "@ref__vzBf6Wcc4wG__",
+          "@ref__vYgSV7U5VdD__",
           "z.object({ nested_prop: z.boolean() }).partial()",
-          "@ref__v1LOGJ1r17E__",
-          "@ref__v7Yf0oeOD7p__",
-          "@ref__v7Yf0oeOD7p__",
+          "@ref__vYEGOMAPsCq__",
+          "@ref__vltcwuCNPqv__",
+          "@ref__vltcwuCNPqv__",
       ]
     `);
     expect(ctx).toMatchInlineSnapshot(`
@@ -267,24 +267,24 @@ test("CodeMeta with nested refs", () => {
               "WithNested": "@circular__tPB2Le4g2m",
           },
           "codeMetaByRef": {
-              "Basic": "z.object({ prop: z.string(), second: z.number() }).partial().optional()",
-              "DeepNested": "z.object({ deep: z.boolean() }).partial().optional()",
-              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__v1LOGJ1r17E__), someReference: @ref__v7Yf0oeOD7p__ }).partial().optional()",
-              "WithNested": "z.object({ nested: z.string(), nestedRef: @ref__vdmzyCFsyxL__ }).partial().optional()",
+              "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",
+              "DeepNested": "z.object({ deep: z.boolean() }).partial()",
+              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__vYEGOMAPsCq__), someReference: @ref__vltcwuCNPqv__ }).partial()",
+              "WithNested": "z.object({ nested: z.string(), nestedRef: @ref__vZmDobZZtRj__ }).partial()",
           },
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "schemaHashByRef": {
-              "Basic": "@ref__v7Yf0oeOD7p__",
-              "DeepNested": "@ref__vdmzyCFsyxL__",
-              "ObjectWithArrayOfRef": "@ref__vzBf6Wcc4wG__",
-              "WithNested": "@ref__v1LOGJ1r17E__",
+              "Basic": "@ref__vltcwuCNPqv__",
+              "DeepNested": "@ref__vZmDobZZtRj__",
+              "ObjectWithArrayOfRef": "@ref__vYgSV7U5VdD__",
+              "WithNested": "@ref__vYEGOMAPsCq__",
           },
           "zodSchemaByHash": {
-              "@ref__v1LOGJ1r17E__": "z.object({ nested: z.string(), nestedRef: @ref__vdmzyCFsyxL__ }).partial().optional()",
-              "@ref__v7Yf0oeOD7p__": "z.object({ prop: z.string(), second: z.number() }).partial().optional()",
-              "@ref__vdmzyCFsyxL__": "z.object({ deep: z.boolean() }).partial().optional()",
-              "@ref__vzBf6Wcc4wG__": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__v1LOGJ1r17E__), someReference: @ref__v7Yf0oeOD7p__ }).partial().optional()",
+              "@ref__vYEGOMAPsCq__": "z.object({ nested: z.string(), nestedRef: @ref__vZmDobZZtRj__ }).partial()",
+              "@ref__vYgSV7U5VdD__": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__vYEGOMAPsCq__), someReference: @ref__vltcwuCNPqv__ }).partial()",
+              "@ref__vZmDobZZtRj__": "z.object({ deep: z.boolean() }).partial()",
+              "@ref__vltcwuCNPqv__": "z.object({ prop: z.string(), second: z.number() }).partial()",
           },
       }
     `);

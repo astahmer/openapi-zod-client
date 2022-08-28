@@ -12,7 +12,7 @@ import {
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
-import { CodeMeta, ConversionTypeContext, getZodSchema } from "./openApiToZod";
+import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
 import { tokens } from "./tokens";
 
 export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) => {
@@ -117,6 +117,12 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             for (const param of parameters) {
                 const paramItem = (isReferenceObject(param) ? getSchemaByRef(param.$ref) : param) as ParameterObject;
                 if (allowedPathInValues.includes(paramItem.in)) {
+                    const paramSchema = param?.$ref ? param.$ref : (param as ParameterObject).schema;
+                    const paramCode = getZodSchema({
+                        schema: paramSchema,
+                        ctx,
+                        meta: { isRequired: paramItem.in === "path" ? true : paramItem.required || false },
+                    });
                     endpointDescription.parameters.push({
                         name: paramItem.name,
                         type: match(paramItem.in)
@@ -124,13 +130,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                             .with("query", () => "Query")
                             .run() as "Header" | "Query",
                         schema: getZodVarName(
-                            getZodSchema({
-                                schema: param?.$ref ? param.$ref : (param as ParameterObject).schema,
-                                ctx,
-                                meta: {
-                                    isRequired: paramItem.in === "path" ? true : paramItem.required || false,
-                                },
-                            }),
+                            paramCode.assign(paramCode.code + getZodChainablePresence(paramCode, paramCode.meta)),
                             paramItem.name
                         ),
                     });

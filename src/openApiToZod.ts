@@ -165,7 +165,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
                     isRequired: isPartial ? true : schema.required?.includes(prop),
                     name: prop,
                 } as CodeMetaData;
-                const propCode = getZodSchema({ schema: propSchema, ctx, meta: propMetadata });
+                const propCode =
+                    getZodSchema({ schema: propSchema, ctx, meta: propMetadata }) +
+                    getZodChainablePresence(propSchema, propMetadata);
 
                 return [prop, propCode.toString()];
             });
@@ -204,7 +206,7 @@ type DefinedCodeMetaProps = "referencedBy" | "nestingLevel";
 type DefinedCodeMetaData = Pick<Required<CodeMetaData>, DefinedCodeMetaProps> &
     Omit<CodeMetaData, DefinedCodeMetaProps>;
 
-const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
+export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
     if (schema.nullable && !meta?.isRequired) {
         return `.nullish()`;
     }
@@ -280,8 +282,7 @@ export class CodeMeta {
     }
 
     assign(code: string) {
-        const chainable = getZodChainablePresence(this.schema, this.meta);
-        this.code = code + chainable;
+        this.code = code;
 
         return this;
     }

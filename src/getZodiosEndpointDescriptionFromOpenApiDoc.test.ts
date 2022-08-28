@@ -100,7 +100,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
               "#/components/schemas/Order": "@circular__wK9RiJx7oC",
           },
           "codeMetaByRef": {
-              "#/components/schemas/Order": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
+              "#/components/schemas/Order": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
           },
           "deepDependencyGraph": {},
           "endpoints": [
@@ -123,9 +123,9 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/Order": "@ref__vdqJo8eOFaZ__",
-              "@var/placeOrder": "@ref__vdqJo8eOFaZ__",
-              "@var/placeOrder_Body": "@ref__vdqJo8eOFaZ__",
+              "@var/Order": "@ref__vMXzDdmPwwi__",
+              "@var/placeOrder": "@ref__vMXzDdmPwwi__",
+              "@var/placeOrder_Body": "@ref__vMXzDdmPwwi__",
           },
           "refsDependencyGraph": {},
           "responsesByOperationId": {
@@ -134,10 +134,10 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Order": "@ref__vdqJo8eOFaZ__",
+              "#/components/schemas/Order": "@ref__vMXzDdmPwwi__",
           },
           "zodSchemaByHash": {
-              "@ref__vdqJo8eOFaZ__": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
+              "@ref__vMXzDdmPwwi__": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
           },
       }
     `);
@@ -215,9 +215,9 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
               "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
           },
           "codeMetaByRef": {
-              "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
+              "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial()",
+              "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vjRtoG5L21b__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vjRtoG5L21b__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial()",
           },
           "deepDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -261,11 +261,11 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/Pet": "@ref__vV4HVBDOhfv__",
-              "@var/addPet": "@ref__vV4HVBDOhfv__",
-              "@var/addPet_Body": "@ref__vV4HVBDOhfv__",
-              "@var/updatePet": "@ref__vV4HVBDOhfv__",
-              "@var/updatePet_Body": "@ref__vV4HVBDOhfv__",
+              "@var/Pet": "@ref__vnp2gpvFZCj__",
+              "@var/addPet": "@ref__vnp2gpvFZCj__",
+              "@var/addPet_Body": "@ref__vnp2gpvFZCj__",
+              "@var/updatePet": "@ref__vnp2gpvFZCj__",
+              "@var/updatePet_Body": "@ref__vnp2gpvFZCj__",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -282,13 +282,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Category": "@ref__vhu8VM64CQw__",
-              "#/components/schemas/Pet": "@ref__vV4HVBDOhfv__",
-              "#/components/schemas/Tag": "@ref__vhu8VM64CQw__",
+              "#/components/schemas/Category": "@ref__vjRtoG5L21b__",
+              "#/components/schemas/Pet": "@ref__vnp2gpvFZCj__",
+              "#/components/schemas/Tag": "@ref__vjRtoG5L21b__",
           },
           "zodSchemaByHash": {
-              "@ref__vV4HVBDOhfv__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "@ref__vhu8VM64CQw__": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
+              "@ref__vjRtoG5L21b__": "z.object({ id: z.bigint(), name: z.string() }).partial()",
+              "@ref__vnp2gpvFZCj__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vjRtoG5L21b__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vjRtoG5L21b__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
           },
       }
     `);
@@ -418,9 +418,9 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
               "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
           },
           "codeMetaByRef": {
-              "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
+              "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial()",
+              "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vjRtoG5L21b__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vjRtoG5L21b__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial()",
           },
           "deepDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -442,7 +442,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vV4HVBDOhfv__)",
+                  "response": "z.array(@ref__vnp2gpvFZCj__)",
               },
               {
                   "alias": "findPetsByTags",
@@ -457,15 +457,15 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vV4HVBDOhfv__)",
+                  "response": "z.array(@ref__vnp2gpvFZCj__)",
               },
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/findPetsByStatus": "@ref__vR4bF4K0wxQ__",
-              "@var/findPetsByTags": "@ref__vR4bF4K0wxQ__",
+              "@var/findPetsByStatus": "@ref__vP9z4ayAy35__",
+              "@var/findPetsByTags": "@ref__vP9z4ayAy35__",
               "@var/status": "@ref__vlh4E1pXYTG__",
-              "@var/tags": "@ref__vlBJyXSdkxV__",
+              "@var/tags": "@ref__vGqL1kemtHF__",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -482,16 +482,16 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Category": "@ref__vhu8VM64CQw__",
-              "#/components/schemas/Pet": "@ref__vV4HVBDOhfv__",
-              "#/components/schemas/Tag": "@ref__vhu8VM64CQw__",
+              "#/components/schemas/Category": "@ref__vjRtoG5L21b__",
+              "#/components/schemas/Pet": "@ref__vnp2gpvFZCj__",
+              "#/components/schemas/Tag": "@ref__vjRtoG5L21b__",
           },
           "zodSchemaByHash": {
-              "@ref__vR4bF4K0wxQ__": "z.array(@ref__vV4HVBDOhfv__)",
-              "@ref__vV4HVBDOhfv__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "@ref__vhu8VM64CQw__": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "@ref__vlBJyXSdkxV__": "z.array(z.string().optional()).optional()",
+              "@ref__vGqL1kemtHF__": "z.array(z.string()).optional()",
+              "@ref__vP9z4ayAy35__": "z.array(@ref__vnp2gpvFZCj__)",
+              "@ref__vjRtoG5L21b__": "z.object({ id: z.bigint(), name: z.string() }).partial()",
               "@ref__vlh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
+              "@ref__vnp2gpvFZCj__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vjRtoG5L21b__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vjRtoG5L21b__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
           },
       }
     `);
@@ -511,12 +511,12 @@ test("petstore.yaml", async () => {
               "#/components/schemas/User": "@circular__9Dvq68jEoU",
           },
           "codeMetaByRef": {
-              "#/components/schemas/ApiResponse": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional()",
-              "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "#/components/schemas/Order": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
-              "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "#/components/schemas/User": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial().optional()",
+              "#/components/schemas/ApiResponse": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial()",
+              "#/components/schemas/Category": "z.object({ id: z.bigint(), name: z.string() }).partial()",
+              "#/components/schemas/Order": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "#/components/schemas/Pet": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vjRtoG5L21b__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vjRtoG5L21b__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "#/components/schemas/Tag": "z.object({ id: z.bigint(), name: z.string() }).partial()",
+              "#/components/schemas/User": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial()",
           },
           "deepDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -570,7 +570,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vV4HVBDOhfv__)",
+                  "response": "z.array(@ref__vnp2gpvFZCj__)",
               },
               {
                   "alias": "findPetsByTags",
@@ -585,7 +585,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vV4HVBDOhfv__)",
+                  "response": "z.array(@ref__vnp2gpvFZCj__)",
               },
               {
                   "alias": "getPetById",
@@ -651,7 +651,7 @@ test("petstore.yaml", async () => {
                   "parameters": [],
                   "path": "/store/inventory",
                   "requestFormat": "json",
-                  "response": "z.record(z.bigint().optional())",
+                  "response": "z.record(z.bigint())",
               },
               {
                   "alias": "placeOrder",
@@ -781,29 +781,29 @@ test("petstore.yaml", async () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/ApiResponse": "@ref__voE4gkLXxTn__",
-              "@var/Order": "@ref__vdqJo8eOFaZ__",
-              "@var/Pet": "@ref__vV4HVBDOhfv__",
-              "@var/User": "@ref__vdkmtDx9IhK__",
-              "@var/addPet": "@ref__vV4HVBDOhfv__",
-              "@var/addPet_Body": "@ref__vV4HVBDOhfv__",
-              "@var/createUser": "@ref__vdkmtDx9IhK__",
-              "@var/createUser_Body": "@ref__vdkmtDx9IhK__",
-              "@var/createUsersWithListInput": "@ref__vdkmtDx9IhK__",
-              "@var/createUsersWithListInput_Body": "@ref__vGKbZVOSWPT__",
-              "@var/findPetsByStatus": "@ref__vR4bF4K0wxQ__",
-              "@var/findPetsByTags": "@ref__vR4bF4K0wxQ__",
-              "@var/getOrderById": "@ref__vdqJo8eOFaZ__",
-              "@var/getPetById": "@ref__vV4HVBDOhfv__",
-              "@var/getUserByName": "@ref__vdkmtDx9IhK__",
-              "@var/placeOrder": "@ref__vdqJo8eOFaZ__",
-              "@var/placeOrder_Body": "@ref__vdqJo8eOFaZ__",
+              "@var/ApiResponse": "@ref__vUMmIUy5eXh__",
+              "@var/Order": "@ref__vMXzDdmPwwi__",
+              "@var/Pet": "@ref__vnp2gpvFZCj__",
+              "@var/User": "@ref__vtA6zvELdW2__",
+              "@var/addPet": "@ref__vnp2gpvFZCj__",
+              "@var/addPet_Body": "@ref__vnp2gpvFZCj__",
+              "@var/createUser": "@ref__vtA6zvELdW2__",
+              "@var/createUser_Body": "@ref__vtA6zvELdW2__",
+              "@var/createUsersWithListInput": "@ref__vtA6zvELdW2__",
+              "@var/createUsersWithListInput_Body": "@ref__vIuVRTTFbUj__",
+              "@var/findPetsByStatus": "@ref__vP9z4ayAy35__",
+              "@var/findPetsByTags": "@ref__vP9z4ayAy35__",
+              "@var/getOrderById": "@ref__vMXzDdmPwwi__",
+              "@var/getPetById": "@ref__vnp2gpvFZCj__",
+              "@var/getUserByName": "@ref__vtA6zvELdW2__",
+              "@var/placeOrder": "@ref__vMXzDdmPwwi__",
+              "@var/placeOrder_Body": "@ref__vMXzDdmPwwi__",
               "@var/status": "@ref__vlh4E1pXYTG__",
-              "@var/tags": "@ref__vlBJyXSdkxV__",
-              "@var/updatePet": "@ref__vV4HVBDOhfv__",
-              "@var/updatePet_Body": "@ref__vV4HVBDOhfv__",
-              "@var/updateUser_Body": "@ref__vdkmtDx9IhK__",
-              "@var/uploadFile": "@ref__voE4gkLXxTn__",
+              "@var/tags": "@ref__vGqL1kemtHF__",
+              "@var/updatePet": "@ref__vnp2gpvFZCj__",
+              "@var/updatePet_Body": "@ref__vnp2gpvFZCj__",
+              "@var/updateUser_Body": "@ref__vtA6zvELdW2__",
+              "@var/uploadFile": "@ref__vUMmIUy5eXh__",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -828,7 +828,7 @@ test("petstore.yaml", async () => {
                   "200": "@var/findPetsByTags",
               },
               "getInventory": {
-                  "200": "z.record(z.bigint().optional())",
+                  "200": "z.record(z.bigint())",
               },
               "getOrderById": {
                   "200": "@var/getOrderById",
@@ -853,23 +853,23 @@ test("petstore.yaml", async () => {
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/ApiResponse": "@ref__voE4gkLXxTn__",
-              "#/components/schemas/Category": "@ref__vhu8VM64CQw__",
-              "#/components/schemas/Order": "@ref__vdqJo8eOFaZ__",
-              "#/components/schemas/Pet": "@ref__vV4HVBDOhfv__",
-              "#/components/schemas/Tag": "@ref__vhu8VM64CQw__",
-              "#/components/schemas/User": "@ref__vdkmtDx9IhK__",
+              "#/components/schemas/ApiResponse": "@ref__vUMmIUy5eXh__",
+              "#/components/schemas/Category": "@ref__vjRtoG5L21b__",
+              "#/components/schemas/Order": "@ref__vMXzDdmPwwi__",
+              "#/components/schemas/Pet": "@ref__vnp2gpvFZCj__",
+              "#/components/schemas/Tag": "@ref__vjRtoG5L21b__",
+              "#/components/schemas/User": "@ref__vtA6zvELdW2__",
           },
           "zodSchemaByHash": {
-              "@ref__vGKbZVOSWPT__": "z.array(@ref__vdkmtDx9IhK__)",
-              "@ref__vR4bF4K0wxQ__": "z.array(@ref__vV4HVBDOhfv__)",
-              "@ref__vV4HVBDOhfv__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vhu8VM64CQw__, photoUrls: z.array(z.string().optional()), tags: z.array(@ref__vhu8VM64CQw__).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "@ref__vdkmtDx9IhK__": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial().optional()",
-              "@ref__vdqJo8eOFaZ__": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
-              "@ref__vhu8VM64CQw__": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "@ref__vlBJyXSdkxV__": "z.array(z.string().optional()).optional()",
+              "@ref__vGqL1kemtHF__": "z.array(z.string()).optional()",
+              "@ref__vIuVRTTFbUj__": "z.array(@ref__vtA6zvELdW2__)",
+              "@ref__vMXzDdmPwwi__": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "@ref__vP9z4ayAy35__": "z.array(@ref__vnp2gpvFZCj__)",
+              "@ref__vUMmIUy5eXh__": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial()",
+              "@ref__vjRtoG5L21b__": "z.object({ id: z.bigint(), name: z.string() }).partial()",
               "@ref__vlh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
-              "@ref__voE4gkLXxTn__": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional()",
+              "@ref__vnp2gpvFZCj__": "z.object({ id: z.bigint().optional(), name: z.string(), category: @ref__vjRtoG5L21b__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vjRtoG5L21b__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "@ref__vtA6zvELdW2__": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial()",
           },
       }
     `);

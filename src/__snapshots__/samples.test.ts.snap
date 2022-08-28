@@ -28,26 +28,25 @@ exports[`samples-generator > ./samples/v3.0/link-example.yaml 1`] = `
 "import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vS2Mj9IGgPD = z.object({ username: z.string(), uuid: z.string() }).partial().optional();
-const vaIoGnQOM3l = z.object({ slug: z.string(), owner: vS2Mj9IGgPD }).partial().optional();
-const vKVPAt4Ooqg = z
-    .object({ id: z.bigint(), title: z.string(), repository: vaIoGnQOM3l, author: vS2Mj9IGgPD })
-    .partial()
-    .optional();
-const vvVkaqOsRu8 = z.array(vaIoGnQOM3l);
+const vObntp1skbx = z.object({ username: z.string(), uuid: z.string() }).partial();
+const vZj8Kquc5yX = z.object({ slug: z.string(), owner: vObntp1skbx }).partial();
+const vSVDEGcbL5d = z
+    .object({ id: z.bigint(), title: z.string(), repository: vZj8Kquc5yX, author: vObntp1skbx })
+    .partial();
+const vKMFj5kanr5 = z.array(vZj8Kquc5yX);
 const vt4Y3jGvjMM = z.enum(["open", "merged", "declined"]).optional();
-const vuJj3ChNvFC = z.array(vKVPAt4Ooqg);
+const vID2hHkgVJD = z.array(vSVDEGcbL5d);
 
 const variables = {
-    getPullRequestsById: vKVPAt4Ooqg,
-    getPullRequestsByRepository: vuJj3ChNvFC,
-    getRepositoriesByOwner: vvVkaqOsRu8,
-    getRepository: vaIoGnQOM3l,
-    getUserByName: vS2Mj9IGgPD,
-    pullrequest: vKVPAt4Ooqg,
-    repository: vaIoGnQOM3l,
+    getPullRequestsById: vSVDEGcbL5d,
+    getPullRequestsByRepository: vID2hHkgVJD,
+    getRepositoriesByOwner: vKMFj5kanr5,
+    getRepository: vZj8Kquc5yX,
+    getUserByName: vObntp1skbx,
+    pullrequest: vSVDEGcbL5d,
+    repository: vZj8Kquc5yX,
     state: vt4Y3jGvjMM,
-    user: vS2Mj9IGgPD,
+    user: vObntp1skbx,
 };
 
 const endpoints = [
@@ -98,17 +97,17 @@ exports[`samples-generator > ./samples/v3.0/petstore.yaml 1`] = `
 "import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const v7LgRCMpuZ0 = z.object({ id: z.bigint(), name: z.string(), tag: z.string().optional() }).optional();
-const vWZd2G8UeSs = z.array(v7LgRCMpuZ0).optional();
-const v77smkx5YEB = z.object({ code: z.bigint(), message: z.string() }).optional();
+const vA5phPF1XN0 = z.object({ id: z.bigint(), name: z.string(), tag: z.string().optional() });
+const vvyrAzqIevM = z.array(vA5phPF1XN0);
+const vtNuPz7NRv2 = z.object({ code: z.bigint(), message: z.string() });
 
 const variables = {
-    Error: v77smkx5YEB,
-    Pet: v7LgRCMpuZ0,
-    Pets: vWZd2G8UeSs,
-    createPets: v77smkx5YEB,
-    listPets: v77smkx5YEB,
-    showPetById: v77smkx5YEB,
+    Error: vtNuPz7NRv2,
+    Pet: vA5phPF1XN0,
+    Pets: vvyrAzqIevM,
+    createPets: vtNuPz7NRv2,
+    listPets: vtNuPz7NRv2,
+    showPetById: vtNuPz7NRv2,
 };
 
 const endpoints = [
@@ -147,21 +146,21 @@ exports[`samples-generator > ./samples/v3.0/petstore-expanded.yaml 1`] = `
 "import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vh5l7qDPzUx = z.object({ name: z.string(), tag: z.string().optional() }).optional();
-const vBIls4f9qcU = vh5l7qDPzUx.and(z.object({ id: z.bigint() }).optional()).optional();
-const vlBJyXSdkxV = z.array(z.string().optional()).optional();
-const vIjp66DQDrb = z.array(vBIls4f9qcU);
-const v77smkx5YEB = z.object({ code: z.bigint(), message: z.string() }).optional();
+const vPXNN6VHlNv = z.object({ name: z.string(), tag: z.string().optional() });
+const vwx4hLsQgSR = vPXNN6VHlNv.and(z.object({ id: z.bigint() }));
+const vGqL1kemtHF = z.array(z.string()).optional();
+const vIQgTKHlH8s = z.array(vwx4hLsQgSR);
+const vtNuPz7NRv2 = z.object({ code: z.bigint(), message: z.string() });
 
 const variables = {
-    Error: v77smkx5YEB,
-    Pet: vBIls4f9qcU,
-    addPet: v77smkx5YEB,
-    addPet_Body: vh5l7qDPzUx,
-    deletePet: v77smkx5YEB,
-    findPets: v77smkx5YEB,
-    find_pet_by_id: v77smkx5YEB,
-    tags: vlBJyXSdkxV,
+    Error: vtNuPz7NRv2,
+    Pet: vwx4hLsQgSR,
+    addPet: vtNuPz7NRv2,
+    addPet_Body: vPXNN6VHlNv,
+    deletePet: vtNuPz7NRv2,
+    findPets: vtNuPz7NRv2,
+    find_pet_by_id: vtNuPz7NRv2,
+    tags: vGqL1kemtHF,
 };
 
 const endpoints = [
@@ -227,7 +226,7 @@ exports[`samples-generator > ./samples/v3.0/uspto.yaml 1`] = `
 "import { Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vyKcOnOy590 = z
+const vPdkWyLlwq1 = z
     .object({
         total: z.bigint(),
         apis: z.array(
@@ -239,17 +238,15 @@ const vyKcOnOy590 = z
                     apiDocumentationUrl: z.string(),
                 })
                 .partial()
-                .optional()
         ),
     })
-    .partial()
-    .optional();
-const vakY1xA0lMT = z.array(z.record(z.object({}).partial().optional()).optional());
+    .partial();
+const vlyQvttKNVV = z.array(z.record(z.object({}).partial()));
 
 const variables = {
-    dataSetList: vyKcOnOy590,
-    list_data_sets: vyKcOnOy590,
-    perform_search: vakY1xA0lMT,
+    dataSetList: vPdkWyLlwq1,
+    list_data_sets: vPdkWyLlwq1,
+    perform_search: vlyQvttKNVV,
 };
 
 const endpoints = [
@@ -271,7 +268,7 @@ const endpoints = [
         path: "/:dataset/:version/records",
         description: \`This API is based on Solr/Lucene Search. The data is indexed using SOLR. This GET API returns the list of all the searchable field names that are in the Solr Index. Please see the &#x27;fields&#x27; attribute which returns an array of field names. Each field or a combination of fields can be searched using the Solr/Lucene Syntax. Please refer https://lucene.apache.org/core/3_6_2/queryparsersyntax.html#Overview for the query syntax. List of field names that are searchable can be determined using above GET api.\`,
         requestFormat: "json",
-        response: z.array(z.record(z.object({}).partial().optional()).optional()),
+        response: z.array(z.record(z.object({}).partial())),
     },
 ] as const;
 

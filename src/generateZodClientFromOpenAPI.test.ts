@@ -1,13 +1,17 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { compile } from "handlebars";
 import { readFile } from "node:fs/promises";
-import { OpenAPIObject } from "openapi3-ts";
+import { OpenAPIObject, SchemasObject } from "openapi3-ts";
 import { resolveConfig } from "prettier";
-import { describe, expect, test } from "vitest";
+import { beforeAll, describe, expect, test } from "vitest";
 import { getZodClientTemplateContext, maybePretty, TemplateContext } from "./generateZodClientFromOpenAPI";
 
+let openApiDoc: OpenAPIObject;
+beforeAll(async () => {
+    openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
+});
+
 test("getZodClientTemplateContext", async () => {
-    const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
     const result = getZodClientTemplateContext(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
@@ -105,7 +109,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [],
                   "path": "/store/inventory",
                   "requestFormat": "json",
-                  "response": "z.record(z.bigint().optional())",
+                  "response": "z.record(z.bigint())",
               },
               {
                   "alias": "placeOrder",
@@ -199,42 +203,42 @@ test("getZodClientTemplateContext", async () => {
               "withAlias": false,
           },
           "schemas": {
-              "vGKbZVOSWPT": "z.array(vdkmtDx9IhK)",
-              "vR4bF4K0wxQ": "z.array(vV4HVBDOhfv)",
-              "vV4HVBDOhfv": "z.object({ id: z.bigint().optional(), name: z.string(), category: vhu8VM64CQw, photoUrls: z.array(z.string().optional()), tags: z.array(vhu8VM64CQw).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).optional()",
-              "vdkmtDx9IhK": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial().optional()",
-              "vdqJo8eOFaZ": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().optional()",
-              "vhu8VM64CQw": "z.object({ id: z.bigint(), name: z.string() }).partial().optional()",
-              "vlBJyXSdkxV": "z.array(z.string().optional()).optional()",
+              "vGqL1kemtHF": "z.array(z.string()).optional()",
+              "vIuVRTTFbUj": "z.array(vtA6zvELdW2)",
+              "vMXzDdmPwwi": "z.object({ id: z.bigint(), petId: z.bigint(), quantity: z.bigint(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "vP9z4ayAy35": "z.array(vnp2gpvFZCj)",
+              "vUMmIUy5eXh": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial()",
+              "vjRtoG5L21b": "z.object({ id: z.bigint(), name: z.string() }).partial()",
               "vlh4E1pXYTG": "z.enum(["available", "pending", "sold"]).optional()",
-              "voE4gkLXxTn": "z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional()",
+              "vnp2gpvFZCj": "z.object({ id: z.bigint().optional(), name: z.string(), category: vjRtoG5L21b.optional(), photoUrls: z.array(z.string()), tags: z.array(vjRtoG5L21b).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "vtA6zvELdW2": "z.object({ id: z.bigint(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.bigint() }).partial()",
           },
           "typeNameByRefHash": {},
           "types": {},
           "variables": {
-              "ApiResponse": "voE4gkLXxTn",
-              "Order": "vdqJo8eOFaZ",
-              "Pet": "vV4HVBDOhfv",
-              "User": "vdkmtDx9IhK",
-              "addPet": "vV4HVBDOhfv",
-              "addPet_Body": "vV4HVBDOhfv",
-              "createUser": "vdkmtDx9IhK",
-              "createUser_Body": "vdkmtDx9IhK",
-              "createUsersWithListInput": "vdkmtDx9IhK",
-              "createUsersWithListInput_Body": "vGKbZVOSWPT",
-              "findPetsByStatus": "vR4bF4K0wxQ",
-              "findPetsByTags": "vR4bF4K0wxQ",
-              "getOrderById": "vdqJo8eOFaZ",
-              "getPetById": "vV4HVBDOhfv",
-              "getUserByName": "vdkmtDx9IhK",
-              "placeOrder": "vdqJo8eOFaZ",
-              "placeOrder_Body": "vdqJo8eOFaZ",
+              "ApiResponse": "vUMmIUy5eXh",
+              "Order": "vMXzDdmPwwi",
+              "Pet": "vnp2gpvFZCj",
+              "User": "vtA6zvELdW2",
+              "addPet": "vnp2gpvFZCj",
+              "addPet_Body": "vnp2gpvFZCj",
+              "createUser": "vtA6zvELdW2",
+              "createUser_Body": "vtA6zvELdW2",
+              "createUsersWithListInput": "vtA6zvELdW2",
+              "createUsersWithListInput_Body": "vIuVRTTFbUj",
+              "findPetsByStatus": "vP9z4ayAy35",
+              "findPetsByTags": "vP9z4ayAy35",
+              "getOrderById": "vMXzDdmPwwi",
+              "getPetById": "vnp2gpvFZCj",
+              "getUserByName": "vtA6zvELdW2",
+              "placeOrder": "vMXzDdmPwwi",
+              "placeOrder_Body": "vMXzDdmPwwi",
               "status": "vlh4E1pXYTG",
-              "tags": "vlBJyXSdkxV",
-              "updatePet": "vV4HVBDOhfv",
-              "updatePet_Body": "vV4HVBDOhfv",
-              "updateUser_Body": "vdkmtDx9IhK",
-              "uploadFile": "voE4gkLXxTn",
+              "tags": "vGqL1kemtHF",
+              "updatePet": "vnp2gpvFZCj",
+              "updatePet_Body": "vnp2gpvFZCj",
+              "updateUser_Body": "vtA6zvELdW2",
+              "uploadFile": "vUMmIUy5eXh",
           },
       }
     `);
@@ -242,7 +246,6 @@ test("getZodClientTemplateContext", async () => {
 
 describe("generateZodClientFromOpenAPI", () => {
     test("without options", async () => {
-        const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
         const data = getZodClientTemplateContext(openApiDoc);
 
         const source = await readFile("./src/template.hbs", "utf-8");
@@ -255,22 +258,20 @@ describe("generateZodClientFromOpenAPI", () => {
           "import { Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const vhu8VM64CQw = z.object({ id: z.bigint(), name: z.string() }).partial().optional();
-          const vV4HVBDOhfv = z
-              .object({
-                  id: z.bigint().optional(),
-                  name: z.string(),
-                  category: vhu8VM64CQw,
-                  photoUrls: z.array(z.string().optional()),
-                  tags: z.array(vhu8VM64CQw).optional(),
-                  status: z.enum(["available", "pending", "sold"]).optional(),
-              })
-              .optional();
+          const vjRtoG5L21b = z.object({ id: z.bigint(), name: z.string() }).partial();
+          const vnp2gpvFZCj = z.object({
+              id: z.bigint().optional(),
+              name: z.string(),
+              category: vjRtoG5L21b.optional(),
+              photoUrls: z.array(z.string()),
+              tags: z.array(vjRtoG5L21b).optional(),
+              status: z.enum(["available", "pending", "sold"]).optional(),
+          });
           const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const vR4bF4K0wxQ = z.array(vV4HVBDOhfv);
-          const vlBJyXSdkxV = z.array(z.string().optional()).optional();
-          const voE4gkLXxTn = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional();
-          const vdqJo8eOFaZ = z
+          const vP9z4ayAy35 = z.array(vnp2gpvFZCj);
+          const vGqL1kemtHF = z.array(z.string()).optional();
+          const vUMmIUy5eXh = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial();
+          const vMXzDdmPwwi = z
               .object({
                   id: z.bigint(),
                   petId: z.bigint(),
@@ -279,9 +280,8 @@ describe("generateZodClientFromOpenAPI", () => {
                   status: z.enum(["placed", "approved", "delivered"]),
                   complete: z.boolean(),
               })
-              .partial()
-              .optional();
-          const vdkmtDx9IhK = z
+              .partial();
+          const vtA6zvELdW2 = z
               .object({
                   id: z.bigint(),
                   username: z.string(),
@@ -292,34 +292,33 @@ describe("generateZodClientFromOpenAPI", () => {
                   phone: z.string(),
                   userStatus: z.bigint(),
               })
-              .partial()
-              .optional();
-          const vGKbZVOSWPT = z.array(vdkmtDx9IhK);
+              .partial();
+          const vIuVRTTFbUj = z.array(vtA6zvELdW2);
 
           const variables = {
-              ApiResponse: voE4gkLXxTn,
-              Order: vdqJo8eOFaZ,
-              Pet: vV4HVBDOhfv,
-              User: vdkmtDx9IhK,
-              addPet: vV4HVBDOhfv,
-              addPet_Body: vV4HVBDOhfv,
-              createUser: vdkmtDx9IhK,
-              createUser_Body: vdkmtDx9IhK,
-              createUsersWithListInput: vdkmtDx9IhK,
-              createUsersWithListInput_Body: vGKbZVOSWPT,
-              findPetsByStatus: vR4bF4K0wxQ,
-              findPetsByTags: vR4bF4K0wxQ,
-              getOrderById: vdqJo8eOFaZ,
-              getPetById: vV4HVBDOhfv,
-              getUserByName: vdkmtDx9IhK,
-              placeOrder: vdqJo8eOFaZ,
-              placeOrder_Body: vdqJo8eOFaZ,
+              ApiResponse: vUMmIUy5eXh,
+              Order: vMXzDdmPwwi,
+              Pet: vnp2gpvFZCj,
+              User: vtA6zvELdW2,
+              addPet: vnp2gpvFZCj,
+              addPet_Body: vnp2gpvFZCj,
+              createUser: vtA6zvELdW2,
+              createUser_Body: vtA6zvELdW2,
+              createUsersWithListInput: vtA6zvELdW2,
+              createUsersWithListInput_Body: vIuVRTTFbUj,
+              findPetsByStatus: vP9z4ayAy35,
+              findPetsByTags: vP9z4ayAy35,
+              getOrderById: vMXzDdmPwwi,
+              getPetById: vnp2gpvFZCj,
+              getUserByName: vtA6zvELdW2,
+              placeOrder: vMXzDdmPwwi,
+              placeOrder_Body: vMXzDdmPwwi,
               status: vlh4E1pXYTG,
-              tags: vlBJyXSdkxV,
-              updatePet: vV4HVBDOhfv,
-              updatePet_Body: vV4HVBDOhfv,
-              updateUser_Body: vdkmtDx9IhK,
-              uploadFile: voE4gkLXxTn,
+              tags: vGqL1kemtHF,
+              updatePet: vnp2gpvFZCj,
+              updatePet_Body: vnp2gpvFZCj,
+              updateUser_Body: vtA6zvELdW2,
+              uploadFile: vUMmIUy5eXh,
           };
 
           const endpoints = [
@@ -406,7 +405,7 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/store/inventory",
                   description: \`Returns a map of status codes to quantities\`,
                   requestFormat: "json",
-                  response: z.record(z.bigint().optional()),
+                  response: z.record(z.bigint()),
               },
               {
                   method: "post",
@@ -490,7 +489,6 @@ describe("generateZodClientFromOpenAPI", () => {
     });
 
     test("withAlias", async () => {
-        const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
         const data = getZodClientTemplateContext(openApiDoc);
 
         const source = await readFile("./src/template.hbs", "utf-8");
@@ -503,22 +501,20 @@ describe("generateZodClientFromOpenAPI", () => {
           "import { Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const vhu8VM64CQw = z.object({ id: z.bigint(), name: z.string() }).partial().optional();
-          const vV4HVBDOhfv = z
-              .object({
-                  id: z.bigint().optional(),
-                  name: z.string(),
-                  category: vhu8VM64CQw,
-                  photoUrls: z.array(z.string().optional()),
-                  tags: z.array(vhu8VM64CQw).optional(),
-                  status: z.enum(["available", "pending", "sold"]).optional(),
-              })
-              .optional();
+          const vjRtoG5L21b = z.object({ id: z.bigint(), name: z.string() }).partial();
+          const vnp2gpvFZCj = z.object({
+              id: z.bigint().optional(),
+              name: z.string(),
+              category: vjRtoG5L21b.optional(),
+              photoUrls: z.array(z.string()),
+              tags: z.array(vjRtoG5L21b).optional(),
+              status: z.enum(["available", "pending", "sold"]).optional(),
+          });
           const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const vR4bF4K0wxQ = z.array(vV4HVBDOhfv);
-          const vlBJyXSdkxV = z.array(z.string().optional()).optional();
-          const voE4gkLXxTn = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional();
-          const vdqJo8eOFaZ = z
+          const vP9z4ayAy35 = z.array(vnp2gpvFZCj);
+          const vGqL1kemtHF = z.array(z.string()).optional();
+          const vUMmIUy5eXh = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial();
+          const vMXzDdmPwwi = z
               .object({
                   id: z.bigint(),
                   petId: z.bigint(),
@@ -527,9 +523,8 @@ describe("generateZodClientFromOpenAPI", () => {
                   status: z.enum(["placed", "approved", "delivered"]),
                   complete: z.boolean(),
               })
-              .partial()
-              .optional();
-          const vdkmtDx9IhK = z
+              .partial();
+          const vtA6zvELdW2 = z
               .object({
                   id: z.bigint(),
                   username: z.string(),
@@ -540,34 +535,33 @@ describe("generateZodClientFromOpenAPI", () => {
                   phone: z.string(),
                   userStatus: z.bigint(),
               })
-              .partial()
-              .optional();
-          const vGKbZVOSWPT = z.array(vdkmtDx9IhK);
+              .partial();
+          const vIuVRTTFbUj = z.array(vtA6zvELdW2);
 
           const variables = {
-              ApiResponse: voE4gkLXxTn,
-              Order: vdqJo8eOFaZ,
-              Pet: vV4HVBDOhfv,
-              User: vdkmtDx9IhK,
-              addPet: vV4HVBDOhfv,
-              addPet_Body: vV4HVBDOhfv,
-              createUser: vdkmtDx9IhK,
-              createUser_Body: vdkmtDx9IhK,
-              createUsersWithListInput: vdkmtDx9IhK,
-              createUsersWithListInput_Body: vGKbZVOSWPT,
-              findPetsByStatus: vR4bF4K0wxQ,
-              findPetsByTags: vR4bF4K0wxQ,
-              getOrderById: vdqJo8eOFaZ,
-              getPetById: vV4HVBDOhfv,
-              getUserByName: vdkmtDx9IhK,
-              placeOrder: vdqJo8eOFaZ,
-              placeOrder_Body: vdqJo8eOFaZ,
+              ApiResponse: vUMmIUy5eXh,
+              Order: vMXzDdmPwwi,
+              Pet: vnp2gpvFZCj,
+              User: vtA6zvELdW2,
+              addPet: vnp2gpvFZCj,
+              addPet_Body: vnp2gpvFZCj,
+              createUser: vtA6zvELdW2,
+              createUser_Body: vtA6zvELdW2,
+              createUsersWithListInput: vtA6zvELdW2,
+              createUsersWithListInput_Body: vIuVRTTFbUj,
+              findPetsByStatus: vP9z4ayAy35,
+              findPetsByTags: vP9z4ayAy35,
+              getOrderById: vMXzDdmPwwi,
+              getPetById: vnp2gpvFZCj,
+              getUserByName: vtA6zvELdW2,
+              placeOrder: vMXzDdmPwwi,
+              placeOrder_Body: vMXzDdmPwwi,
               status: vlh4E1pXYTG,
-              tags: vlBJyXSdkxV,
-              updatePet: vV4HVBDOhfv,
-              updatePet_Body: vV4HVBDOhfv,
-              updateUser_Body: vdkmtDx9IhK,
-              uploadFile: voE4gkLXxTn,
+              tags: vGqL1kemtHF,
+              updatePet: vnp2gpvFZCj,
+              updatePet_Body: vnp2gpvFZCj,
+              updateUser_Body: vtA6zvELdW2,
+              uploadFile: vUMmIUy5eXh,
           };
 
           const endpoints = [
@@ -661,7 +655,7 @@ describe("generateZodClientFromOpenAPI", () => {
                   alias: "getInventory",
                   description: \`Returns a map of status codes to quantities\`,
                   requestFormat: "json",
-                  response: z.record(z.bigint().optional()),
+                  response: z.record(z.bigint()),
               },
               {
                   method: "post",
@@ -751,7 +745,6 @@ describe("generateZodClientFromOpenAPI", () => {
     });
 
     test("with baseUrl", async () => {
-        const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
         const data = getZodClientTemplateContext(openApiDoc);
 
         const source = await readFile("./src/template.hbs", "utf-8");
@@ -764,22 +757,20 @@ describe("generateZodClientFromOpenAPI", () => {
           "import { Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const vhu8VM64CQw = z.object({ id: z.bigint(), name: z.string() }).partial().optional();
-          const vV4HVBDOhfv = z
-              .object({
-                  id: z.bigint().optional(),
-                  name: z.string(),
-                  category: vhu8VM64CQw,
-                  photoUrls: z.array(z.string().optional()),
-                  tags: z.array(vhu8VM64CQw).optional(),
-                  status: z.enum(["available", "pending", "sold"]).optional(),
-              })
-              .optional();
+          const vjRtoG5L21b = z.object({ id: z.bigint(), name: z.string() }).partial();
+          const vnp2gpvFZCj = z.object({
+              id: z.bigint().optional(),
+              name: z.string(),
+              category: vjRtoG5L21b.optional(),
+              photoUrls: z.array(z.string()),
+              tags: z.array(vjRtoG5L21b).optional(),
+              status: z.enum(["available", "pending", "sold"]).optional(),
+          });
           const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const vR4bF4K0wxQ = z.array(vV4HVBDOhfv);
-          const vlBJyXSdkxV = z.array(z.string().optional()).optional();
-          const voE4gkLXxTn = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial().optional();
-          const vdqJo8eOFaZ = z
+          const vP9z4ayAy35 = z.array(vnp2gpvFZCj);
+          const vGqL1kemtHF = z.array(z.string()).optional();
+          const vUMmIUy5eXh = z.object({ code: z.bigint(), type: z.string(), message: z.string() }).partial();
+          const vMXzDdmPwwi = z
               .object({
                   id: z.bigint(),
                   petId: z.bigint(),
@@ -788,9 +779,8 @@ describe("generateZodClientFromOpenAPI", () => {
                   status: z.enum(["placed", "approved", "delivered"]),
                   complete: z.boolean(),
               })
-              .partial()
-              .optional();
-          const vdkmtDx9IhK = z
+              .partial();
+          const vtA6zvELdW2 = z
               .object({
                   id: z.bigint(),
                   username: z.string(),
@@ -801,34 +791,33 @@ describe("generateZodClientFromOpenAPI", () => {
                   phone: z.string(),
                   userStatus: z.bigint(),
               })
-              .partial()
-              .optional();
-          const vGKbZVOSWPT = z.array(vdkmtDx9IhK);
+              .partial();
+          const vIuVRTTFbUj = z.array(vtA6zvELdW2);
 
           const variables = {
-              ApiResponse: voE4gkLXxTn,
-              Order: vdqJo8eOFaZ,
-              Pet: vV4HVBDOhfv,
-              User: vdkmtDx9IhK,
-              addPet: vV4HVBDOhfv,
-              addPet_Body: vV4HVBDOhfv,
-              createUser: vdkmtDx9IhK,
-              createUser_Body: vdkmtDx9IhK,
-              createUsersWithListInput: vdkmtDx9IhK,
-              createUsersWithListInput_Body: vGKbZVOSWPT,
-              findPetsByStatus: vR4bF4K0wxQ,
-              findPetsByTags: vR4bF4K0wxQ,
-              getOrderById: vdqJo8eOFaZ,
-              getPetById: vV4HVBDOhfv,
-              getUserByName: vdkmtDx9IhK,
-              placeOrder: vdqJo8eOFaZ,
-              placeOrder_Body: vdqJo8eOFaZ,
+              ApiResponse: vUMmIUy5eXh,
+              Order: vMXzDdmPwwi,
+              Pet: vnp2gpvFZCj,
+              User: vtA6zvELdW2,
+              addPet: vnp2gpvFZCj,
+              addPet_Body: vnp2gpvFZCj,
+              createUser: vtA6zvELdW2,
+              createUser_Body: vtA6zvELdW2,
+              createUsersWithListInput: vtA6zvELdW2,
+              createUsersWithListInput_Body: vIuVRTTFbUj,
+              findPetsByStatus: vP9z4ayAy35,
+              findPetsByTags: vP9z4ayAy35,
+              getOrderById: vMXzDdmPwwi,
+              getPetById: vnp2gpvFZCj,
+              getUserByName: vtA6zvELdW2,
+              placeOrder: vMXzDdmPwwi,
+              placeOrder_Body: vMXzDdmPwwi,
               status: vlh4E1pXYTG,
-              tags: vlBJyXSdkxV,
-              updatePet: vV4HVBDOhfv,
-              updatePet_Body: vV4HVBDOhfv,
-              updateUser_Body: vdkmtDx9IhK,
-              uploadFile: voE4gkLXxTn,
+              tags: vGqL1kemtHF,
+              updatePet: vnp2gpvFZCj,
+              updatePet_Body: vnp2gpvFZCj,
+              updateUser_Body: vtA6zvELdW2,
+              uploadFile: vUMmIUy5eXh,
           };
 
           const endpoints = [
@@ -915,7 +904,7 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/store/inventory",
                   description: \`Returns a map of status codes to quantities\`,
                   requestFormat: "json",
-                  response: z.record(z.bigint().optional()),
+                  response: z.record(z.bigint()),
               },
               {
                   method: "post",
@@ -997,4 +986,250 @@ describe("generateZodClientFromOpenAPI", () => {
           "
         `);
     });
+});
+
+test("with optional, partial, all required objects", async () => {
+    const schemas = {
+        Root2: {
+            type: "object",
+            properties: {
+                str: { type: "string" },
+                nb: { type: "number" },
+                nested: { $ref: "#/components/schemas/Nested2" },
+                partial: { $ref: "#/components/schemas/PartialObject" },
+                optionalProp: { type: "string" },
+            },
+            required: ["str", "nb", "nested"],
+        },
+        Nested2: {
+            type: "object",
+            properties: {
+                nested_prop: { type: "boolean" },
+                deeplyNested: { $ref: "#/components/schemas/DeeplyNested" },
+                circularToRoot: { $ref: "#/components/schemas/Root2" },
+                requiredProp: { type: "string" },
+            },
+            required: ["requiredProp"],
+        },
+        PartialObject: {
+            type: "object",
+            properties: {
+                something: { type: "string" },
+                another: { type: "number" },
+            },
+        },
+        DeeplyNested: {
+            type: "array",
+            items: { $ref: "#/components/schemas/VeryDeeplyNested" },
+        },
+        VeryDeeplyNested: {
+            type: "string",
+            enum: ["aaa", "bbb", "ccc"],
+        },
+    } as SchemasObject;
+    const openApiDoc = {
+        openapi: "3.0.3",
+        info: { title: "Swagger Petstore - OpenAPI 3.0", version: "1.0.11" },
+        paths: {
+            "/root": {
+                get: {
+                    operationId: "getRoot",
+                    responses: {
+                        "200": { description: "OK", content: { "application/json": { schema: schemas.Root2 } } },
+                    },
+                },
+            },
+            "/nested": {
+                get: {
+                    operationId: "getNested",
+                    responses: {
+                        "200": { description: "OK", content: { "application/json": { schema: schemas.Nested2 } } },
+                    },
+                },
+            },
+            "/deeplyNested": {
+                get: {
+                    operationId: "getDeeplyNested",
+                    responses: {
+                        "200": {
+                            description: "OK",
+                            content: { "application/json": { schema: schemas.DeeplyNested2 } },
+                        },
+                    },
+                },
+            },
+            "/veryDeeplyNested": {
+                get: {
+                    operationId: "getVeryDeeplyNested",
+                    responses: {
+                        "200": {
+                            description: "OK",
+                            content: { "application/json": { schema: schemas.VeryDeeplyNested2 } },
+                        },
+                    },
+                },
+            },
+        },
+        components: { schemas },
+    };
+
+    const data = getZodClientTemplateContext(openApiDoc);
+
+    expect(data).toMatchInlineSnapshot(`
+      {
+          "endpoints": [
+              {
+                  "alias": "getNested",
+                  "description": undefined,
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/nested",
+                  "requestFormat": "json",
+                  "response": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: variables["getNested"].optional(), circularToRoot: variables["getRoot"].optional(), requiredProp: z.string() })",
+              },
+              {
+                  "alias": "getRoot",
+                  "description": undefined,
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/root",
+                  "requestFormat": "json",
+                  "response": "z.object({ str: z.string(), nb: z.number(), nested: variables["getRoot"], partial: variables["getRoot"].optional(), optionalProp: z.string().optional() })",
+              },
+          ],
+          "options": {
+              "baseUrl": "__baseurl__",
+              "withAlias": false,
+          },
+          "schemas": {
+              "v0a43T4TEdB": "z.enum(["aaa", "bbb", "ccc"])",
+              "v6JdpQSn4Hj": "z.object({ something: z.string(), another: z.number() }).partial()",
+              "vCj2di4DExd": "z.lazy(() => z.object({ str: z.string(), nb: z.number(), nested: vmYnun0sFdZ, partial: v6JdpQSn4Hj.optional(), optionalProp: z.string().optional() }))",
+              "vFHcIEhV0A3": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: vm0znqO5M3d.optional(), circularToRoot: vCj2di4DExd.optional(), requiredProp: z.string() })",
+              "vm0znqO5M3d": "z.array(v0a43T4TEdB)",
+              "vmYnun0sFdZ": "z.lazy(() => z.object({ nested_prop: z.boolean().optional(), deeplyNested: vm0znqO5M3d.optional(), circularToRoot: vCj2di4DExd.optional(), requiredProp: z.string() }))",
+          },
+          "typeNameByRefHash": {
+              "vCj2di4DExd": "Root2",
+              "vmYnun0sFdZ": "Nested2",
+          },
+          "types": {
+              "DeeplyNested": "type DeeplyNested = Array<VeryDeeplyNested>;",
+              "Nested2": "type Nested2 = {
+          nested_prop?: boolean | undefined;
+          deeplyNested?: DeeplyNested | undefined;
+          circularToRoot?: Root2 | undefined;
+          requiredProp: string;
+      };",
+              "PartialObject": "type PartialObject = Partial<{
+          something: string;
+          another: number;
+      }>;",
+              "Root2": "type Root2 = {
+          str: string;
+          nb: number;
+          nested: Nested2;
+          partial?: PartialObject | undefined;
+          optionalProp?: string | undefined;
+      };",
+              "VeryDeeplyNested": "type VeryDeeplyNested = "aaa" | "bbb" | "ccc";",
+          },
+          "variables": {
+              "getNested": "vFHcIEhV0A3",
+              "getRoot": "vCj2di4DExd",
+          },
+      }
+    `);
+
+    const source = await readFile("./src/template.hbs", "utf-8");
+    const template = compile(source);
+    const prettierConfig = await resolveConfig("./");
+
+    const output = template(data);
+    const prettyOutput = maybePretty(output, prettierConfig);
+    expect(prettyOutput).toMatchInlineSnapshot(`
+      "import { Zodios } from "@zodios/core";
+      import { z } from "zod";
+
+      type Nested2 = {
+          nested_prop?: boolean | undefined;
+          deeplyNested?: DeeplyNested | undefined;
+          circularToRoot?: Root2 | undefined;
+          requiredProp: string;
+      };
+      type DeeplyNested = Array<VeryDeeplyNested>;
+      type VeryDeeplyNested = "aaa" | "bbb" | "ccc";
+      type PartialObject = Partial<{
+          something: string;
+          another: number;
+      }>;
+      type Root2 = {
+          str: string;
+          nb: number;
+          nested: Nested2;
+          partial?: PartialObject | undefined;
+          optionalProp?: string | undefined;
+      };
+
+      const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
+      const vm0znqO5M3d = z.array(v0a43T4TEdB);
+      const vmYnun0sFdZ: z.ZodType<Nested2> = z.lazy(() =>
+          z.object({
+              nested_prop: z.boolean().optional(),
+              deeplyNested: vm0znqO5M3d.optional(),
+              circularToRoot: vCj2di4DExd.optional(),
+              requiredProp: z.string(),
+          })
+      );
+      const v6JdpQSn4Hj = z.object({ something: z.string(), another: z.number() }).partial();
+      const vCj2di4DExd: z.ZodType<Root2> = z.lazy(() =>
+          z.object({
+              str: z.string(),
+              nb: z.number(),
+              nested: vmYnun0sFdZ,
+              partial: v6JdpQSn4Hj.optional(),
+              optionalProp: z.string().optional(),
+          })
+      );
+      const vFHcIEhV0A3 = z.object({
+          nested_prop: z.boolean().optional(),
+          deeplyNested: vm0znqO5M3d.optional(),
+          circularToRoot: vCj2di4DExd.optional(),
+          requiredProp: z.string(),
+      });
+
+      const variables = {
+          getNested: vFHcIEhV0A3,
+          getRoot: vCj2di4DExd,
+      };
+
+      const endpoints = [
+          {
+              method: "get",
+              path: "/nested",
+              requestFormat: "json",
+              response: z.object({
+                  nested_prop: z.boolean().optional(),
+                  deeplyNested: variables["getNested"].optional(),
+                  circularToRoot: variables["getRoot"].optional(),
+                  requiredProp: z.string(),
+              }),
+          },
+          {
+              method: "get",
+              path: "/root",
+              requestFormat: "json",
+              response: z.object({
+                  str: z.string(),
+                  nb: z.number(),
+                  nested: variables["getRoot"],
+                  partial: variables["getRoot"].optional(),
+                  optionalProp: z.string().optional(),
+              }),
+          },
+      ] as const;
+
+      export const api = new Zodios("__baseurl__", endpoints);
+      "
+    `);
 });

@@ -39,8 +39,8 @@ test("operationId-starting-with-number", () => {
 
     expect(ctx.variables).toMatchInlineSnapshot(`
       {
-          "Basic": "vJAv5J1oLvr",
-          "_123_example": "vJAv5J1oLvr",
+          "Basic": "vZwdCSvA9Xq",
+          "_123_example": "vZwdCSvA9Xq",
       }
     `);
 });
