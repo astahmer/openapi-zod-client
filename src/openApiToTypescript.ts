@@ -106,7 +106,8 @@ export const getTypescriptFromOpenApi = ({
 
         if (schema.type === "string") return t.string();
         if (schema.type === "boolean") return t.boolean();
-        if (schema.type === "number" || schema.type === "integer") return t.number();
+        if (schema.type === "number") return t.number();
+        if (schema.type === "integer") return t.bigint();
         if (schema.type === "null") return ts.factory.createNull();
     }
 
