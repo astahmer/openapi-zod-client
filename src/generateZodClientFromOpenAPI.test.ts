@@ -199,7 +199,7 @@ test("getZodClientTemplateContext", async () => {
               },
           ],
           "options": {
-              "baseUrl": "__baseurl__",
+              "baseUrl": "",
               "withAlias": false,
           },
           "schemas": {
@@ -483,7 +483,7 @@ describe("generateZodClientFromOpenAPI", () => {
               },
           ] as const;
 
-          export const api = new Zodios("__baseurl__", endpoints);
+          export const api = new Zodios(endpoints);
           "
         `);
     });
@@ -1098,7 +1098,7 @@ test("with optional, partial, all required objects", async () => {
               },
           ],
           "options": {
-              "baseUrl": "__baseurl__",
+              "baseUrl": "",
               "withAlias": false,
           },
           "schemas": {
@@ -1229,7 +1229,7 @@ test("with optional, partial, all required objects", async () => {
           },
       ] as const;
 
-      export const api = new Zodios("__baseurl__", endpoints);
+      export const api = new Zodios(endpoints);
       "
     `);
 });

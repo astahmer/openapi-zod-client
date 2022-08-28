@@ -183,7 +183,7 @@ const makeInitialContext = () =>
         typeNameByRefHash: {},
         options: {
             withAlias: false,
-            baseUrl: "__baseurl__",
+            baseUrl: "",
         },
     } as TemplateContext);
 

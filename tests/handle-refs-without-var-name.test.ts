@@ -42,7 +42,7 @@ test("handle-refs-without-var-name", () => {
               },
           ],
           "options": {
-              "baseUrl": "__baseurl__",
+              "baseUrl": "",
               "withAlias": false,
           },
           "schemas": {

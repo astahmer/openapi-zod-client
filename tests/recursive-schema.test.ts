@@ -166,7 +166,7 @@ describe("recursive-schema", () => {
               },
           ] as const;
 
-          export const api = new Zodios("__baseurl__", endpoints);
+          export const api = new Zodios(endpoints);
           "
         `);
     });
@@ -462,7 +462,7 @@ describe("recursive-schema", () => {
                   },
               ],
               "options": {
-                  "baseUrl": "__baseurl__",
+                  "baseUrl": "",
                   "withAlias": false,
               },
               "schemas": {
@@ -538,7 +538,7 @@ describe("recursive-schema", () => {
               },
           ] as const;
 
-          export const api = new Zodios("__baseurl__", endpoints);
+          export const api = new Zodios(endpoints);
           "
         `);
     });
@@ -680,7 +680,7 @@ describe("recursive-schema", () => {
               },
           ] as const;
 
-          export const api = new Zodios("__baseurl__", endpoints);
+          export const api = new Zodios(endpoints);
           "
         `);
     });
