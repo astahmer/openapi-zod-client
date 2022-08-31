@@ -192,23 +192,23 @@ components:
 output:
 
 ```ts
-import { Zodios } from "@zodios/core";
+import { asApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const v7LgRCMpuZ0 = z.object({ id: z.bigint(), name: z.string(), tag: z.string().optional() }).optional();
-const vWZd2G8UeSs = z.array(v7LgRCMpuZ0).optional();
-const v77smkx5YEB = z.object({ code: z.bigint(), message: z.string() }).optional();
+const vz089ZHJr6H = z.object({ id: z.number(), name: z.string(), tag: z.string().optional() });
+const vvHrKrAZzfP = z.array(vz089ZHJr6H);
+const vusbpdVpqWm = z.object({ code: z.number(), message: z.string() });
 
 const variables = {
-    Error: v77smkx5YEB,
-    Pet: v7LgRCMpuZ0,
-    Pets: vWZd2G8UeSs,
-    createPets: v77smkx5YEB,
-    listPets: v77smkx5YEB,
-    showPetById: v77smkx5YEB,
+    Error: vusbpdVpqWm,
+    Pet: vz089ZHJr6H,
+    Pets: vvHrKrAZzfP,
+    createPets: vusbpdVpqWm,
+    listPets: vusbpdVpqWm,
+    showPetById: vusbpdVpqWm,
 };
 
-const endpoints = [
+const endpoints = asApi([
     {
         method: "get",
         path: "/pets",
@@ -217,7 +217,7 @@ const endpoints = [
             {
                 name: "limit",
                 type: "Query",
-                schema: z.bigint().optional(),
+                schema: z.number().optional(),
             },
         ],
         response: variables["Pets"],
@@ -234,7 +234,7 @@ const endpoints = [
         requestFormat: "json",
         response: variables["Pet"],
     },
-] as const;
+]);
 
 export const api = new Zodios(endpoints);
 ```
@@ -245,7 +245,6 @@ export const api = new Zodios(endpoints);
 -   handle OA spec `format: date-time` -> output `z.date()` / `preprocess` ?
 -   handle string/number constraints -> output z.`min max length email url uuid startsWith endsWith regex trim nonempty gt gte lt lte int positive nonnegative negative nonpositive multipleOf`
 -   handle OA `prefixItems` -> output `z.tuple`
--   handle recursive schemas -> output `z.lazy()`
 -   add an argument to control which response should be added (currently by status code === "200" or when there is a "default")
 -   rm unused (=never referenced) variables from output
 
