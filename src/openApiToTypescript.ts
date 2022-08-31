@@ -124,6 +124,41 @@ export const getTypescriptFromOpenApi = ({
             canBeWrapped = false;
 
             const isPartial = !schema.required?.length;
+            let additionalProperties;
+            if (schema.additionalProperties) {
+                let additionalPropertiesType;
+                if (
+                    (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
+                    (typeof schema.additionalProperties === "object" &&
+                        Object.keys(schema.additionalProperties).length === 0)
+                ) {
+                    additionalPropertiesType = t.any();
+                } else if (typeof schema.additionalProperties === "object") {
+                    additionalPropertiesType = getTypescriptFromOpenApi({
+                        schema: schema.additionalProperties,
+                        ctx,
+                        meta,
+                    });
+                }
+
+                additionalProperties = ts.factory.createTypeLiteralNode([
+                    ts.factory.createIndexSignature(
+                        undefined,
+                        [
+                            ts.factory.createParameterDeclaration(
+                                undefined,
+                                undefined,
+                                ts.factory.createIdentifier("key"),
+                                undefined,
+                                ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
+                                undefined
+                            ),
+                        ],
+                        additionalPropertiesType as ts.TypeNode
+                    ),
+                ]);
+            }
+
             const props = Object.fromEntries(
                 Object.entries(schema.properties!).map(([prop, propSchema]) => {
                     let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta }) as TypeDefinition;
@@ -138,32 +173,20 @@ export const getTypescriptFromOpenApi = ({
                 })
             );
 
+            const objectType = additionalProperties ? t.intersection([props, additionalProperties]) : props;
+
             if (isInline) {
-                return isPartial ? t.reference("Partial", [props]) : props;
+                return isPartial ? t.reference("Partial", [objectType]) : objectType;
             }
 
             if (!inheritedMeta?.name) {
                 throw new Error("Name is required to convert an object schema to a type reference");
             }
 
-            // let additionalProps = "";
-            // TODO
-            // if (
-            //     (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
-            //     (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length === 0)
-            // ) {
-            //     additionalProps = ".passthrough()";
-            // } else if (typeof schema.additionalProperties === "object") {
-            //     // TODO maybe z.lazy
-            //     return (
-            //         `z.record(${getTypescriptFromOpenApi(schema.additionalProperties)})`
-            //     );
-            // }
-
-            const base = t.type(inheritedMeta.name, props);
+            const base = t.type(inheritedMeta.name, objectType);
             if (!isPartial) return base;
 
-            return t.type(inheritedMeta.name, t.reference("Partial", [props]));
+            return t.type(inheritedMeta.name, t.reference("Partial", [objectType]));
         }
 
         throw new Error(`Unsupported schema type: ${schema.type}`);
@@ -199,11 +222,3 @@ const wrapTypeIfInline = ({
 
     return typeDef as ts.Node;
 };
-
-// https://cs.github.com/leancodepl/contractsgenerator-typescript/blob/c897eaab9dfa3bc0c08a67322759c94b3b0326b0/src/typesGeneration/types/GeneratorKnownType.ts?q=createIdentifier%28%22Partial%22%29#L14
-// t.reference(ts.factory.createIdentifier("Partial"), [
-//     t.reference(ts.factory.createIdentifier("Record"), [
-//         ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-//         ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword),
-//     ]),
-// ])

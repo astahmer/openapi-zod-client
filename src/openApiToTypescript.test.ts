@@ -116,6 +116,38 @@ test("getSchemaAsTsString", () => {
     `);
 
     expect(
+        getSchemaAsTsString(
+            { type: "object", properties: { str: { type: "string" } }, additionalProperties: { type: "number" } },
+            { name: "ObjectWithAdditionalPropsNb" }
+        )
+    ).toMatchInlineSnapshot(`
+      "export type ObjectWithAdditionalPropsNb = Partial<{
+          str: string;
+      } & {
+          [key: string]: number;
+      }>;"
+    `);
+
+    expect(
+        getSchemaAsTsString(
+            {
+                type: "object",
+                properties: { str: { type: "string" } },
+                additionalProperties: { type: "object", properties: { prop: { type: "boolean" } } },
+            },
+            { name: "ObjectWithNestedRecordBoolean" }
+        )
+    ).toMatchInlineSnapshot(`
+      "export type ObjectWithNestedRecordBoolean = Partial<{
+          str: string;
+      } & {
+          [key: string]: Partial<{
+              prop: boolean;
+          }>;
+      }>;"
+    `);
+
+    expect(
         getSchemaAsTsString({
             type: "array",
             items: {
