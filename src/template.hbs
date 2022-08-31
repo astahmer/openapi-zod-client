@@ -1,4 +1,4 @@
-import { Zodios } from "@zodios/core";
+import { asApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 {{#if types}}
@@ -17,7 +17,7 @@ const variables = {
 {{/each}}
 };
 
-const endpoints = [
+const endpoints = asApi([
 {{#each endpoints}}
 	{
 		method: "{{method}}",
@@ -52,6 +52,6 @@ const endpoints = [
 		response: {{{response}}},
 	},
 {{/each}}
-] as const;
+]);
 
 export const api = new Zodios({{#if options.baseUrl}}"{{options.baseUrl}}", {{/if}}endpoints);

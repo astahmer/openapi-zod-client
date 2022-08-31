@@ -138,7 +138,7 @@ describe("recursive-schema", () => {
         const prettyOutput = maybePretty(output, prettierConfig);
 
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { Zodios } from "@zodios/core";
+          "import { asApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           type User = Partial<{
@@ -157,14 +157,14 @@ describe("recursive-schema", () => {
               getExample: vpPUiHrnAPA,
           };
 
-          const endpoints = [
+          const endpoints = asApi([
               {
                   method: "get",
                   path: "/example",
                   requestFormat: "json",
                   response: z.object({ recursive: variables["getExample"], basic: z.number() }).partial(),
               },
-          ] as const;
+          ]);
 
           export const api = new Zodios(endpoints);
           "
@@ -500,7 +500,7 @@ describe("recursive-schema", () => {
         const prettyOutput = maybePretty(output, prettierConfig);
 
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { Zodios } from "@zodios/core";
+          "import { asApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           type UserWithFriends = Partial<{
@@ -529,14 +529,14 @@ describe("recursive-schema", () => {
               getExample: vJxvA6FpTFS,
           };
 
-          const endpoints = [
+          const endpoints = asApi([
               {
                   method: "get",
                   path: "/example",
                   requestFormat: "json",
                   response: z.object({ someUser: variables["getExample"], someProp: z.boolean() }).partial(),
               },
-          ] as const;
+          ]);
 
           export const api = new Zodios(endpoints);
           "
@@ -635,7 +635,7 @@ describe("recursive-schema", () => {
         const output = template(data);
         const prettyOutput = maybePretty(output, prettierConfig);
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { Zodios } from "@zodios/core";
+          "import { asApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           type Playlist = Partial<{
@@ -671,14 +671,14 @@ describe("recursive-schema", () => {
               getExample: vDYmM7qpXBP,
           };
 
-          const endpoints = [
+          const endpoints = asApi([
               {
                   method: "get",
                   path: "/example",
                   requestFormat: "json",
                   response: z.object({ playlist: variables["getExample"], by_author: variables["getExample"] }).partial(),
               },
-          ] as const;
+          ]);
 
           export const api = new Zodios(endpoints);
           "
