@@ -12,7 +12,7 @@ const cli = cac("openapi-zod-client");
 const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf-8")) as PackageJson;
 
 cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
-    .option("-o, --output <path>", "Output path for the zodios api client ts file (defaults to `<input>.ts`)")
+    .option("-o, --output <path>", "Output path for the zodios api client ts file (defaults to `<input>.client.ts`)")
     .option(
         "-t, --template <path>",
         "Template path for the handlebars template that will be used to generate the output"
@@ -24,7 +24,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
         const prettierConfig = await resolveConfig(options.prettier || "./");
-        const distPath = options.output || input + ".ts";
+        const distPath = options.output || input + ".client.ts";
 
         await generateZodClientFromOpenAPI({
             openApiDoc,
