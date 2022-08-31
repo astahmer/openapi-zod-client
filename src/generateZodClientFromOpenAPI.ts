@@ -160,7 +160,9 @@ export const generateZodClientFromOpenAPI = async ({
     const output = template({ ...data, options });
     const prettyOutput = maybePretty(output, prettierConfig);
 
-    await fs.writeFile(distPath, prettyOutput);
+    if (!options?.disableWriteToFile) {
+        await fs.writeFile(distPath, prettyOutput);
+    }
 
     return prettyOutput;
 };
@@ -196,5 +198,6 @@ export interface TemplateContext {
     options?: {
         baseUrl?: string;
         withAlias?: boolean;
+        disableWriteToFile?: boolean;
     };
 }
