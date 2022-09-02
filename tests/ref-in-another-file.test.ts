@@ -15,7 +15,7 @@ test("ref-in-another-file", async () => {
           "deepDependencyGraph": {},
           "endpoints": [
               {
-                  "alias": undefined,
+                  "alias": "getRobots_txt",
                   "description": "Gets robots.txt",
                   "method": "get",
                   "parameters": [],
@@ -25,11 +25,19 @@ test("ref-in-another-file", async () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {},
+          "hashByVariableName": {
+              "@var/getRobots_txt": "@ref__vgWIuZgOW3W__",
+          },
           "refsDependencyGraph": {},
-          "responsesByOperationId": {},
+          "responsesByOperationId": {
+              "getRobots_txt": {
+                  "200": "@var/getRobots_txt",
+              },
+          },
           "schemaHashByRef": {},
-          "zodSchemaByHash": {},
+          "zodSchemaByHash": {
+              "@ref__vgWIuZgOW3W__": "z.object({ name: z.string(), completed: z.boolean() })",
+          },
       }
     `);
 });

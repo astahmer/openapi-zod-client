@@ -9,7 +9,7 @@ import {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { get } from "pastable/server";
+import { capitalize, get, kebabToCamel } from "pastable/server";
 import { match } from "ts-pattern";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
@@ -85,10 +85,11 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             const operation = pathItem[method] as OperationObject;
 
             const parameters = operation.parameters || [];
+            const operationName = operation.operationId || method + pathToVariableName(path);
             const endpointDescription = {
                 method,
                 path: path.replaceAll(pathParamRegex, ":$1"),
-                alias: operation.operationId,
+                alias: operationName,
                 description: operation.description,
                 requestFormat: "json",
                 parameters: [] as any,
@@ -108,7 +109,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                                 ctx,
                                 meta: { isRequired: requestBody.required || true },
                             }),
-                            operation.operationId + "-Body"
+                            operationName + "_Body"
                         ),
                     });
                 }
@@ -193,3 +194,11 @@ export type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDescriptio
 
 const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
 const pathParamRegex = /{(\w+)}/g;
+const pathParamWithBracketsRegex = /({\w+})/g;
+const wordPrecededByNonWordCharacter = /[^\w\-]+/g;
+
+/** @example turns `/media-objects/{id}` into `MediaObjectsId` */
+const pathToVariableName = (path: string) =>
+    capitalize(kebabToCamel(path).replaceAll("/", "")) // /media-objects/{id} -> MediaObjects{id}
+        .replace(pathParamWithBracketsRegex, (group) => capitalize(group.slice(1, -1))) // {id} -> Id
+        .replace(wordPrecededByNonWordCharacter, "_"); // "/robots.txt" -> "/robots_txt"
