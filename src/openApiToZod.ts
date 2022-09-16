@@ -167,7 +167,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
                 } as CodeMetaData;
                 const propCode =
                     getZodSchema({ schema: propSchema, ctx, meta: propMetadata }) +
-                    getZodChainablePresence(propSchema, propMetadata);
+                    getZodChainablePresence(propSchema as SchemaObject, propMetadata);
 
                 return [prop, propCode.toString()];
             });
@@ -253,7 +253,7 @@ export class CodeMeta {
         public ctx?: ConversionTypeContext,
         meta: CodeMetaData = {}
     ) {
-        if (schema.$ref) {
+        if (isReferenceObject(schema)) {
             this.ref = schema.$ref;
         }
 

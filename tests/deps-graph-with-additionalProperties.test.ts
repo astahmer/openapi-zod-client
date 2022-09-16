@@ -1,8 +1,8 @@
-import { SchemaObject, SchemasObject } from "openapi3-ts";
+import { ReferenceObject, SchemaObject, SchemasObject } from "openapi3-ts";
 import { expect, test } from "vitest";
 import { getOpenApiDependencyGraph } from "../src";
 
-const makeOpenApiDoc = (schemas: SchemasObject, responseSchema: SchemaObject) => ({
+const makeOpenApiDoc = (schemas: SchemasObject, responseSchema: SchemaObject | ReferenceObject) => ({
     openapi: "3.0.3",
     info: { title: "Swagger Petstore - OpenAPI 3.0", version: "1.0.11" },
     paths: {

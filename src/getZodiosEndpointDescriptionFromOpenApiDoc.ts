@@ -82,7 +82,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
         const pathItem = doc.paths[path] as PathItemObject;
 
         for (const method in pathItem) {
-            const operation = pathItem[method] as OperationObject;
+            const operation = pathItem[method as keyof PathItemObject] as OperationObject;
 
             const parameters = operation.parameters || [];
             const operationName = operation.operationId || method + pathToVariableName(path);
@@ -118,7 +118,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
             for (const param of parameters) {
                 const paramItem = (isReferenceObject(param) ? getSchemaByRef(param.$ref) : param) as ParameterObject;
                 if (allowedPathInValues.includes(paramItem.in)) {
-                    const paramSchema = param?.$ref ? param.$ref : (param as ParameterObject).schema;
+                    const paramSchema = (isReferenceObject(param) ? param.$ref : param.schema) as SchemaObject;
                     const paramCode = getZodSchema({
                         schema: paramSchema,
                         ctx,
@@ -131,7 +131,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                             .with("query", () => "Query")
                             .run() as "Header" | "Query",
                         schema: getZodVarName(
-                            paramCode.assign(paramCode.code + getZodChainablePresence(paramCode, paramCode.meta)),
+                            paramCode.assign(paramCode.code + getZodChainablePresence(paramSchema, paramCode.meta)),
                             paramItem.name
                         ),
                     });
