@@ -6,7 +6,7 @@ import {
     getOpenApiDependencyGraph,
 } from "../src";
 import { test, expect, describe } from "vitest";
-import { OpenAPIObject, SchemaObject, SchemasObject } from "openapi3-ts";
+import { SchemaObject, SchemasObject } from "openapi3-ts";
 import { maybePretty } from "../src/generateZodClientFromOpenAPI";
 import { resolveConfig } from "prettier";
 import { readFileSync } from "fs";
@@ -349,9 +349,7 @@ describe("recursive-schema", () => {
                 },
                 ctx,
             })
-        ).toMatchInlineSnapshot(
-            '"z.object({ recursiveUser: @ref__vI2n3cIMAsJ__, basic: z.number() }).partial()"'
-        );
+        ).toMatchInlineSnapshot('"z.object({ recursiveUser: @ref__vI2n3cIMAsJ__, basic: z.number() }).partial()"');
         expect(ctx).toMatchInlineSnapshot(`
           {
               "circularTokenByRef": {
