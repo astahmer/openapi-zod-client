@@ -49,6 +49,7 @@ test("autofix-unusual-ref-format", () => {
               {
                   "alias": "getWithUsualRefFormat",
                   "description": undefined,
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/usual-ref-format",
@@ -58,6 +59,7 @@ test("autofix-unusual-ref-format", () => {
               {
                   "alias": "getWithUnusualRefFormat",
                   "description": undefined,
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/unusual-ref-format",

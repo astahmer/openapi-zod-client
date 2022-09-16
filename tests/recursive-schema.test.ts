@@ -243,6 +243,7 @@ describe("recursive-schema", () => {
                       {
                           "alias": "getExample",
                           "description": undefined,
+                          "errors": [],
                           "method": "get",
                           "parameters": [],
                           "path": "/example",
@@ -407,6 +408,7 @@ describe("recursive-schema", () => {
                   {
                       "alias": "getExample",
                       "description": undefined,
+                      "errors": [],
                       "method": "get",
                       "parameters": [],
                       "path": "/example",
@@ -452,6 +454,7 @@ describe("recursive-schema", () => {
                   {
                       "alias": "getExample",
                       "description": undefined,
+                      "errors": [],
                       "method": "get",
                       "parameters": [],
                       "path": "/example",

@@ -31,6 +31,7 @@ test("missing operationId outputs variables['undefined_Body']", () => {
           {
               "alias": "putMediaObjectsId",
               "description": undefined,
+              "errors": [],
               "method": "put",
               "parameters": [
                   {

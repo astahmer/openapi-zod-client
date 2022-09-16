@@ -50,6 +50,19 @@ const endpoints = asApi([
 		],
 		{{/if}}
 		response: {{{response}}},
+		{{#if errors.length}}
+		errors: [
+			{{#each errors}}
+			{
+				status: "{{status}}",
+				{{#if description}}
+				description: `{{description}}`,
+				{{/if}}
+				schema: {{{schema}}}
+			},
+			{{/each}}
+		]
+		{{/if}}
 	},
 {{/each}}
 ]);

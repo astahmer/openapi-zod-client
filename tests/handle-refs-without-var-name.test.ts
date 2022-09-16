@@ -34,6 +34,7 @@ test("handle-refs-without-var-name", () => {
               {
                   "alias": "getSomething",
                   "description": undefined,
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/something",

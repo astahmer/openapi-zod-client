@@ -17,6 +17,7 @@ test("ref-in-another-file", async () => {
               {
                   "alias": "getRobots_txt",
                   "description": "Gets robots.txt",
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/robots.txt",
