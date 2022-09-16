@@ -133,22 +133,20 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
 
     return data;
 };
-
-interface GenerateZodClientFromOpenApiArgs {
+type GenerateZodClientFromOpenApiArgs<T extends TemplateContext["options"] = TemplateContext["options"]> = {
     openApiDoc: OpenAPIObject;
-    distPath: string;
     templatePath?: string;
     prettierConfig?: Options | null;
-    options?: TemplateContext["options"];
-}
+    options?: T;
+} & (T extends { disableWriteToFile: true } ? { distPath?: never } : { distPath: string });
 
-export const generateZodClientFromOpenAPI = async ({
+export const generateZodClientFromOpenAPI = async <T extends TemplateContext["options"]>({
     openApiDoc,
     distPath,
     templatePath,
     prettierConfig,
     options,
-}: GenerateZodClientFromOpenApiArgs) => {
+}: GenerateZodClientFromOpenApiArgs<T>) => {
     const data = getZodClientTemplateContext(openApiDoc);
 
     if (!templatePath) {
@@ -160,7 +158,7 @@ export const generateZodClientFromOpenAPI = async ({
     const output = template({ ...data, options });
     const prettyOutput = maybePretty(output, prettierConfig);
 
-    if (!options?.disableWriteToFile) {
+    if (!options?.disableWriteToFile && distPath) {
         await fs.writeFile(distPath, prettyOutput);
     }
 
