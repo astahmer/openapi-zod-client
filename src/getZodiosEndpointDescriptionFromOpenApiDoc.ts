@@ -11,16 +11,38 @@ import {
 } from "openapi3-ts";
 import { capitalize, get, kebabToCamel } from "pastable/server";
 import { match } from "ts-pattern";
+import type { TemplateContext } from "./generateZodClientFromOpenAPI";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
 import { tokens } from "./tokens";
 
-export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) => {
+import { sync } from "whence";
+
+export const getZodiosEndpointDescriptionFromOpenApiDoc = (
+    doc: OpenAPIObject,
+    options?: TemplateContext["options"]
+) => {
     const getSchemaByRef = (ref: string) =>
         get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", ".")) as SchemaObject;
 
     const endpoints = [];
     const responsesByOperationId = {} as Record<string, Record<string, string>>;
+
+    let isMainResponseStatus = (status: number) => status === 200;
+    if (options?.isMainResponseStatus) {
+        isMainResponseStatus =
+            typeof options.isMainResponseStatus === "string"
+                ? (status: number) => sync(options.isMainResponseStatus, { status })
+                : options.isMainResponseStatus;
+    }
+
+    let isErrorStatus = (status: number) => !(status >= 200 && status < 300);
+    if (options?.isErrorStatus) {
+        isErrorStatus =
+            typeof options.isErrorStatus === "string"
+                ? (status: number) => sync(options.isErrorStatus, { status })
+                : options.isErrorStatus;
+    }
 
     const ctx: ConversionTypeContext = {
         getSchemaByRef,
@@ -92,7 +114,8 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
                 alias: operationName,
                 description: operation.description,
                 requestFormat: "json",
-                parameters: [] as any,
+                parameters: [] as EndpointDescriptionWithRefs["parameters"],
+                errors: [] as EndpointDescriptionWithRefs["errors"],
             } as EndpointDescriptionWithRefs;
 
             if (operation.requestBody) {
@@ -146,10 +169,27 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (doc: OpenAPIObject) =
 
                     if (maybeSchema) {
                         const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
-                        if (statusCode === "200" || (statusCode === "default" && !endpointDescription.response)) {
+                        if (
+                            isMainResponseStatus(Number(statusCode)) ||
+                            (statusCode === "default" && !endpointDescription.response)
+                        ) {
                             // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
                             // getZodVarName should use operation.operationId as fallbackName
                             endpointDescription.response = schema.ref ? getZodVarName(schema) : schema.toString();
+
+                            if (
+                                !endpointDescription.description &&
+                                responseItem.description &&
+                                options?.useMainResponseDescriptionAsEndpointDescriptionFallback
+                            ) {
+                                endpointDescription.description = responseItem.description;
+                            }
+                        } else if (statusCode !== "default" && isErrorStatus(Number(statusCode))) {
+                            endpointDescription.errors.push({
+                                schema: (schema.ref ? getZodVarName(schema) : schema.toString()) as any,
+                                status: Number(statusCode),
+                                description: responseItem.description,
+                            });
                         }
 
                         if (endpointDescription.alias) {

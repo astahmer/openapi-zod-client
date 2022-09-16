@@ -19,6 +19,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "updatePet",
                   "description": "Update an existing pet by Id",
+                  "errors": [],
                   "method": "put",
                   "parameters": [
                       {
@@ -35,6 +36,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "addPet",
                   "description": "Add a new pet to the store",
+                  "errors": [],
                   "method": "post",
                   "parameters": [
                       {
@@ -51,6 +53,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getPetById",
                   "description": "Returns a single pet",
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/pet/:petId",
@@ -60,6 +63,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "uploadFile",
                   "description": "",
+                  "errors": [],
                   "method": "post",
                   "parameters": [
                       {
@@ -75,6 +79,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "findPetsByStatus",
                   "description": "Multiple status values can be provided with comma separated strings",
+                  "errors": [],
                   "method": "get",
                   "parameters": [
                       {
@@ -90,6 +95,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "findPetsByTags",
                   "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+                  "errors": [],
                   "method": "get",
                   "parameters": [
                       {
@@ -105,6 +111,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getInventory",
                   "description": "Returns a map of status codes to quantities",
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/store/inventory",
@@ -114,6 +121,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "placeOrder",
                   "description": "Place a new order in the store",
+                  "errors": [],
                   "method": "post",
                   "parameters": [
                       {
@@ -130,6 +138,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getOrderById",
                   "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/store/order/:orderId",
@@ -139,6 +148,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "createUser",
                   "description": "This can only be done by the logged in user.",
+                  "errors": [],
                   "method": "post",
                   "parameters": [
                       {
@@ -155,6 +165,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getUserByName",
                   "description": "",
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/user/:username",
@@ -164,6 +175,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "createUsersWithListInput",
                   "description": "Creates list of users with given input array",
+                  "errors": [],
                   "method": "post",
                   "parameters": [
                       {
@@ -180,6 +192,7 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "loginUser",
                   "description": "",
+                  "errors": [],
                   "method": "get",
                   "parameters": [
                       {
@@ -1081,6 +1094,7 @@ test("with optional, partial, all required objects", async () => {
               {
                   "alias": "getNested",
                   "description": undefined,
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/nested",
@@ -1090,6 +1104,7 @@ test("with optional, partial, all required objects", async () => {
               {
                   "alias": "getRoot",
                   "description": undefined,
+                  "errors": [],
                   "method": "get",
                   "parameters": [],
                   "path": "/root",

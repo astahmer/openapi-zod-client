@@ -29,6 +29,7 @@ specifiers:
   type-fest: ^2.19.0
   typescript: ^4.8.3
   vitest: ^0.22.1
+  whence: ^2.0.0
   zod: ^3.19.1
 
 dependencies:
@@ -63,6 +64,7 @@ devDependencies:
   type-fest: 2.19.0
   typescript: 4.8.3
   vitest: 0.22.1
+  whence: 2.0.0
 
 packages:
 
@@ -2273,6 +2275,10 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /eval-estree-expression/1.1.0:
+    resolution: {integrity: sha512-6ZAHSb0wsqxutjk2lXZcW7btSc51I8BhlIetit0wIf5sOb5xDNBrIqe0g8RFyQ/EW6Xwn1szrtButztU7Vdj1Q==}
+    dev: true
+
   /fast-deep-equal/2.0.1:
     resolution: {integrity: sha512-bCK/2Z4zLidyB4ReuIsvALH6w31YfAQDmXMqMx6FyfHqvBxtjC0eRumeSu4Bs3XtXwpyIywtSTrVT99BxY1f9w==}
     dev: true
@@ -3468,6 +3474,14 @@ packages:
       - stylus
       - supports-color
       - terser
+    dev: true
+
+  /whence/2.0.0:
+    resolution: {integrity: sha512-exmM13v2lg8juBbfS2tao/alV68jyryPXS+jf29NBNGLzE2hRgmzvQFQGX5CxNfH4Ag9qRqd6gGpXTH2JxqKHg==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@babel/parser': 7.19.1
+      eval-estree-expression: 1.1.0
     dev: true
 
   /wordwrap/1.0.0:

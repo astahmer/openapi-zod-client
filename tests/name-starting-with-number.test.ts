@@ -28,6 +28,7 @@ test("operationId-starting-with-number", () => {
           {
               "alias": "123_example",
               "description": undefined,
+              "errors": [],
               "method": "get",
               "parameters": [],
               "path": "/operationId-starting-with-number",

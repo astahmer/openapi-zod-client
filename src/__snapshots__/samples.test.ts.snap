@@ -262,6 +262,13 @@ const endpoints = asApi([
         description: \`This GET API returns the list of all the searchable field names that are in the oa_citations. Please see the &#x27;fields&#x27; attribute which returns an array of field names. Each field or a combination of fields can be searched using the syntax options shown below.\`,
         requestFormat: "json",
         response: z.string(),
+        errors: [
+            {
+                status: "404",
+                description: \`The combination of dataset name and version is not found in the system or it is not published yet to be consumed by public.\`,
+                schema: z.string(),
+            },
+        ],
     },
     {
         method: "post",

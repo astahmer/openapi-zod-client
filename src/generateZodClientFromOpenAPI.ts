@@ -19,8 +19,11 @@ const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
 
-export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"]) => {
-    const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
+export const getZodClientTemplateContext = (
+    openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"],
+    options?: TemplateContext["options"]
+) => {
+    const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc, options);
     const data = makeInitialContext();
 
     const refsByCircularToken = reverse(result.circularTokenByRef) as Record<string, string>;
@@ -133,21 +136,29 @@ export const getZodClientTemplateContext = (openApiDoc: GenerateZodClientFromOpe
 
     return data;
 };
-type GenerateZodClientFromOpenApiArgs<T extends TemplateContext["options"] = TemplateContext["options"]> = {
+type GenerateZodClientFromOpenApiArgs = {
     openApiDoc: OpenAPIObject;
     templatePath?: string;
     prettierConfig?: Options | null;
-    options?: T;
-} & (T extends { disableWriteToFile: true } ? { distPath?: never } : { distPath: string });
+    options?: TemplateContext["options"];
+} & (
+    | {
+          distPath?: never;
+          /** when true, will only return the result rather than writing it to a file, mostly used for easier testing purpose */
+          disableWriteToFile: true;
+      }
+    | { distPath: string; disableWriteToFile?: false }
+);
 
-export const generateZodClientFromOpenAPI = async <T extends TemplateContext["options"]>({
+export const generateZodClientFromOpenAPI = async ({
     openApiDoc,
     distPath,
     templatePath,
     prettierConfig,
     options,
-}: GenerateZodClientFromOpenApiArgs<T>) => {
-    const data = getZodClientTemplateContext(openApiDoc);
+    disableWriteToFile,
+}: GenerateZodClientFromOpenApiArgs) => {
+    const data = getZodClientTemplateContext(openApiDoc, options);
 
     if (!templatePath) {
         templatePath = path.join(__dirname, "../src/template.hbs");
@@ -158,7 +169,7 @@ export const generateZodClientFromOpenAPI = async <T extends TemplateContext["op
     const output = template({ ...data, options });
     const prettyOutput = maybePretty(output, prettierConfig);
 
-    if (!options?.disableWriteToFile && distPath) {
+    if (!disableWriteToFile && distPath) {
         await fs.writeFile(distPath, prettyOutput);
     }
 
@@ -194,8 +205,35 @@ export interface TemplateContext {
     types: Record<string, string>;
     typeNameByRefHash: Record<string, string>;
     options?: {
+        /** @see https://www.zodios.org/docs/client#baseurl */
         baseUrl?: string;
+        /** @see https://www.zodios.org/docs/client#zodiosalias */
         withAlias?: boolean;
-        disableWriteToFile?: boolean;
+        /**
+         * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDescription["response"]`
+         * will use `default` status code as fallback
+         *
+         * @see https://www.zodios.org/docs/api/api-definition#api-definition-structure
+         *
+         * works like `validateStatus` from axios
+         * @see https://github.com/axios/axios#handling-errors
+         *
+         * @default `(200)`
+         */
+        isMainResponseStatus?: string | ((status: number) => boolean);
+        /**
+         * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDescription["errors"]` array
+         * ignores `default` status
+         *
+         * @see https://www.zodios.org/docs/api/api-definition#errors
+         *
+         * works like `validateStatus` from axios
+         * @see https://github.com/axios/axios#handling-errors
+         *
+         * @default `!(status >= 200 && status < 300)`
+         */
+        isErrorStatus?: string | ((status: number) => boolean);
+        /** if OperationObject["description"] is not defined but the main ResponseItem["description"] is defined, use the latter as ZodiosEndpointDescription["description"] */
+        useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
     };
 }
