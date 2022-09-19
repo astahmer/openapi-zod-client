@@ -32,6 +32,8 @@ or directly
 ## CLI
 
 ```sh
+openapi-zod-client/0.2.0
+
 Usage:
   $ openapi-zod-client <input>
 
@@ -42,11 +44,13 @@ For more info, run any command with the `--help` flag:
   $ openapi-zod-client --help
 
 Options:
-  -o, --output <path>    Output path for the zodios api client ts file (defaults to `<input>.ts`)
+  -o, --output <path>    Output path for the zodios api client ts file (defaults to `<input>.client.ts`)
   -t, --template <path>  Template path for the handlebars template that will be used to generate the output
   -p, --prettier <path>  Prettier config path that will be used to format the output client file
   -b, --base-url <url>   Base url for the api
   -a, --with-alias       With alias as api client methods
+  --error-expr <expr>    Pass an expression to determine if a response status is an error
+  --success-expr <expr>  Pass an expression to determine which response status is the main success status
   -v, --version          Display version number
   -h, --help             Display this message
 
@@ -55,7 +59,17 @@ Options:
 ## Customization
 
 You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a [custom prettier config](https://prettier.io/docs/en/configuration.html) with something like:
+
 `pnpm openapi-zod-client ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json`, there is an example [here](./example/)
+
+## When using the CLI
+
+-   `--success-expr` is bound to [`isMainResponseStatus`](https://github.com/astahmer/openapi-zod-client/blob/main/src/generateZodClientFromOpenAPI.ts#L212-L223)
+-   `--error-expr` is bound to [`isErrorStatus`](https://github.com/astahmer/openapi-zod-client/blob/main/src/generateZodClientFromOpenAPI.ts#L224-L235)
+
+You can pass an expression that will be safely evaluted (thanks to [whence](https://github.com/jonschlinkert/whence/)) and works like `validateStatus` from axios to determine which OpenAPI `ResponseItem` should be picked as the main one for the `ZodiosEndpoint["response"]` and which ones will be added to the `ZodiosEndpoint["errors"]` array.
+
+Exemple: `--success-expr "status >= 200 && status < 300"`
 
 ## Tips
 
