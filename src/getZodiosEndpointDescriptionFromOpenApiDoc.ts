@@ -169,8 +169,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
 
                     if (maybeSchema) {
                         const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
+                        const status = Number(statusCode);
+
                         if (
-                            isMainResponseStatus(Number(statusCode)) ||
+                            isMainResponseStatus(status) ||
                             (statusCode === "default" && !endpointDescription.response)
                         ) {
                             // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
@@ -184,10 +186,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
                             ) {
                                 endpointDescription.description = responseItem.description;
                             }
-                        } else if (statusCode !== "default" && isErrorStatus(Number(statusCode))) {
+                        } else if (statusCode !== "default" && isErrorStatus(status)) {
                             endpointDescription.errors.push({
                                 schema: (schema.ref ? getZodVarName(schema) : schema.toString()) as any,
-                                status: Number(statusCode),
+                                status,
                                 description: responseItem.description,
                             });
                         }
