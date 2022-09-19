@@ -16,7 +16,7 @@ you could use `openapi-zod-client` to automate the API integration part (doesn't
 
 ## Comparison vs tRPC etc
 
-please just use [tRPC](https://github.com/trpc/trpc) or alternatives if you do have control on your API/back-end
+please just use [tRPC](https://github.com/trpc/trpc) or alternatives ([zodios](https://www.zodios.org/) is actually a full-featured solution and not just an api client, [ts-rest](https://github.com/ts-rest/ts-rest) looks cool as well) if you do have control on your API/back-end
 
 # Usage
 
