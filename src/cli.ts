@@ -20,6 +20,8 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     .option("-p, --prettier <path>", "Prettier config path that will be used to format the output client file")
     .option("-b, --base-url <url>", "Base url for the api")
     .option("-a, --with-alias", "With alias as api client methods")
+    .option("--error-expr <expr>", "Pass an expression to determine if a response status is an error")
+    .option("--success-expr <expr>", "Pass an expression to determine which response status is the main success status")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -34,6 +36,8 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
             options: {
                 withAlias: options.withAlias,
                 baseUrl: options.baseUrl,
+                isErrorStatus: options.errorExpr,
+                isMainResponseStatus: options.successExpr,
             },
         });
         console.log(`Done generating <${distPath}> !`);
