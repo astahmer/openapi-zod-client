@@ -264,7 +264,7 @@ const endpoints = asApi([
         response: z.string(),
         errors: [
             {
-                status: "404",
+                status: 404,
                 description: \`The combination of dataset name and version is not found in the system or it is not published yet to be consumed by public.\`,
                 schema: z.string(),
             },

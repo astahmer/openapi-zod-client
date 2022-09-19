@@ -130,6 +130,13 @@ export const getZodClientTemplateContext = (
                 schema: maybeReplaceTokenOrVarnameWithRef(param.schema),
             })),
             response: maybeReplaceTokenOrVarnameWithRef(endpoint.response, endpoint.alias),
+            errors: endpoint.errors.map((error) => ({
+                ...error,
+                schema: maybeReplaceTokenOrVarnameWithRef(
+                    error.schema as any,
+                    `${endpoint.alias}_Error_${error.status}`
+                ),
+            })) as any,
         });
     });
     data.endpoints = sortBy(data.endpoints, "path");

@@ -54,7 +54,7 @@ const endpoints = asApi([
 		errors: [
 			{{#each errors}}
 			{
-				status: "{{status}}",
+				status: {{status}},
 				{{#if description}}
 				description: `{{description}}`,
 				{{/if}}
