@@ -260,7 +260,6 @@ export const api = new Zodios(endpoints);
 -   handle OA spec `format: date-time` -> output `z.date()` / `preprocess` ?
 -   handle string/number constraints -> output z.`min max length email url uuid startsWith endsWith regex trim nonempty gt gte lt lte int positive nonnegative negative nonpositive multipleOf`
 -   handle OA `prefixItems` -> output `z.tuple`
--   add an argument to control which response should be added (currently by status code === "200" or when there is a "default")
 -   rm unused (=never referenced) variables from output
 
 # Caveats
