@@ -12,6 +12,7 @@ import {
     getZodiosEndpointDescriptionFromOpenApiDoc,
 } from "./getZodiosEndpointDescriptionFromOpenApiDoc";
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
+import { getZodSchema } from "./openApiToZod";
 import { tokens } from "./tokens";
 import { topologicalSort } from "./topologicalSort";
 
@@ -27,8 +28,9 @@ export const getZodClientTemplateContext = (
     const data = makeInitialContext();
 
     const refsByCircularToken = reverse(result.circularTokenByRef) as Record<string, string>;
+    const docSchemas = openApiDoc.components?.schemas || {};
     const depsGraphs = getOpenApiDependencyGraph(
-        Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),
+        Object.keys(docSchemas).map((name) => `#/components/schemas/${name}`),
         result.getSchemaByRef
     );
 
@@ -71,6 +73,18 @@ export const getZodClientTemplateContext = (
 
         return unknownRef;
     };
+
+    if (options?.shouldExportAllSchemas) {
+        Object.entries(docSchemas).map(([name, schema]) => {
+            const varName = tokens.makeVar(name);
+            if (!result.hashByVariableName[varName]) {
+                const code = getZodSchema({ schema, ctx: result }).toString();
+                const hashed = tokens.makeRefHash(code);
+                result.hashByVariableName[varName] = hashed;
+                result.zodSchemaByHash[hashed] = code;
+            }
+        });
+    }
 
     const refByHash = reverse(result.schemaHashByRef) as Record<string, string>;
     for (const refHash in result.zodSchemaByHash) {
@@ -242,5 +256,10 @@ export interface TemplateContext {
         isErrorStatus?: string | ((status: number) => boolean);
         /** if OperationObject["description"] is not defined but the main ResponseItem["description"] is defined, use the latter as ZodiosEndpointDescription["description"] */
         useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
+        /**
+         * when true, will export all `#/components/schemas` even when not used in any PathItemObject
+         * @see https://github.com/astahmer/openapi-zod-client/issues/19
+         */
+        shouldExportAllSchemas?: boolean;
     };
 }

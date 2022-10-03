@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.2.0
+openapi-zod-client/0.2.2
 
 Usage:
   $ openapi-zod-client <input>
@@ -51,6 +51,7 @@ Options:
   -a, --with-alias       With alias as api client methods
   --error-expr <expr>    Pass an expression to determine if a response status is an error
   --success-expr <expr>  Pass an expression to determine which response status is the main success status
+  --export-schemas       When true, will export all `#/components/schemas` even if not used in any paths
   -v, --version          Display version number
   -h, --help             Display this message
 
@@ -60,7 +61,7 @@ Options:
 
 You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a [custom prettier config](https://prettier.io/docs/en/configuration.html) with something like:
 
-`pnpm openapi-zod-client ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json`, there is an example [here](./example/)
+`pnpm openapi-zod-client ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json --export-schemas`, there is an example of the output [here](./example/petstore-schemas.ts)
 
 ## When using the CLI
 
