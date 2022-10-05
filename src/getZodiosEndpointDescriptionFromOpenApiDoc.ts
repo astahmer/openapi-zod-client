@@ -128,7 +128,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
 
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
-                const mediaTypes = Object.keys(requestBody.content);
+                const mediaTypes = Object.keys(requestBody.content ?? []);
                 const mediaType = mediaTypes.find(isMediaTypeAllowed);
 
                 const bodySchema = mediaType && requestBody.content?.[mediaType]?.schema;
