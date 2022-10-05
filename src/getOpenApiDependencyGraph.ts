@@ -23,25 +23,6 @@ export const getOpenApiDependencyGraph = (
             return;
         }
 
-        if (schema.type === "array") {
-            if (!schema.items) return;
-            return visit(schema.items, fromRef);
-        }
-
-        if (schema.type === "object") {
-            if (schema.properties) {
-                for (const property in schema.properties) {
-                    visit(schema.properties[property], fromRef);
-                }
-            }
-
-            if (schema.additionalProperties && typeof schema.additionalProperties === "object") {
-                visit(schema.additionalProperties, fromRef);
-            }
-
-            return;
-        }
-
         if (schema.allOf) {
             for (const allOf of schema.allOf) {
                 visit(allOf, fromRef);
@@ -60,6 +41,25 @@ export const getOpenApiDependencyGraph = (
             for (const anyOf of schema.anyOf) {
                 visit(anyOf, fromRef);
             }
+            return;
+        }
+
+        if (schema.type === "array") {
+            if (!schema.items) return;
+            return visit(schema.items, fromRef);
+        }
+
+        if (schema.type === "object") {
+            if (schema.properties) {
+                for (const property in schema.properties) {
+                    visit(schema.properties[property], fromRef);
+                }
+            }
+
+            if (schema.additionalProperties && typeof schema.additionalProperties === "object") {
+                visit(schema.additionalProperties, fromRef);
+            }
+
             return;
         }
     };
