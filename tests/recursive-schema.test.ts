@@ -138,7 +138,7 @@ describe("recursive-schema", () => {
         const prettyOutput = maybePretty(output, prettierConfig);
 
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { asApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           type User = Partial<{
@@ -157,7 +157,7 @@ describe("recursive-schema", () => {
               getExample: vpPUiHrnAPA,
           };
 
-          const endpoints = asApi([
+          const endpoints = makeApi([
               {
                   method: "get",
                   path: "/example",
@@ -501,7 +501,7 @@ describe("recursive-schema", () => {
         const prettyOutput = maybePretty(output, prettierConfig);
 
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { asApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           type UserWithFriends = Partial<{
@@ -530,7 +530,7 @@ describe("recursive-schema", () => {
               getExample: vJxvA6FpTFS,
           };
 
-          const endpoints = asApi([
+          const endpoints = makeApi([
               {
                   method: "get",
                   path: "/example",
@@ -636,7 +636,7 @@ describe("recursive-schema", () => {
         const output = template(data);
         const prettyOutput = maybePretty(output, prettierConfig);
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { asApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           type Playlist = Partial<{
@@ -672,7 +672,7 @@ describe("recursive-schema", () => {
               getExample: vDYmM7qpXBP,
           };
 
-          const endpoints = asApi([
+          const endpoints = makeApi([
               {
                   method: "get",
                   path: "/example",

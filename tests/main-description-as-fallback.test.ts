@@ -40,7 +40,7 @@ it("use main-description-as-fallback", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { asApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
@@ -49,7 +49,7 @@ it("use main-description-as-fallback", async () => {
         getExample: vssLgQd9tqs,
       };
 
-      const endpoints = asApi([
+      const endpoints = makeApi([
         {
           method: "get",
           path: "/example",

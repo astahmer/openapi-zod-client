@@ -1,4 +1,4 @@
-import { asApi, Zodios } from "@zodios/core";
+import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const vR1x0k5qaLk = z.object({ id: z.number(), name: z.string() }).partial();
@@ -64,7 +64,7 @@ const variables = {
     uploadFile: vBaxCoPHbgy,
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
     {
         method: "put",
         path: "/pet",

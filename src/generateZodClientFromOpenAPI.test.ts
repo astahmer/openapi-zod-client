@@ -268,7 +268,7 @@ describe("generateZodClientFromOpenAPI", () => {
         const output = template(data);
         const prettyOutput = maybePretty(output, prettierConfig);
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { asApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const vR1x0k5qaLk = z.object({ id: z.number(), name: z.string() }).partial();
@@ -334,7 +334,7 @@ describe("generateZodClientFromOpenAPI", () => {
               uploadFile: vBaxCoPHbgy,
           };
 
-          const endpoints = asApi([
+          const endpoints = makeApi([
               {
                   method: "put",
                   path: "/pet",
@@ -511,7 +511,7 @@ describe("generateZodClientFromOpenAPI", () => {
         const output = template({ ...data, options: { withAlias: true } } as TemplateContext);
         const prettyOutput = maybePretty(output, prettierConfig);
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { asApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const vR1x0k5qaLk = z.object({ id: z.number(), name: z.string() }).partial();
@@ -577,7 +577,7 @@ describe("generateZodClientFromOpenAPI", () => {
               uploadFile: vBaxCoPHbgy,
           };
 
-          const endpoints = asApi([
+          const endpoints = makeApi([
               {
                   method: "put",
                   path: "/pet",
@@ -767,7 +767,7 @@ describe("generateZodClientFromOpenAPI", () => {
         const output = template({ ...data, options: { baseUrl: "http://example.com" } } as TemplateContext);
         const prettyOutput = maybePretty(output, prettierConfig);
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { asApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const vR1x0k5qaLk = z.object({ id: z.number(), name: z.string() }).partial();
@@ -833,7 +833,7 @@ describe("generateZodClientFromOpenAPI", () => {
               uploadFile: vBaxCoPHbgy,
           };
 
-          const endpoints = asApi([
+          const endpoints = makeApi([
               {
                   method: "put",
                   path: "/pet",
@@ -1163,7 +1163,7 @@ test("with optional, partial, all required objects", async () => {
     const output = template(data);
     const prettyOutput = maybePretty(output, prettierConfig);
     expect(prettyOutput).toMatchInlineSnapshot(`
-      "import { asApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       type Nested2 = {
@@ -1218,7 +1218,7 @@ test("with optional, partial, all required objects", async () => {
           getRoot: vCj2di4DExd,
       };
 
-      const endpoints = asApi([
+      const endpoints = makeApi([
           {
               method: "get",
               path: "/nested",
