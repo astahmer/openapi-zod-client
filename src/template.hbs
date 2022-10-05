@@ -1,4 +1,4 @@
-import { asApi, Zodios } from "@zodios/core";
+import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 {{#if types}}
@@ -17,7 +17,7 @@ const variables = {
 {{/each}}
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
 {{#each endpoints}}
 	{
 		method: "{{method}}",

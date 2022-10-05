@@ -42,7 +42,7 @@ it("determines which one is-main-response", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { asApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
@@ -51,7 +51,7 @@ it("determines which one is-main-response", async () => {
         getExample: vssLgQd9tqs,
       };
 
-      const endpoints = asApi([
+      const endpoints = makeApi([
         {
           method: "get",
           path: "/example",

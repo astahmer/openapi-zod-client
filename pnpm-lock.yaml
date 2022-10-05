@@ -11,7 +11,7 @@ specifiers:
   '@types/js-yaml': ^4.0.5
   '@types/node': ^18.7.18
   '@types/prettier': ^2.7.0
-  '@zodios/core': ^9.0.1
+  '@zodios/core': ^9.3.3
   axios: ^0.27.2
   cac: ^6.7.14
   degit: ^2.8.4
@@ -35,7 +35,7 @@ specifiers:
 dependencies:
   '@apidevtools/swagger-parser': 10.1.0_openapi-types@12.0.2
   '@babel/core': 7.19.1
-  '@zodios/core': 9.0.1_axios@0.27.2+zod@3.19.1
+  '@zodios/core': 9.3.3_axios@0.27.2+zod@3.19.1
   axios: 0.27.2
   cac: 6.7.14
   handlebars: 4.7.7
@@ -46,6 +46,7 @@ dependencies:
   prettier: 2.7.1
   tanu: 0.1.13
   ts-pattern: 4.0.5
+  whence: 2.0.0
   zod: 3.19.1
 
 devDependencies:
@@ -64,7 +65,6 @@ devDependencies:
   type-fest: 2.19.0
   typescript: 4.8.3
   vitest: 0.22.1
-  whence: 2.0.0
 
 packages:
 
@@ -1630,8 +1630,8 @@ packages:
       '@types/node': 18.7.18
     dev: true
 
-  /@zodios/core/9.0.1_axios@0.27.2+zod@3.19.1:
-    resolution: {integrity: sha512-SJ0U4U5w6MBiGNy3L/n6Wv8Ju0hpP5BGxB8XxccuFuPWDtfsRgC++rjKMpfkRlH4ambJUECNh7L/ISdbWwzRCQ==}
+  /@zodios/core/9.3.3_axios@0.27.2+zod@3.19.1:
+    resolution: {integrity: sha512-hGAWXWWnco/pSp1jaIDZglUX+yW89aNAdgUlRWgfzMWRIqm94XmDY7HlqPCEfJ/649zwTb9vbNYPKRlv0vkL3A==}
     peerDependencies:
       axios: ^0.x
       zod: ^3.x
@@ -2277,7 +2277,7 @@ packages:
 
   /eval-estree-expression/1.1.0:
     resolution: {integrity: sha512-6ZAHSb0wsqxutjk2lXZcW7btSc51I8BhlIetit0wIf5sOb5xDNBrIqe0g8RFyQ/EW6Xwn1szrtButztU7Vdj1Q==}
-    dev: true
+    dev: false
 
   /fast-deep-equal/2.0.1:
     resolution: {integrity: sha512-bCK/2Z4zLidyB4ReuIsvALH6w31YfAQDmXMqMx6FyfHqvBxtjC0eRumeSu4Bs3XtXwpyIywtSTrVT99BxY1f9w==}
@@ -2434,7 +2434,7 @@ packages:
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.17.0
+      uglify-js: 3.17.2
     dev: false
 
   /hard-rejection/2.1.0:
@@ -3343,8 +3343,8 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
-  /uglify-js/3.17.0:
-    resolution: {integrity: sha512-aTeNPVmgIMPpm1cxXr2Q/nEbvkmV8yq66F3om7X3P/cvOXQ0TMQ64Wk63iyT1gPlmdmGzjGpyLh1f3y8MZWXGg==}
+  /uglify-js/3.17.2:
+    resolution: {integrity: sha512-bbxglRjsGQMchfvXZNusUcYgiB9Hx2K4AHYXQy2DITZ9Rd+JzhX7+hoocE5Winr7z2oHvPsekkBwXtigvxevXg==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true
@@ -3482,7 +3482,7 @@ packages:
     dependencies:
       '@babel/parser': 7.19.1
       eval-estree-expression: 1.1.0
-    dev: true
+    dev: false
 
   /wordwrap/1.0.0:
     resolution: {integrity: sha512-gvVzJFlPycKc5dZN4yPkP8w7Dc37BtP1yczEneOb4uq34pXZcvrtRTmWV8W+Ume+XCxKgbjM+nevkyFPMybd4Q==}

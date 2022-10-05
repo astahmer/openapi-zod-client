@@ -171,7 +171,7 @@ it.only("determines which status are considered errors-responses", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { asApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
@@ -192,7 +192,7 @@ it.only("determines which status are considered errors-responses", async () => {
         getExample__2: vbpc7CyOzlu,
       };
 
-      const endpoints = asApi([
+      const endpoints = makeApi([
         {
           method: "get",
           path: "/example",
@@ -231,7 +231,7 @@ it.only("determines which status are considered errors-responses", async () => {
             openApiDoc,
         })
     ).toMatchInlineSnapshot(`
-      "import { asApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
@@ -252,7 +252,7 @@ it.only("determines which status are considered errors-responses", async () => {
         getExample__2: vbpc7CyOzlu,
       };
 
-      const endpoints = asApi([
+      const endpoints = makeApi([
         {
           method: "get",
           path: "/example",

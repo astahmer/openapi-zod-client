@@ -1,31 +1,31 @@
 // Vitest Snapshot v1
 
 exports[`samples-generator > ./samples/v3.0/api-with-examples.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const variables = {};
 
-const endpoints = asApi([]);
+const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
 "
 `;
 
 exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const variables = {};
 
-const endpoints = asApi([]);
+const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
 "
 `;
 
 exports[`samples-generator > ./samples/v3.0/link-example.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const vObntp1skbx = z.object({ username: z.string(), uuid: z.string() }).partial();
@@ -49,7 +49,7 @@ const variables = {
     user: vObntp1skbx,
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
     {
         method: "get",
         path: "/2.0/repositories/:username",
@@ -94,7 +94,7 @@ export const api = new Zodios(endpoints);
 `;
 
 exports[`samples-generator > ./samples/v3.0/petstore.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const vz089ZHJr6H = z.object({ id: z.number(), name: z.string(), tag: z.string().optional() });
@@ -110,7 +110,7 @@ const variables = {
     showPetById: vusbpdVpqWm,
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
     {
         method: "get",
         path: "/pets",
@@ -143,7 +143,7 @@ export const api = new Zodios(endpoints);
 `;
 
 exports[`samples-generator > ./samples/v3.0/petstore-expanded.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const vPXNN6VHlNv = z.object({ name: z.string(), tag: z.string().optional() });
@@ -163,7 +163,7 @@ const variables = {
     tags: vGqL1kemtHF,
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
     {
         method: "get",
         path: "/pets",
@@ -223,7 +223,7 @@ export const api = new Zodios(endpoints);
 `;
 
 exports[`samples-generator > ./samples/v3.0/uspto.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const vIEeBL2OSmC = z
@@ -249,7 +249,7 @@ const variables = {
     perform_search: vlyQvttKNVV,
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
     {
         method: "get",
         path: "/",
@@ -284,24 +284,24 @@ export const api = new Zodios(endpoints);
 `;
 
 exports[`samples-generator > ./samples/v3.1/non-oauth-scopes.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const variables = {};
 
-const endpoints = asApi([]);
+const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
 "
 `;
 
 exports[`samples-generator > ./samples/v3.1/webhook-example.yaml 1`] = `
-"import { asApi, Zodios } from "@zodios/core";
+"import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const variables = {};
 
-const endpoints = asApi([]);
+const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
 "
