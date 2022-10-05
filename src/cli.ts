@@ -22,6 +22,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     .option("-a, --with-alias", "With alias as api client methods")
     .option("--error-expr <expr>", "Pass an expression to determine if a response status is an error")
     .option("--success-expr <expr>", "Pass an expression to determine which response status is the main success status")
+    .option("--media-type-expr <expr>", "Pass an expression to determine which response content should be allowed")
     .option("--export-schemas", "When true, will export all `#/components/schemas`")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
@@ -40,6 +41,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 isErrorStatus: options.errorExpr,
                 isMainResponseStatus: options.successExpr,
                 shouldExportAllSchemas: options.exportSchemas,
+                isMediaTypeAllowed: options.mediaTypeExpr,
             },
         });
         console.log(`Done generating <${distPath}> !`);

@@ -254,7 +254,18 @@ export interface TemplateContext {
          * @default `!(status >= 200 && status < 300)`
          */
         isErrorStatus?: string | ((status: number) => boolean);
-        /** if OperationObject["description"] is not defined but the main ResponseItem["description"] is defined, use the latter as ZodiosEndpointDescription["description"] */
+        /**
+         * when defined, will be used to pick the first MediaType found in (ResponseObject|RequestBodyObject)["content"] map matching the given expression
+         *
+         * context: some APIs returns multiple media types for the same response, this option allows you to pick which one to use
+         * or allows you to define a custom media type to use like `application/json-ld` or `application/vnd.api+json`) etc...
+         * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#response-object
+         * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-types
+         *
+         * @default `mediaType === "application/json"`
+         */
+        isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
+        /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDescription["description"] */
         useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
         /**
          * when true, will export all `#/components/schemas` even when not used in any PathItemObject
