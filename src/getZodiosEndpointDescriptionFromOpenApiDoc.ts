@@ -44,6 +44,14 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
                 : options.isErrorStatus;
     }
 
+    let isMediaTypeAllowed = (mediaType: string) => mediaType === "application/json";
+    if (options?.isMediaTypeAllowed) {
+        isMediaTypeAllowed =
+            typeof options.isMediaTypeAllowed === "string"
+                ? (mediaType: string) => sync(options.isMediaTypeAllowed, { mediaType })
+                : options.isMediaTypeAllowed;
+    }
+
     const ctx: ConversionTypeContext = {
         getSchemaByRef,
         zodSchemaByHash: {},
@@ -120,7 +128,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
 
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
-                const bodySchema = requestBody.content?.["application/json"]?.schema;
+                const mediaTypes = Object.keys(requestBody.content);
+                const mediaType = mediaTypes.find(isMediaTypeAllowed);
+
+                const bodySchema = mediaType && requestBody.content?.[mediaType]?.schema;
                 if (bodySchema) {
                     endpointDescription.parameters.push({
                         name: "body",
@@ -165,7 +176,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
                 const responseItem = operation.responses[statusCode] as ResponseObject;
 
                 if (responseItem.content) {
-                    const maybeSchema = responseItem.content["application/json"]?.schema;
+                    const mediaTypes = Object.keys(responseItem.content);
+                    const mediaType = mediaTypes.find(isMediaTypeAllowed);
+
+                    const maybeSchema = mediaType && responseItem.content[mediaType]?.schema;
 
                     if (maybeSchema) {
                         const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
