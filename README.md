@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.2.2
+openapi-zod-client/0.2.3
 
 Usage:
   $ openapi-zod-client <input>
@@ -44,16 +44,17 @@ For more info, run any command with the `--help` flag:
   $ openapi-zod-client --help
 
 Options:
-  -o, --output <path>    Output path for the zodios api client ts file (defaults to `<input>.client.ts`)
-  -t, --template <path>  Template path for the handlebars template that will be used to generate the output
-  -p, --prettier <path>  Prettier config path that will be used to format the output client file
-  -b, --base-url <url>   Base url for the api
-  -a, --with-alias       With alias as api client methods
-  --error-expr <expr>    Pass an expression to determine if a response status is an error
-  --success-expr <expr>  Pass an expression to determine which response status is the main success status
-  --export-schemas       When true, will export all `#/components/schemas` even if not used in any paths
-  -v, --version          Display version number
-  -h, --help             Display this message
+  -o, --output <path>       Output path for the zodios api client ts file (defaults to `<input>.client.ts`)
+  -t, --template <path>     Template path for the handlebars template that will be used to generate the output
+  -p, --prettier <path>     Prettier config path that will be used to format the output client file
+  -b, --base-url <url>      Base url for the api
+  -a, --with-alias          With alias as api client methods
+  --error-expr <expr>       Pass an expression to determine if a response status is an error
+  --success-expr <expr>     Pass an expression to determine which response status is the main success status
+  --media-type-expr <expr>  Pass an expression to determine which response content should be allowed
+  --export-schemas          When true, will export all `#/components/schemas`
+  -v, --version             Display version number
+  -h, --help                Display this message
 
 ```
 
