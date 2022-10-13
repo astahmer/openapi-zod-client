@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.2.5
+openapi-zod-client/0.3.0
 
 Usage:
   $ openapi-zod-client <input>
@@ -53,9 +53,9 @@ Options:
   --success-expr <expr>     Pass an expression to determine which response status is the main success status
   --media-type-expr <expr>  Pass an expression to determine which response content should be allowed
   --export-schemas          When true, will export all `#/components/schemas`
+  --implicit-required       When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
   -v, --version             Display version number
   -h, --help                Display this message
-
 ```
 
 ## Customization
@@ -208,7 +208,7 @@ components:
 output:
 
 ```ts
-import { asApi, Zodios } from "@zodios/core";
+import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
 const vz089ZHJr6H = z.object({ id: z.number(), name: z.string(), tag: z.string().optional() });
@@ -224,7 +224,7 @@ const variables = {
     showPetById: vusbpdVpqWm,
 };
 
-const endpoints = asApi([
+const endpoints = makeApi([
     {
         method: "get",
         path: "/pets",
