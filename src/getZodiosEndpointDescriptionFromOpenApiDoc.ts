@@ -144,6 +144,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
                                 schema: bodySchema,
                                 ctx,
                                 meta: { isRequired: requestBody.required || true },
+                                options,
                             }),
                             operationName + "_Body"
                         ),
@@ -185,7 +186,7 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
                 let schema: CodeMeta | undefined;
 
                 if (maybeSchema) {
-                    schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
+                    schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
                     schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
                 }
 

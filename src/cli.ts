@@ -24,6 +24,10 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     .option("--success-expr <expr>", "Pass an expression to determine which response status is the main success status")
     .option("--media-type-expr <expr>", "Pass an expression to determine which response content should be allowed")
     .option("--export-schemas", "When true, will export all `#/components/schemas`")
+    .option(
+        "--implicit-required",
+        "When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set"
+    )
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -42,6 +46,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 isMainResponseStatus: options.successExpr,
                 shouldExportAllSchemas: options.exportSchemas,
                 isMediaTypeAllowed: options.mediaTypeExpr,
+                withImplicitRequiredProps: options.implicitRequired,
             },
         });
         console.log(`Done generating <${distPath}> !`);

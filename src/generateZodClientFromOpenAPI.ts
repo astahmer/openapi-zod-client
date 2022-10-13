@@ -272,5 +272,10 @@ export interface TemplateContext {
          * @see https://github.com/astahmer/openapi-zod-client/issues/19
          */
         shouldExportAllSchemas?: boolean;
+        /**
+         * when true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
+         * @see https://github.com/astahmer/openapi-zod-client/issues/23
+         */
+        withImplicitRequiredProps?: boolean;
     };
 }
