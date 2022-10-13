@@ -1,4 +1,4 @@
-import { getZodiosEndpointDescriptionFromOpenApiDoc } from "../src";
+import { getZodiosEndpointDefinitionFromOpenApiDoc } from "../src";
 import { expect, test } from "vitest";
 import { OpenAPIObject } from "openapi3-ts";
 
@@ -28,7 +28,7 @@ test("is-media-type-allowed", () => {
             },
         },
     };
-    const defaultResult = getZodiosEndpointDescriptionFromOpenApiDoc(doc);
+    const defaultResult = getZodiosEndpointDefinitionFromOpenApiDoc(doc);
     expect(defaultResult.endpoints).toMatchInlineSnapshot(`
       [
           {
@@ -44,7 +44,7 @@ test("is-media-type-allowed", () => {
       ]
     `);
 
-    const withCustomOption = getZodiosEndpointDescriptionFromOpenApiDoc(doc, {
+    const withCustomOption = getZodiosEndpointDefinitionFromOpenApiDoc(doc, {
         isMediaTypeAllowed: (mediaType) => mediaType === "application/json-ld",
     });
     expect(withCustomOption.endpoints).toMatchInlineSnapshot(`

@@ -2,6 +2,6 @@ export { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 export { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "./generateZodClientFromOpenAPI";
 export {
     type EndpointDescriptionWithRefs,
-    getZodiosEndpointDescriptionFromOpenApiDoc,
-} from "./getZodiosEndpointDescriptionFromOpenApiDoc";
+    getZodiosEndpointDefinitionFromOpenApiDoc,
+} from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 export { type CodeMeta, type CodeMetaData, type ConversionTypeContext, getZodSchema } from "./openApiToZod";

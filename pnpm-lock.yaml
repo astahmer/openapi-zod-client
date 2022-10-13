@@ -11,7 +11,7 @@ specifiers:
   '@types/js-yaml': ^4.0.5
   '@types/node': ^18.7.18
   '@types/prettier': ^2.7.0
-  '@zodios/core': ^9.3.3
+  '@zodios/core': ^10.0.0
   axios: ^0.27.2
   cac: ^6.7.14
   degit: ^2.8.4
@@ -35,7 +35,7 @@ specifiers:
 dependencies:
   '@apidevtools/swagger-parser': 10.1.0_openapi-types@12.0.2
   '@babel/core': 7.19.1
-  '@zodios/core': 9.3.3_axios@0.27.2+zod@3.19.1
+  '@zodios/core': 10.0.0_axios@0.27.2+zod@3.19.1
   axios: 0.27.2
   cac: 6.7.14
   handlebars: 4.7.7
@@ -1630,10 +1630,10 @@ packages:
       '@types/node': 18.7.18
     dev: true
 
-  /@zodios/core/9.3.3_axios@0.27.2+zod@3.19.1:
-    resolution: {integrity: sha512-hGAWXWWnco/pSp1jaIDZglUX+yW89aNAdgUlRWgfzMWRIqm94XmDY7HlqPCEfJ/649zwTb9vbNYPKRlv0vkL3A==}
+  /@zodios/core/10.0.0_axios@0.27.2+zod@3.19.1:
+    resolution: {integrity: sha512-xC5QoCo9seKaQHVkCeSg7s4yWnedpibKNIb7vx7wvIMWftTOW8wk8TvRl9WadZAKHMA+0VAe/zxaBmcOrAWciQ==}
     peerDependencies:
-      axios: ^0.x
+      axios: ^0.x || ^1.0.0
       zod: ^3.x
     dependencies:
       axios: 0.27.2
@@ -2434,7 +2434,7 @@ packages:
       source-map: 0.6.1
       wordwrap: 1.0.0
     optionalDependencies:
-      uglify-js: 3.17.2
+      uglify-js: 3.17.3
     dev: false
 
   /hard-rejection/2.1.0:
@@ -3343,8 +3343,8 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
-  /uglify-js/3.17.2:
-    resolution: {integrity: sha512-bbxglRjsGQMchfvXZNusUcYgiB9Hx2K4AHYXQy2DITZ9Rd+JzhX7+hoocE5Winr7z2oHvPsekkBwXtigvxevXg==}
+  /uglify-js/3.17.3:
+    resolution: {integrity: sha512-JmMFDME3iufZnBpyKL+uS78LRiC+mK55zWfM5f/pWBJfpOttXAqYfdDGRukYhJuyRinvPVAtUhvy7rlDybNtFg==}
     engines: {node: '>=0.8.0'}
     hasBin: true
     requiresBuild: true

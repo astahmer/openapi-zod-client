@@ -1,14 +1,14 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { OpenAPIObject } from "openapi3-ts";
 import { resolve } from "path";
-import { getZodiosEndpointDescriptionFromOpenApiDoc } from "../src";
+import { getZodiosEndpointDefinitionFromOpenApiDoc } from "../src";
 import { expect, test } from "vitest";
 
 test("ref-in-another-file", async () => {
     const openApiDoc = (await SwaggerParser.bundle(
         resolve(__dirname, "ref-in-another-file", "partial.yaml")
     )) as OpenAPIObject;
-    expect(getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
+    expect(getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
       {
           "circularTokenByRef": {},
           "codeMetaByRef": {},
