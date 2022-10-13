@@ -18,6 +18,8 @@ import { tokens } from "./tokens";
 
 import { sync } from "whence";
 
+const voidSchema = "z.void()";
+
 export const getZodiosEndpointDescriptionFromOpenApiDoc = (
     doc: OpenAPIObject,
     options?: TemplateContext["options"]
@@ -128,10 +130,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
 
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
-                const mediaTypes = Object.keys(requestBody.content ?? []);
-                const mediaType = mediaTypes.find(isMediaTypeAllowed);
+                const mediaTypes = Object.keys(requestBody.content ?? {});
+                const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
 
-                const bodySchema = mediaType && requestBody.content?.[mediaType]?.schema;
+                const bodySchema = matchingMediaType && requestBody.content?.[matchingMediaType]?.schema;
                 if (bodySchema) {
                     endpointDescription.parameters.push({
                         name: "body",
@@ -175,48 +177,46 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
             for (const statusCode in operation.responses) {
                 const responseItem = operation.responses[statusCode] as ResponseObject;
 
-                if (responseItem.content) {
-                    const mediaTypes = Object.keys(responseItem.content);
-                    const mediaType = mediaTypes.find(isMediaTypeAllowed);
+                const mediaTypes = Object.keys(responseItem.content ?? {});
+                const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
 
-                    const maybeSchema = mediaType && responseItem.content[mediaType]?.schema;
+                const maybeSchema = matchingMediaType && responseItem.content?.[matchingMediaType]?.schema;
+                let schemaString = matchingMediaType ? undefined : voidSchema;
+                let schema: CodeMeta | undefined;
 
-                    if (maybeSchema) {
-                        const schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
-                        const status = Number(statusCode);
+                if (maybeSchema) {
+                    schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } });
+                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
+                }
+
+                if (schemaString) {
+                    const status = Number(statusCode);
+
+                    if (isMainResponseStatus(status) || (statusCode === "default" && !endpointDescription.response)) {
+                        // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
+                        // getZodVarName should use operation.operationId as fallbackName
+                        endpointDescription.response = schemaString;
 
                         if (
-                            isMainResponseStatus(status) ||
-                            (statusCode === "default" && !endpointDescription.response)
+                            !endpointDescription.description &&
+                            responseItem.description &&
+                            options?.useMainResponseDescriptionAsEndpointDescriptionFallback
                         ) {
-                            // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
-                            // getZodVarName should use operation.operationId as fallbackName
-                            endpointDescription.response = schema.ref ? getZodVarName(schema) : schema.toString();
-
-                            if (
-                                !endpointDescription.description &&
-                                responseItem.description &&
-                                options?.useMainResponseDescriptionAsEndpointDescriptionFallback
-                            ) {
-                                endpointDescription.description = responseItem.description;
-                            }
-                        } else if (statusCode !== "default" && isErrorStatus(status)) {
-                            endpointDescription.errors.push({
-                                schema: (schema.ref ? getZodVarName(schema) : schema.toString()) as any,
-                                status,
-                                description: responseItem.description,
-                            });
+                            endpointDescription.description = responseItem.description;
                         }
+                    } else if (statusCode !== "default" && isErrorStatus(status)) {
+                        endpointDescription.errors.push({
+                            schema: schemaString as any,
+                            status,
+                            description: responseItem.description,
+                        });
+                    }
 
-                        if (endpointDescription.alias) {
-                            responsesByOperationId[endpointDescription.alias] = {
-                                ...responsesByOperationId[endpointDescription.alias],
-                                [statusCode]: getZodVarName(
-                                    getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true } }),
-                                    endpointDescription.alias
-                                ),
-                            };
-                        }
+                    if (endpointDescription.alias) {
+                        responsesByOperationId[endpointDescription.alias] = {
+                            ...responsesByOperationId[endpointDescription.alias],
+                            [statusCode]: schema ? getZodVarName(schema, endpointDescription.alias) : schemaString,
+                        };
                     }
                 }
             }

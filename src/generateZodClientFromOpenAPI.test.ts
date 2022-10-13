@@ -19,7 +19,23 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "updatePet",
                   "description": "Update an existing pet by Id",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                      {
+                          "description": "Validation exception",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "put",
                   "parameters": [
                       {
@@ -36,7 +52,13 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "addPet",
                   "description": "Add a new pet to the store",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -53,7 +75,18 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getPetById",
                   "description": "Returns a single pet",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/pet/:petId",
@@ -79,7 +112,13 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "findPetsByStatus",
                   "description": "Multiple status values can be provided with comma separated strings",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid status value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -95,7 +134,13 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "findPetsByTags",
                   "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid tag value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -121,7 +166,13 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "placeOrder",
                   "description": "Place a new order in the store",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -138,7 +189,18 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getOrderById",
                   "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Order not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/store/order/:orderId",
@@ -165,12 +227,40 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "getUserByName",
                   "description": "",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid username supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "User not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/user/:username",
                   "requestFormat": "json",
                   "response": "variables["User"]",
+              },
+              {
+                  "alias": "updateUser",
+                  "description": "This can only be done by the logged in user.",
+                  "errors": [],
+                  "method": "put",
+                  "parameters": [
+                      {
+                          "description": "Update an existent user in the store",
+                          "name": "body",
+                          "schema": "variables["updateUser_Body"]",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/user/:username",
+                  "requestFormat": "json",
+                  "response": "z.void()",
               },
               {
                   "alias": "createUsersWithListInput",
@@ -192,7 +282,13 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "loginUser",
                   "description": "",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid username/password supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -209,6 +305,16 @@ test("getZodClientTemplateContext", async () => {
                   "path": "/user/login",
                   "requestFormat": "json",
                   "response": "z.string()",
+              },
+              {
+                  "alias": "logoutUser",
+                  "description": "",
+                  "errors": [],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/user/logout",
+                  "requestFormat": "json",
+                  "response": "z.void()",
               },
           ],
           "options": {
@@ -349,6 +455,23 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Pet not found\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 405,
+                          description: \`Validation exception\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -364,6 +487,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 405,
+                          description: \`Invalid input\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -371,6 +501,18 @@ describe("generateZodClientFromOpenAPI", () => {
                   description: \`Returns a single pet\`,
                   requestFormat: "json",
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Pet not found\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -398,6 +540,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.array(variables["getPetById"]),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid status value\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -412,6 +561,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.array(variables["getPetById"]),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid tag value\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -433,6 +589,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Order"],
+                  errors: [
+                      {
+                          status: 405,
+                          description: \`Invalid input\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -440,6 +603,18 @@ describe("generateZodClientFromOpenAPI", () => {
                   description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
                   requestFormat: "json",
                   response: variables["Order"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Order not found\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -461,6 +636,33 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/user/:username",
                   requestFormat: "json",
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid username supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`User not found\`,
+                          schema: z.void(),
+                      },
+                  ],
+              },
+              {
+                  method: "put",
+                  path: "/user/:username",
+                  description: \`This can only be done by the logged in user.\`,
+                  requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "body",
+                          description: \`Update an existent user in the store\`,
+                          type: "Body",
+                          schema: variables["updateUser_Body"],
+                      },
+                  ],
+                  response: z.void(),
               },
               {
                   method: "post",
@@ -493,6 +695,19 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.string(),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid username/password supplied\`,
+                          schema: z.void(),
+                      },
+                  ],
+              },
+              {
+                  method: "get",
+                  path: "/user/logout",
+                  requestFormat: "json",
+                  response: z.void(),
               },
           ]);
 
@@ -593,6 +808,23 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Pet not found\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 405,
+                          description: \`Validation exception\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -609,6 +841,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 405,
+                          description: \`Invalid input\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -617,6 +856,18 @@ describe("generateZodClientFromOpenAPI", () => {
                   description: \`Returns a single pet\`,
                   requestFormat: "json",
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Pet not found\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -646,6 +897,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.array(variables["getPetById"]),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid status value\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -661,6 +919,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.array(variables["getPetById"]),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid tag value\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -684,6 +949,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Order"],
+                  errors: [
+                      {
+                          status: 405,
+                          description: \`Invalid input\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -692,6 +964,18 @@ describe("generateZodClientFromOpenAPI", () => {
                   description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
                   requestFormat: "json",
                   response: variables["Order"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Order not found\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -715,6 +999,34 @@ describe("generateZodClientFromOpenAPI", () => {
                   alias: "getUserByName",
                   requestFormat: "json",
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid username supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`User not found\`,
+                          schema: z.void(),
+                      },
+                  ],
+              },
+              {
+                  method: "put",
+                  path: "/user/:username",
+                  alias: "updateUser",
+                  description: \`This can only be done by the logged in user.\`,
+                  requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "body",
+                          description: \`Update an existent user in the store\`,
+                          type: "Body",
+                          schema: variables["updateUser_Body"],
+                      },
+                  ],
+                  response: z.void(),
               },
               {
                   method: "post",
@@ -749,6 +1061,20 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.string(),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid username/password supplied\`,
+                          schema: z.void(),
+                      },
+                  ],
+              },
+              {
+                  method: "get",
+                  path: "/user/logout",
+                  alias: "logoutUser",
+                  requestFormat: "json",
+                  response: z.void(),
               },
           ]);
 
@@ -848,6 +1174,23 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Pet not found\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 405,
+                          description: \`Validation exception\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -863,6 +1206,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 405,
+                          description: \`Invalid input\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -870,6 +1220,18 @@ describe("generateZodClientFromOpenAPI", () => {
                   description: \`Returns a single pet\`,
                   requestFormat: "json",
                   response: variables["Pet"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Pet not found\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -897,6 +1259,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.array(variables["getPetById"]),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid status value\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -911,6 +1280,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.array(variables["getPetById"]),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid tag value\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -932,6 +1308,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["Order"],
+                  errors: [
+                      {
+                          status: 405,
+                          description: \`Invalid input\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -939,6 +1322,18 @@ describe("generateZodClientFromOpenAPI", () => {
                   description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
                   requestFormat: "json",
                   response: variables["Order"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid ID supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`Order not found\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "post",
@@ -960,6 +1355,33 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/user/:username",
                   requestFormat: "json",
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid username supplied\`,
+                          schema: z.void(),
+                      },
+                      {
+                          status: 404,
+                          description: \`User not found\`,
+                          schema: z.void(),
+                      },
+                  ],
+              },
+              {
+                  method: "put",
+                  path: "/user/:username",
+                  description: \`This can only be done by the logged in user.\`,
+                  requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "body",
+                          description: \`Update an existent user in the store\`,
+                          type: "Body",
+                          schema: variables["updateUser_Body"],
+                      },
+                  ],
+                  response: z.void(),
               },
               {
                   method: "post",
@@ -992,6 +1414,19 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: z.string(),
+                  errors: [
+                      {
+                          status: 400,
+                          description: \`Invalid username/password supplied\`,
+                          schema: z.void(),
+                      },
+                  ],
+              },
+              {
+                  method: "get",
+                  path: "/user/logout",
+                  requestFormat: "json",
+                  response: z.void(),
               },
           ]);
 
@@ -1066,7 +1501,7 @@ test("with optional, partial, all required objects", async () => {
                     responses: {
                         "200": {
                             description: "OK",
-                            content: { "application/json": { schema: schemas.DeeplyNested2 } },
+                            content: { "application/json": { schema: schemas.DeeplyNested } },
                         },
                     },
                 },
@@ -1077,7 +1512,7 @@ test("with optional, partial, all required objects", async () => {
                     responses: {
                         "200": {
                             description: "OK",
-                            content: { "application/json": { schema: schemas.VeryDeeplyNested2 } },
+                            content: { "application/json": { schema: schemas.VeryDeeplyNested } },
                         },
                     },
                 },
@@ -1092,6 +1527,16 @@ test("with optional, partial, all required objects", async () => {
       {
           "endpoints": [
               {
+                  "alias": "getDeeplyNested",
+                  "description": undefined,
+                  "errors": [],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/deeplyNested",
+                  "requestFormat": "json",
+                  "response": "z.array(variables["getVeryDeeplyNested"])",
+              },
+              {
                   "alias": "getNested",
                   "description": undefined,
                   "errors": [],
@@ -1099,7 +1544,7 @@ test("with optional, partial, all required objects", async () => {
                   "parameters": [],
                   "path": "/nested",
                   "requestFormat": "json",
-                  "response": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: variables["getNested"].optional(), circularToRoot: variables["getRoot"].optional(), requiredProp: z.string() })",
+                  "response": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: variables["getDeeplyNested"].optional(), circularToRoot: variables["getRoot"].optional(), requiredProp: z.string() })",
               },
               {
                   "alias": "getRoot",
@@ -1110,6 +1555,16 @@ test("with optional, partial, all required objects", async () => {
                   "path": "/root",
                   "requestFormat": "json",
                   "response": "z.object({ str: z.string(), nb: z.number(), nested: variables["getRoot"], partial: variables["getRoot"].optional(), optionalProp: z.string().optional() })",
+              },
+              {
+                  "alias": "getVeryDeeplyNested",
+                  "description": undefined,
+                  "errors": [],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/veryDeeplyNested",
+                  "requestFormat": "json",
+                  "response": "z.enum(["aaa", "bbb", "ccc"])",
               },
           ],
           "options": {
@@ -1150,8 +1605,10 @@ test("with optional, partial, all required objects", async () => {
               "VeryDeeplyNested": "type VeryDeeplyNested = "aaa" | "bbb" | "ccc";",
           },
           "variables": {
+              "getDeeplyNested": "vm0znqO5M3d",
               "getNested": "vFHcIEhV0A3",
               "getRoot": "vCj2di4DExd",
+              "getVeryDeeplyNested": "v0a43T4TEdB",
           },
       }
     `);
@@ -1214,18 +1671,26 @@ test("with optional, partial, all required objects", async () => {
       });
 
       const variables = {
+          getDeeplyNested: vm0znqO5M3d,
           getNested: vFHcIEhV0A3,
           getRoot: vCj2di4DExd,
+          getVeryDeeplyNested: v0a43T4TEdB,
       };
 
       const endpoints = makeApi([
+          {
+              method: "get",
+              path: "/deeplyNested",
+              requestFormat: "json",
+              response: z.array(variables["getVeryDeeplyNested"]),
+          },
           {
               method: "get",
               path: "/nested",
               requestFormat: "json",
               response: z.object({
                   nested_prop: z.boolean().optional(),
-                  deeplyNested: variables["getNested"].optional(),
+                  deeplyNested: variables["getDeeplyNested"].optional(),
                   circularToRoot: variables["getRoot"].optional(),
                   requiredProp: z.string(),
               }),
@@ -1241,6 +1706,12 @@ test("with optional, partial, all required objects", async () => {
                   partial: variables["getRoot"].optional(),
                   optionalProp: z.string().optional(),
               }),
+          },
+          {
+              method: "get",
+              path: "/veryDeeplyNested",
+              requestFormat: "json",
+              response: z.enum(["aaa", "bbb", "ccc"]),
           },
       ]);
 

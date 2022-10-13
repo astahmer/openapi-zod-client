@@ -107,7 +107,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
               {
                   "alias": "placeOrder",
                   "description": "Place a new order in the store",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -132,6 +138,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
           "responsesByOperationId": {
               "placeOrder": {
                   "200": "@var/placeOrder",
+                  "405": "z.void()",
               },
           },
           "schemaHashByRef": {
@@ -230,7 +237,23 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
               {
                   "alias": "updatePet",
                   "description": "Update an existing pet by Id",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                      {
+                          "description": "Validation exception",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "put",
                   "parameters": [
                       {
@@ -247,7 +270,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
               {
                   "alias": "addPet",
                   "description": "Add a new pet to the store",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -279,9 +308,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
           "responsesByOperationId": {
               "addPet": {
                   "200": "@var/addPet",
+                  "405": "z.void()",
               },
               "updatePet": {
                   "200": "@var/updatePet",
+                  "400": "z.void()",
+                  "404": "z.void()",
+                  "405": "z.void()",
               },
           },
           "schemaHashByRef": {
@@ -435,7 +468,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
               {
                   "alias": "findPetsByStatus",
                   "description": "Multiple status values can be provided with comma separated strings",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid status value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -451,7 +490,13 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
               {
                   "alias": "findPetsByTags",
                   "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid tag value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -481,9 +526,11 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
           "responsesByOperationId": {
               "findPetsByStatus": {
                   "200": "@var/findPetsByStatus",
+                  "400": "z.void()",
               },
               "findPetsByTags": {
                   "200": "@var/findPetsByTags",
+                  "400": "z.void()",
               },
           },
           "schemaHashByRef": {
@@ -533,7 +580,23 @@ test("petstore.yaml", async () => {
               {
                   "alias": "updatePet",
                   "description": "Update an existing pet by Id",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                      {
+                          "description": "Validation exception",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "put",
                   "parameters": [
                       {
@@ -550,7 +613,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "addPet",
                   "description": "Add a new pet to the store",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -567,7 +636,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "findPetsByStatus",
                   "description": "Multiple status values can be provided with comma separated strings",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid status value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -583,7 +658,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "findPetsByTags",
                   "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid tag value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -599,7 +680,18 @@ test("petstore.yaml", async () => {
               {
                   "alias": "getPetById",
                   "description": "Returns a single pet",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/pet/:petId",
@@ -609,7 +701,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "updatePetWithForm",
                   "description": "",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -629,7 +727,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "deletePet",
                   "description": "delete a pet",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid pet value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "delete",
                   "parameters": [
                       {
@@ -670,7 +774,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "placeOrder",
                   "description": "Place a new order in the store",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -687,7 +797,18 @@ test("petstore.yaml", async () => {
               {
                   "alias": "getOrderById",
                   "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Order not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/store/order/:orderId",
@@ -697,7 +818,18 @@ test("petstore.yaml", async () => {
               {
                   "alias": "deleteOrder",
                   "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Order not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "delete",
                   "parameters": [],
                   "path": "/store/order/:orderId",
@@ -740,7 +872,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "loginUser",
                   "description": "",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid username/password supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [
                       {
@@ -766,11 +904,23 @@ test("petstore.yaml", async () => {
                   "parameters": [],
                   "path": "/user/logout",
                   "requestFormat": "json",
+                  "response": "z.void()",
               },
               {
                   "alias": "getUserByName",
                   "description": "",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid username supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "User not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/user/:username",
@@ -792,11 +942,23 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
+                  "response": "z.void()",
               },
               {
                   "alias": "deleteUser",
                   "description": "This can only be done by the logged in user.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "Invalid username supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "User not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
                   "method": "delete",
                   "parameters": [],
                   "path": "/user/:username",
@@ -838,39 +1000,74 @@ test("petstore.yaml", async () => {
           "responsesByOperationId": {
               "addPet": {
                   "200": "@var/addPet",
+                  "405": "z.void()",
               },
               "createUser": {
                   "default": "@var/createUser",
               },
               "createUsersWithListInput": {
                   "200": "@var/createUsersWithListInput",
+                  "default": "z.void()",
+              },
+              "deleteOrder": {
+                  "400": "z.void()",
+                  "404": "z.void()",
+              },
+              "deletePet": {
+                  "400": "z.void()",
+              },
+              "deleteUser": {
+                  "400": "z.void()",
+                  "404": "z.void()",
               },
               "findPetsByStatus": {
                   "200": "@var/findPetsByStatus",
+                  "400": "z.void()",
               },
               "findPetsByTags": {
                   "200": "@var/findPetsByTags",
+                  "400": "z.void()",
               },
               "getInventory": {
                   "200": "z.record(z.number())",
               },
               "getOrderById": {
                   "200": "@var/getOrderById",
+                  "400": "z.void()",
+                  "404": "z.void()",
               },
               "getPetById": {
                   "200": "@var/getPetById",
+                  "400": "z.void()",
+                  "404": "z.void()",
               },
               "getUserByName": {
                   "200": "@var/getUserByName",
+                  "400": "z.void()",
+                  "404": "z.void()",
               },
               "loginUser": {
                   "200": "z.string()",
+                  "400": "z.void()",
+              },
+              "logoutUser": {
+                  "default": "z.void()",
               },
               "placeOrder": {
                   "200": "@var/placeOrder",
+                  "405": "z.void()",
               },
               "updatePet": {
                   "200": "@var/updatePet",
+                  "400": "z.void()",
+                  "404": "z.void()",
+                  "405": "z.void()",
+              },
+              "updatePetWithForm": {
+                  "405": "z.void()",
+              },
+              "updateUser": {
+                  "default": "z.void()",
               },
               "uploadFile": {
                   "200": "@var/uploadFile",

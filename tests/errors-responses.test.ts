@@ -53,7 +53,7 @@ it("includes errors-responses", async () => {
     const result = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { asApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
@@ -64,7 +64,7 @@ it("includes errors-responses", async () => {
         getExample__2: vnCsZAxBbBU,
       };
 
-      const endpoints = asApi([
+      const endpoints = makeApi([
         {
           method: "get",
           path: "/example",
@@ -72,12 +72,12 @@ it("includes errors-responses", async () => {
           response: z.object({ str: z.string(), nb: z.number() }),
           errors: [
             {
-              status: "400",
+              status: 400,
               description: \`Bad request\`,
               schema: z.object({ is400: z.boolean() }).partial(),
             },
             {
-              status: "500",
+              status: 500,
               description: \`Internal server error\`,
               schema: z.string(),
             },
@@ -90,7 +90,7 @@ it("includes errors-responses", async () => {
     `);
 });
 
-it.only("determines which status are considered errors-responses", async () => {
+it("determines which status are considered errors-responses", async () => {
     const schemas = {
         Main: {
             type: "object",
