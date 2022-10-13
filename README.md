@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.3.0
+openapi-zod-client/0.3.1
 
 Usage:
   $ openapi-zod-client <input>
