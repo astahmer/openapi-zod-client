@@ -1,7 +1,7 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { OpenAPIObject, SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
-import { getZodiosEndpointDescriptionFromOpenApiDoc } from "./getZodiosEndpointDescriptionFromOpenApiDoc";
+import { getZodiosEndpointDefinitionFromOpenApiDoc } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 
 const baseDoc = {
     openapi: "3.0.3",
@@ -64,9 +64,9 @@ const schemas = {
     } as SchemaObject,
 } as const;
 
-test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
+test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
     expect(
-        getZodiosEndpointDescriptionFromOpenApiDoc({
+        getZodiosEndpointDefinitionFromOpenApiDoc({
             ...baseDoc,
             components: { schemas: { Order: schemas.Order } },
             paths: {
@@ -151,9 +151,9 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /store/order", () => {
     `);
 });
 
-test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
+test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
     expect(
-        getZodiosEndpointDescriptionFromOpenApiDoc({
+        getZodiosEndpointDefinitionFromOpenApiDoc({
             ...baseDoc,
             components: { schemas: { Pet: schemas.Pet, Category: schemas.Category, Tag: schemas.Tag } },
             paths: {
@@ -330,9 +330,9 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet", () => {
     `);
 });
 
-test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
+test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
     expect(
-        getZodiosEndpointDescriptionFromOpenApiDoc({
+        getZodiosEndpointDefinitionFromOpenApiDoc({
             ...baseDoc,
             components: { schemas: { Pet: schemas.Pet, Category: schemas.Category, Tag: schemas.Tag } },
             paths: {
@@ -551,7 +551,7 @@ test("getZodiosEndpointDescriptionFromOpenApiDoc /pet/findXXX", () => {
 
 test("petstore.yaml", async () => {
     const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
-    const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc);
+    const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
           "circularTokenByRef": {

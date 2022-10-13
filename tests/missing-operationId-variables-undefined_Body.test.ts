@@ -1,8 +1,8 @@
 import { expect, test } from "vitest";
-import { getZodiosEndpointDescriptionFromOpenApiDoc } from "../src";
+import { getZodiosEndpointDefinitionFromOpenApiDoc } from "../src";
 
 test("missing operationId outputs variables['undefined_Body']", () => {
-    const result = getZodiosEndpointDescriptionFromOpenApiDoc({
+    const result = getZodiosEndpointDefinitionFromOpenApiDoc({
         openapi: "3.0.3",
         info: { version: "1", title: "Example API" },
         paths: {

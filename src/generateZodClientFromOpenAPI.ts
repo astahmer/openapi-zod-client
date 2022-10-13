@@ -9,8 +9,8 @@ import { ts } from "tanu";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import {
     EndpointDescriptionWithRefs,
-    getZodiosEndpointDescriptionFromOpenApiDoc,
-} from "./getZodiosEndpointDescriptionFromOpenApiDoc";
+    getZodiosEndpointDefinitionFromOpenApiDoc,
+} from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
 import { tokens } from "./tokens";
@@ -24,7 +24,7 @@ export const getZodClientTemplateContext = (
     openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"],
     options?: TemplateContext["options"]
 ) => {
-    const result = getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc, options);
+    const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc, options);
     const data = makeInitialContext();
 
     const refsByCircularToken = reverse(result.circularTokenByRef) as Record<string, string>;
@@ -231,7 +231,7 @@ export interface TemplateContext {
         /** @see https://www.zodios.org/docs/client#zodiosalias */
         withAlias?: boolean;
         /**
-         * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDescription["response"]`
+         * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
          * will use `default` status code as fallback
          *
          * @see https://www.zodios.org/docs/api/api-definition#api-definition-structure
@@ -243,7 +243,7 @@ export interface TemplateContext {
          */
         isMainResponseStatus?: string | ((status: number) => boolean);
         /**
-         * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDescription["errors"]` array
+         * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDefinition["errors"]` array
          * ignores `default` status
          *
          * @see https://www.zodios.org/docs/api/api-definition#errors
@@ -265,7 +265,7 @@ export interface TemplateContext {
          * @default `mediaType === "application/json"`
          */
         isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
-        /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDescription["description"] */
+        /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDefinition["description"] */
         useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
         /**
          * when true, will export all `#/components/schemas` even when not used in any PathItemObject

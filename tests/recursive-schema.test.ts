@@ -1,6 +1,6 @@
 import {
     getZodSchema,
-    getZodiosEndpointDescriptionFromOpenApiDoc,
+    getZodiosEndpointDefinitionFromOpenApiDoc,
     getZodClientTemplateContext,
     ConversionTypeContext,
     getOpenApiDependencyGraph,
@@ -225,7 +225,7 @@ describe("recursive-schema", () => {
           }
         `);
 
-        expect(getZodiosEndpointDescriptionFromOpenApiDoc(makeOpenApiDoc(schemas2, ResponseSchema)))
+        expect(getZodiosEndpointDefinitionFromOpenApiDoc(makeOpenApiDoc(schemas2, ResponseSchema)))
             .toMatchInlineSnapshot(`
               {
                   "circularTokenByRef": {
@@ -384,7 +384,7 @@ describe("recursive-schema", () => {
             },
         });
 
-        expect(getZodiosEndpointDescriptionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
+        expect(getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
           {
               "circularTokenByRef": {
                   "#/components/schemas/Friend": "@circular__y9ima2EJ1e",

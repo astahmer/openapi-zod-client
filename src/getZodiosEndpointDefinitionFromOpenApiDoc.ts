@@ -1,4 +1,4 @@
-import { ZodiosEndpointDescription } from "@zodios/core";
+import { ZodiosEndpointDefinition } from "@zodios/core";
 import {
     isReferenceObject,
     OpenAPIObject,
@@ -20,10 +20,7 @@ import { sync } from "whence";
 
 const voidSchema = "z.void()";
 
-export const getZodiosEndpointDescriptionFromOpenApiDoc = (
-    doc: OpenAPIObject,
-    options?: TemplateContext["options"]
-) => {
+export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
     const getSchemaByRef = (ref: string) =>
         get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", ".")) as SchemaObject;
 
@@ -242,10 +239,10 @@ export const getZodiosEndpointDescriptionFromOpenApiDoc = (
 
 const allowedPathInValues = ["query", "header"] as Array<ParameterObject["in"]>;
 
-export type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDescription<any>, "response" | "parameters">> & {
+export type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDefinition<any>, "response" | "parameters">> & {
     response: string;
     parameters: Array<
-        Omit<Required<ZodiosEndpointDescription<any>>["parameters"][number], "schema"> & { schema: string }
+        Omit<Required<ZodiosEndpointDefinition<any>>["parameters"][number], "schema"> & { schema: string }
     >;
 };
 
