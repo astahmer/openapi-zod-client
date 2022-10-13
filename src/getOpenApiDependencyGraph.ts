@@ -49,7 +49,7 @@ export const getOpenApiDependencyGraph = (
             return visit(schema.items, fromRef);
         }
 
-        if (schema.type === "object") {
+        if (schema.type === "object" || schema.properties || schema.additionalProperties) {
             if (schema.properties) {
                 for (const property in schema.properties) {
                     visit(schema.properties[property], fromRef);

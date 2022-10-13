@@ -16,7 +16,11 @@ exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const variables = {};
+const vLMDqDGAeww = z.object({ subscriptionId: z.string() });
+
+const variables = {
+    postStreams: vLMDqDGAeww,
+};
 
 const endpoints = makeApi([]);
 

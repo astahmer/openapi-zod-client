@@ -90,9 +90,7 @@ export const getTypescriptFromOpenApi = ({
             return t.intersection(types);
         }
 
-        if (!schema.type) return t.unknown();
-
-        if (isPrimitiveType(schema.type)) {
+        if (schema.type && isPrimitiveType(schema.type)) {
             if (schema.enum) {
                 return t.union(schema.enum);
             }
@@ -116,7 +114,7 @@ export const getTypescriptFromOpenApi = ({
             return t.array(t.any());
         }
 
-        if (schema.type === "object") {
+        if (schema.type === "object" || schema.properties || schema.additionalProperties) {
             if (!schema.properties) {
                 return {};
             }
@@ -188,6 +186,8 @@ export const getTypescriptFromOpenApi = ({
 
             return t.type(inheritedMeta.name, t.reference("Partial", [objectType]));
         }
+
+        if (!schema.type) return t.unknown();
 
         throw new Error(`Unsupported schema type: ${schema.type}`);
     };

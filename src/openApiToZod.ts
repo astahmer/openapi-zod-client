@@ -114,9 +114,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         );
     }
 
-    if (!schema.type) return code.assign(`z.unknown()`);
-
-    if (isPrimitiveType(schema.type)) {
+    if (schema.type && isPrimitiveType(schema.type)) {
         if (schema.enum) {
             if (schema.type === "string") {
                 return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
@@ -143,7 +141,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
         return code.assign(`z.array(z.any())`);
     }
 
-    if (schema.type === "object") {
+    if (schema.type === "object" || schema.properties || schema.additionalProperties) {
         let additionalProps = "";
         if (
             (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
@@ -180,6 +178,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta }: ConversionArg
 
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
+
+    if (!schema.type) return code.assign(`z.unknown()`);
 
     throw new Error(`Unsupported schema type: ${schema.type}`);
 }
