@@ -88,7 +88,13 @@ test("getZodClientTemplateContext", async () => {
                       },
                   ],
                   "method": "get",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
                   "response": "variables["Pet"]",
@@ -99,6 +105,11 @@ test("getZodClientTemplateContext", async () => {
                   "errors": [],
                   "method": "post",
                   "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
                       {
                           "name": "additionalMetadata",
                           "schema": "z.string().optional()",
@@ -202,7 +213,13 @@ test("getZodClientTemplateContext", async () => {
                       },
                   ],
                   "method": "get",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "orderId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
                   "response": "variables["Order"]",
@@ -240,7 +257,13 @@ test("getZodClientTemplateContext", async () => {
                       },
                   ],
                   "method": "get",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/user/:username",
                   "requestFormat": "json",
                   "response": "variables["User"]",
@@ -256,6 +279,11 @@ test("getZodClientTemplateContext", async () => {
                           "name": "body",
                           "schema": "variables["updateUser_Body"]",
                           "type": "Body",
+                      },
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
                       },
                   ],
                   "path": "/user/:username",
@@ -500,6 +528,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/pet/:petId",
                   description: \`Returns a single pet\`,
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "petId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
+                  ],
                   response: variables["Pet"],
                   errors: [
                       {
@@ -519,6 +554,11 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/pet/:petId/uploadImage",
                   requestFormat: "json",
                   parameters: [
+                      {
+                          name: "petId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
                       {
                           name: "additionalMetadata",
                           type: "Query",
@@ -602,6 +642,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/store/order/:orderId",
                   description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "orderId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
+                  ],
                   response: variables["Order"],
                   errors: [
                       {
@@ -635,6 +682,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   method: "get",
                   path: "/user/:username",
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "username",
+                          type: "Path",
+                          schema: z.string(),
+                      },
+                  ],
                   response: variables["User"],
                   errors: [
                       {
@@ -660,6 +714,11 @@ describe("generateZodClientFromOpenAPI", () => {
                           description: \`Update an existent user in the store\`,
                           type: "Body",
                           schema: variables["updateUser_Body"],
+                      },
+                      {
+                          name: "username",
+                          type: "Path",
+                          schema: z.string(),
                       },
                   ],
                   response: z.void(),
@@ -855,6 +914,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   alias: "getPetById",
                   description: \`Returns a single pet\`,
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "petId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
+                  ],
                   response: variables["Pet"],
                   errors: [
                       {
@@ -875,6 +941,11 @@ describe("generateZodClientFromOpenAPI", () => {
                   alias: "uploadFile",
                   requestFormat: "json",
                   parameters: [
+                      {
+                          name: "petId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
                       {
                           name: "additionalMetadata",
                           type: "Query",
@@ -963,6 +1034,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   alias: "getOrderById",
                   description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "orderId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
+                  ],
                   response: variables["Order"],
                   errors: [
                       {
@@ -998,6 +1076,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/user/:username",
                   alias: "getUserByName",
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "username",
+                          type: "Path",
+                          schema: z.string(),
+                      },
+                  ],
                   response: variables["User"],
                   errors: [
                       {
@@ -1024,6 +1109,11 @@ describe("generateZodClientFromOpenAPI", () => {
                           description: \`Update an existent user in the store\`,
                           type: "Body",
                           schema: variables["updateUser_Body"],
+                      },
+                      {
+                          name: "username",
+                          type: "Path",
+                          schema: z.string(),
                       },
                   ],
                   response: z.void(),
@@ -1219,6 +1309,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/pet/:petId",
                   description: \`Returns a single pet\`,
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "petId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
+                  ],
                   response: variables["Pet"],
                   errors: [
                       {
@@ -1238,6 +1335,11 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/pet/:petId/uploadImage",
                   requestFormat: "json",
                   parameters: [
+                      {
+                          name: "petId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
                       {
                           name: "additionalMetadata",
                           type: "Query",
@@ -1321,6 +1423,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   path: "/store/order/:orderId",
                   description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "orderId",
+                          type: "Path",
+                          schema: z.number(),
+                      },
+                  ],
                   response: variables["Order"],
                   errors: [
                       {
@@ -1354,6 +1463,13 @@ describe("generateZodClientFromOpenAPI", () => {
                   method: "get",
                   path: "/user/:username",
                   requestFormat: "json",
+                  parameters: [
+                      {
+                          name: "username",
+                          type: "Path",
+                          schema: z.string(),
+                      },
+                  ],
                   response: variables["User"],
                   errors: [
                       {
@@ -1379,6 +1495,11 @@ describe("generateZodClientFromOpenAPI", () => {
                           description: \`Update an existent user in the store\`,
                           type: "Body",
                           schema: variables["updateUser_Body"],
+                      },
+                      {
+                          name: "username",
+                          type: "Path",
+                          schema: z.string(),
                       },
                   ],
                   response: z.void(),

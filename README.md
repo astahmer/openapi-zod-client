@@ -248,6 +248,13 @@ const endpoints = makeApi([
         method: "get",
         path: "/pets/:petId",
         requestFormat: "json",
+        parameters: [
+            {
+                name: "petId",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: variables["Pet"],
     },
 ]);

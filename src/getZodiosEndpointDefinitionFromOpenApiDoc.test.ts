@@ -693,7 +693,13 @@ test("petstore.yaml", async () => {
                       },
                   ],
                   "method": "get",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
                   "response": "@var/Pet",
@@ -710,6 +716,11 @@ test("petstore.yaml", async () => {
                   ],
                   "method": "post",
                   "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
                       {
                           "name": "name",
                           "schema": "z.string().optional()",
@@ -741,6 +752,11 @@ test("petstore.yaml", async () => {
                           "schema": "z.string().optional()",
                           "type": "Header",
                       },
+                      {
+                          "name": "petId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
@@ -751,6 +767,11 @@ test("petstore.yaml", async () => {
                   "errors": [],
                   "method": "post",
                   "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
                       {
                           "name": "additionalMetadata",
                           "schema": "z.string().optional()",
@@ -810,7 +831,13 @@ test("petstore.yaml", async () => {
                       },
                   ],
                   "method": "get",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "orderId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
                   "response": "@var/Order",
@@ -831,7 +858,13 @@ test("petstore.yaml", async () => {
                       },
                   ],
                   "method": "delete",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "orderId",
+                          "schema": "z.number()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
               },
@@ -922,7 +955,13 @@ test("petstore.yaml", async () => {
                       },
                   ],
                   "method": "get",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/user/:username",
                   "requestFormat": "json",
                   "response": "@var/User",
@@ -938,6 +977,11 @@ test("petstore.yaml", async () => {
                           "name": "body",
                           "schema": "@var/updateUser_Body",
                           "type": "Body",
+                      },
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
                       },
                   ],
                   "path": "/user/:username",
@@ -960,7 +1004,13 @@ test("petstore.yaml", async () => {
                       },
                   ],
                   "method": "delete",
-                  "parameters": [],
+                  "parameters": [
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
+                      },
+                  ],
                   "path": "/user/:username",
                   "requestFormat": "json",
               },
