@@ -58,12 +58,31 @@ const endpoints = makeApi([
         method: "get",
         path: "/2.0/repositories/:username",
         requestFormat: "json",
+        parameters: [
+            {
+                name: "username",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: z.array(variables["getRepository"]),
     },
     {
         method: "get",
         path: "/2.0/repositories/:username/:slug",
         requestFormat: "json",
+        parameters: [
+            {
+                name: "username",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "slug",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: variables["repository"],
     },
     {
@@ -71,6 +90,16 @@ const endpoints = makeApi([
         path: "/2.0/repositories/:username/:slug/pullrequests",
         requestFormat: "json",
         parameters: [
+            {
+                name: "username",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "slug",
+                type: "Path",
+                schema: z.string(),
+            },
             {
                 name: "state",
                 type: "Query",
@@ -83,12 +112,36 @@ const endpoints = makeApi([
         method: "get",
         path: "/2.0/repositories/:username/:slug/pullrequests/:pid",
         requestFormat: "json",
+        parameters: [
+            {
+                name: "username",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "slug",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "pid",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: variables["pullrequest"],
     },
     {
         method: "get",
         path: "/2.0/users/:username",
         requestFormat: "json",
+        parameters: [
+            {
+                name: "username",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: variables["user"],
     },
 ]);
@@ -138,6 +191,13 @@ const endpoints = makeApi([
         method: "get",
         path: "/pets/:petId",
         requestFormat: "json",
+        parameters: [
+            {
+                name: "petId",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: variables["Pet"],
     },
 ]);
@@ -211,6 +271,13 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
         path: "/pets/:id",
         description: \`Returns a user based on a single ID, if the user does not have access to the pet\`,
         requestFormat: "json",
+        parameters: [
+            {
+                name: "id",
+                type: "Path",
+                schema: z.number(),
+            },
+        ],
         response: variables["Pet"],
     },
     {
@@ -218,6 +285,13 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
         path: "/pets/:id",
         description: \`deletes a single pet based on the ID supplied\`,
         requestFormat: "json",
+        parameters: [
+            {
+                name: "id",
+                type: "Path",
+                schema: z.number(),
+            },
+        ],
         response: variables["Error"],
     },
 ]);
@@ -265,6 +339,18 @@ const endpoints = makeApi([
         path: "/:dataset/:version/fields",
         description: \`This GET API returns the list of all the searchable field names that are in the oa_citations. Please see the &#x27;fields&#x27; attribute which returns an array of field names. Each field or a combination of fields can be searched using the syntax options shown below.\`,
         requestFormat: "json",
+        parameters: [
+            {
+                name: "dataset",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "version",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: z.string(),
         errors: [
             {
@@ -279,6 +365,18 @@ const endpoints = makeApi([
         path: "/:dataset/:version/records",
         description: \`This API is based on Solr/Lucene Search. The data is indexed using SOLR. This GET API returns the list of all the searchable field names that are in the Solr Index. Please see the &#x27;fields&#x27; attribute which returns an array of field names. Each field or a combination of fields can be searched using the Solr/Lucene Syntax. Please refer https://lucene.apache.org/core/3_6_2/queryparsersyntax.html#Overview for the query syntax. List of field names that are searchable can be determined using above GET api.\`,
         requestFormat: "json",
+        parameters: [
+            {
+                name: "version",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "dataset",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
         response: z.array(z.record(z.object({}).partial())),
         errors: [
             {
