@@ -34,20 +34,20 @@ import { z } from "zod";
 
 const vObntp1skbx = z.object({ username: z.string(), uuid: z.string() }).partial();
 const vZj8Kquc5yX = z.object({ slug: z.string(), owner: vObntp1skbx }).partial();
-const vDuiOz9DMZ7 = z
-    .object({ id: z.number(), title: z.string(), repository: vZj8Kquc5yX, author: vObntp1skbx })
+const vRlupufDwET = z
+    .object({ id: z.number().int(), title: z.string(), repository: vZj8Kquc5yX, author: vObntp1skbx })
     .partial();
 const vKMFj5kanr5 = z.array(vZj8Kquc5yX);
 const vt4Y3jGvjMM = z.enum(["open", "merged", "declined"]).optional();
-const vSgadMZDVXI = z.array(vDuiOz9DMZ7);
+const vXjHxaxSqAF = z.array(vRlupufDwET);
 
 const variables = {
-    getPullRequestsById: vDuiOz9DMZ7,
-    getPullRequestsByRepository: vSgadMZDVXI,
+    getPullRequestsById: vRlupufDwET,
+    getPullRequestsByRepository: vXjHxaxSqAF,
     getRepositoriesByOwner: vKMFj5kanr5,
     getRepository: vZj8Kquc5yX,
     getUserByName: vObntp1skbx,
-    pullrequest: vDuiOz9DMZ7,
+    pullrequest: vRlupufDwET,
     repository: vZj8Kquc5yX,
     state: vt4Y3jGvjMM,
     user: vObntp1skbx,
@@ -154,17 +154,17 @@ exports[`samples-generator > ./samples/v3.0/petstore.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vz089ZHJr6H = z.object({ id: z.number(), name: z.string(), tag: z.string().optional() });
-const vvHrKrAZzfP = z.array(vz089ZHJr6H);
-const vusbpdVpqWm = z.object({ code: z.number(), message: z.string() });
+const v1V4WeOqHOR = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
+const vE4h2yEASDL = z.array(v1V4WeOqHOR);
+const vQV94vZN90C = z.object({ code: z.number().int(), message: z.string() });
 
 const variables = {
-    Error: vusbpdVpqWm,
-    Pet: vz089ZHJr6H,
-    Pets: vvHrKrAZzfP,
-    createPets: vusbpdVpqWm,
-    listPets: vusbpdVpqWm,
-    showPetById: vusbpdVpqWm,
+    Error: vQV94vZN90C,
+    Pet: v1V4WeOqHOR,
+    Pets: vE4h2yEASDL,
+    createPets: vQV94vZN90C,
+    listPets: vQV94vZN90C,
+    showPetById: vQV94vZN90C,
 };
 
 const endpoints = makeApi([
@@ -211,19 +211,19 @@ exports[`samples-generator > ./samples/v3.0/petstore-expanded.yaml 1`] = `
 import { z } from "zod";
 
 const vPXNN6VHlNv = z.object({ name: z.string(), tag: z.string().optional() });
-const vwtihe8QpJQ = vPXNN6VHlNv.and(z.object({ id: z.number() }));
+const vdFAvdPGqCi = vPXNN6VHlNv.and(z.object({ id: z.number().int() }));
 const vGqL1kemtHF = z.array(z.string()).optional();
-const vDdKrvyZ9gt = z.array(vwtihe8QpJQ);
-const vusbpdVpqWm = z.object({ code: z.number(), message: z.string() });
+const vuUCHA8LJFF = z.array(vdFAvdPGqCi);
+const vQV94vZN90C = z.object({ code: z.number().int(), message: z.string() });
 
 const variables = {
-    Error: vusbpdVpqWm,
-    Pet: vwtihe8QpJQ,
-    addPet: vusbpdVpqWm,
+    Error: vQV94vZN90C,
+    Pet: vdFAvdPGqCi,
+    addPet: vQV94vZN90C,
     addPet_Body: vPXNN6VHlNv,
-    deletePet: vusbpdVpqWm,
-    findPets: vusbpdVpqWm,
-    find_pet_by_id: vusbpdVpqWm,
+    deletePet: vQV94vZN90C,
+    findPets: vQV94vZN90C,
+    find_pet_by_id: vQV94vZN90C,
     tags: vGqL1kemtHF,
 };
 
@@ -304,9 +304,9 @@ exports[`samples-generator > ./samples/v3.0/uspto.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vIEeBL2OSmC = z
+const v60c7XUj6A7 = z
     .object({
-        total: z.number(),
+        total: z.number().int(),
         apis: z.array(
             z
                 .object({
@@ -322,8 +322,8 @@ const vIEeBL2OSmC = z
 const vlyQvttKNVV = z.array(z.record(z.object({}).partial()));
 
 const variables = {
-    dataSetList: vIEeBL2OSmC,
-    list_data_sets: vIEeBL2OSmC,
+    dataSetList: v60c7XUj6A7,
+    list_data_sets: v60c7XUj6A7,
     perform_search: vlyQvttKNVV,
 };
 

@@ -211,17 +211,17 @@ output:
 import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vz089ZHJr6H = z.object({ id: z.number(), name: z.string(), tag: z.string().optional() });
-const vvHrKrAZzfP = z.array(vz089ZHJr6H);
-const vusbpdVpqWm = z.object({ code: z.number(), message: z.string() });
+const v1V4WeOqHOR = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
+const vE4h2yEASDL = z.array(v1V4WeOqHOR);
+const vQV94vZN90C = z.object({ code: z.number().int(), message: z.string() });
 
 const variables = {
-    Error: vusbpdVpqWm,
-    Pet: vz089ZHJr6H,
-    Pets: vvHrKrAZzfP,
-    createPets: vusbpdVpqWm,
-    listPets: vusbpdVpqWm,
-    showPetById: vusbpdVpqWm,
+    Error: vQV94vZN90C,
+    Pet: v1V4WeOqHOR,
+    Pets: vE4h2yEASDL,
+    createPets: vQV94vZN90C,
+    listPets: vQV94vZN90C,
+    showPetById: vQV94vZN90C,
 };
 
 const endpoints = makeApi([
@@ -266,7 +266,6 @@ export const api = new Zodios(endpoints);
 
 -   handle default values (output `z.default(xxx)`)
 -   handle OA spec `format: date-time` -> output `z.date()` / `preprocess` ?
--   handle string/number constraints -> output z.`min max length email url uuid startsWith endsWith regex trim nonempty gt gte lt lte int positive nonnegative negative nonpositive multipleOf`
 -   handle OA `prefixItems` -> output `z.tuple`
 -   rm unused (=never referenced) variables from output
 
