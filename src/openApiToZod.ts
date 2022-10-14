@@ -172,7 +172,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 } as CodeMetaData;
                 const propCode =
                     getZodSchema({ schema: propSchema, ctx, meta: propMetadata, options }) +
-                    getZodChainablePresence(propSchema as SchemaObject, propMetadata);
+                    getZodChain(propSchema as SchemaObject, propMetadata);
 
                 return [prop, propCode.toString()];
             });
@@ -213,33 +213,115 @@ type DefinedCodeMetaProps = "referencedBy" | "nestingLevel";
 type DefinedCodeMetaData = Pick<Required<CodeMetaData>, DefinedCodeMetaProps> &
     Omit<CodeMetaData, DefinedCodeMetaProps>;
 
+const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
+    const chains: string[] = [];
+
+    if (schema.type === "string") {
+        chains.push(getZodChainableStringValidations(schema, meta));
+    } else if (schema.type === "number" || schema.type === "integer") {
+        chains.push(getZodChainableNumberValidations(schema, meta));
+    } else if (schema.type === "array") {
+        chains.push(getZodChainableArrayValidations(schema, meta));
+    }
+
+    const output = chains.concat(getZodChainablePresence(schema, meta)).filter(Boolean).join(".");
+    return output ? `.${output}` : "";
+};
+
 export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
     if (schema.nullable && !meta?.isRequired) {
-        return `.nullish()`;
+        return `nullish()`;
     }
 
     if (schema.nullable) {
-        return `.nullable()`;
+        return `nullable()`;
     }
 
     if (!meta?.isRequired) {
-        return `.optional()`;
+        return `optional()`;
     }
 
     return "";
 };
 
 // TODO z.default()
-// TODO OA format: date-time -> z.date() / preprocess ?
-// TODO z.nonempty min max length
 // TODO OA prefixItems -> z.tuple
-// TODO recursive = z.lazy() ?
 
-const getZodChainableStringConditions = (schema: SchemaObject, meta?: ConversionTypeContext) => {
-    // TODO min max length email url uuid startsWith endsWith regex trim nonempty
+const getZodChainableStringValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
+    const validations: string[] = [];
+
+    if (schema.minLength && schema.maxLength) {
+        validations.push(`length(${schema.minLength})`);
+    } else if (schema.minLength) {
+        validations.push(`min(${schema.minLength})`);
+    } else if (schema.maxLength) {
+        validations.push(`max(${schema.maxLength})`);
+    }
+
+    if (schema.pattern) {
+        validations.push(`regex(/${schema.pattern}/)`);
+    }
+
+    if (schema.format) {
+        const chain = match(schema.format)
+            .with("email", () => `email()`)
+            .with("hostname", () => `url()`)
+            .with("uri", () => `url()`)
+            .with("uuid", () => `uuid()`)
+            .otherwise(() => "");
+
+        if (chain) {
+            validations.push(chain);
+        }
+    }
+
+    return validations.join(".");
 };
-const getZodChainableNumberConditions = (schema: SchemaObject, meta?: ConversionTypeContext) => {
-    // TODO gt gte lt lte int positive nonnegative negative nonpositive multipleOf
+const getZodChainableNumberValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
+    const validations: string[] = [];
+
+    if (schema.type === "integer") {
+        validations.push(`int()`);
+    }
+    if (schema.minimum) {
+        if (schema.exclusiveMinimum) {
+            validations.push(`gt(${schema.minimum})`);
+        } else {
+            validations.push(`gte(${schema.minimum})`);
+        }
+    } else if (typeof schema.exclusiveMinimum === "number") {
+        validations.push(`gt(${schema.exclusiveMinimum})`);
+    }
+
+    if (schema.maximum) {
+        if (schema.exclusiveMaximum) {
+            validations.push(`lt(${schema.maximum})`);
+        } else {
+            validations.push(`lte(${schema.maximum})`);
+        }
+    } else if (typeof schema.exclusiveMaximum === "number") {
+        validations.push(`lt(${schema.exclusiveMaximum})`);
+    }
+
+    if (schema.multipleOf) {
+        validations.push(`multipleOf(${schema.multipleOf})`);
+    }
+
+    return validations.join(".");
+};
+
+const getZodChainableArrayValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
+    const validations: string[] = [];
+
+    if (schema.minItems && schema.maxItems) {
+        validations.push(`length(${schema.minItems})`);
+    } else if (schema.minItems) {
+        validations.push(`min(${schema.minItems})`);
+    } else if (schema.maxItems) {
+        validations.push(`max(${schema.maxItems})`);
+    }
+
+    return validations.join(".");
 };
 
 type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;

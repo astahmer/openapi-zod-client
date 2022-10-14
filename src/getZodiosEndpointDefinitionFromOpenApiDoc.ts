@@ -158,6 +158,8 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                         ctx,
                         meta: { isRequired: paramItem.in === "path" ? true : paramItem.required || false },
                     });
+                    const chainablePresence = getZodChainablePresence(paramSchema, paramCode.meta);
+
                     endpointDescription.parameters.push({
                         name: paramItem.name,
                         type: match(paramItem.in)
@@ -166,7 +168,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                             .with("path", () => "Path")
                             .run() as "Header" | "Query" | "Path",
                         schema: getZodVarName(
-                            paramCode.assign(paramCode.code + getZodChainablePresence(paramSchema, paramCode.meta)),
+                            paramCode.assign(paramCode.code + (chainablePresence ? "." + chainablePresence : "")),
                             paramItem.name
                         ),
                     });
