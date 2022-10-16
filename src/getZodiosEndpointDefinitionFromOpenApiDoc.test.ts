@@ -871,7 +871,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "createUser",
                   "description": "This can only be done by the logged in user.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "@var/User",
+                          "status": "default",
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -883,12 +889,17 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user",
                   "requestFormat": "json",
-                  "response": "@var/User",
               },
               {
                   "alias": "createUsersWithListInput",
                   "description": "Creates list of users with given input array",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.void()",
+                          "status": "default",
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -932,12 +943,17 @@ test("petstore.yaml", async () => {
               {
                   "alias": "logoutUser",
                   "description": "",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.void()",
+                          "status": "default",
+                      },
+                  ],
                   "method": "get",
                   "parameters": [],
                   "path": "/user/logout",
                   "requestFormat": "json",
-                  "response": "z.void()",
               },
               {
                   "alias": "getUserByName",
@@ -969,7 +985,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "updateUser",
                   "description": "This can only be done by the logged in user.",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.void()",
+                          "status": "default",
+                      },
+                  ],
                   "method": "put",
                   "parameters": [
                       {
@@ -986,7 +1008,6 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
-                  "response": "z.void()",
               },
               {
                   "alias": "deleteUser",

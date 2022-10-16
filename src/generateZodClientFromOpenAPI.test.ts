@@ -225,23 +225,6 @@ test("getZodClientTemplateContext", async () => {
                   "response": "variables["Order"]",
               },
               {
-                  "alias": "createUser",
-                  "description": "This can only be done by the logged in user.",
-                  "errors": [],
-                  "method": "post",
-                  "parameters": [
-                      {
-                          "description": "Created user object",
-                          "name": "body",
-                          "schema": "variables["createUser_Body"]",
-                          "type": "Body",
-                      },
-                  ],
-                  "path": "/user",
-                  "requestFormat": "json",
-                  "response": "variables["User"]",
-              },
-              {
                   "alias": "getUserByName",
                   "description": "",
                   "errors": [
@@ -269,31 +252,15 @@ test("getZodClientTemplateContext", async () => {
                   "response": "variables["User"]",
               },
               {
-                  "alias": "updateUser",
-                  "description": "This can only be done by the logged in user.",
-                  "errors": [],
-                  "method": "put",
-                  "parameters": [
-                      {
-                          "description": "Update an existent user in the store",
-                          "name": "body",
-                          "schema": "variables["updateUser_Body"]",
-                          "type": "Body",
-                      },
-                      {
-                          "name": "username",
-                          "schema": "z.string()",
-                          "type": "Path",
-                      },
-                  ],
-                  "path": "/user/:username",
-                  "requestFormat": "json",
-                  "response": "z.void()",
-              },
-              {
                   "alias": "createUsersWithListInput",
                   "description": "Creates list of users with given input array",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.void()",
+                          "status": "default",
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -333,16 +300,6 @@ test("getZodClientTemplateContext", async () => {
                   "path": "/user/login",
                   "requestFormat": "json",
                   "response": "z.string()",
-              },
-              {
-                  "alias": "logoutUser",
-                  "description": "",
-                  "errors": [],
-                  "method": "get",
-                  "parameters": [],
-                  "path": "/user/logout",
-                  "requestFormat": "json",
-                  "response": "z.void()",
               },
           ],
           "options": {
@@ -664,21 +621,6 @@ describe("generateZodClientFromOpenAPI", () => {
                   ],
               },
               {
-                  method: "post",
-                  path: "/user",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Created user object\`,
-                          type: "Body",
-                          schema: variables["createUser_Body"],
-                      },
-                  ],
-                  response: variables["User"],
-              },
-              {
                   method: "get",
                   path: "/user/:username",
                   requestFormat: "json",
@@ -704,26 +646,6 @@ describe("generateZodClientFromOpenAPI", () => {
                   ],
               },
               {
-                  method: "put",
-                  path: "/user/:username",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent user in the store\`,
-                          type: "Body",
-                          schema: variables["updateUser_Body"],
-                      },
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: z.void(),
-              },
-              {
                   method: "post",
                   path: "/user/createWithList",
                   description: \`Creates list of users with given input array\`,
@@ -736,6 +658,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: "default",
+                          description: \`successful operation\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -761,12 +690,6 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.void(),
                       },
                   ],
-              },
-              {
-                  method: "get",
-                  path: "/user/logout",
-                  requestFormat: "json",
-                  response: z.void(),
               },
           ]);
 
@@ -1056,22 +979,6 @@ describe("generateZodClientFromOpenAPI", () => {
                   ],
               },
               {
-                  method: "post",
-                  path: "/user",
-                  alias: "createUser",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Created user object\`,
-                          type: "Body",
-                          schema: variables["createUser_Body"],
-                      },
-                  ],
-                  response: variables["User"],
-              },
-              {
                   method: "get",
                   path: "/user/:username",
                   alias: "getUserByName",
@@ -1098,27 +1005,6 @@ describe("generateZodClientFromOpenAPI", () => {
                   ],
               },
               {
-                  method: "put",
-                  path: "/user/:username",
-                  alias: "updateUser",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent user in the store\`,
-                          type: "Body",
-                          schema: variables["updateUser_Body"],
-                      },
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: z.void(),
-              },
-              {
                   method: "post",
                   path: "/user/createWithList",
                   alias: "createUsersWithListInput",
@@ -1132,6 +1018,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: "default",
+                          description: \`successful operation\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -1158,13 +1051,6 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.void(),
                       },
                   ],
-              },
-              {
-                  method: "get",
-                  path: "/user/logout",
-                  alias: "logoutUser",
-                  requestFormat: "json",
-                  response: z.void(),
               },
           ]);
 
@@ -1445,21 +1331,6 @@ describe("generateZodClientFromOpenAPI", () => {
                   ],
               },
               {
-                  method: "post",
-                  path: "/user",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Created user object\`,
-                          type: "Body",
-                          schema: variables["createUser_Body"],
-                      },
-                  ],
-                  response: variables["User"],
-              },
-              {
                   method: "get",
                   path: "/user/:username",
                   requestFormat: "json",
@@ -1485,26 +1356,6 @@ describe("generateZodClientFromOpenAPI", () => {
                   ],
               },
               {
-                  method: "put",
-                  path: "/user/:username",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent user in the store\`,
-                          type: "Body",
-                          schema: variables["updateUser_Body"],
-                      },
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: z.void(),
-              },
-              {
                   method: "post",
                   path: "/user/createWithList",
                   description: \`Creates list of users with given input array\`,
@@ -1517,6 +1368,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: "default",
+                          description: \`successful operation\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -1542,12 +1400,6 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.void(),
                       },
                   ],
-              },
-              {
-                  method: "get",
-                  path: "/user/logout",
-                  requestFormat: "json",
-                  response: z.void(),
               },
           ]);
 
