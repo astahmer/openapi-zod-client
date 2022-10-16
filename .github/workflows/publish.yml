@@ -1,0 +1,62 @@
+# publish on npm when there is a new version tag
+
+name: publish
+on:
+    push:
+        tags: [v*]
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [16.x]
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+            - name: Install pnpm
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 7
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node-version }}
+                  cache: "pnpm"
+            - name: Install dependencies
+              run: pnpm install --frozen-lockfile
+            - name: Build
+              run: pnpm build
+            - name: Test
+              run: pnpm test
+            - name: Publish to npm
+              run: pnpm publish
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: generate changelog
+              uses: orhun/git-cliff-action@v1
+              id: cliff
+              with:
+                  args: --latest --strip footer
+              env:
+                  OUTPUT: CHANGES.md
+            - name: save changelog
+              id: changelog
+              shell: bash
+              run: |
+                  changelog=$(cat ${{ steps.cliff.outputs.changelog }})
+                  changelog="${changelog//'%'/'%25'}"
+                  changelog="${changelog//$'\n'/'%0A'}"
+                  changelog="${changelog//$'\r'/'%0D'}"
+                  echo "::set-output name=changelog::$changelog"
+            - name: create release
+              id: release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release ${{ github.ref }}
+                  body: ${{ steps.changelog.outputs.changelog }}
+                  draft: false
+                  prerelease: false
