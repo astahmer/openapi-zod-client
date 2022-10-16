@@ -1,4 +1,4 @@
-import { compile } from "handlebars";
+import { compile, registerHelper, HelperOptions } from "handlebars";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { OpenAPIObject } from "openapi3-ts";
@@ -19,6 +19,15 @@ import { topologicalSort } from "./topologicalSort";
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
+
+registerHelper("ifeq", function (a: string, b: string, options: HelperOptions) {
+    if (a === b) {
+        // @ts-ignore
+        return options.fn(this);
+    }
+    // @ts-ignore
+    return options.inverse(this);
+});
 
 export const getZodClientTemplateContext = (
     openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"],
