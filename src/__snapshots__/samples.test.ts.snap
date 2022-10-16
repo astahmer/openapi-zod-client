@@ -218,12 +218,26 @@ const endpoints = makeApi([
             },
         ],
         response: variables["Pets"],
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
     {
         method: "post",
         path: "/pets",
         requestFormat: "json",
         response: z.void(),
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
     {
         method: "get",
@@ -237,6 +251,13 @@ const endpoints = makeApi([
             },
         ],
         response: variables["Pet"],
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
 ]);
 
@@ -288,6 +309,13 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             },
         ],
         response: z.array(variables["Pet"]),
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
     {
         method: "post",
@@ -303,6 +331,13 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             },
         ],
         response: variables["Pet"],
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
     {
         method: "get",
@@ -317,6 +352,13 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             },
         ],
         response: variables["Pet"],
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
     {
         method: "delete",
@@ -331,6 +373,13 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             },
         ],
         response: z.void(),
+        errors: [
+            {
+                status: "default",
+                description: \`unexpected error\`,
+                schema: variables["Error"],
+            },
+        ],
     },
 ]);
 

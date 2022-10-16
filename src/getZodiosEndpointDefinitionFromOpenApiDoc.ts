@@ -220,7 +220,10 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                 }
             }
 
-            if (!endpointDescription.response && operation.responses?.["default"]) {
+            // use `default` as fallback for `response` undeclared responses
+            // if no main response has been found, this should be considered it
+            // else this will be added as an error response
+            if (operation.responses?.["default"]) {
                 const responseItem = operation.responses["default"] as ResponseObject;
 
                 const mediaTypes = Object.keys(responseItem.content ?? {});
@@ -236,7 +239,15 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                 }
 
                 if (schemaString) {
-                    endpointDescription.response = schemaString;
+                    if (endpointDescription.response) {
+                        endpointDescription.errors.push({
+                            schema: schemaString as any,
+                            status: "default",
+                            description: responseItem.description,
+                        });
+                    } else {
+                        endpointDescription.response = schemaString;
+                    }
                 }
             }
 

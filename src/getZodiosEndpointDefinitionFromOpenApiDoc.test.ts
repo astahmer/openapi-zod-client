@@ -888,7 +888,13 @@ test("petstore.yaml", async () => {
               {
                   "alias": "createUsersWithListInput",
                   "description": "Creates list of users with given input array",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.void()",
+                          "status": "default",
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {

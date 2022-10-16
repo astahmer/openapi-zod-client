@@ -293,7 +293,13 @@ test("getZodClientTemplateContext", async () => {
               {
                   "alias": "createUsersWithListInput",
                   "description": "Creates list of users with given input array",
-                  "errors": [],
+                  "errors": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.void()",
+                          "status": "default",
+                      },
+                  ],
                   "method": "post",
                   "parameters": [
                       {
@@ -736,6 +742,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: "default",
+                          description: \`successful operation\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -1132,6 +1145,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: "default",
+                          description: \`successful operation\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
@@ -1517,6 +1537,13 @@ describe("generateZodClientFromOpenAPI", () => {
                       },
                   ],
                   response: variables["User"],
+                  errors: [
+                      {
+                          status: "default",
+                          description: \`successful operation\`,
+                          schema: z.void(),
+                      },
+                  ],
               },
               {
                   method: "get",
