@@ -27,7 +27,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
     const endpoints = [];
     const responsesByOperationId = {} as Record<string, Record<string, string>>;
 
-    let isMainResponseStatus = (status: number) => status === 200;
+    let isMainResponseStatus = (status: number) => status >= 200 && status < 300;
     if (options?.isMainResponseStatus) {
         isMainResponseStatus =
             typeof options.isMainResponseStatus === "string"
@@ -193,9 +193,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                 if (schemaString) {
                     const status = Number(statusCode);
 
-                    if (!isErrorStatus(status)) {
-                        // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
-                        // getZodVarName should use operation.operationId as fallbackName
+                    if (isMainResponseStatus(status) && !endpointDescription.response) {
                         endpointDescription.response = schemaString;
 
                         if (
@@ -205,7 +203,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                         ) {
                             endpointDescription.description = responseItem.description;
                         }
-                    } else if (statusCode === "default" || isErrorStatus(status)) {
+                    } else if (statusCode !== "default" && isErrorStatus(status)) {
                         endpointDescription.errors.push({
                             schema: schemaString as any,
                             status: statusCode === "default" ? "default" : status,
@@ -219,6 +217,26 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                             [statusCode]: schema ? getZodVarName(schema, endpointDescription.alias) : schemaString,
                         };
                     }
+                }
+            }
+
+            if (!endpointDescription.response && operation.responses?.["default"]) {
+                const responseItem = operation.responses["default"] as ResponseObject;
+
+                const mediaTypes = Object.keys(responseItem.content ?? {});
+                const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
+
+                const maybeSchema = matchingMediaType && responseItem.content?.[matchingMediaType]?.schema;
+                let schemaString = matchingMediaType ? undefined : voidSchema;
+                let schema: CodeMeta | undefined;
+
+                if (maybeSchema) {
+                    schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
+                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
+                }
+
+                if (schemaString) {
+                    endpointDescription.response = schemaString;
                 }
             }
 
