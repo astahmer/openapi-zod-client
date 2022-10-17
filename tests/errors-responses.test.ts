@@ -69,7 +69,7 @@ it("includes errors-responses", async () => {
           method: "get",
           path: "/example",
           requestFormat: "json",
-          response: z.number(),
+          response: z.object({ str: z.string(), nb: z.number() }),
           errors: [
             {
               status: 400,
@@ -197,9 +197,7 @@ it("determines which status are considered errors-responses", async () => {
           method: "get",
           path: "/example",
           requestFormat: "json",
-          response: z
-            .object({ is400: z.boolean(), nested: variables["getExample"] })
-            .partial(),
+          response: z.object({ str: z.string(), nb: z.number() }),
           errors: [
             {
               status: 400,
@@ -259,9 +257,7 @@ it("determines which status are considered errors-responses", async () => {
           method: "get",
           path: "/example",
           requestFormat: "json",
-          response: z
-            .object({ is400: z.boolean(), nested: variables["getExample"] })
-            .partial(),
+          response: z.object({ str: z.string(), nb: z.number() }),
           errors: [
             {
               status: 400,
