@@ -4,65 +4,65 @@
 name: CI
 
 on:
-    push:
-        branches: [main]
-        paths:
-            - src/**
-            - pnpm-lock.yaml
-            - package.json
-            - tsconfig.json
-    pull_request:
-        branches: [main]
-        paths:
-            - src/**
-            - pnpm-lock.yaml
-            - package.json
-            - tsconfig.json
+  push:
+    branches: [main]
+    paths:
+      - src/**
+      - pnpm-lock.yaml
+      - package.json
+      - tsconfig.json
+  pull_request:
+    branches: [main]
+    paths:
+      - src/**
+      - pnpm-lock.yaml
+      - package.json
+      - tsconfig.json
 
 jobs:
-    build:
-        name: Build
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                node-version: [14.x, 16.x, 18.x]
-                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-            - name: Install pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 7
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v3
-              with:
-                  node-version: ${{ matrix.node-version }}
-                  cache: "pnpm"
-            - name: Install dependencies
-              run: pnpm install --frozen-lockfile
-            - name: Build
-              run: pnpm build
-            - name: Test
-              run: pnpm test
-    analyze:
-        name: Analyze
-        runs-on: ubuntu-latest
-        permissions:
-            actions: read
-            contents: read
-            security-events: write
-        strategy:
-            fail-fast: false
-            matrix:
-                language: ["javascript"]
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v3
-            - name: Initialize CodeQL
-              uses: github/codeql-action/init@v2
-              with:
-                  languages: ${{ matrix.language }}
-            - name: Perform CodeQL Analysis
-              uses: github/codeql-action/analyze@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 7
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build
+        run: pnpm build
+      - name: Test
+        run: pnpm test
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript"]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
