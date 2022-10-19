@@ -29,6 +29,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set"
     )
     .option("--with-deprecated", "when true, will keep deprecated endpoints in the api output")
+    .option("--group-strategy", "groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method'")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -49,6 +50,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 isMediaTypeAllowed: options.mediaTypeExpr,
                 withImplicitRequiredProps: options.implicitRequired,
                 withDeprecatedEndpoints: options.withDeprecated,
+                groupStrategy: options.groupStrategy,
             },
         });
         console.log(`Done generating <${distPath}> !`);
