@@ -239,7 +239,7 @@ export interface TemplateContext {
          * works like `validateStatus` from axios
          * @see https://github.com/axios/axios#handling-errors
          *
-         * @default `(200)`
+         * @default `(status >= 200 && status < 300)`
          */
         isMainResponseStatus?: string | ((status: number) => boolean);
         /**
