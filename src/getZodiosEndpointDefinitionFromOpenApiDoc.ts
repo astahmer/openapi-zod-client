@@ -113,6 +113,8 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
         for (const method in pathItem) {
             const operation = pathItem[method as keyof PathItemObject] as OperationObject;
 
+            if (options?.withDeprecatedEndpoints ? false : operation.deprecated) continue;
+
             const parameters = operation.parameters || [];
             const operationName = operation.operationId || method + pathToVariableName(path);
             const endpointDescription = {

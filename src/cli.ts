@@ -28,6 +28,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "--implicit-required",
         "When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set"
     )
+    .option("--with-deprecated", "when true, will keep deprecated endpoints in the api output")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -47,6 +48,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 shouldExportAllSchemas: options.exportSchemas,
                 isMediaTypeAllowed: options.mediaTypeExpr,
                 withImplicitRequiredProps: options.implicitRequired,
+                withDeprecatedEndpoints: options.withDeprecated,
             },
         });
         console.log(`Done generating <${distPath}> !`);

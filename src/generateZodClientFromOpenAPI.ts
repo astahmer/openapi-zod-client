@@ -277,5 +277,10 @@ export interface TemplateContext {
          * @see https://github.com/astahmer/openapi-zod-client/issues/23
          */
         withImplicitRequiredProps?: boolean;
+        /**
+         * when true, will keep deprecated endpoints in the api output
+         * @default false
+         */
+        withDeprecatedEndpoints?: boolean;
     };
 }
