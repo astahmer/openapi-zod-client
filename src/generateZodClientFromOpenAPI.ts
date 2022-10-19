@@ -1,19 +1,21 @@
 import { compile } from "handlebars";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { OpenAPIObject } from "openapi3-ts";
-import { reverse, sortBy, sortObjectKeys, sortObjKeysFromArray } from "pastable/server";
+import { OpenAPIObject, PathItemObject } from "openapi3-ts";
+import { sortBy, sortObjKeysFromArray } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
 import { ts } from "tanu";
+import { match } from "ts-pattern";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import {
     EndpointDescriptionWithRefs,
+    getOriginalPathWithBrackets,
     getZodiosEndpointDefinitionFromOpenApiDoc,
 } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
-import { getRefName } from "./tokens";
+import { getRefName, normalizeString } from "./tokens";
 import { topologicalSort } from "./topologicalSort";
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
@@ -89,14 +91,39 @@ export const getZodClientTemplateContext = (
     const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph).map((ref) => getRefName(ref));
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
+    const groupStrategy = options?.groupStrategy ?? "none";
+
     result.endpoints.forEach((endpoint) => {
         if (!endpoint.response) return;
-        data.endpoints.push({
+        const computedDefinition = {
             ...endpoint,
             parameters: endpoint.parameters.map((param) => ({ ...param, schema: param.schema })),
             response: endpoint.response,
             errors: endpoint.errors.map((error) => ({ ...error, schema: error.schema as any })) as any,
-        });
+        };
+
+        data.endpoints.push(computedDefinition);
+
+        if (groupStrategy !== "none") {
+            const operationPath = getOriginalPathWithBrackets(endpoint.path);
+            const pathItemObject: PathItemObject = openApiDoc.paths[endpoint.path] ?? openApiDoc.paths[operationPath];
+            if (!pathItemObject) {
+                console.warn("Missing path", endpoint.path);
+                return;
+            }
+
+            const operation = pathItemObject[endpoint.method]!;
+            const baseName = match(groupStrategy)
+                .with("tag", () => operation.tags?.[0] ?? "default")
+                .with("method", () => endpoint.method)
+                .exhaustive();
+            const groupName = normalizeString(baseName);
+
+            if (!data.endpointsGrouped[groupName]) {
+                data.endpointsGrouped[groupName] = [];
+            }
+            data.endpointsGrouped[groupName].push(computedDefinition);
+        }
     });
     data.endpoints = sortBy(data.endpoints, "path");
 
@@ -125,9 +152,14 @@ export const generateZodClientFromOpenAPI = async ({
     disableWriteToFile,
 }: GenerateZodClientFromOpenApiArgs) => {
     const data = getZodClientTemplateContext(openApiDoc, options);
+    const groupStrategy = options?.groupStrategy ?? "none";
 
     if (!templatePath) {
         templatePath = path.join(__dirname, "../src/template.hbs");
+
+        if (groupStrategy !== "none") {
+            templatePath = path.join(__dirname, "../src/template-grouped-by.hbs");
+        }
     }
     const source = await fs.readFile(templatePath, "utf-8");
     const template = compile(source);
@@ -156,6 +188,7 @@ const makeInitialContext = () =>
         variables: {},
         schemas: {},
         endpoints: [],
+        endpointsGrouped: {},
         types: {},
         circularTypeByName: {},
         options: {
@@ -168,6 +201,7 @@ export interface TemplateContext {
     variables: Record<string, string>;
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
+    endpointsGrouped: Record<string, EndpointDescriptionWithRefs[]>;
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
     options?: {
@@ -227,5 +261,13 @@ export interface TemplateContext {
          * @default false
          */
         withDeprecatedEndpoints?: boolean;
+        /**
+         * groups endpoints by a given strategy
+         *
+         * when strategy is "tag" and multiple tags are defined for an endpoint, the first one will be used
+         *
+         * @default "none"
+         */
+        groupStrategy?: "none" | "tag" | "method";
     };
 }

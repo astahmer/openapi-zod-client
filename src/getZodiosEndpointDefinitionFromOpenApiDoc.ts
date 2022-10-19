@@ -232,3 +232,6 @@ const pathToVariableName = (path: string) =>
     capitalize(kebabToCamel(path).replaceAll("/", "")) // /media-objects/{id} -> MediaObjects{id}
         .replace(pathParamWithBracketsRegex, (group) => capitalize(group.slice(1, -1))) // {id} -> Id
         .replace(wordPrecededByNonWordCharacter, "_"); // "/robots.txt" -> "/robots_txt"
+
+const originalPathParam = /:(\w+)/g;
+export const getOriginalPathWithBrackets = (path: string) => path.replaceAll(originalPathParam, "{$1}");
