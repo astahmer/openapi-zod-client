@@ -4,8 +4,6 @@ const varPrefix = "@var/" as const;
 const refToken = "@ref" as const;
 type TokenAlias = typeof varPrefix | typeof refToken;
 
-const getRefName = (ref: string) => prefixStringStartingWithNumberIfNeeded(ref.split("/").at(-1)!);
-
 export const tokens = {
     varPrefix,
     refToken,
@@ -26,7 +24,7 @@ export const tokens = {
         if (!zodSchemaString) throw new Error("zodSchemaString is required");
         return refToken + `__v${hash(zodSchemaString)}__`;
     },
-    getRefName,
+    getRefName: (ref: string) => normalizeString(ref.split("/").at(-1)!),
 };
 
 export function normalizeString(text: string) {
