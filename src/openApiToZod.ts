@@ -21,7 +21,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     const code = new CodeMeta(schema, ctx, inheritedMeta);
     const meta = {
-        nestingLevel: code.meta.nestingLevel,
         parent: code.inherit(inheritedMeta?.parent),
         referencedBy: [...code.meta.referencedBy],
     };
@@ -40,11 +39,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 ctx.circularTokenByRef[fromRef] = tokens.makeCircularRef(fromRef);
             }
         }
-    }
-
-    // safety net for circular(=recursive) references
-    if (meta.nestingLevel > 50) {
-        throw new Error("Nesting level exceeded, probably a circular reference: " + nestingPath);
     }
 
     if (isReferenceObject(schema)) {
@@ -73,9 +67,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code;
         }
 
-        const hashed = tokens.makeRefHash(result);
-        ctx.schemaHashByRef[schema.$ref] = hashed;
-        ctx.zodSchemaByHash[hashed] = result;
+        const refName = tokens.getRefName(schema.$ref);
+        ctx.schemaHashByRef[schema.$ref] = refName;
+        ctx.zodSchemaByHash[refName] = result;
 
         return code;
     }
@@ -348,7 +342,6 @@ export class CodeMeta {
 
         // @ts-ignore
         this.meta = { ...meta };
-        this.meta.nestingLevel = (meta?.nestingLevel || 0) + 1;
         this.meta.referencedBy = [...(meta?.referencedBy || [])];
 
         if (this.ref) {
