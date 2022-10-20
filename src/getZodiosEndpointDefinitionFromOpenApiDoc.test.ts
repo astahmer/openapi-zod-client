@@ -96,12 +96,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
         })
     ).toMatchInlineSnapshot(`
       {
-          "circularTokenByRef": {
-              "#/components/schemas/Order": "@circular__wK9RiJx7oC",
-          },
-          "codeMetaByRef": {
-              "#/components/schemas/Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-          },
           "deepDependencyGraph": {},
           "endpoints": [
               {
@@ -213,16 +207,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
         })
     ).toMatchInlineSnapshot(`
       {
-          "circularTokenByRef": {
-              "#/components/schemas/Category": "@circular__xzXS1LrlKn",
-              "#/components/schemas/Pet": "@circular__nUVh3ER5kL",
-              "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
-          },
-          "codeMetaByRef": {
-              "#/components/schemas/Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "#/components/schemas/Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-          },
           "deepDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -439,16 +423,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
         })
     ).toMatchInlineSnapshot(`
       {
-          "circularTokenByRef": {
-              "#/components/schemas/Category": "@circular__xzXS1LrlKn",
-              "#/components/schemas/Pet": "@circular__nUVh3ER5kL",
-              "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
-          },
-          "codeMetaByRef": {
-              "#/components/schemas/Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "#/components/schemas/Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-          },
           "deepDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -546,22 +520,6 @@ test("petstore.yaml", async () => {
     const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
-          "circularTokenByRef": {
-              "#/components/schemas/ApiResponse": "@circular__UW2sXbIQK7",
-              "#/components/schemas/Category": "@circular__xzXS1LrlKn",
-              "#/components/schemas/Order": "@circular__wK9RiJx7oC",
-              "#/components/schemas/Pet": "@circular__nUVh3ER5kL",
-              "#/components/schemas/Tag": "@circular__ihL6q6cZXP",
-              "#/components/schemas/User": "@circular__9Dvq68jEoU",
-          },
-          "codeMetaByRef": {
-              "#/components/schemas/ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
-              "#/components/schemas/Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "#/components/schemas/Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "#/components/schemas/Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "#/components/schemas/User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
-          },
           "deepDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",

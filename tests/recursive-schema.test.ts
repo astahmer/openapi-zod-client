@@ -69,8 +69,6 @@ describe("recursive-schema", () => {
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
-            codeMetaByRef: {},
-            circularTokenByRef: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
         expect(getZodSchema({ schema: schemas.Root, ctx })).toMatchInlineSnapshot(
@@ -78,14 +76,6 @@ describe("recursive-schema", () => {
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "circularTokenByRef": {
-                  "#/components/schemas/Middle": "@circular__WRZ2lBGFuo",
-                  "#/components/schemas/User": "@circular__9Dvq68jEoU",
-              },
-              "codeMetaByRef": {
-                  "#/components/schemas/Middle": "z.object({ user: User }).partial()",
-                  "#/components/schemas/User": "z.object({ name: z.string(), middle: Middle }).partial()",
-              },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
@@ -94,7 +84,7 @@ describe("recursive-schema", () => {
               },
               "zodSchemaByHash": {
                   "Middle": "z.object({ user: User }).partial()",
-                  "User": "z.object({ name: z.string(), middle: @circular__WRZ2lBGFuo }).partial()",
+                  "User": "z.object({ name: z.string(), middle: Middle }).partial()",
               },
           }
         `);
@@ -199,8 +189,6 @@ describe("recursive-schema", () => {
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
-            codeMetaByRef: {},
-            circularTokenByRef: {},
             getSchemaByRef: (ref) => schemas2[ref.split("/").at(-1)!],
         };
         expect(getZodSchema({ schema: ResponseSchema, ctx })).toMatchInlineSnapshot(
@@ -208,19 +196,13 @@ describe("recursive-schema", () => {
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "circularTokenByRef": {
-                  "#/components/schemas/ObjectWithRecursiveArray": "@circular__CGhYUyblqx",
-              },
-              "codeMetaByRef": {
-                  "#/components/schemas/ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
-              },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
                   "#/components/schemas/ObjectWithRecursiveArray": "ObjectWithRecursiveArray",
               },
               "zodSchemaByHash": {
-                  "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@circular__CGhYUyblqx) }).partial()",
+                  "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
               },
           }
         `);
@@ -228,12 +210,6 @@ describe("recursive-schema", () => {
         expect(getZodiosEndpointDefinitionFromOpenApiDoc(makeOpenApiDoc(schemas2, ResponseSchema)))
             .toMatchInlineSnapshot(`
               {
-                  "circularTokenByRef": {
-                      "#/components/schemas/ObjectWithRecursiveArray": "@circular__CGhYUyblqx",
-                  },
-                  "codeMetaByRef": {
-                      "#/components/schemas/ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
-                  },
                   "deepDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
                           "#/components/schemas/ObjectWithRecursiveArray",
@@ -270,7 +246,7 @@ describe("recursive-schema", () => {
                   },
                   "zodSchemaByHash": {
                       "@ref__vaoMU01Shfe__": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
-                      "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(@circular__CGhYUyblqx) }).partial()",
+                      "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
                   },
               }
             `);
@@ -281,8 +257,6 @@ describe("recursive-schema", () => {
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
-            codeMetaByRef: {},
-            circularTokenByRef: {},
             getSchemaByRef: (ref) => UserSchema,
         };
         expect(getZodSchema({ schema: UserSchema, ctx })).toMatchInlineSnapshot(
@@ -290,19 +264,13 @@ describe("recursive-schema", () => {
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "circularTokenByRef": {
-                  "#/components/schemas/User": "@circular__9Dvq68jEoU",
-              },
-              "codeMetaByRef": {
-                  "#/components/schemas/User": "z.object({ name: z.string(), parent: User }).partial()",
-              },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
                   "#/components/schemas/User": "User",
               },
               "zodSchemaByHash": {
-                  "User": "z.object({ name: z.string(), parent: @circular__9Dvq68jEoU }).partial()",
+                  "User": "z.object({ name: z.string(), parent: User }).partial()",
               },
           }
         `);
@@ -333,8 +301,6 @@ describe("recursive-schema", () => {
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
-            codeMetaByRef: {},
-            circularTokenByRef: {},
             getSchemaByRef: (ref: string) => schemas[ref.replace("#/components/schemas/", "")],
         };
         expect(
@@ -353,14 +319,6 @@ describe("recursive-schema", () => {
         ).toMatchInlineSnapshot('"z.object({ recursiveUser: UserWithFriends, basic: z.number() }).partial()"');
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "circularTokenByRef": {
-                  "#/components/schemas/Friend": "@circular__y9ima2EJ1e",
-                  "#/components/schemas/UserWithFriends": "@circular__HOpnp24BWM",
-              },
-              "codeMetaByRef": {
-                  "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
-                  "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
-              },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
@@ -368,8 +326,8 @@ describe("recursive-schema", () => {
                   "#/components/schemas/UserWithFriends": "UserWithFriends",
               },
               "zodSchemaByHash": {
-                  "Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
-                  "UserWithFriends": "z.object({ name: z.string(), parent: @circular__HOpnp24BWM, friends: z.array(Friend), bestFriend: Friend }).partial()",
+                  "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
+                  "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
               },
           }
         `);
@@ -386,14 +344,6 @@ describe("recursive-schema", () => {
 
         expect(getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
           {
-              "circularTokenByRef": {
-                  "#/components/schemas/Friend": "@circular__y9ima2EJ1e",
-                  "#/components/schemas/UserWithFriends": "@circular__HOpnp24BWM",
-              },
-              "codeMetaByRef": {
-                  "#/components/schemas/Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
-                  "#/components/schemas/UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
-              },
               "deepDependencyGraph": {
                   "#/components/schemas/Friend": Set {
                       "#/components/schemas/UserWithFriends",
@@ -441,8 +391,8 @@ describe("recursive-schema", () => {
               },
               "zodSchemaByHash": {
                   "@ref__v8T5EgXYMnN__": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
-                  "Friend": "z.object({ nickname: z.string(), user: @circular__HOpnp24BWM, circle: z.array(@circular__y9ima2EJ1e) }).partial()",
-                  "UserWithFriends": "z.object({ name: z.string(), parent: @circular__HOpnp24BWM, friends: z.array(Friend), bestFriend: Friend }).partial()",
+                  "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
+                  "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
               },
           }
         `);
@@ -581,8 +531,6 @@ describe("recursive-schema", () => {
             hashByVariableName: {},
             schemaHashByRef: {},
             zodSchemaByHash: {},
-            codeMetaByRef: {},
-            circularTokenByRef: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
 
@@ -598,18 +546,6 @@ describe("recursive-schema", () => {
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "circularTokenByRef": {
-                  "#/components/schemas/Author": "@circular__AtBhSdDVi2",
-                  "#/components/schemas/Playlist": "@circular__HCGhm3ASad",
-                  "#/components/schemas/Settings": "@circular__3CW414XqWI",
-                  "#/components/schemas/Song": "@circular__XRX5ZO2W35",
-              },
-              "codeMetaByRef": {
-                  "#/components/schemas/Author": "z.object({ name: z.string(), mail: z.string(), settings: Settings }).partial()",
-                  "#/components/schemas/Playlist": "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()",
-                  "#/components/schemas/Settings": "z.object({ theme_color: z.string() }).partial()",
-                  "#/components/schemas/Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(Playlist) }).partial()",
-              },
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
               "schemaHashByRef": {
@@ -620,7 +556,7 @@ describe("recursive-schema", () => {
               },
               "zodSchemaByHash": {
                   "Author": "z.object({ name: z.string(), mail: z.string(), settings: Settings }).partial()",
-                  "Playlist": "z.object({ name: z.string(), author: Author, songs: z.array(@circular__XRX5ZO2W35) }).partial()",
+                  "Playlist": "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()",
                   "Settings": "z.object({ theme_color: z.string() }).partial()",
                   "Song": "z.object({ name: z.string(), duration: z.number(), in_playlists: z.array(Playlist) }).partial()",
               },
