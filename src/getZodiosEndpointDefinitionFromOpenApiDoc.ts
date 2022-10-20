@@ -89,16 +89,8 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
             return result;
         }
 
-        // TODO rm ?
-        // $ref like #/components/xxx/name
-        if (fallbackName) {
-            const formatedName = tokens.makeVar(fallbackName);
-            ctx.hashByVariableName[formatedName] = result;
-
-            return formatedName;
-        }
-
-        return tokens.getRefName(input.ref!);
+        console.log({ ref: input.ref, fallbackName, result });
+        throw new Error("Invalid ref: " + input.ref);
     };
 
     for (const path in doc.paths) {
