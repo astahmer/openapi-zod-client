@@ -259,7 +259,7 @@ const getZodChainableStringValidations = (schema: SchemaObject, meta?: CodeMetaD
     }
 
     if (schema.pattern) {
-        validations.push(`regex(/${schema.pattern}/)`);
+        validations.push(`regex(${schema.pattern})`);
     }
 
     if (schema.format) {
