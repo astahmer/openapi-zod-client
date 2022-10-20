@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.4.1
+openapi-zod-client/0.5
 
 Usage:
   $ openapi-zod-client <input>
@@ -211,18 +211,11 @@ output:
 import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const v1V4WeOqHOR = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
-const vE4h2yEASDL = z.array(v1V4WeOqHOR);
-const vQV94vZN90C = z.object({ code: z.number().int(), message: z.string() });
+const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
+const Pets = z.array(Pet);
+const Error = z.object({ code: z.number().int(), message: z.string() });
 
-const variables = {
-    Error: vQV94vZN90C,
-    Pet: v1V4WeOqHOR,
-    Pets: vE4h2yEASDL,
-    createPets: vQV94vZN90C,
-    listPets: vQV94vZN90C,
-    showPetById: vQV94vZN90C,
-};
+const variables = {};
 
 const endpoints = makeApi([
     {
@@ -236,13 +229,13 @@ const endpoints = makeApi([
                 schema: z.number().optional(),
             },
         ],
-        response: variables["Pets"],
+        response: Pets,
     },
     {
         method: "post",
         path: "/pets",
         requestFormat: "json",
-        response: variables["Error"],
+        response: Error,
     },
     {
         method: "get",
@@ -255,7 +248,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: variables["Pet"],
+        response: Pet,
     },
 ]);
 
@@ -265,7 +258,6 @@ export const api = new Zodios(endpoints);
 # TODO
 
 -   handle default values (output `z.default(xxx)`)
--   handle OA spec `format: date-time` -> output `z.date()` / `preprocess` ?
 -   handle OA `prefixItems` -> output `z.tuple`
 -   rm unused (=never referenced) variables from output
 
