@@ -1679,11 +1679,12 @@ test("with optional, partial, all required objects", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      type Nested2 = {
-          nested_prop?: boolean | undefined;
-          deeplyNested?: DeeplyNested | undefined;
-          circularToRoot?: Root2 | undefined;
-          requiredProp: string;
+      type Root2 = {
+          str: string;
+          nb: number;
+          nested: Nested2;
+          partial?: PartialObject | undefined;
+          optionalProp?: string | undefined;
       };
       type DeeplyNested = Array<VeryDeeplyNested>;
       type VeryDeeplyNested = "aaa" | "bbb" | "ccc";
@@ -1691,12 +1692,11 @@ test("with optional, partial, all required objects", async () => {
           something: string;
           another: number;
       }>;
-      type Root2 = {
-          str: string;
-          nb: number;
-          nested: Nested2;
-          partial?: PartialObject | undefined;
-          optionalProp?: string | undefined;
+      type Nested2 = {
+          nested_prop?: boolean | undefined;
+          deeplyNested?: DeeplyNested | undefined;
+          circularToRoot?: Root2 | undefined;
+          requiredProp: string;
       };
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);

@@ -121,8 +121,6 @@ test("CodeMeta with ref", () => {
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        codeMetaByRef: {},
-        circularTokenByRef: {},
     };
 
     expect(() =>
@@ -162,8 +160,6 @@ test("CodeMeta with missing ref", () => {
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        codeMetaByRef: {},
-        circularTokenByRef: {},
     };
 
     const code = getZodSchema({
@@ -216,8 +212,6 @@ test("CodeMeta with nested refs", () => {
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        codeMetaByRef: {},
-        circularTokenByRef: {},
     };
 
     const code = getZodSchema({
@@ -256,18 +250,6 @@ test("CodeMeta with nested refs", () => {
     `);
     expect(ctx).toMatchInlineSnapshot(`
       {
-          "circularTokenByRef": {
-              "Basic": "@circular__DjX26XQuB0",
-              "DeepNested": "@circular__c96SHAMadg",
-              "ObjectWithArrayOfRef": "@circular__oIHzDRwnzI",
-              "WithNested": "@circular__tPB2Le4g2m",
-          },
-          "codeMetaByRef": {
-              "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",
-              "DeepNested": "z.object({ deep: z.boolean() }).partial()",
-              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(WithNested), someReference: Basic }).partial()",
-              "WithNested": "z.object({ nested: z.string(), nestedRef: DeepNested }).partial()",
-          },
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "schemaHashByRef": {

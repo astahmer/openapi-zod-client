@@ -10,8 +10,6 @@ test("ref-in-another-file", async () => {
     )) as OpenAPIObject;
     expect(getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
       {
-          "circularTokenByRef": {},
-          "codeMetaByRef": {},
           "deepDependencyGraph": {},
           "endpoints": [
               {
