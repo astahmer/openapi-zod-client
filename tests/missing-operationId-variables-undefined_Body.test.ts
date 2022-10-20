@@ -37,13 +37,13 @@ test("missing operationId outputs variables['undefined_Body']", () => {
                   {
                       "description": undefined,
                       "name": "body",
-                      "schema": "@var/putMediaObjectsId_Body",
+                      "schema": "Basic",
                       "type": "Body",
                   },
               ],
               "path": "/media-objects/:id",
               "requestFormat": "json",
-              "response": "@var/Basic",
+              "response": "Basic",
           },
       ]
     `);

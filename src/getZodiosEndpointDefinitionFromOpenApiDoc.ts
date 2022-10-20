@@ -94,7 +94,6 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
         // TODO rm ?
         // $ref like #/components/xxx/name
         if (fallbackName) {
-            console.log({ result, fallbackName });
             const formatedName = tokens.makeVar(fallbackName);
             ctx.hashByVariableName[formatedName] = result;
 

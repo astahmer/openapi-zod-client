@@ -174,22 +174,21 @@ it("determines which status are considered errors-responses", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
-      const vm0znqO5M3d = z.array(v0a43T4TEdB);
-      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
-      const vXqGcvAjoyf = z.object({
+      const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
+      const DeeplyNested = z.array(VeryDeeplyNested);
+      const Main = z.object({ str: z.string(), nb: z.number() });
+      const Nested = z.object({
         nested_prop: z.boolean().optional(),
-        deeplyNested: vm0znqO5M3d.optional(),
-        circularToMain: vssLgQd9tqs.optional(),
+        deeplyNested: DeeplyNested.optional(),
+        circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
-      const vbpc7CyOzlu = z
-        .object({ is400: z.boolean(), nested: vXqGcvAjoyf })
-        .partial();
+      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
+      const vbjg9h29P9L = z.object({ is400: z.boolean(), nested: Nested }).partial();
 
       const variables = {
         getExample: vssLgQd9tqs,
-        getExample__2: vbpc7CyOzlu,
+        getExample__2: vbjg9h29P9L,
       };
 
       const endpoints = makeApi([
@@ -202,12 +201,7 @@ it("determines which status are considered errors-responses", async () => {
             {
               status: 400,
               description: \`Bad request\`,
-              schema: z
-                .object({
-                  is400: z.boolean(),
-                  nested: variables["getExample_Error_400"],
-                })
-                .partial(),
+              schema: z.object({ is400: z.boolean(), nested: Nested }).partial(),
             },
             {
               status: 500,
@@ -234,22 +228,21 @@ it("determines which status are considered errors-responses", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
-      const vm0znqO5M3d = z.array(v0a43T4TEdB);
-      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
-      const vXqGcvAjoyf = z.object({
+      const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
+      const DeeplyNested = z.array(VeryDeeplyNested);
+      const Main = z.object({ str: z.string(), nb: z.number() });
+      const Nested = z.object({
         nested_prop: z.boolean().optional(),
-        deeplyNested: vm0znqO5M3d.optional(),
-        circularToMain: vssLgQd9tqs.optional(),
+        deeplyNested: DeeplyNested.optional(),
+        circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
-      const vbpc7CyOzlu = z
-        .object({ is400: z.boolean(), nested: vXqGcvAjoyf })
-        .partial();
+      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
+      const vbjg9h29P9L = z.object({ is400: z.boolean(), nested: Nested }).partial();
 
       const variables = {
         getExample: vssLgQd9tqs,
-        getExample__2: vbpc7CyOzlu,
+        getExample__2: vbjg9h29P9L,
       };
 
       const endpoints = makeApi([
@@ -262,12 +255,7 @@ it("determines which status are considered errors-responses", async () => {
             {
               status: 400,
               description: \`Bad request\`,
-              schema: z
-                .object({
-                  is400: z.boolean(),
-                  nested: variables["getExample_Error_400"],
-                })
-                .partial(),
+              schema: z.object({ is400: z.boolean(), nested: Nested }).partial(),
             },
             {
               status: 500,

@@ -43,7 +43,7 @@ test("export-schemas-option", () => {
               "parameters": [],
               "path": "/export-schemas-option",
               "requestFormat": "json",
-              "response": "variables["Basic"]",
+              "response": "Basic",
           },
       ]
     `);
@@ -52,11 +52,11 @@ test("export-schemas-option", () => {
       {
           "Basic": "vZwdCSvA9Xq",
           "UnusedSchemas": "vwpxzXzCh7o",
-          "_123_example": "vZwdCSvA9Xq",
       }
     `);
     expect(ctx.schemas).toMatchInlineSnapshot(`
       {
+          "Basic": "z.string()",
           "vZwdCSvA9Xq": "z.string()",
           "vwpxzXzCh7o": "z.object({ nested_prop: z.boolean(), another: z.string() }).partial()",
       }

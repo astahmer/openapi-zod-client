@@ -185,12 +185,12 @@ test("CodeMeta with missing ref", () => {
         ctx,
     });
     expect(code.toString()).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), reference: @ref__vIxl2qZdKNR__, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial()"'
+        '"z.object({ str: z.string(), reference: Example, inline: z.object({ nested_prop: z.boolean() }).partial() }).partial()"'
     );
     expect(code.children).toMatchInlineSnapshot(`
       [
           "z.string()",
-          "@ref__vIxl2qZdKNR__",
+          "Example",
           "z.object({ nested_prop: z.boolean() }).partial()",
       ]
     `);
@@ -242,16 +242,16 @@ test("CodeMeta with nested refs", () => {
         ctx,
     });
     expect(code.toString()).toMatchInlineSnapshot(
-        '"z.object({ str: z.string(), reference: @ref__vYgSV7U5VdD__, inline: z.object({ nested_prop: z.boolean() }).partial(), another: @ref__vYEGOMAPsCq__, basic: @ref__vltcwuCNPqv__, differentPropSameRef: @ref__vltcwuCNPqv__ }).partial()"'
+        '"z.object({ str: z.string(), reference: ObjectWithArrayOfRef, inline: z.object({ nested_prop: z.boolean() }).partial(), another: WithNested, basic: Basic, differentPropSameRef: Basic }).partial()"'
     );
     expect(code.children).toMatchInlineSnapshot(`
       [
           "z.string()",
-          "@ref__vYgSV7U5VdD__",
+          "ObjectWithArrayOfRef",
           "z.object({ nested_prop: z.boolean() }).partial()",
-          "@ref__vYEGOMAPsCq__",
-          "@ref__vltcwuCNPqv__",
-          "@ref__vltcwuCNPqv__",
+          "WithNested",
+          "Basic",
+          "Basic",
       ]
     `);
     expect(ctx).toMatchInlineSnapshot(`
@@ -265,22 +265,22 @@ test("CodeMeta with nested refs", () => {
           "codeMetaByRef": {
               "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",
               "DeepNested": "z.object({ deep: z.boolean() }).partial()",
-              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__vYEGOMAPsCq__), someReference: @ref__vltcwuCNPqv__ }).partial()",
-              "WithNested": "z.object({ nested: z.string(), nestedRef: @ref__vZmDobZZtRj__ }).partial()",
+              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(WithNested), someReference: Basic }).partial()",
+              "WithNested": "z.object({ nested: z.string(), nestedRef: DeepNested }).partial()",
           },
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "schemaHashByRef": {
-              "Basic": "@ref__vltcwuCNPqv__",
-              "DeepNested": "@ref__vZmDobZZtRj__",
-              "ObjectWithArrayOfRef": "@ref__vYgSV7U5VdD__",
-              "WithNested": "@ref__vYEGOMAPsCq__",
+              "Basic": "Basic",
+              "DeepNested": "DeepNested",
+              "ObjectWithArrayOfRef": "ObjectWithArrayOfRef",
+              "WithNested": "WithNested",
           },
           "zodSchemaByHash": {
-              "@ref__vYEGOMAPsCq__": "z.object({ nested: z.string(), nestedRef: @ref__vZmDobZZtRj__ }).partial()",
-              "@ref__vYgSV7U5VdD__": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(@ref__vYEGOMAPsCq__), someReference: @ref__vltcwuCNPqv__ }).partial()",
-              "@ref__vZmDobZZtRj__": "z.object({ deep: z.boolean() }).partial()",
-              "@ref__vltcwuCNPqv__": "z.object({ prop: z.string(), second: z.number() }).partial()",
+              "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",
+              "DeepNested": "z.object({ deep: z.boolean() }).partial()",
+              "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(WithNested), someReference: Basic }).partial()",
+              "WithNested": "z.object({ nested: z.string(), nestedRef: DeepNested }).partial()",
           },
       }
     `);

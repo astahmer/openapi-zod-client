@@ -41,13 +41,13 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": "Update an existent pet in the store",
                           "name": "body",
-                          "schema": "variables["updatePet_Body"]",
+                          "schema": "Pet",
                           "type": "Body",
                       },
                   ],
                   "path": "/pet",
                   "requestFormat": "json",
-                  "response": "variables["Pet"]",
+                  "response": "Pet",
               },
               {
                   "alias": "addPet",
@@ -64,13 +64,13 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": "Create a new pet in the store",
                           "name": "body",
-                          "schema": "variables["addPet_Body"]",
+                          "schema": "Pet",
                           "type": "Body",
                       },
                   ],
                   "path": "/pet",
                   "requestFormat": "json",
-                  "response": "variables["Pet"]",
+                  "response": "Pet",
               },
               {
                   "alias": "getPetById",
@@ -97,7 +97,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
-                  "response": "variables["Pet"]",
+                  "response": "Pet",
               },
               {
                   "alias": "uploadFile",
@@ -118,7 +118,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/pet/:petId/uploadImage",
                   "requestFormat": "json",
-                  "response": "variables["ApiResponse"]",
+                  "response": "ApiResponse",
               },
               {
                   "alias": "findPetsByStatus",
@@ -140,7 +140,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(variables["getPetById"])",
+                  "response": "z.array(Pet)",
               },
               {
                   "alias": "findPetsByTags",
@@ -162,7 +162,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(variables["getPetById"])",
+                  "response": "z.array(Pet)",
               },
               {
                   "alias": "getInventory",
@@ -189,13 +189,13 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "variables["placeOrder_Body"]",
+                          "schema": "Order",
                           "type": "Body",
                       },
                   ],
                   "path": "/store/order",
                   "requestFormat": "json",
-                  "response": "variables["Order"]",
+                  "response": "Order",
               },
               {
                   "alias": "getOrderById",
@@ -222,7 +222,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
-                  "response": "variables["Order"]",
+                  "response": "Order",
               },
               {
                   "alias": "createUser",
@@ -233,13 +233,13 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": "Created user object",
                           "name": "body",
-                          "schema": "variables["createUser_Body"]",
+                          "schema": "User",
                           "type": "Body",
                       },
                   ],
                   "path": "/user",
                   "requestFormat": "json",
-                  "response": "variables["User"]",
+                  "response": "User",
               },
               {
                   "alias": "getUserByName",
@@ -266,7 +266,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
-                  "response": "variables["User"]",
+                  "response": "User",
               },
               {
                   "alias": "updateUser",
@@ -277,7 +277,7 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": "Update an existent user in the store",
                           "name": "body",
-                          "schema": "variables["updateUser_Body"]",
+                          "schema": "User",
                           "type": "Body",
                       },
                       {
@@ -305,7 +305,7 @@ test("getZodClientTemplateContext", async () => {
                   ],
                   "path": "/user/createWithList",
                   "requestFormat": "json",
-                  "response": "variables["User"]",
+                  "response": "User",
               },
               {
                   "alias": "loginUser",
@@ -350,42 +350,25 @@ test("getZodClientTemplateContext", async () => {
               "withAlias": false,
           },
           "schemas": {
-              "v1QfJ6T3SbL": "z.array(vuZawvBEAhG)",
+              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
               "vGqL1kemtHF": "z.array(z.string()).optional()",
-              "vVNOkMuhu59": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
-              "vimJdKcOZX8": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-              "vjrUWIUkeIl": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
+              "vhZunxssSBT": "z.array(User)",
               "vlh4E1pXYTG": "z.enum(["available", "pending", "sold"]).optional()",
-              "vqZ2pR7iMi4": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "vrMyJmYcfcf": "z.array(vVNOkMuhu59)",
-              "vuZawvBEAhG": "z.object({ id: z.number().int().optional(), name: z.string(), category: vqZ2pR7iMi4.optional(), photoUrls: z.array(z.string()), tags: z.array(vqZ2pR7iMi4).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "vuJkCuHe8KS": "z.array(Pet)",
           },
           "typeNameByRefHash": {},
           "types": {},
           "variables": {
-              "ApiResponse": "vjrUWIUkeIl",
-              "Order": "vimJdKcOZX8",
-              "Pet": "vuZawvBEAhG",
-              "User": "vVNOkMuhu59",
-              "addPet": "vuZawvBEAhG",
-              "addPet_Body": "vuZawvBEAhG",
-              "createUser": "vVNOkMuhu59",
-              "createUser_Body": "vVNOkMuhu59",
-              "createUsersWithListInput": "vVNOkMuhu59",
-              "createUsersWithListInput_Body": "vrMyJmYcfcf",
-              "findPetsByStatus": "v1QfJ6T3SbL",
-              "findPetsByTags": "v1QfJ6T3SbL",
-              "getOrderById": "vimJdKcOZX8",
-              "getPetById": "vuZawvBEAhG",
-              "getUserByName": "vVNOkMuhu59",
-              "placeOrder": "vimJdKcOZX8",
-              "placeOrder_Body": "vimJdKcOZX8",
+              "createUsersWithListInput_Body": "vhZunxssSBT",
+              "findPetsByStatus": "vuJkCuHe8KS",
+              "findPetsByTags": "vuJkCuHe8KS",
               "status": "vlh4E1pXYTG",
               "tags": "vGqL1kemtHF",
-              "updatePet": "vuZawvBEAhG",
-              "updatePet_Body": "vuZawvBEAhG",
-              "updateUser_Body": "vVNOkMuhu59",
-              "uploadFile": "vjrUWIUkeIl",
           },
       }
     `);
@@ -405,20 +388,21 @@ describe("generateZodClientFromOpenAPI", () => {
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const vqZ2pR7iMi4 = z.object({ id: z.number().int(), name: z.string() }).partial();
-          const vuZawvBEAhG = z.object({
+          const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
+          const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
+          const Pet = z.object({
               id: z.number().int().optional(),
               name: z.string(),
-              category: vqZ2pR7iMi4.optional(),
+              category: Category.optional(),
               photoUrls: z.array(z.string()),
-              tags: z.array(vqZ2pR7iMi4).optional(),
+              tags: z.array(Tag).optional(),
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const v1QfJ6T3SbL = z.array(vuZawvBEAhG);
+          const vuJkCuHe8KS = z.array(Pet);
           const vGqL1kemtHF = z.array(z.string()).optional();
-          const vjrUWIUkeIl = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
-          const vimJdKcOZX8 = z
+          const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+          const Order = z
               .object({
                   id: z.number().int(),
                   petId: z.number().int(),
@@ -428,7 +412,7 @@ describe("generateZodClientFromOpenAPI", () => {
                   complete: z.boolean(),
               })
               .partial();
-          const vVNOkMuhu59 = z
+          const User = z
               .object({
                   id: z.number().int(),
                   username: z.string(),
@@ -440,32 +424,14 @@ describe("generateZodClientFromOpenAPI", () => {
                   userStatus: z.number().int(),
               })
               .partial();
-          const vrMyJmYcfcf = z.array(vVNOkMuhu59);
+          const vhZunxssSBT = z.array(User);
 
           const variables = {
-              ApiResponse: vjrUWIUkeIl,
-              Order: vimJdKcOZX8,
-              Pet: vuZawvBEAhG,
-              User: vVNOkMuhu59,
-              addPet: vuZawvBEAhG,
-              addPet_Body: vuZawvBEAhG,
-              createUser: vVNOkMuhu59,
-              createUser_Body: vVNOkMuhu59,
-              createUsersWithListInput: vVNOkMuhu59,
-              createUsersWithListInput_Body: vrMyJmYcfcf,
-              findPetsByStatus: v1QfJ6T3SbL,
-              findPetsByTags: v1QfJ6T3SbL,
-              getOrderById: vimJdKcOZX8,
-              getPetById: vuZawvBEAhG,
-              getUserByName: vVNOkMuhu59,
-              placeOrder: vimJdKcOZX8,
-              placeOrder_Body: vimJdKcOZX8,
+              createUsersWithListInput_Body: vhZunxssSBT,
+              findPetsByStatus: vuJkCuHe8KS,
+              findPetsByTags: vuJkCuHe8KS,
               status: vlh4E1pXYTG,
               tags: vGqL1kemtHF,
-              updatePet: vuZawvBEAhG,
-              updatePet_Body: vuZawvBEAhG,
-              updateUser_Body: vVNOkMuhu59,
-              uploadFile: vjrUWIUkeIl,
           };
 
           const endpoints = makeApi([
@@ -479,10 +445,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Update an existent pet in the store\`,
                           type: "Body",
-                          schema: variables["updatePet_Body"],
+                          schema: Pet,
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 400,
@@ -511,10 +477,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Create a new pet in the store\`,
                           type: "Body",
-                          schema: variables["addPet_Body"],
+                          schema: Pet,
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 405,
@@ -535,7 +501,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.number(),
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 400,
@@ -565,7 +531,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.string().optional(),
                       },
                   ],
-                  response: variables["ApiResponse"],
+                  response: ApiResponse,
               },
               {
                   method: "get",
@@ -579,7 +545,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["status"],
                       },
                   ],
-                  response: z.array(variables["getPetById"]),
+                  response: z.array(Pet),
                   errors: [
                       {
                           status: 400,
@@ -600,7 +566,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["tags"],
                       },
                   ],
-                  response: z.array(variables["getPetById"]),
+                  response: z.array(Pet),
                   errors: [
                       {
                           status: 400,
@@ -625,10 +591,10 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "body",
                           type: "Body",
-                          schema: variables["placeOrder_Body"],
+                          schema: Order,
                       },
                   ],
-                  response: variables["Order"],
+                  response: Order,
                   errors: [
                       {
                           status: 405,
@@ -649,7 +615,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.number(),
                       },
                   ],
-                  response: variables["Order"],
+                  response: Order,
                   errors: [
                       {
                           status: 400,
@@ -673,10 +639,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Created user object\`,
                           type: "Body",
-                          schema: variables["createUser_Body"],
+                          schema: User,
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
               },
               {
                   method: "get",
@@ -689,7 +655,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.string(),
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
                   errors: [
                       {
                           status: 400,
@@ -713,7 +679,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Update an existent user in the store\`,
                           type: "Body",
-                          schema: variables["updateUser_Body"],
+                          schema: User,
                       },
                       {
                           name: "username",
@@ -735,7 +701,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["createUsersWithListInput_Body"],
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
               },
               {
                   method: "get",
@@ -788,20 +754,21 @@ describe("generateZodClientFromOpenAPI", () => {
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const vqZ2pR7iMi4 = z.object({ id: z.number().int(), name: z.string() }).partial();
-          const vuZawvBEAhG = z.object({
+          const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
+          const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
+          const Pet = z.object({
               id: z.number().int().optional(),
               name: z.string(),
-              category: vqZ2pR7iMi4.optional(),
+              category: Category.optional(),
               photoUrls: z.array(z.string()),
-              tags: z.array(vqZ2pR7iMi4).optional(),
+              tags: z.array(Tag).optional(),
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const v1QfJ6T3SbL = z.array(vuZawvBEAhG);
+          const vuJkCuHe8KS = z.array(Pet);
           const vGqL1kemtHF = z.array(z.string()).optional();
-          const vjrUWIUkeIl = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
-          const vimJdKcOZX8 = z
+          const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+          const Order = z
               .object({
                   id: z.number().int(),
                   petId: z.number().int(),
@@ -811,7 +778,7 @@ describe("generateZodClientFromOpenAPI", () => {
                   complete: z.boolean(),
               })
               .partial();
-          const vVNOkMuhu59 = z
+          const User = z
               .object({
                   id: z.number().int(),
                   username: z.string(),
@@ -823,32 +790,14 @@ describe("generateZodClientFromOpenAPI", () => {
                   userStatus: z.number().int(),
               })
               .partial();
-          const vrMyJmYcfcf = z.array(vVNOkMuhu59);
+          const vhZunxssSBT = z.array(User);
 
           const variables = {
-              ApiResponse: vjrUWIUkeIl,
-              Order: vimJdKcOZX8,
-              Pet: vuZawvBEAhG,
-              User: vVNOkMuhu59,
-              addPet: vuZawvBEAhG,
-              addPet_Body: vuZawvBEAhG,
-              createUser: vVNOkMuhu59,
-              createUser_Body: vVNOkMuhu59,
-              createUsersWithListInput: vVNOkMuhu59,
-              createUsersWithListInput_Body: vrMyJmYcfcf,
-              findPetsByStatus: v1QfJ6T3SbL,
-              findPetsByTags: v1QfJ6T3SbL,
-              getOrderById: vimJdKcOZX8,
-              getPetById: vuZawvBEAhG,
-              getUserByName: vVNOkMuhu59,
-              placeOrder: vimJdKcOZX8,
-              placeOrder_Body: vimJdKcOZX8,
+              createUsersWithListInput_Body: vhZunxssSBT,
+              findPetsByStatus: vuJkCuHe8KS,
+              findPetsByTags: vuJkCuHe8KS,
               status: vlh4E1pXYTG,
               tags: vGqL1kemtHF,
-              updatePet: vuZawvBEAhG,
-              updatePet_Body: vuZawvBEAhG,
-              updateUser_Body: vVNOkMuhu59,
-              uploadFile: vjrUWIUkeIl,
           };
 
           const endpoints = makeApi([
@@ -863,10 +812,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Update an existent pet in the store\`,
                           type: "Body",
-                          schema: variables["updatePet_Body"],
+                          schema: Pet,
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 400,
@@ -896,10 +845,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Create a new pet in the store\`,
                           type: "Body",
-                          schema: variables["addPet_Body"],
+                          schema: Pet,
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 405,
@@ -921,7 +870,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.number(),
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 400,
@@ -952,7 +901,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.string().optional(),
                       },
                   ],
-                  response: variables["ApiResponse"],
+                  response: ApiResponse,
               },
               {
                   method: "get",
@@ -967,7 +916,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["status"],
                       },
                   ],
-                  response: z.array(variables["getPetById"]),
+                  response: z.array(Pet),
                   errors: [
                       {
                           status: 400,
@@ -989,7 +938,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["tags"],
                       },
                   ],
-                  response: z.array(variables["getPetById"]),
+                  response: z.array(Pet),
                   errors: [
                       {
                           status: 400,
@@ -1016,10 +965,10 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "body",
                           type: "Body",
-                          schema: variables["placeOrder_Body"],
+                          schema: Order,
                       },
                   ],
-                  response: variables["Order"],
+                  response: Order,
                   errors: [
                       {
                           status: 405,
@@ -1041,7 +990,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.number(),
                       },
                   ],
-                  response: variables["Order"],
+                  response: Order,
                   errors: [
                       {
                           status: 400,
@@ -1066,10 +1015,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Created user object\`,
                           type: "Body",
-                          schema: variables["createUser_Body"],
+                          schema: User,
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
               },
               {
                   method: "get",
@@ -1083,7 +1032,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.string(),
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
                   errors: [
                       {
                           status: 400,
@@ -1108,7 +1057,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Update an existent user in the store\`,
                           type: "Body",
-                          schema: variables["updateUser_Body"],
+                          schema: User,
                       },
                       {
                           name: "username",
@@ -1131,7 +1080,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["createUsersWithListInput_Body"],
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
               },
               {
                   method: "get",
@@ -1186,20 +1135,21 @@ describe("generateZodClientFromOpenAPI", () => {
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const vqZ2pR7iMi4 = z.object({ id: z.number().int(), name: z.string() }).partial();
-          const vuZawvBEAhG = z.object({
+          const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
+          const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
+          const Pet = z.object({
               id: z.number().int().optional(),
               name: z.string(),
-              category: vqZ2pR7iMi4.optional(),
+              category: Category.optional(),
               photoUrls: z.array(z.string()),
-              tags: z.array(vqZ2pR7iMi4).optional(),
+              tags: z.array(Tag).optional(),
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const v1QfJ6T3SbL = z.array(vuZawvBEAhG);
+          const vuJkCuHe8KS = z.array(Pet);
           const vGqL1kemtHF = z.array(z.string()).optional();
-          const vjrUWIUkeIl = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
-          const vimJdKcOZX8 = z
+          const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+          const Order = z
               .object({
                   id: z.number().int(),
                   petId: z.number().int(),
@@ -1209,7 +1159,7 @@ describe("generateZodClientFromOpenAPI", () => {
                   complete: z.boolean(),
               })
               .partial();
-          const vVNOkMuhu59 = z
+          const User = z
               .object({
                   id: z.number().int(),
                   username: z.string(),
@@ -1221,32 +1171,14 @@ describe("generateZodClientFromOpenAPI", () => {
                   userStatus: z.number().int(),
               })
               .partial();
-          const vrMyJmYcfcf = z.array(vVNOkMuhu59);
+          const vhZunxssSBT = z.array(User);
 
           const variables = {
-              ApiResponse: vjrUWIUkeIl,
-              Order: vimJdKcOZX8,
-              Pet: vuZawvBEAhG,
-              User: vVNOkMuhu59,
-              addPet: vuZawvBEAhG,
-              addPet_Body: vuZawvBEAhG,
-              createUser: vVNOkMuhu59,
-              createUser_Body: vVNOkMuhu59,
-              createUsersWithListInput: vVNOkMuhu59,
-              createUsersWithListInput_Body: vrMyJmYcfcf,
-              findPetsByStatus: v1QfJ6T3SbL,
-              findPetsByTags: v1QfJ6T3SbL,
-              getOrderById: vimJdKcOZX8,
-              getPetById: vuZawvBEAhG,
-              getUserByName: vVNOkMuhu59,
-              placeOrder: vimJdKcOZX8,
-              placeOrder_Body: vimJdKcOZX8,
+              createUsersWithListInput_Body: vhZunxssSBT,
+              findPetsByStatus: vuJkCuHe8KS,
+              findPetsByTags: vuJkCuHe8KS,
               status: vlh4E1pXYTG,
               tags: vGqL1kemtHF,
-              updatePet: vuZawvBEAhG,
-              updatePet_Body: vuZawvBEAhG,
-              updateUser_Body: vVNOkMuhu59,
-              uploadFile: vjrUWIUkeIl,
           };
 
           const endpoints = makeApi([
@@ -1260,10 +1192,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Update an existent pet in the store\`,
                           type: "Body",
-                          schema: variables["updatePet_Body"],
+                          schema: Pet,
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 400,
@@ -1292,10 +1224,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Create a new pet in the store\`,
                           type: "Body",
-                          schema: variables["addPet_Body"],
+                          schema: Pet,
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 405,
@@ -1316,7 +1248,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.number(),
                       },
                   ],
-                  response: variables["Pet"],
+                  response: Pet,
                   errors: [
                       {
                           status: 400,
@@ -1346,7 +1278,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.string().optional(),
                       },
                   ],
-                  response: variables["ApiResponse"],
+                  response: ApiResponse,
               },
               {
                   method: "get",
@@ -1360,7 +1292,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["status"],
                       },
                   ],
-                  response: z.array(variables["getPetById"]),
+                  response: z.array(Pet),
                   errors: [
                       {
                           status: 400,
@@ -1381,7 +1313,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["tags"],
                       },
                   ],
-                  response: z.array(variables["getPetById"]),
+                  response: z.array(Pet),
                   errors: [
                       {
                           status: 400,
@@ -1406,10 +1338,10 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "body",
                           type: "Body",
-                          schema: variables["placeOrder_Body"],
+                          schema: Order,
                       },
                   ],
-                  response: variables["Order"],
+                  response: Order,
                   errors: [
                       {
                           status: 405,
@@ -1430,7 +1362,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.number(),
                       },
                   ],
-                  response: variables["Order"],
+                  response: Order,
                   errors: [
                       {
                           status: 400,
@@ -1454,10 +1386,10 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Created user object\`,
                           type: "Body",
-                          schema: variables["createUser_Body"],
+                          schema: User,
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
               },
               {
                   method: "get",
@@ -1470,7 +1402,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: z.string(),
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
                   errors: [
                       {
                           status: 400,
@@ -1494,7 +1426,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           name: "body",
                           description: \`Update an existent user in the store\`,
                           type: "Body",
-                          schema: variables["updateUser_Body"],
+                          schema: User,
                       },
                       {
                           name: "username",
@@ -1516,7 +1448,7 @@ describe("generateZodClientFromOpenAPI", () => {
                           schema: variables["createUsersWithListInput_Body"],
                       },
                   ],
-                  response: variables["User"],
+                  response: User,
               },
               {
                   method: "get",
@@ -1655,7 +1587,7 @@ test("with optional, partial, all required objects", async () => {
                   "parameters": [],
                   "path": "/deeplyNested",
                   "requestFormat": "json",
-                  "response": "z.array(variables["getVeryDeeplyNested"])",
+                  "response": "z.array(VeryDeeplyNested)",
               },
               {
                   "alias": "getNested",
@@ -1665,7 +1597,7 @@ test("with optional, partial, all required objects", async () => {
                   "parameters": [],
                   "path": "/nested",
                   "requestFormat": "json",
-                  "response": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: variables["getDeeplyNested"].optional(), circularToRoot: variables["getRoot"].optional(), requiredProp: z.string() })",
+                  "response": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() })",
               },
               {
                   "alias": "getRoot",
@@ -1675,7 +1607,7 @@ test("with optional, partial, all required objects", async () => {
                   "parameters": [],
                   "path": "/root",
                   "requestFormat": "json",
-                  "response": "z.object({ str: z.string(), nb: z.number(), nested: variables["getRoot"], partial: variables["getRoot"].optional(), optionalProp: z.string().optional() })",
+                  "response": "z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() })",
               },
               {
                   "alias": "getVeryDeeplyNested",
@@ -1693,16 +1625,19 @@ test("with optional, partial, all required objects", async () => {
               "withAlias": false,
           },
           "schemas": {
+              "DeeplyNested": "z.array(VeryDeeplyNested)",
+              "Nested2": "z.lazy(() => z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() }))",
+              "PartialObject": "z.object({ something: z.string(), another: z.number() }).partial()",
+              "Root2": "z.lazy(() => z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() }))",
+              "VeryDeeplyNested": "z.enum(["aaa", "bbb", "ccc"])",
               "v0a43T4TEdB": "z.enum(["aaa", "bbb", "ccc"])",
-              "v6JdpQSn4Hj": "z.object({ something: z.string(), another: z.number() }).partial()",
-              "vCj2di4DExd": "z.lazy(() => z.object({ str: z.string(), nb: z.number(), nested: vmYnun0sFdZ, partial: v6JdpQSn4Hj.optional(), optionalProp: z.string().optional() }))",
-              "vFHcIEhV0A3": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: vm0znqO5M3d.optional(), circularToRoot: vCj2di4DExd.optional(), requiredProp: z.string() })",
-              "vm0znqO5M3d": "z.array(v0a43T4TEdB)",
-              "vmYnun0sFdZ": "z.lazy(() => z.object({ nested_prop: z.boolean().optional(), deeplyNested: vm0znqO5M3d.optional(), circularToRoot: vCj2di4DExd.optional(), requiredProp: z.string() }))",
+              "vD7Rw82zk4s": "z.array(VeryDeeplyNested)",
+              "vO1pZnSWOkR": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() })",
+              "vRvCWBriblb": "z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() })",
           },
           "typeNameByRefHash": {
-              "vCj2di4DExd": "Root2",
-              "vmYnun0sFdZ": "Nested2",
+              "Nested2": "Nested2",
+              "Root2": "Root2",
           },
           "types": {
               "DeeplyNested": "type DeeplyNested = Array<VeryDeeplyNested>;",
@@ -1726,9 +1661,9 @@ test("with optional, partial, all required objects", async () => {
               "VeryDeeplyNested": "type VeryDeeplyNested = "aaa" | "bbb" | "ccc";",
           },
           "variables": {
-              "getDeeplyNested": "vm0znqO5M3d",
-              "getNested": "vFHcIEhV0A3",
-              "getRoot": "vCj2di4DExd",
+              "getDeeplyNested": "vD7Rw82zk4s",
+              "getNested": "vO1pZnSWOkR",
+              "getRoot": "vRvCWBriblb",
               "getVeryDeeplyNested": "v0a43T4TEdB",
           },
       }
@@ -1764,37 +1699,46 @@ test("with optional, partial, all required objects", async () => {
           optionalProp?: string | undefined;
       };
 
-      const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
-      const vm0znqO5M3d = z.array(v0a43T4TEdB);
-      const vmYnun0sFdZ: z.ZodType<Nested2> = z.lazy(() =>
+      const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
+      const DeeplyNested = z.array(VeryDeeplyNested);
+      const Nested2: z.ZodType<Nested2> = z.lazy(() =>
           z.object({
               nested_prop: z.boolean().optional(),
-              deeplyNested: vm0znqO5M3d.optional(),
-              circularToRoot: vCj2di4DExd.optional(),
+              deeplyNested: DeeplyNested.optional(),
+              circularToRoot: Root2.optional(),
               requiredProp: z.string(),
           })
       );
-      const v6JdpQSn4Hj = z.object({ something: z.string(), another: z.number() }).partial();
-      const vCj2di4DExd: z.ZodType<Root2> = z.lazy(() =>
+      const PartialObject = z.object({ something: z.string(), another: z.number() }).partial();
+      const Root2: z.ZodType<Root2> = z.lazy(() =>
           z.object({
               str: z.string(),
               nb: z.number(),
-              nested: vmYnun0sFdZ,
-              partial: v6JdpQSn4Hj.optional(),
+              nested: Nested2,
+              partial: PartialObject.optional(),
               optionalProp: z.string().optional(),
           })
       );
-      const vFHcIEhV0A3 = z.object({
+      const vRvCWBriblb = z.object({
+          str: z.string(),
+          nb: z.number(),
+          nested: Nested2,
+          partial: PartialObject.optional(),
+          optionalProp: z.string().optional(),
+      });
+      const vO1pZnSWOkR = z.object({
           nested_prop: z.boolean().optional(),
-          deeplyNested: vm0znqO5M3d.optional(),
-          circularToRoot: vCj2di4DExd.optional(),
+          deeplyNested: DeeplyNested.optional(),
+          circularToRoot: Root2.optional(),
           requiredProp: z.string(),
       });
+      const vD7Rw82zk4s = z.array(VeryDeeplyNested);
+      const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
 
       const variables = {
-          getDeeplyNested: vm0znqO5M3d,
-          getNested: vFHcIEhV0A3,
-          getRoot: vCj2di4DExd,
+          getDeeplyNested: vD7Rw82zk4s,
+          getNested: vO1pZnSWOkR,
+          getRoot: vRvCWBriblb,
           getVeryDeeplyNested: v0a43T4TEdB,
       };
 
@@ -1803,7 +1747,7 @@ test("with optional, partial, all required objects", async () => {
               method: "get",
               path: "/deeplyNested",
               requestFormat: "json",
-              response: z.array(variables["getVeryDeeplyNested"]),
+              response: z.array(VeryDeeplyNested),
           },
           {
               method: "get",
@@ -1811,8 +1755,8 @@ test("with optional, partial, all required objects", async () => {
               requestFormat: "json",
               response: z.object({
                   nested_prop: z.boolean().optional(),
-                  deeplyNested: variables["getDeeplyNested"].optional(),
-                  circularToRoot: variables["getRoot"].optional(),
+                  deeplyNested: DeeplyNested.optional(),
+                  circularToRoot: Root2.optional(),
                   requiredProp: z.string(),
               }),
           },
@@ -1823,8 +1767,8 @@ test("with optional, partial, all required objects", async () => {
               response: z.object({
                   str: z.string(),
                   nb: z.number(),
-                  nested: variables["getRoot"],
-                  partial: variables["getRoot"].optional(),
+                  nested: Nested2,
+                  partial: PartialObject.optional(),
                   optionalProp: z.string().optional(),
               }),
           },

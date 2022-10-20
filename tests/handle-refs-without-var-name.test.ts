@@ -39,7 +39,7 @@ test("handle-refs-without-var-name", () => {
                   "parameters": [],
                   "path": "/something",
                   "requestFormat": "json",
-                  "response": "z.array(variables["getSomething"])",
+                  "response": "z.array(Basic)",
               },
           ],
           "options": {
@@ -47,13 +47,13 @@ test("handle-refs-without-var-name", () => {
               "withAlias": false,
           },
           "schemas": {
-              "v8qB08Q3UVq": "z.object({}).partial()",
-              "vbGTEfr1PUp": "z.array(v8qB08Q3UVq)",
+              "Basic": "z.object({}).partial()",
+              "vP9uJf7G9dY": "z.array(Basic)",
           },
           "typeNameByRefHash": {},
           "types": {},
           "variables": {
-              "getSomething": "vbGTEfr1PUp",
+              "getSomething": "vP9uJf7G9dY",
           },
       }
     `);
