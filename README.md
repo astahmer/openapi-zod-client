@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.5
+openapi-zod-client/0.5.0
 
 Usage:
   $ openapi-zod-client <input>
@@ -54,6 +54,7 @@ Options:
   --media-type-expr <expr>  Pass an expression to determine which response content should be allowed
   --export-schemas          When true, will export all `#/components/schemas`
   --implicit-required       When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
+  --with-deprecated         when true, will keep deprecated endpoints in the api output
   -v, --version             Display version number
   -h, --help                Display this message
 ```
