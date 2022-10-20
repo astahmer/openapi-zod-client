@@ -56,8 +56,6 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
         zodSchemaByHash: {},
         schemaHashByRef: {},
         hashByVariableName: {},
-        codeMetaByRef: {},
-        circularTokenByRef: {},
     };
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
