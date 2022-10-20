@@ -331,7 +331,7 @@ const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as 
 type PrimitiveType = typeof primitiveTypeList[number];
 
 export class CodeMeta {
-    code?: string;
+    private code?: string;
     ref?: string;
 
     children: CodeMeta[] = [];
