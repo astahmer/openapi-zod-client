@@ -170,7 +170,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                             .with("path", () => "Path")
                             .run() as "Header" | "Query" | "Path",
                         schema: getZodVarName(
-                            paramCode.assign(paramCode.code + (chainablePresence ? "." + chainablePresence : "")),
+                            paramCode.assign(paramCode.toString() + (chainablePresence ? "." + chainablePresence : "")),
                             paramItem.name
                         ),
                     });
