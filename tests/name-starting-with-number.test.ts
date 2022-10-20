@@ -33,15 +33,10 @@ test("operationId-starting-with-number", () => {
               "parameters": [],
               "path": "/operationId-starting-with-number",
               "requestFormat": "json",
-              "response": "variables["Basic"]",
+              "response": "Basic",
           },
       ]
     `);
 
-    expect(ctx.variables).toMatchInlineSnapshot(`
-      {
-          "Basic": "vZwdCSvA9Xq",
-          "_123_example": "vZwdCSvA9Xq",
-      }
-    `);
+    expect(ctx.variables).toMatchInlineSnapshot('{}');
 });

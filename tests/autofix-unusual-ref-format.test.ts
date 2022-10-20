@@ -54,7 +54,7 @@ test("autofix-unusual-ref-format", () => {
                   "parameters": [],
                   "path": "/usual-ref-format",
                   "requestFormat": "json",
-                  "response": "@var/Basic",
+                  "response": "Basic",
               },
               {
                   "alias": "getWithUnusualRefFormat",
@@ -64,30 +64,26 @@ test("autofix-unusual-ref-format", () => {
                   "parameters": [],
                   "path": "/unusual-ref-format",
                   "requestFormat": "json",
-                  "response": "@var/Basic",
+                  "response": "Basic",
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {
-              "@var/Basic": "@ref__vZwdCSvA9Xq__",
-              "@var/getWithUnusualRefFormat": "@ref__vZwdCSvA9Xq__",
-              "@var/getWithUsualRefFormat": "@ref__vZwdCSvA9Xq__",
-          },
+          "hashByVariableName": {},
           "refsDependencyGraph": {},
           "responsesByOperationId": {
               "getWithUnusualRefFormat": {
-                  "200": "@var/getWithUnusualRefFormat",
+                  "200": "Basic",
               },
               "getWithUsualRefFormat": {
-                  "200": "@var/getWithUsualRefFormat",
+                  "200": "Basic",
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Basic": "@ref__vZwdCSvA9Xq__",
-              "#components/schemas/Basic": "@ref__vZwdCSvA9Xq__",
+              "#/components/schemas/Basic": "Basic",
+              "#components/schemas/Basic": "Basic",
           },
           "zodSchemaByHash": {
-              "@ref__vZwdCSvA9Xq__": "z.string()",
+              "Basic": "z.string()",
           },
       }
     `);

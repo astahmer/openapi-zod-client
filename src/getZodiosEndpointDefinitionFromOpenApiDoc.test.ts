@@ -119,33 +119,29 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "@var/placeOrder_Body",
+                          "schema": "Order",
                           "type": "Body",
                       },
                   ],
                   "path": "/store/order",
                   "requestFormat": "json",
-                  "response": "@var/Order",
+                  "response": "Order",
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {
-              "@var/Order": "@ref__vimJdKcOZX8__",
-              "@var/placeOrder": "@ref__vimJdKcOZX8__",
-              "@var/placeOrder_Body": "@ref__vimJdKcOZX8__",
-          },
+          "hashByVariableName": {},
           "refsDependencyGraph": {},
           "responsesByOperationId": {
               "placeOrder": {
-                  "200": "@var/placeOrder",
+                  "200": "Order",
                   "405": "z.void()",
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Order": "@ref__vimJdKcOZX8__",
+              "#/components/schemas/Order": "Order",
           },
           "zodSchemaByHash": {
-              "@ref__vimJdKcOZX8__": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
           },
       }
     `);
@@ -224,7 +220,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
           },
           "codeMetaByRef": {
               "#/components/schemas/Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: @ref__vqZ2pR7iMi4__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vqZ2pR7iMi4__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "#/components/schemas/Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
           },
           "deepDependencyGraph": {
@@ -259,13 +255,13 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
                       {
                           "description": "Update an existent pet in the store",
                           "name": "body",
-                          "schema": "@var/updatePet_Body",
+                          "schema": "Pet",
                           "type": "Body",
                       },
                   ],
                   "path": "/pet",
                   "requestFormat": "json",
-                  "response": "@var/Pet",
+                  "response": "Pet",
               },
               {
                   "alias": "addPet",
@@ -282,23 +278,17 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
                       {
                           "description": "Create a new pet in the store",
                           "name": "body",
-                          "schema": "@var/addPet_Body",
+                          "schema": "Pet",
                           "type": "Body",
                       },
                   ],
                   "path": "/pet",
                   "requestFormat": "json",
-                  "response": "@var/Pet",
+                  "response": "Pet",
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {
-              "@var/Pet": "@ref__vuZawvBEAhG__",
-              "@var/addPet": "@ref__vuZawvBEAhG__",
-              "@var/addPet_Body": "@ref__vuZawvBEAhG__",
-              "@var/updatePet": "@ref__vuZawvBEAhG__",
-              "@var/updatePet_Body": "@ref__vuZawvBEAhG__",
-          },
+          "hashByVariableName": {},
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -307,24 +297,25 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
           },
           "responsesByOperationId": {
               "addPet": {
-                  "200": "@var/addPet",
+                  "200": "Pet",
                   "405": "z.void()",
               },
               "updatePet": {
-                  "200": "@var/updatePet",
+                  "200": "Pet",
                   "400": "z.void()",
                   "404": "z.void()",
                   "405": "z.void()",
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Category": "@ref__vqZ2pR7iMi4__",
-              "#/components/schemas/Pet": "@ref__vuZawvBEAhG__",
-              "#/components/schemas/Tag": "@ref__vqZ2pR7iMi4__",
+              "#/components/schemas/Category": "Category",
+              "#/components/schemas/Pet": "Pet",
+              "#/components/schemas/Tag": "Tag",
           },
           "zodSchemaByHash": {
-              "@ref__vqZ2pR7iMi4__": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "@ref__vuZawvBEAhG__": "z.object({ id: z.number().int().optional(), name: z.string(), category: @ref__vqZ2pR7iMi4__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vqZ2pR7iMi4__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
           },
       }
     `);
@@ -455,7 +446,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
           },
           "codeMetaByRef": {
               "#/components/schemas/Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: @ref__vqZ2pR7iMi4__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vqZ2pR7iMi4__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "#/components/schemas/Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
           },
           "deepDependencyGraph": {
@@ -485,7 +476,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vuZawvBEAhG__)",
+                  "response": "z.array(Pet)",
               },
               {
                   "alias": "findPetsByTags",
@@ -507,13 +498,13 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vuZawvBEAhG__)",
+                  "response": "z.array(Pet)",
               },
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/findPetsByStatus": "@ref__v1QfJ6T3SbL__",
-              "@var/findPetsByTags": "@ref__v1QfJ6T3SbL__",
+              "@var/findPetsByStatus": "@ref__vuJkCuHe8KS__",
+              "@var/findPetsByTags": "@ref__vuJkCuHe8KS__",
               "@var/status": "@ref__vlh4E1pXYTG__",
               "@var/tags": "@ref__vGqL1kemtHF__",
           },
@@ -534,16 +525,17 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/Category": "@ref__vqZ2pR7iMi4__",
-              "#/components/schemas/Pet": "@ref__vuZawvBEAhG__",
-              "#/components/schemas/Tag": "@ref__vqZ2pR7iMi4__",
+              "#/components/schemas/Category": "Category",
+              "#/components/schemas/Pet": "Pet",
+              "#/components/schemas/Tag": "Tag",
           },
           "zodSchemaByHash": {
-              "@ref__v1QfJ6T3SbL__": "z.array(@ref__vuZawvBEAhG__)",
               "@ref__vGqL1kemtHF__": "z.array(z.string()).optional()",
               "@ref__vlh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
-              "@ref__vqZ2pR7iMi4__": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "@ref__vuZawvBEAhG__": "z.object({ id: z.number().int().optional(), name: z.string(), category: @ref__vqZ2pR7iMi4__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vqZ2pR7iMi4__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "@ref__vuJkCuHe8KS__": "z.array(Pet)",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
           },
       }
     `);
@@ -566,7 +558,7 @@ test("petstore.yaml", async () => {
               "#/components/schemas/ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
               "#/components/schemas/Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "#/components/schemas/Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: @ref__vqZ2pR7iMi4__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vqZ2pR7iMi4__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "#/components/schemas/Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "#/components/schemas/Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "#/components/schemas/User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
           },
@@ -602,13 +594,13 @@ test("petstore.yaml", async () => {
                       {
                           "description": "Update an existent pet in the store",
                           "name": "body",
-                          "schema": "@var/updatePet_Body",
+                          "schema": "Pet",
                           "type": "Body",
                       },
                   ],
                   "path": "/pet",
                   "requestFormat": "json",
-                  "response": "@var/Pet",
+                  "response": "Pet",
               },
               {
                   "alias": "addPet",
@@ -625,13 +617,13 @@ test("petstore.yaml", async () => {
                       {
                           "description": "Create a new pet in the store",
                           "name": "body",
-                          "schema": "@var/addPet_Body",
+                          "schema": "Pet",
                           "type": "Body",
                       },
                   ],
                   "path": "/pet",
                   "requestFormat": "json",
-                  "response": "@var/Pet",
+                  "response": "Pet",
               },
               {
                   "alias": "findPetsByStatus",
@@ -653,7 +645,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/findByStatus",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vuZawvBEAhG__)",
+                  "response": "z.array(Pet)",
               },
               {
                   "alias": "findPetsByTags",
@@ -675,7 +667,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(@ref__vuZawvBEAhG__)",
+                  "response": "z.array(Pet)",
               },
               {
                   "alias": "getPetById",
@@ -702,7 +694,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
-                  "response": "@var/Pet",
+                  "response": "Pet",
               },
               {
                   "alias": "updatePetWithForm",
@@ -780,7 +772,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/:petId/uploadImage",
                   "requestFormat": "json",
-                  "response": "@var/ApiResponse",
+                  "response": "ApiResponse",
               },
               {
                   "alias": "getInventory",
@@ -807,13 +799,13 @@ test("petstore.yaml", async () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "@var/placeOrder_Body",
+                          "schema": "Order",
                           "type": "Body",
                       },
                   ],
                   "path": "/store/order",
                   "requestFormat": "json",
-                  "response": "@var/Order",
+                  "response": "Order",
               },
               {
                   "alias": "getOrderById",
@@ -840,7 +832,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
-                  "response": "@var/Order",
+                  "response": "Order",
               },
               {
                   "alias": "deleteOrder",
@@ -877,13 +869,13 @@ test("petstore.yaml", async () => {
                       {
                           "description": "Created user object",
                           "name": "body",
-                          "schema": "@var/createUser_Body",
+                          "schema": "User",
                           "type": "Body",
                       },
                   ],
                   "path": "/user",
                   "requestFormat": "json",
-                  "response": "@var/User",
+                  "response": "User",
               },
               {
                   "alias": "createUsersWithListInput",
@@ -900,7 +892,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/createWithList",
                   "requestFormat": "json",
-                  "response": "@var/User",
+                  "response": "User",
               },
               {
                   "alias": "loginUser",
@@ -964,7 +956,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
-                  "response": "@var/User",
+                  "response": "User",
               },
               {
                   "alias": "updateUser",
@@ -975,7 +967,7 @@ test("petstore.yaml", async () => {
                       {
                           "description": "Update an existent user in the store",
                           "name": "body",
-                          "schema": "@var/updateUser_Body",
+                          "schema": "User",
                           "type": "Body",
                       },
                       {
@@ -1017,29 +1009,11 @@ test("petstore.yaml", async () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/ApiResponse": "@ref__vjrUWIUkeIl__",
-              "@var/Order": "@ref__vimJdKcOZX8__",
-              "@var/Pet": "@ref__vuZawvBEAhG__",
-              "@var/User": "@ref__vVNOkMuhu59__",
-              "@var/addPet": "@ref__vuZawvBEAhG__",
-              "@var/addPet_Body": "@ref__vuZawvBEAhG__",
-              "@var/createUser": "@ref__vVNOkMuhu59__",
-              "@var/createUser_Body": "@ref__vVNOkMuhu59__",
-              "@var/createUsersWithListInput": "@ref__vVNOkMuhu59__",
-              "@var/createUsersWithListInput_Body": "@ref__vrMyJmYcfcf__",
-              "@var/findPetsByStatus": "@ref__v1QfJ6T3SbL__",
-              "@var/findPetsByTags": "@ref__v1QfJ6T3SbL__",
-              "@var/getOrderById": "@ref__vimJdKcOZX8__",
-              "@var/getPetById": "@ref__vuZawvBEAhG__",
-              "@var/getUserByName": "@ref__vVNOkMuhu59__",
-              "@var/placeOrder": "@ref__vimJdKcOZX8__",
-              "@var/placeOrder_Body": "@ref__vimJdKcOZX8__",
+              "@var/createUsersWithListInput_Body": "@ref__vhZunxssSBT__",
+              "@var/findPetsByStatus": "@ref__vuJkCuHe8KS__",
+              "@var/findPetsByTags": "@ref__vuJkCuHe8KS__",
               "@var/status": "@ref__vlh4E1pXYTG__",
               "@var/tags": "@ref__vGqL1kemtHF__",
-              "@var/updatePet": "@ref__vuZawvBEAhG__",
-              "@var/updatePet_Body": "@ref__vuZawvBEAhG__",
-              "@var/updateUser_Body": "@ref__vVNOkMuhu59__",
-              "@var/uploadFile": "@ref__vjrUWIUkeIl__",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -1049,14 +1023,14 @@ test("petstore.yaml", async () => {
           },
           "responsesByOperationId": {
               "addPet": {
-                  "200": "@var/addPet",
+                  "200": "Pet",
                   "405": "z.void()",
               },
               "createUser": {
-                  "default": "@var/createUser",
+                  "default": "User",
               },
               "createUsersWithListInput": {
-                  "200": "@var/createUsersWithListInput",
+                  "200": "User",
                   "default": "z.void()",
               },
               "deleteOrder": {
@@ -1082,17 +1056,17 @@ test("petstore.yaml", async () => {
                   "200": "z.record(z.number())",
               },
               "getOrderById": {
-                  "200": "@var/getOrderById",
+                  "200": "Order",
                   "400": "z.void()",
                   "404": "z.void()",
               },
               "getPetById": {
-                  "200": "@var/getPetById",
+                  "200": "Pet",
                   "400": "z.void()",
                   "404": "z.void()",
               },
               "getUserByName": {
-                  "200": "@var/getUserByName",
+                  "200": "User",
                   "400": "z.void()",
                   "404": "z.void()",
               },
@@ -1104,11 +1078,11 @@ test("petstore.yaml", async () => {
                   "default": "z.void()",
               },
               "placeOrder": {
-                  "200": "@var/placeOrder",
+                  "200": "Order",
                   "405": "z.void()",
               },
               "updatePet": {
-                  "200": "@var/updatePet",
+                  "200": "Pet",
                   "400": "z.void()",
                   "404": "z.void()",
                   "405": "z.void()",
@@ -1120,27 +1094,28 @@ test("petstore.yaml", async () => {
                   "default": "z.void()",
               },
               "uploadFile": {
-                  "200": "@var/uploadFile",
+                  "200": "ApiResponse",
               },
           },
           "schemaHashByRef": {
-              "#/components/schemas/ApiResponse": "@ref__vjrUWIUkeIl__",
-              "#/components/schemas/Category": "@ref__vqZ2pR7iMi4__",
-              "#/components/schemas/Order": "@ref__vimJdKcOZX8__",
-              "#/components/schemas/Pet": "@ref__vuZawvBEAhG__",
-              "#/components/schemas/Tag": "@ref__vqZ2pR7iMi4__",
-              "#/components/schemas/User": "@ref__vVNOkMuhu59__",
+              "#/components/schemas/ApiResponse": "ApiResponse",
+              "#/components/schemas/Category": "Category",
+              "#/components/schemas/Order": "Order",
+              "#/components/schemas/Pet": "Pet",
+              "#/components/schemas/Tag": "Tag",
+              "#/components/schemas/User": "User",
           },
           "zodSchemaByHash": {
-              "@ref__v1QfJ6T3SbL__": "z.array(@ref__vuZawvBEAhG__)",
               "@ref__vGqL1kemtHF__": "z.array(z.string()).optional()",
-              "@ref__vVNOkMuhu59__": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
-              "@ref__vimJdKcOZX8__": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-              "@ref__vjrUWIUkeIl__": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
+              "@ref__vhZunxssSBT__": "z.array(User)",
               "@ref__vlh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
-              "@ref__vqZ2pR7iMi4__": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "@ref__vrMyJmYcfcf__": "z.array(@ref__vVNOkMuhu59__)",
-              "@ref__vuZawvBEAhG__": "z.object({ id: z.number().int().optional(), name: z.string(), category: @ref__vqZ2pR7iMi4__.optional(), photoUrls: z.array(z.string()), tags: z.array(@ref__vqZ2pR7iMi4__).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "@ref__vuJkCuHe8KS__": "z.array(Pet)",
+              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
           },
       }
     `);

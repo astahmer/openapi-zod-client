@@ -32,25 +32,19 @@ exports[`samples-generator > ./samples/v3.0/link-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vObntp1skbx = z.object({ username: z.string(), uuid: z.string() }).partial();
-const vZj8Kquc5yX = z.object({ slug: z.string(), owner: vObntp1skbx }).partial();
-const vRlupufDwET = z
-    .object({ id: z.number().int(), title: z.string(), repository: vZj8Kquc5yX, author: vObntp1skbx })
+const user = z.object({ username: z.string(), uuid: z.string() }).partial();
+const repository = z.object({ slug: z.string(), owner: user }).partial();
+const pullrequest = z
+    .object({ id: z.number().int(), title: z.string(), repository: repository, author: user })
     .partial();
-const vKMFj5kanr5 = z.array(vZj8Kquc5yX);
+const vAW9ZFEfpeT = z.array(repository);
 const vt4Y3jGvjMM = z.enum(["open", "merged", "declined"]).optional();
-const vXjHxaxSqAF = z.array(vRlupufDwET);
+const v9T3jAsYMDH = z.array(pullrequest);
 
 const variables = {
-    getPullRequestsById: vRlupufDwET,
-    getPullRequestsByRepository: vXjHxaxSqAF,
-    getRepositoriesByOwner: vKMFj5kanr5,
-    getRepository: vZj8Kquc5yX,
-    getUserByName: vObntp1skbx,
-    pullrequest: vRlupufDwET,
-    repository: vZj8Kquc5yX,
+    getPullRequestsByRepository: v9T3jAsYMDH,
+    getRepositoriesByOwner: vAW9ZFEfpeT,
     state: vt4Y3jGvjMM,
-    user: vObntp1skbx,
 };
 
 const endpoints = makeApi([
@@ -65,7 +59,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: z.array(variables["getRepository"]),
+        response: z.array(repository),
     },
     {
         method: "get",
@@ -83,7 +77,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: variables["repository"],
+        response: repository,
     },
     {
         method: "get",
@@ -106,7 +100,7 @@ const endpoints = makeApi([
                 schema: variables["state"],
             },
         ],
-        response: z.array(variables["getPullRequestsById"]),
+        response: z.array(pullrequest),
     },
     {
         method: "get",
@@ -129,7 +123,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: variables["pullrequest"],
+        response: pullrequest,
     },
     {
         method: "get",
@@ -142,7 +136,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: variables["user"],
+        response: user,
     },
 ]);
 
@@ -154,18 +148,11 @@ exports[`samples-generator > ./samples/v3.0/petstore.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const v1V4WeOqHOR = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
-const vE4h2yEASDL = z.array(v1V4WeOqHOR);
-const vQV94vZN90C = z.object({ code: z.number().int(), message: z.string() });
+const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
+const Pets = z.array(Pet);
+const Error = z.object({ code: z.number().int(), message: z.string() });
 
-const variables = {
-    Error: vQV94vZN90C,
-    Pet: v1V4WeOqHOR,
-    Pets: vE4h2yEASDL,
-    createPets: vQV94vZN90C,
-    listPets: vQV94vZN90C,
-    showPetById: vQV94vZN90C,
-};
+const variables = {};
 
 const endpoints = makeApi([
     {
@@ -179,13 +166,13 @@ const endpoints = makeApi([
                 schema: z.number().optional(),
             },
         ],
-        response: variables["Pets"],
+        response: Pets,
     },
     {
         method: "post",
         path: "/pets",
         requestFormat: "json",
-        response: variables["Error"],
+        response: Error,
     },
     {
         method: "get",
@@ -198,7 +185,7 @@ const endpoints = makeApi([
                 schema: z.string(),
             },
         ],
-        response: variables["Pet"],
+        response: Pet,
     },
 ]);
 
@@ -210,20 +197,14 @@ exports[`samples-generator > ./samples/v3.0/petstore-expanded.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vPXNN6VHlNv = z.object({ name: z.string(), tag: z.string().optional() });
-const vdFAvdPGqCi = vPXNN6VHlNv.and(z.object({ id: z.number().int() }));
+const NewPet = z.object({ name: z.string(), tag: z.string().optional() });
+const Pet = NewPet.and(z.object({ id: z.number().int() }));
 const vGqL1kemtHF = z.array(z.string()).optional();
-const vuUCHA8LJFF = z.array(vdFAvdPGqCi);
-const vQV94vZN90C = z.object({ code: z.number().int(), message: z.string() });
+const vuJkCuHe8KS = z.array(Pet);
+const Error = z.object({ code: z.number().int(), message: z.string() });
 
 const variables = {
-    Error: vQV94vZN90C,
-    Pet: vdFAvdPGqCi,
-    addPet: vQV94vZN90C,
-    addPet_Body: vPXNN6VHlNv,
-    deletePet: vQV94vZN90C,
-    findPets: vQV94vZN90C,
-    find_pet_by_id: vQV94vZN90C,
+    findPets: vuJkCuHe8KS,
     tags: vGqL1kemtHF,
 };
 
@@ -249,7 +230,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 schema: z.number().optional(),
             },
         ],
-        response: z.array(variables["Pet"]),
+        response: z.array(Pet),
     },
     {
         method: "post",
@@ -261,10 +242,10 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 name: "body",
                 description: \`Pet to add to the store\`,
                 type: "Body",
-                schema: variables["addPet_Body"],
+                schema: NewPet,
             },
         ],
-        response: variables["Pet"],
+        response: Pet,
     },
     {
         method: "get",
@@ -278,7 +259,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 schema: z.number(),
             },
         ],
-        response: variables["Pet"],
+        response: Pet,
     },
     {
         method: "delete",
@@ -292,7 +273,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 schema: z.number(),
             },
         ],
-        response: variables["Error"],
+        response: Error,
     },
 ]);
 
@@ -304,7 +285,7 @@ exports[`samples-generator > ./samples/v3.0/uspto.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const v60c7XUj6A7 = z
+const dataSetList = z
     .object({
         total: z.number().int(),
         apis: z.array(
@@ -322,8 +303,6 @@ const v60c7XUj6A7 = z
 const vlyQvttKNVV = z.array(z.record(z.object({}).partial()));
 
 const variables = {
-    dataSetList: v60c7XUj6A7,
-    list_data_sets: v60c7XUj6A7,
     perform_search: vlyQvttKNVV,
 };
 
@@ -332,7 +311,7 @@ const endpoints = makeApi([
         method: "get",
         path: "/",
         requestFormat: "json",
-        response: variables["dataSetList"],
+        response: dataSetList,
     },
     {
         method: "get",

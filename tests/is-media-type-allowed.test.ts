@@ -39,7 +39,7 @@ test("is-media-type-allowed", () => {
               "parameters": [],
               "path": "/unusual-ref-format",
               "requestFormat": "json",
-              "response": "@var/Basic",
+              "response": "Basic",
           },
       ]
     `);
@@ -57,7 +57,7 @@ test("is-media-type-allowed", () => {
               "parameters": [],
               "path": "/unusual-ref-format",
               "requestFormat": "json",
-              "response": "@var/CustomMediaType",
+              "response": "CustomMediaType",
           },
       ]
     `);
