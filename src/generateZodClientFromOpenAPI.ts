@@ -27,14 +27,13 @@ export const getZodClientTemplateContext = (
     const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc, options);
     const data = makeInitialContext();
 
-    const refsByCircularToken = reverse(result.circularTokenByRef) as Record<string, string>;
     const docSchemas = openApiDoc.components?.schemas || {};
     const depsGraphs = getOpenApiDependencyGraph(
         Object.keys(docSchemas).map((name) => `#/components/schemas/${name}`),
         result.getSchemaByRef
     );
 
-    const replaceCircularTokenWithRefToken = (refHash: string) => {
+    const wrapWithLazyIfNeeded = (refHash: string) => {
         const [code, ref] = [result.zodSchemaByHash[refHash], refByHash[refHash]];
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         const actualCode = isCircular ? `z.lazy(() => ${code})` : code;
@@ -44,9 +43,7 @@ export const getZodClientTemplateContext = (
             data.typeNameByRefHash[tokens.rmToken(refHash, tokens.refToken)] = refName;
         }
 
-        return actualCode.replaceAll(tokens.circularRefRegex, (match) => {
-            return result.schemaHashByRef[refsByCircularToken[match]];
-        });
+        return actualCode;
     };
     const replaceRefTokenWithVariableRef = (code: string) =>
         code.replaceAll(tokens.refTokenHashRegex, (match) => tokens.rmToken(match, tokens.refToken));
@@ -89,11 +86,11 @@ export const getZodClientTemplateContext = (
     const refByHash = reverse(result.schemaHashByRef) as Record<string, string>;
     for (const refHash in result.zodSchemaByHash) {
         data.schemas[tokens.rmToken(refHash, tokens.refToken)] = replaceRefTokenWithVariableRef(
-            replaceCircularTokenWithRefToken(refHash)
+            wrapWithLazyIfNeeded(refHash)
         );
     }
 
-    for (const ref in result.circularTokenByRef) {
+    for (const ref in depsGraphs.deepDependencyGraph) {
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         const ctx: TsConversionContext = { nodeByRef: {}, getSchemaByRef: result.getSchemaByRef, visitedsRefs: {} };
 
@@ -106,7 +103,7 @@ export const getZodClientTemplateContext = (
             }) as ts.Node;
             data.types[refName] = printTs(node).replace("export ", "");
 
-            for (const depRef of depsGraphs.deepDependencyGraph[ref] || []) {
+            for (const depRef of depsGraphs.deepDependencyGraph[ref] ?? []) {
                 const depRefName = tokens.getRefName(depRef);
                 const isDepCircular = depsGraphs.deepDependencyGraph[depRef]?.has(depRef);
 

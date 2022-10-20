@@ -2,15 +2,14 @@ import { hash } from "ohash";
 
 const varPrefix = "@var/" as const;
 const refToken = "@ref" as const;
-const circularRefToken = "@circular__" as const;
-type TokenAlias = typeof varPrefix | typeof refToken | typeof circularRefToken;
+type TokenAlias = typeof varPrefix | typeof refToken;
+
+const getRefName = (ref: string) => prefixStringStartingWithNumberIfNeeded(ref.split("/").at(-1)!);
 
 export const tokens = {
     varPrefix,
     refToken,
-    circularRefToken,
     refTokenHashRegex: new RegExp(`${refToken}__v\\w{10}__`, "g"),
-    circularRefRegex: new RegExp(`${circularRefToken}(\\w{10})`, "g"),
     isToken: (name: string, token: TokenAlias) => name.startsWith(token),
     rmToken: (name: string, token: TokenAlias) => {
         if (token === varPrefix) return name.replace(token, "");
@@ -27,8 +26,7 @@ export const tokens = {
         if (!zodSchemaString) throw new Error("zodSchemaString is required");
         return refToken + `__v${hash(zodSchemaString)}__`;
     },
-    makeCircularRef: (ref: string) => circularRefToken + hash(ref),
-    getRefName: (ref: string) => prefixStringStartingWithNumberIfNeeded(ref.split("/").at(-1)!),
+    getRefName,
 };
 
 export function normalizeString(text: string) {
