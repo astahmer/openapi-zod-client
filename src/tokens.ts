@@ -14,7 +14,12 @@ export const tokens = {
     isToken: (name: string, token: TokenAlias) => name.startsWith(token),
     rmToken: (name: string, token: TokenAlias) => {
         if (token === varPrefix) return name.replace(token, "");
-        if (token === refToken) return name.replace(token, "").slice(2, -2);
+        if (token === refToken && name.startsWith(token)) {
+            // @ref__v1234567890__ => 1234567890
+            return name.replace(token, "").slice(2, -2);
+        }
+
+        // @ref__SchemaName => SchemaName
         return name;
     },
     makeVar: (name: string) => varPrefix + normalizeString(name),
@@ -23,7 +28,7 @@ export const tokens = {
         return refToken + `__v${hash(zodSchemaString)}__`;
     },
     makeCircularRef: (ref: string) => circularRefToken + hash(ref),
-    getRefName: (ref: string) => ref.split("/").at(-1)!,
+    getRefName: (ref: string) => prefixStringStartingWithNumberIfNeeded(ref.split("/").at(-1)!),
 };
 
 export function normalizeString(text: string) {

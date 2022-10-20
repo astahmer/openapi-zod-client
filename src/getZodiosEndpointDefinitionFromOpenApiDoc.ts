@@ -86,25 +86,22 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
             return formatedName;
         }
 
+        // result is a reference to another schema
+        if (ctx.zodSchemaByHash[result]) {
+            return result;
+        }
+
+        // TODO rm ?
         // $ref like #/components/xxx/name
         if (fallbackName) {
+            console.log({ result, fallbackName });
             const formatedName = tokens.makeVar(fallbackName);
             ctx.hashByVariableName[formatedName] = result;
 
             return formatedName;
         }
 
-        const refName = tokens.getRefName(input.ref!);
-        if (!refName) {
-            console.log({ ref: input.ref, refName, fallbackName, result });
-            throw new Error("Invalid ref: " + input.ref);
-        }
-
-        const formatedName = tokens.makeVar(refName);
-
-        ctx.hashByVariableName[formatedName] = result;
-
-        return formatedName;
+        return tokens.getRefName(input.ref!);
     };
 
     for (const path in doc.paths) {
