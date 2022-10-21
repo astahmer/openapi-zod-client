@@ -25,7 +25,7 @@ test("ref-in-another-file", async () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/getRobots_txt": "@ref__vgWIuZgOW3W__",
+              "@var/getRobots_txt": "getRobots_txt",
           },
           "refsDependencyGraph": {},
           "responsesByOperationId": {
@@ -35,7 +35,7 @@ test("ref-in-another-file", async () => {
           },
           "schemaHashByRef": {},
           "zodSchemaByHash": {
-              "@ref__vgWIuZgOW3W__": "z.object({ name: z.string(), completed: z.boolean() })",
+              "getRobots_txt": "z.object({ name: z.string(), completed: z.boolean() })",
           },
       }
     `);

@@ -477,10 +477,10 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/findPetsByStatus": "@ref__vuJkCuHe8KS__",
-              "@var/findPetsByTags": "@ref__vuJkCuHe8KS__",
-              "@var/status": "@ref__vlh4E1pXYTG__",
-              "@var/tags": "@ref__vGqL1kemtHF__",
+              "@var/findPetsByStatus": "findPetsByStatus",
+              "@var/findPetsByTags": "findPetsByTags",
+              "@var/status": "status",
+              "@var/tags": "tags",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -504,12 +504,13 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
               "#/components/schemas/Tag": "Tag",
           },
           "zodSchemaByHash": {
-              "@ref__vGqL1kemtHF__": "z.array(z.string()).optional()",
-              "@ref__vlh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
-              "@ref__vuJkCuHe8KS__": "z.array(Pet)",
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "findPetsByStatus": "z.array(Pet)",
+              "findPetsByTags": "z.array(Pet)",
+              "status": "z.enum(["available", "pending", "sold"]).optional()",
+              "tags": "z.array(z.string()).optional()",
           },
       }
     `);
@@ -967,11 +968,11 @@ test("petstore.yaml", async () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/createUsersWithListInput_Body": "@ref__vhZunxssSBT__",
-              "@var/findPetsByStatus": "@ref__vuJkCuHe8KS__",
-              "@var/findPetsByTags": "@ref__vuJkCuHe8KS__",
-              "@var/status": "@ref__vlh4E1pXYTG__",
-              "@var/tags": "@ref__vGqL1kemtHF__",
+              "@var/createUsersWithListInput_Body": "createUsersWithListInput_Body",
+              "@var/findPetsByStatus": "findPetsByStatus",
+              "@var/findPetsByTags": "findPetsByTags",
+              "@var/status": "status",
+              "@var/tags": "tags",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -1064,16 +1065,17 @@ test("petstore.yaml", async () => {
               "#/components/schemas/User": "User",
           },
           "zodSchemaByHash": {
-              "@ref__vGqL1kemtHF__": "z.array(z.string()).optional()",
-              "@ref__vhZunxssSBT__": "z.array(User)",
-              "@ref__vlh4E1pXYTG__": "z.enum(["available", "pending", "sold"]).optional()",
-              "@ref__vuJkCuHe8KS__": "z.array(Pet)",
               "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
+              "createUsersWithListInput_Body": "z.array(User)",
+              "findPetsByStatus": "z.array(Pet)",
+              "findPetsByTags": "z.array(Pet)",
+              "status": "z.enum(["available", "pending", "sold"]).optional()",
+              "tags": "z.array(z.string()).optional()",
           },
       }
     `);

@@ -16,10 +16,10 @@ exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const vLMDqDGAeww = z.object({ subscriptionId: z.string() });
+const postStreams = z.object({ subscriptionId: z.string() });
 
 const variables = {
-    postStreams: vLMDqDGAeww,
+    postStreams: postStreams,
 };
 
 const endpoints = makeApi([]);
@@ -37,14 +37,14 @@ const repository = z.object({ slug: z.string(), owner: user }).partial();
 const pullrequest = z
     .object({ id: z.number().int(), title: z.string(), repository: repository, author: user })
     .partial();
-const vAW9ZFEfpeT = z.array(repository);
-const vt4Y3jGvjMM = z.enum(["open", "merged", "declined"]).optional();
-const v9T3jAsYMDH = z.array(pullrequest);
+const getRepositoriesByOwner = z.array(repository);
+const state = z.enum(["open", "merged", "declined"]).optional();
+const getPullRequestsByRepository = z.array(pullrequest);
 
 const variables = {
-    getPullRequestsByRepository: v9T3jAsYMDH,
-    getRepositoriesByOwner: vAW9ZFEfpeT,
-    state: vt4Y3jGvjMM,
+    getPullRequestsByRepository: getPullRequestsByRepository,
+    getRepositoriesByOwner: getRepositoriesByOwner,
+    state: state,
 };
 
 const endpoints = makeApi([
@@ -199,13 +199,13 @@ import { z } from "zod";
 
 const NewPet = z.object({ name: z.string(), tag: z.string().optional() });
 const Pet = NewPet.and(z.object({ id: z.number().int() }));
-const vGqL1kemtHF = z.array(z.string()).optional();
-const vuJkCuHe8KS = z.array(Pet);
+const tags = z.array(z.string()).optional();
+const findPets = z.array(Pet);
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
 const variables = {
-    findPets: vuJkCuHe8KS,
-    tags: vGqL1kemtHF,
+    findPets: findPets,
+    tags: tags,
 };
 
 const endpoints = makeApi([
@@ -300,10 +300,10 @@ const dataSetList = z
         ),
     })
     .partial();
-const vlyQvttKNVV = z.array(z.record(z.object({}).partial()));
+const perform_search = z.array(z.record(z.object({}).partial()));
 
 const variables = {
-    perform_search: vlyQvttKNVV,
+    perform_search: perform_search,
 };
 
 const endpoints = makeApi([

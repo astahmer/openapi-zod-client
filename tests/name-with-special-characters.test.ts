@@ -44,8 +44,6 @@ test("name-with-special-characters", async () => {
       ]
     `);
 
-    expect(ctx.variables).toMatchInlineSnapshot("{}");
-
     const result = await generateZodClientFromOpenAPI({ disableWriteToFile: true, openApiDoc });
     expect(result).toMatchInlineSnapshot(`
       "import { makeApi, Zodios } from "@zodios/core";

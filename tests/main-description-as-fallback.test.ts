@@ -43,10 +43,10 @@ it("use main-description-as-fallback", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
+      const getExample = z.object({ str: z.string(), nb: z.number() });
 
       const variables = {
-        getExample: vssLgQd9tqs,
+        getExample: getExample,
       };
 
       const endpoints = makeApi([

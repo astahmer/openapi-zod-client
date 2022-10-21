@@ -48,12 +48,12 @@ test("handle-refs-without-var-name", () => {
           },
           "schemas": {
               "Basic": "z.object({}).partial()",
-              "vP9uJf7G9dY": "z.array(Basic)",
+              "getSomething": "z.array(Basic)",
           },
           "typeNameByRefHash": {},
           "types": {},
           "variables": {
-              "getSomething": "vP9uJf7G9dY",
+              "getSomething": "getSomething",
           },
       }
     `);
