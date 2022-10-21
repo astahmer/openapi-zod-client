@@ -9,12 +9,12 @@ import {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { capitalize, get, kebabToCamel } from "pastable/server";
+import { get } from "pastable/server";
 import { match } from "ts-pattern";
 import type { TemplateContext } from "./generateZodClientFromOpenAPI";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
-import { normalizeString } from "./tokens";
+import { normalizeString, pathToVariableName } from "./tokens";
 
 import { sync } from "whence";
 
@@ -95,16 +95,17 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
             if (options?.withDeprecatedEndpoints ? false : operation.deprecated) continue;
 
             const parameters = operation.parameters || [];
-            const operationName = operation.operationId || method + pathToVariableName(path);
-            const endpointDescription = {
-                method,
+            const operationName = operation.operationId ?? method + pathToVariableName(path);
+            const endpointDescription: EndpointDescriptionWithRefs = {
+                method: method as EndpointDescriptionWithRefs["method"],
                 path: path.replaceAll(pathParamRegex, ":$1"),
                 alias: operationName,
                 description: operation.description,
                 requestFormat: "json",
-                parameters: [] as EndpointDescriptionWithRefs["parameters"],
-                errors: [] as EndpointDescriptionWithRefs["errors"],
-            } as EndpointDescriptionWithRefs;
+                parameters: [],
+                errors: [],
+                response: "",
+            };
 
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
@@ -175,8 +176,6 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                     const status = Number(statusCode);
 
                     if (isMainResponseStatus(status) || (statusCode === "default" && !endpointDescription.response)) {
-                        // if we want `response: variables["listPets"]`, instead of `response: variables["Pets"]`,
-                        // getZodVarName should use operation.operationId as fallbackName
                         endpointDescription.response = schemaString;
 
                         if (
@@ -200,38 +199,27 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
         }
     }
 
-    const { refsDependencyGraph, deepDependencyGraph } = getOpenApiDependencyGraph(
+    const graphs = getOpenApiDependencyGraph(
         Object.keys(ctx.zodSchemaByName).map((name) => `#/components/schemas/${name}`),
         ctx.getSchemaByRef
     );
 
     return {
         ...(ctx as Required<ConversionTypeContext>),
+        ...graphs,
         endpoints,
-        refsDependencyGraph,
-        deepDependencyGraph,
     };
 };
 
 const allowedPathInValues = ["query", "header", "path"] as Array<ParameterObject["in"]>;
 
-export type EndpointDescriptionWithRefs = Required<Omit<ZodiosEndpointDefinition<any>, "response" | "parameters">> & {
+export type EndpointDescriptionWithRefs = Omit<ZodiosEndpointDefinition<any>, "response" | "parameters" | "errors"> & {
     response: string;
     parameters: Array<
         Omit<Required<ZodiosEndpointDefinition<any>>["parameters"][number], "schema"> & { schema: string }
     >;
+    errors: Array<Omit<Required<ZodiosEndpointDefinition<any>>["errors"][number], "schema"> & { schema: string }>;
 };
 
 const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
 const pathParamRegex = /{(\w+)}/g;
-const pathParamWithBracketsRegex = /({\w+})/g;
-const wordPrecededByNonWordCharacter = /[^\w\-]+/g;
-
-/** @example turns `/media-objects/{id}` into `MediaObjectsId` */
-const pathToVariableName = (path: string) =>
-    capitalize(kebabToCamel(path).replaceAll("/", "")) // /media-objects/{id} -> MediaObjects{id}
-        .replace(pathParamWithBracketsRegex, (group) => capitalize(group.slice(1, -1))) // {id} -> Id
-        .replace(wordPrecededByNonWordCharacter, "_"); // "/robots.txt" -> "/robots_txt"
-
-const originalPathParam = /:(\w+)/g;
-export const getOriginalPathWithBrackets = (path: string) => path.replaceAll(originalPathParam, "{$1}");

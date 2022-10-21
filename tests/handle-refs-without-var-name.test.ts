@@ -43,6 +43,7 @@ test("handle-refs-without-var-name", () => {
                   "response": "z.array(Basic)",
               },
           ],
+          "endpointsGroups": {},
           "options": {
               "baseUrl": "",
               "withAlias": false,
@@ -51,7 +52,6 @@ test("handle-refs-without-var-name", () => {
               "Basic": "z.object({}).partial()",
           },
           "types": {},
-          "variables": {},
       }
     `);
 });

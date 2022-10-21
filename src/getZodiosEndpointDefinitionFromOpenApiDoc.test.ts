@@ -634,6 +634,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
+                  "response": "",
               },
               {
                   "alias": "deletePet",
@@ -660,6 +661,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
+                  "response": "",
               },
               {
                   "alias": "uploadFile",
@@ -767,6 +769,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
+                  "response": "",
               },
               {
                   "alias": "createUser",
@@ -913,6 +916,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
+                  "response": "",
               },
           ],
           "getSchemaByRef": [Function],

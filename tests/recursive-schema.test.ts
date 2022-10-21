@@ -363,6 +363,7 @@ describe("recursive-schema", () => {
                       "response": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
                   },
               ],
+              "endpointsGroups": {},
               "options": {
                   "baseUrl": "",
                   "withAlias": false,
@@ -384,7 +385,6 @@ describe("recursive-schema", () => {
               bestFriend: Friend;
           }>;",
               },
-              "variables": {},
           }
         `);
 
