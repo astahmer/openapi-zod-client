@@ -26,8 +26,7 @@ test("ref-in-another-file", async () => {
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "refsDependencyGraph": {},
-          "schemaHashByRef": {},
-          "zodSchemaByHash": {},
+          "zodSchemaByName": {},
       }
     `);
 });

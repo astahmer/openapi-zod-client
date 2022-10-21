@@ -125,10 +125,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "refsDependencyGraph": {},
-          "schemaHashByRef": {
-              "#/components/schemas/Order": "Order",
-          },
-          "zodSchemaByHash": {
+          "zodSchemaByName": {
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
           },
       }
@@ -273,12 +270,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
                   "#/components/schemas/Tag",
               },
           },
-          "schemaHashByRef": {
-              "#/components/schemas/Category": "Category",
-              "#/components/schemas/Pet": "Pet",
-              "#/components/schemas/Tag": "Tag",
-          },
-          "zodSchemaByHash": {
+          "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
@@ -468,12 +460,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "#/components/schemas/Tag",
               },
           },
-          "schemaHashByRef": {
-              "#/components/schemas/Category": "Category",
-              "#/components/schemas/Pet": "Pet",
-              "#/components/schemas/Tag": "Tag",
-          },
-          "zodSchemaByHash": {
+          "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
@@ -946,15 +933,7 @@ test("petstore.yaml", async () => {
                   "#/components/schemas/Tag",
               },
           },
-          "schemaHashByRef": {
-              "#/components/schemas/ApiResponse": "ApiResponse",
-              "#/components/schemas/Category": "Category",
-              "#/components/schemas/Order": "Order",
-              "#/components/schemas/Pet": "Pet",
-              "#/components/schemas/Tag": "Tag",
-              "#/components/schemas/User": "User",
-          },
-          "zodSchemaByHash": {
+          "zodSchemaByName": {
               "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",

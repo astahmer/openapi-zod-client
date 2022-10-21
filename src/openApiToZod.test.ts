@@ -118,8 +118,7 @@ test("getSchemaWithChainableAsZodString", () => {
 test("CodeMeta with ref", () => {
     const ctx: ConversionTypeContext = {
         getSchemaByRef: (ref) => null as any,
-        zodSchemaByHash: {},
-        schemaHashByRef: {},
+        zodSchemaByName: {},
         hashByVariableName: {},
     };
 
@@ -157,8 +156,7 @@ test("CodeMeta with missing ref", () => {
     } as Record<string, SchemaObject>;
     const ctx: ConversionTypeContext = {
         getSchemaByRef: (ref) => schemas[ref],
-        zodSchemaByHash: {},
-        schemaHashByRef: {},
+        zodSchemaByName: {},
         hashByVariableName: {},
     };
 
@@ -209,8 +207,7 @@ test("CodeMeta with nested refs", () => {
     } as Record<string, SchemaObject>;
     const ctx: ConversionTypeContext = {
         getSchemaByRef: (ref) => schemas[ref],
-        zodSchemaByHash: {},
-        schemaHashByRef: {},
+        zodSchemaByName: {},
         hashByVariableName: {},
     };
 
@@ -252,13 +249,7 @@ test("CodeMeta with nested refs", () => {
       {
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
-          "schemaHashByRef": {
-              "Basic": "Basic",
-              "DeepNested": "DeepNested",
-              "ObjectWithArrayOfRef": "ObjectWithArrayOfRef",
-              "WithNested": "WithNested",
-          },
-          "zodSchemaByHash": {
+          "zodSchemaByName": {
               "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",
               "DeepNested": "z.object({ deep: z.boolean() }).partial()",
               "ObjectWithArrayOfRef": "z.object({ exampleProp: z.string(), another: z.number(), link: z.array(WithNested), someReference: Basic }).partial()",

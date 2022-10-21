@@ -35,15 +35,14 @@ export const getZodClientTemplateContext = (
 
     if (options?.shouldExportAllSchemas) {
         Object.entries(docSchemas).map(([name, schema]) => {
-            if (!result.zodSchemaByHash[name]) {
-                result.zodSchemaByHash[name] = getZodSchema({ schema, ctx: result }).toString();
+            if (!result.zodSchemaByName[name]) {
+                result.zodSchemaByName[name] = getZodSchema({ schema, ctx: result }).toString();
             }
         });
     }
 
-    const refByHash = reverse(result.schemaHashByRef) as Record<string, string>;
     const wrapWithLazyIfNeeded = (name: string) => {
-        const [code, ref] = [result.zodSchemaByHash[name], refByHash[name]];
+        const [code, ref] = [result.zodSchemaByName[name], `#/components/schemas/${name}`];
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         if (isCircular) {
             data.circularTypeByName[name] = true;
@@ -54,7 +53,7 @@ export const getZodClientTemplateContext = (
         return actualCode;
     };
 
-    for (const name in result.zodSchemaByHash) {
+    for (const name in result.zodSchemaByName) {
         data.schemas[name] = wrapWithLazyIfNeeded(name);
     }
 
@@ -87,9 +86,7 @@ export const getZodClientTemplateContext = (
         }
     }
 
-    const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph)
-        .filter((ref) => result.zodSchemaByHash[result.schemaHashByRef[ref]])
-        .map((ref) => result.schemaHashByRef[ref]);
+    const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph).map((ref) => getRefName(ref));
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
     result.endpoints.forEach((endpoint) => {
