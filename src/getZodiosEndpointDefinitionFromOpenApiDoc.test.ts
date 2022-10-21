@@ -123,7 +123,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {},
           "refsDependencyGraph": {},
           "zodSchemaByName": {
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
@@ -263,7 +262,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {},
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -450,10 +448,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {
-              "status": "status",
-              "tags": "tags",
-          },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -922,11 +916,6 @@ test("petstore.yaml", async () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {
-              "createUsersWithListInput_Body": "createUsersWithListInput_Body",
-              "status": "status",
-              "tags": "tags",
-          },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",

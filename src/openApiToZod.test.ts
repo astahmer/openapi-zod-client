@@ -119,7 +119,6 @@ test("CodeMeta with ref", () => {
     const ctx: ConversionTypeContext = {
         getSchemaByRef: (ref) => null as any,
         zodSchemaByName: {},
-        hashByVariableName: {},
     };
 
     expect(() =>
@@ -157,7 +156,6 @@ test("CodeMeta with missing ref", () => {
     const ctx: ConversionTypeContext = {
         getSchemaByRef: (ref) => schemas[ref],
         zodSchemaByName: {},
-        hashByVariableName: {},
     };
 
     const code = getZodSchema({
@@ -208,7 +206,6 @@ test("CodeMeta with nested refs", () => {
     const ctx: ConversionTypeContext = {
         getSchemaByRef: (ref) => schemas[ref],
         zodSchemaByName: {},
-        hashByVariableName: {},
     };
 
     const code = getZodSchema({
@@ -248,7 +245,6 @@ test("CodeMeta with nested refs", () => {
     expect(ctx).toMatchInlineSnapshot(`
       {
           "getSchemaByRef": [Function],
-          "hashByVariableName": {},
           "zodSchemaByName": {
               "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",
               "DeepNested": "z.object({ deep: z.boolean() }).partial()",

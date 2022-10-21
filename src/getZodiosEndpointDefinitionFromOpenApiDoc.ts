@@ -25,7 +25,6 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
         get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", ".")) as SchemaObject;
 
     const endpoints = [];
-    const responsesByOperationId = {} as Record<string, Record<string, string>>;
 
     let isMainResponseStatus = (status: number) => status === 200;
     if (options?.isMainResponseStatus) {
@@ -51,11 +50,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                 : options.isMediaTypeAllowed;
     }
 
-    const ctx: ConversionTypeContext = {
-        getSchemaByRef,
-        zodSchemaByName: {},
-        hashByVariableName: {},
-    };
+    const ctx: ConversionTypeContext = { getSchemaByRef, zodSchemaByName: {} };
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
 
@@ -69,17 +64,16 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
 
             // result is complex and would benefit from being re-used
             let formatedName = safeName;
-            const isVarNameAlreadyUsed = Boolean(ctx.hashByVariableName[formatedName]);
+            const isVarNameAlreadyUsed = Boolean(ctx.zodSchemaByName[formatedName]);
             if (isVarNameAlreadyUsed) {
-                if (ctx.hashByVariableName[formatedName] === safeName) {
+                if (ctx.zodSchemaByName[formatedName] === safeName) {
                     return formatedName;
                 } else {
                     formatedName += "__2";
                 }
             }
 
-            ctx.hashByVariableName[formatedName] = safeName;
-            ctx.zodSchemaByName[safeName] = result;
+            ctx.zodSchemaByName[formatedName] = result;
             return formatedName;
         }
 
