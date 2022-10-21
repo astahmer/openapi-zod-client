@@ -49,7 +49,6 @@ test("handle-refs-without-var-name", () => {
           },
           "schemas": {
               "Basic": "z.object({}).partial()",
-              "getSomething": "z.array(Basic)",
           },
           "types": {},
           "variables": {},

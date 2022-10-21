@@ -14,8 +14,6 @@ exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const postStreams = z.object({ subscriptionId: z.string() });
-
 const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
@@ -31,9 +29,7 @@ const repository = z.object({ slug: z.string(), owner: user }).partial();
 const pullrequest = z
     .object({ id: z.number().int(), title: z.string(), repository: repository, author: user })
     .partial();
-const getRepositoriesByOwner = z.array(repository);
 const state = z.enum(["open", "merged", "declined"]).optional();
-const getPullRequestsByRepository = z.array(pullrequest);
 
 const endpoints = makeApi([
     {
@@ -186,7 +182,6 @@ import { z } from "zod";
 const NewPet = z.object({ name: z.string(), tag: z.string().optional() });
 const Pet = NewPet.and(z.object({ id: z.number().int() }));
 const tags = z.array(z.string()).optional();
-const findPets = z.array(Pet);
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
 const endpoints = makeApi([
@@ -281,7 +276,6 @@ const dataSetList = z
         ),
     })
     .partial();
-const perform_search = z.array(z.record(z.object({}).partial()));
 
 const endpoints = makeApi([
     {

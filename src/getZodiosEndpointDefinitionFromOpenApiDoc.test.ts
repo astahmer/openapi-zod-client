@@ -125,12 +125,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "refsDependencyGraph": {},
-          "responsesByOperationId": {
-              "placeOrder": {
-                  "200": "Order",
-                  "405": "z.void()",
-              },
-          },
           "schemaHashByRef": {
               "#/components/schemas/Order": "Order",
           },
@@ -277,18 +271,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
-              },
-          },
-          "responsesByOperationId": {
-              "addPet": {
-                  "200": "Pet",
-                  "405": "z.void()",
-              },
-              "updatePet": {
-                  "200": "Pet",
-                  "400": "z.void()",
-                  "404": "z.void()",
-                  "405": "z.void()",
               },
           },
           "schemaHashByRef": {
@@ -477,8 +459,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "findPetsByStatus": "findPetsByStatus",
-              "findPetsByTags": "findPetsByTags",
               "status": "status",
               "tags": "tags",
           },
@@ -486,16 +466,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
-              },
-          },
-          "responsesByOperationId": {
-              "findPetsByStatus": {
-                  "200": "findPetsByStatus",
-                  "400": "z.void()",
-              },
-              "findPetsByTags": {
-                  "200": "findPetsByTags",
-                  "400": "z.void()",
               },
           },
           "schemaHashByRef": {
@@ -507,8 +477,6 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "findPetsByStatus": "z.array(Pet)",
-              "findPetsByTags": "z.array(Pet)",
               "status": "z.enum(["available", "pending", "sold"]).optional()",
               "tags": "z.array(z.string()).optional()",
           },
@@ -969,8 +937,6 @@ test("petstore.yaml", async () => {
           "getSchemaByRef": [Function],
           "hashByVariableName": {
               "createUsersWithListInput_Body": "createUsersWithListInput_Body",
-              "findPetsByStatus": "findPetsByStatus",
-              "findPetsByTags": "findPetsByTags",
               "status": "status",
               "tags": "tags",
           },
@@ -978,82 +944,6 @@ test("petstore.yaml", async () => {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
-              },
-          },
-          "responsesByOperationId": {
-              "addPet": {
-                  "200": "Pet",
-                  "405": "z.void()",
-              },
-              "createUser": {
-                  "default": "User",
-              },
-              "createUsersWithListInput": {
-                  "200": "User",
-                  "default": "z.void()",
-              },
-              "deleteOrder": {
-                  "400": "z.void()",
-                  "404": "z.void()",
-              },
-              "deletePet": {
-                  "400": "z.void()",
-              },
-              "deleteUser": {
-                  "400": "z.void()",
-                  "404": "z.void()",
-              },
-              "findPetsByStatus": {
-                  "200": "findPetsByStatus",
-                  "400": "z.void()",
-              },
-              "findPetsByTags": {
-                  "200": "findPetsByTags",
-                  "400": "z.void()",
-              },
-              "getInventory": {
-                  "200": "z.record(z.number())",
-              },
-              "getOrderById": {
-                  "200": "Order",
-                  "400": "z.void()",
-                  "404": "z.void()",
-              },
-              "getPetById": {
-                  "200": "Pet",
-                  "400": "z.void()",
-                  "404": "z.void()",
-              },
-              "getUserByName": {
-                  "200": "User",
-                  "400": "z.void()",
-                  "404": "z.void()",
-              },
-              "loginUser": {
-                  "200": "z.string()",
-                  "400": "z.void()",
-              },
-              "logoutUser": {
-                  "default": "z.void()",
-              },
-              "placeOrder": {
-                  "200": "Order",
-                  "405": "z.void()",
-              },
-              "updatePet": {
-                  "200": "Pet",
-                  "400": "z.void()",
-                  "404": "z.void()",
-                  "405": "z.void()",
-              },
-              "updatePetWithForm": {
-                  "405": "z.void()",
-              },
-              "updateUser": {
-                  "default": "z.void()",
-              },
-              "uploadFile": {
-                  "200": "ApiResponse",
               },
           },
           "schemaHashByRef": {
@@ -1072,8 +962,6 @@ test("petstore.yaml", async () => {
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
               "createUsersWithListInput_Body": "z.array(User)",
-              "findPetsByStatus": "z.array(Pet)",
-              "findPetsByTags": "z.array(Pet)",
               "status": "z.enum(["available", "pending", "sold"]).optional()",
               "tags": "z.array(z.string()).optional()",
           },

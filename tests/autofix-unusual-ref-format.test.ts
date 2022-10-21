@@ -62,14 +62,6 @@ test("autofix-unusual-ref-format", () => {
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "refsDependencyGraph": {},
-          "responsesByOperationId": {
-              "getWithUnusualRefFormat": {
-                  "200": "Basic",
-              },
-              "getWithUsualRefFormat": {
-                  "200": "Basic",
-              },
-          },
           "schemaHashByRef": {
               "#/components/schemas/Basic": "Basic",
               "#components/schemas/Basic": "Basic",

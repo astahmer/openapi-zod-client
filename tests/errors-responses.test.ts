@@ -56,8 +56,6 @@ it("includes errors-responses", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const getExample = z.object({ str: z.string(), nb: z.number() });
-
       const endpoints = makeApi([
         {
           method: "get",
@@ -177,7 +175,6 @@ it("determines which status are considered errors-responses", async () => {
         circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
-      const getExample = z.object({ str: z.string(), nb: z.number() });
 
       const endpoints = makeApi([
         {
@@ -225,7 +222,6 @@ it("determines which status are considered errors-responses", async () => {
         circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
-      const getExample = z.object({ str: z.string(), nb: z.number() });
 
       const endpoints = makeApi([
         {

@@ -141,7 +141,6 @@ describe("recursive-schema", () => {
 
           const Middle: z.ZodType<Middle> = z.lazy(() => z.object({ user: User }).partial());
           const User: z.ZodType<User> = z.lazy(() => z.object({ name: z.string(), middle: Middle }).partial());
-          const getExample = z.object({ recursive: User, basic: z.number() }).partial();
 
           const endpoints = makeApi([
               {
@@ -224,17 +223,10 @@ describe("recursive-schema", () => {
                       },
                   ],
                   "getSchemaByRef": [Function],
-                  "hashByVariableName": {
-                      "getExample": "getExample",
-                  },
+                  "hashByVariableName": {},
                   "refsDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
                           "#/components/schemas/ObjectWithRecursiveArray",
-                      },
-                  },
-                  "responsesByOperationId": {
-                      "getExample": {
-                          "200": "getExample",
                       },
                   },
                   "schemaHashByRef": {
@@ -242,7 +234,6 @@ describe("recursive-schema", () => {
                   },
                   "zodSchemaByHash": {
                       "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
-                      "getExample": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
                   },
               }
             `);
@@ -363,9 +354,7 @@ describe("recursive-schema", () => {
                   },
               ],
               "getSchemaByRef": [Function],
-              "hashByVariableName": {
-                  "getExample": "getExample",
-              },
+              "hashByVariableName": {},
               "refsDependencyGraph": {
                   "#/components/schemas/Friend": Set {
                       "#/components/schemas/UserWithFriends",
@@ -376,11 +365,6 @@ describe("recursive-schema", () => {
                       "#/components/schemas/Friend",
                   },
               },
-              "responsesByOperationId": {
-                  "getExample": {
-                      "200": "getExample",
-                  },
-              },
               "schemaHashByRef": {
                   "#/components/schemas/Friend": "Friend",
                   "#/components/schemas/UserWithFriends": "UserWithFriends",
@@ -388,7 +372,6 @@ describe("recursive-schema", () => {
               "zodSchemaByHash": {
                   "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
                   "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
-                  "getExample": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
               },
           }
         `);
@@ -419,7 +402,6 @@ describe("recursive-schema", () => {
               "schemas": {
                   "Friend": "z.lazy(() => z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial())",
                   "UserWithFriends": "z.lazy(() => z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial())",
-                  "getExample": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
               },
               "types": {
                   "Friend": "type Friend = Partial<{
@@ -466,7 +448,6 @@ describe("recursive-schema", () => {
           const UserWithFriends: z.ZodType<UserWithFriends> = z.lazy(() =>
               z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()
           );
-          const getExample = z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial();
 
           const endpoints = makeApi([
               {
@@ -590,7 +571,6 @@ describe("recursive-schema", () => {
           const Playlist: z.ZodType<Playlist> = z.lazy(() =>
               z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()
           );
-          const getExample = z.object({ playlist: Playlist, by_author: Author }).partial();
 
           const endpoints = makeApi([
               {
