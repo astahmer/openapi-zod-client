@@ -1,3 +1,5 @@
+import { capitalize, kebabToCamel } from "pastable/server";
+
 export const getRefName = (ref: string) => normalizeString(ref.split("/").at(-1)!);
 
 export function normalizeString(text: string) {
@@ -19,3 +21,12 @@ const prefixStringStartingWithNumberIfNeeded = (str: string) => {
 
     return str;
 };
+
+const pathParamWithBracketsRegex = /({\w+})/g;
+const wordPrecededByNonWordCharacter = /[^\w\-]+/g;
+
+/** @example turns `/media-objects/{id}` into `MediaObjectsId` */
+export const pathToVariableName = (path: string) =>
+    capitalize(kebabToCamel(path).replaceAll("/", "")) // /media-objects/{id} -> MediaObjects{id}
+        .replace(pathParamWithBracketsRegex, (group) => capitalize(group.slice(1, -1))) // {id} -> Id
+        .replace(wordPrecededByNonWordCharacter, "_"); // "/robots.txt" -> "/robots_txt"

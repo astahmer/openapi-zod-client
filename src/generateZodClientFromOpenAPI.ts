@@ -1,5 +1,5 @@
 import { compile } from "handlebars";
-import fs from "node:fs/promises";
+import fs from "fs-extra";
 import path from "node:path";
 import { OpenAPIObject, PathItemObject } from "openapi3-ts";
 import { sortBy, sortObjKeysFromArray } from "pastable/server";
@@ -10,7 +10,6 @@ import { match } from "ts-pattern";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import {
     EndpointDescriptionWithRefs,
-    getOriginalPathWithBrackets,
     getZodiosEndpointDefinitionFromOpenApiDoc,
 } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
@@ -27,7 +26,7 @@ export const getZodClientTemplateContext = (
     options?: TemplateContext["options"]
 ) => {
     const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc, options);
-    const data = makeInitialContext();
+    const data = makeTemplateContext();
 
     const docSchemas = openApiDoc.components?.schemas || {};
     const depsGraphs = getOpenApiDependencyGraph(
@@ -95,14 +94,8 @@ export const getZodClientTemplateContext = (
 
     result.endpoints.forEach((endpoint) => {
         if (!endpoint.response) return;
-        const computedDefinition = {
-            ...endpoint,
-            parameters: endpoint.parameters.map((param) => ({ ...param, schema: param.schema })),
-            response: endpoint.response,
-            errors: endpoint.errors.map((error) => ({ ...error, schema: error.schema as any })) as any,
-        };
 
-        data.endpoints.push(computedDefinition);
+        data.endpoints.push(endpoint);
 
         if (groupStrategy !== "none") {
             const operationPath = getOriginalPathWithBrackets(endpoint.path);
@@ -114,15 +107,39 @@ export const getZodClientTemplateContext = (
 
             const operation = pathItemObject[endpoint.method]!;
             const baseName = match(groupStrategy)
-                .with("tag", () => operation.tags?.[0] ?? "default")
-                .with("method", () => endpoint.method)
+                .with("tag", "tag-file", () => operation.tags?.[0] ?? "default")
+                .with("method", "method-file", () => endpoint.method)
                 .exhaustive();
             const groupName = normalizeString(baseName);
 
-            if (!data.endpointsGrouped[groupName]) {
-                data.endpointsGrouped[groupName] = [];
+            if (!data.endpointsGroups[groupName]) {
+                data.endpointsGroups[groupName] = makeEndpointTemplateContext();
             }
-            data.endpointsGrouped[groupName].push(computedDefinition);
+            data.endpointsGroups[groupName].endpoints.push(endpoint);
+
+            const operationDeps = new Set<string>();
+            const addDependencyIfNeeded = (schema: string) => {
+                if (schema.startsWith("z.")) return;
+                operationDeps.add(schema);
+            };
+            addDependencyIfNeeded(endpoint.response);
+            endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
+            endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
+            operationDeps.forEach(
+                (ref) => (data.endpointsGroups[groupName].schemas[getRefName(ref)] = data.schemas[getRefName(ref)])
+            );
+
+            // reduce types/schemas for each group using prev computed deep dependencies
+            if (groupStrategy.includes("file")) {
+                operationDeps.forEach((depRef) => {
+                    const depRefName = getRefName(depRef);
+                    if (data.types[depRefName]) {
+                        data.endpointsGroups[groupName].types[depRefName] = data.types[depRefName];
+                    }
+                    data.endpointsGroups[groupName].schemas[depRefName] = data.schemas[depRefName];
+                });
+                // depsGraphs.deepDependencyGraph[] .forEach((ref) => (data.endpointsGroups[groupName].types[ref] = data.types[ref]));
+            }
         }
     });
     data.endpoints = sortBy(data.endpoints, "path");
@@ -155,11 +172,10 @@ export const generateZodClientFromOpenAPI = async ({
     const groupStrategy = options?.groupStrategy ?? "none";
 
     if (!templatePath) {
-        templatePath = path.join(__dirname, "../src/template.hbs");
-
-        if (groupStrategy !== "none") {
-            templatePath = path.join(__dirname, "../src/template-grouped-by.hbs");
-        }
+        templatePath = match(groupStrategy)
+            .with("none", "tag-file", "method-file", () => path.join(__dirname, "../src/template.hbs"))
+            .with("tag", "method", () => path.join(__dirname, "../src/template-grouped.hbs"))
+            .exhaustive();
     }
     const source = await fs.readFile(templatePath, "utf-8");
     const template = compile(source);
@@ -167,7 +183,32 @@ export const generateZodClientFromOpenAPI = async ({
     const output = template({ ...data, options });
     const prettyOutput = maybePretty(output, prettierConfig);
 
-    if (!disableWriteToFile && distPath) {
+    const willWriteToFile = !disableWriteToFile && distPath;
+
+    if (groupStrategy.includes("file")) {
+        const outputByGroupName: Record<string, string> = {};
+
+        if (willWriteToFile) {
+            await fs.ensureDir(distPath);
+        }
+
+        for (const groupName in data.endpointsGroups) {
+            const groupOutput = template({
+                ...data,
+                ...data.endpointsGroups[groupName],
+                options: { ...options, groupStrategy: "none" },
+            });
+            const prettyGroupOutput = maybePretty(groupOutput, prettierConfig);
+            outputByGroupName[groupName] = prettyGroupOutput;
+
+            if (willWriteToFile) {
+                console.log("Writing to", path.join(distPath, `${groupName}.ts`));
+                await fs.writeFile(path.join(distPath, `${groupName}.ts`), prettyGroupOutput);
+            }
+        }
+
+        return outputByGroupName;
+    } else if (willWriteToFile) {
         await fs.writeFile(distPath, prettyOutput);
     }
 
@@ -183,25 +224,23 @@ export function maybePretty(input: string, options?: Options | null): string {
     }
 }
 
-const makeInitialContext = () =>
-    ({
-        variables: {},
-        schemas: {},
-        endpoints: [],
-        endpointsGrouped: {},
-        types: {},
-        circularTypeByName: {},
-        options: {
-            withAlias: false,
-            baseUrl: "",
-        },
-    } as TemplateContext);
+const makeEndpointTemplateContext = (): MinimalTemplateContext => {
+    return { schemas: {}, endpoints: [], types: {}, circularTypeByName: {} };
+};
+const makeTemplateContext = (): TemplateContext => {
+    return {
+        ...makeEndpointTemplateContext(),
+        endpointsGroups: {},
+        options: { withAlias: false, baseUrl: "" },
+    };
+};
+
+type MinimalTemplateContext = Pick<TemplateContext, "endpoints" | "schemas" | "types" | "circularTypeByName">;
 
 export interface TemplateContext {
-    variables: Record<string, string>;
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
-    endpointsGrouped: Record<string, EndpointDescriptionWithRefs[]>;
+    endpointsGroups: Record<string, MinimalTemplateContext>;
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
     options?: {
@@ -268,6 +307,9 @@ export interface TemplateContext {
          *
          * @default "none"
          */
-        groupStrategy?: "none" | "tag" | "method";
+        groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
     };
 }
+
+const originalPathParam = /:(\w+)/g;
+const getOriginalPathWithBrackets = (path: string) => path.replaceAll(originalPathParam, "{$1}");

@@ -91,6 +91,7 @@ test("schema-name-already-used", async () => {
                   "response": "z.string()",
               },
           ],
+          "endpointsGroups": {},
           "options": {
               "baseUrl": "",
               "withAlias": false,
@@ -100,7 +101,6 @@ test("schema-name-already-used", async () => {
               "schemaNameAlreadyUsed__2": "z.enum(["aaa", "bbb", "ccc"]).optional()",
           },
           "types": {},
-          "variables": {},
       }
     `);
 

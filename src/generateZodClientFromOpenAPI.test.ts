@@ -346,6 +346,7 @@ test("getZodClientTemplateContext", async () => {
                   "response": "z.void()",
               },
           ],
+          "endpointsGroups": {},
           "options": {
               "baseUrl": "",
               "withAlias": false,
@@ -362,7 +363,6 @@ test("getZodClientTemplateContext", async () => {
               "tags": "z.array(z.string()).optional()",
           },
           "types": {},
-          "variables": {},
       }
     `);
 });
@@ -1590,6 +1590,7 @@ test("with optional, partial, all required objects", async () => {
                   "response": "z.enum(["aaa", "bbb", "ccc"])",
               },
           ],
+          "endpointsGroups": {},
           "options": {
               "baseUrl": "",
               "withAlias": false,
@@ -1622,7 +1623,6 @@ test("with optional, partial, all required objects", async () => {
       };",
               "VeryDeeplyNested": "type VeryDeeplyNested = "aaa" | "bbb" | "ccc";",
           },
-          "variables": {},
       }
     `);
 
