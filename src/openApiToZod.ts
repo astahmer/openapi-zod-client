@@ -1,7 +1,7 @@
 import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 import { match } from "ts-pattern";
 import { TemplateContext } from "./generateZodClientFromOpenAPI";
-import { normalizeString, tokens } from "./tokens";
+import { getRefName, normalizeString } from "./tokens";
 
 interface ConversionArgs {
     schema: SchemaObject | ReferenceObject;
@@ -27,7 +27,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     const nestingPath = code.meta.referencedBy
         .slice(0, -1)
-        .map((prev) => tokens.getRefName(prev.ref!))
+        .map((prev) => getRefName(prev.ref!))
         .join("_|_");
 
     const fromRef = inheritedMeta?.parent?.ref;
@@ -36,7 +36,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         if (!ctx) throw new Error("Context is required");
 
         // circular(=recursive) reference
-        if (nestingPath.split("_|_").length > 1 && nestingPath.includes("_|_" + tokens.getRefName(code.ref!))) {
+        if (nestingPath.split("_|_").length > 1 && nestingPath.includes("_|_" + getRefName(code.ref!))) {
             return code.assign(ctx.zodSchemaByHash[code.ref!]);
         }
 
@@ -54,7 +54,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code;
         }
 
-        const refName = tokens.getRefName(schema.$ref);
+        const refName = getRefName(schema.$ref);
         ctx.schemaHashByRef[schema.$ref] = refName;
         ctx.zodSchemaByHash[refName] = result;
 
@@ -339,7 +339,7 @@ export class CodeMeta {
         const refAlias = this.ctx.schemaHashByRef![this.ref!];
         if (!refAlias) {
             const rootDep = this.meta.referencedBy.at(-1)!;
-            return tokens.getRefName(rootDep.ref!);
+            return getRefName(rootDep.ref!);
         }
 
         return refAlias;

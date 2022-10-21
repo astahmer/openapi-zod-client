@@ -1,16 +1,4 @@
-const varPrefix = "@var/" as const;
-type TokenAlias = typeof varPrefix;
-
-export const tokens = {
-    varPrefix,
-    isToken: (name: string, token: TokenAlias) => name.startsWith(token),
-    rmToken: (name: string, token: TokenAlias) => {
-        if (token === varPrefix) return name.replace(token, "");
-        return name;
-    },
-    makeVar: (name: string) => varPrefix + normalizeString(name),
-    getRefName: (ref: string) => normalizeString(ref.split("/").at(-1)!),
-};
+export const getRefName = (ref: string) => normalizeString(ref.split("/").at(-1)!);
 
 export function normalizeString(text: string) {
     const prefixed = prefixStringStartingWithNumberIfNeeded(text);
