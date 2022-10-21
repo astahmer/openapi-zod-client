@@ -5,8 +5,7 @@ const {{@key}} = {{{this}}};
 {{/each}}
 
 export const schemas = {
-{{#each variables}}
-	{{@key}}:
-	{{{this}}},
+{{#each schemas}}
+	{{@key}},
 {{/each}}
 };
