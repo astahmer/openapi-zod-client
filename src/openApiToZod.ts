@@ -30,17 +30,17 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         .map((prev) => getRefName(prev.ref!))
         .join("_|_");
 
-    const fromRef = inheritedMeta?.parent?.ref;
-
     if (isReferenceObject(schema)) {
         if (!ctx) throw new Error("Context is required");
 
+        const refName = getRefName(schema.$ref);
+
         // circular(=recursive) reference
-        if (nestingPath.split("_|_").length > 1 && nestingPath.includes("_|_" + getRefName(code.ref!))) {
-            return code.assign(ctx.zodSchemaByHash[code.ref!]);
+        if (nestingPath.split("_|_").length > 1 && nestingPath.includes("_|_" + refName)) {
+            return code.assign(ctx.zodSchemaByName[code.ref!]);
         }
 
-        let result = ctx.zodSchemaByHash[schema.$ref];
+        let result = ctx.zodSchemaByName[schema.$ref];
         if (!result) {
             const actualSchema = ctx.getSchemaByRef(schema.$ref);
             if (!actualSchema) {
@@ -50,13 +50,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             result = getZodSchema({ schema: actualSchema, ctx, meta, options }).toString();
         }
 
-        if (ctx.schemaHashByRef[schema.$ref]) {
+        if (ctx.zodSchemaByName[refName]) {
             return code;
         }
 
-        const refName = getRefName(schema.$ref);
-        ctx.schemaHashByRef[schema.$ref] = refName;
-        ctx.zodSchemaByHash[refName] = result;
+        ctx.zodSchemaByName[refName] = result;
 
         return code;
     }
@@ -174,8 +172,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
 export interface ConversionTypeContext {
     getSchemaByRef: ($ref: string) => SchemaObject;
-    zodSchemaByHash: Record<string, string>;
-    schemaHashByRef: Record<string, string>;
+    zodSchemaByName: Record<string, string>;
     hashByVariableName: Record<string, string>;
 }
 
@@ -334,15 +331,8 @@ export class CodeMeta {
 
     get codeString(): string {
         if (this.code) return this.code;
-        if (!this.ctx) return this.ref as string;
 
-        const refAlias = this.ctx.schemaHashByRef![this.ref!];
-        if (!refAlias) {
-            const rootDep = this.meta.referencedBy.at(-1)!;
-            return getRefName(rootDep.ref!);
-        }
-
-        return refAlias;
+        return getRefName(this.ref!);
     }
 
     assign(code: string) {

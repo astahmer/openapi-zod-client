@@ -62,11 +62,7 @@ test("autofix-unusual-ref-format", () => {
           "getSchemaByRef": [Function],
           "hashByVariableName": {},
           "refsDependencyGraph": {},
-          "schemaHashByRef": {
-              "#/components/schemas/Basic": "Basic",
-              "#components/schemas/Basic": "Basic",
-          },
-          "zodSchemaByHash": {
+          "zodSchemaByName": {
               "Basic": "z.string()",
           },
       }

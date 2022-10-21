@@ -53,8 +53,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
 
     const ctx: ConversionTypeContext = {
         getSchemaByRef,
-        zodSchemaByHash: {},
-        schemaHashByRef: {},
+        zodSchemaByName: {},
         hashByVariableName: {},
     };
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
@@ -80,12 +79,12 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
             }
 
             ctx.hashByVariableName[formatedName] = safeName;
-            ctx.zodSchemaByHash[safeName] = result;
+            ctx.zodSchemaByName[safeName] = result;
             return formatedName;
         }
 
         // result is a reference to another schema
-        if (ctx.zodSchemaByHash[result]) {
+        if (ctx.zodSchemaByName[result]) {
             return result;
         }
 
@@ -208,7 +207,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
     }
 
     const { refsDependencyGraph, deepDependencyGraph } = getOpenApiDependencyGraph(
-        Object.keys(ctx.schemaHashByRef),
+        Object.keys(ctx.zodSchemaByName).map((name) => `#/components/schemas/${name}`),
         ctx.getSchemaByRef
     );
 

@@ -67,8 +67,7 @@ describe("recursive-schema", () => {
         } as SchemasObject;
         const ctx: ConversionTypeContext = {
             hashByVariableName: {},
-            schemaHashByRef: {},
-            zodSchemaByHash: {},
+            zodSchemaByName: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
         expect(getZodSchema({ schema: schemas.Root, ctx })).toMatchInlineSnapshot(
@@ -78,11 +77,7 @@ describe("recursive-schema", () => {
           {
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
-              "schemaHashByRef": {
-                  "#/components/schemas/Middle": "Middle",
-                  "#/components/schemas/User": "User",
-              },
-              "zodSchemaByHash": {
+              "zodSchemaByName": {
                   "Middle": "z.object({ user: User }).partial()",
                   "User": "z.object({ name: z.string(), middle: Middle }).partial()",
               },
@@ -90,7 +85,10 @@ describe("recursive-schema", () => {
         `);
 
         const openApiDoc = makeOpenApiDoc(schemas, schemas.Root);
-        const depsGraph = getOpenApiDependencyGraph(Object.keys(ctx.schemaHashByRef), ctx.getSchemaByRef);
+        const depsGraph = getOpenApiDependencyGraph(
+            Object.keys(ctx.zodSchemaByName).map((name) => `#/components/schemas/${name}`),
+            ctx.getSchemaByRef
+        );
         expect(depsGraph).toMatchInlineSnapshot(`
           {
               "deepDependencyGraph": {
@@ -182,8 +180,7 @@ describe("recursive-schema", () => {
     test("recursive array", () => {
         const ctx: ConversionTypeContext = {
             hashByVariableName: {},
-            schemaHashByRef: {},
-            zodSchemaByHash: {},
+            zodSchemaByName: {},
             getSchemaByRef: (ref) => schemas2[ref.split("/").at(-1)!],
         };
         expect(getZodSchema({ schema: ResponseSchema, ctx })).toMatchInlineSnapshot(
@@ -193,10 +190,7 @@ describe("recursive-schema", () => {
           {
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
-              "schemaHashByRef": {
-                  "#/components/schemas/ObjectWithRecursiveArray": "ObjectWithRecursiveArray",
-              },
-              "zodSchemaByHash": {
+              "zodSchemaByName": {
                   "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
               },
           }
@@ -229,10 +223,7 @@ describe("recursive-schema", () => {
                           "#/components/schemas/ObjectWithRecursiveArray",
                       },
                   },
-                  "schemaHashByRef": {
-                      "#/components/schemas/ObjectWithRecursiveArray": "ObjectWithRecursiveArray",
-                  },
-                  "zodSchemaByHash": {
+                  "zodSchemaByName": {
                       "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
                   },
               }
@@ -242,8 +233,7 @@ describe("recursive-schema", () => {
     test("direct recursive", () => {
         const ctx: ConversionTypeContext = {
             hashByVariableName: {},
-            schemaHashByRef: {},
-            zodSchemaByHash: {},
+            zodSchemaByName: {},
             getSchemaByRef: (ref) => UserSchema,
         };
         expect(getZodSchema({ schema: UserSchema, ctx })).toMatchInlineSnapshot(
@@ -253,10 +243,7 @@ describe("recursive-schema", () => {
           {
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
-              "schemaHashByRef": {
-                  "#/components/schemas/User": "User",
-              },
-              "zodSchemaByHash": {
+              "zodSchemaByName": {
                   "User": "z.object({ name: z.string(), parent: User }).partial()",
               },
           }
@@ -286,8 +273,7 @@ describe("recursive-schema", () => {
     test("multiple recursive in one root schema", async () => {
         const ctx: ConversionTypeContext = {
             hashByVariableName: {},
-            schemaHashByRef: {},
-            zodSchemaByHash: {},
+            zodSchemaByName: {},
             getSchemaByRef: (ref: string) => schemas[ref.replace("#/components/schemas/", "")],
         };
         expect(
@@ -308,11 +294,7 @@ describe("recursive-schema", () => {
           {
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
-              "schemaHashByRef": {
-                  "#/components/schemas/Friend": "Friend",
-                  "#/components/schemas/UserWithFriends": "UserWithFriends",
-              },
-              "zodSchemaByHash": {
+              "zodSchemaByName": {
                   "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
                   "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
               },
@@ -365,11 +347,7 @@ describe("recursive-schema", () => {
                       "#/components/schemas/Friend",
                   },
               },
-              "schemaHashByRef": {
-                  "#/components/schemas/Friend": "Friend",
-                  "#/components/schemas/UserWithFriends": "UserWithFriends",
-              },
-              "zodSchemaByHash": {
+              "zodSchemaByName": {
                   "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
                   "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
               },
@@ -500,8 +478,7 @@ describe("recursive-schema", () => {
 
         const ctx: ConversionTypeContext = {
             hashByVariableName: {},
-            schemaHashByRef: {},
-            zodSchemaByHash: {},
+            zodSchemaByName: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
 
@@ -519,13 +496,7 @@ describe("recursive-schema", () => {
           {
               "getSchemaByRef": [Function],
               "hashByVariableName": {},
-              "schemaHashByRef": {
-                  "#/components/schemas/Author": "Author",
-                  "#/components/schemas/Playlist": "Playlist",
-                  "#/components/schemas/Settings": "Settings",
-                  "#/components/schemas/Song": "Song",
-              },
-              "zodSchemaByHash": {
+              "zodSchemaByName": {
                   "Author": "z.object({ name: z.string(), mail: z.string(), settings: Settings }).partial()",
                   "Playlist": "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()",
                   "Settings": "z.object({ theme_color: z.string() }).partial()",
