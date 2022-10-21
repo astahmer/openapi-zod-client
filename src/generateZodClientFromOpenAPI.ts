@@ -33,26 +33,6 @@ export const getZodClientTemplateContext = (
         result.getSchemaByRef
     );
 
-    const wrapWithLazyIfNeeded = (refHash: string) => {
-        const [code, ref] = [result.zodSchemaByHash[refHash], refByHash[refHash]];
-        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
-        const actualCode = isCircular ? `z.lazy(() => ${code})` : code;
-
-        if (isCircular) {
-            const refName = tokens.getRefName(ref);
-            data.typeNameByRefHash[refHash] = refName;
-        }
-
-        return actualCode;
-    };
-    const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string, fallbackVarName?: string): string => {
-        if (tokens.isToken(unknownRef, tokens.varPrefix)) {
-            return `variables["${tokens.rmToken(unknownRef, tokens.varPrefix)}"]`;
-        }
-
-        return unknownRef;
-    };
-
     if (options?.shouldExportAllSchemas) {
         Object.entries(docSchemas).map(([name, schema]) => {
             if (!result.zodSchemaByHash[name]) {
@@ -62,6 +42,18 @@ export const getZodClientTemplateContext = (
     }
 
     const refByHash = reverse(result.schemaHashByRef) as Record<string, string>;
+    const wrapWithLazyIfNeeded = (name: string) => {
+        const [code, ref] = [result.zodSchemaByHash[name], refByHash[name]];
+        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
+        if (isCircular) {
+            data.circularTypeByName[name] = true;
+        }
+
+        const actualCode = isCircular ? `z.lazy(() => ${code})` : code;
+
+        return actualCode;
+    };
+
     for (const refHash in result.zodSchemaByHash) {
         data.schemas[refHash] = wrapWithLazyIfNeeded(refHash);
     }
@@ -105,6 +97,13 @@ export const getZodClientTemplateContext = (
     }
     data.variables = sortObjectKeys(data.variables);
 
+    const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string): string => {
+        if (tokens.isToken(unknownRef, tokens.varPrefix)) {
+            return `variables["${tokens.rmToken(unknownRef, tokens.varPrefix)}"]`;
+        }
+
+        return unknownRef;
+    };
     result.endpoints.forEach((endpoint) => {
         if (!endpoint.response) return;
         data.endpoints.push({
@@ -113,13 +112,10 @@ export const getZodClientTemplateContext = (
                 ...param,
                 schema: maybeReplaceTokenOrVarnameWithRef(param.schema),
             })),
-            response: maybeReplaceTokenOrVarnameWithRef(endpoint.response, endpoint.alias),
+            response: maybeReplaceTokenOrVarnameWithRef(endpoint.response),
             errors: endpoint.errors.map((error) => ({
                 ...error,
-                schema: maybeReplaceTokenOrVarnameWithRef(
-                    error.schema as any,
-                    `${endpoint.alias}_Error_${error.status}`
-                ),
+                schema: maybeReplaceTokenOrVarnameWithRef(error.schema as any),
             })) as any,
         });
     });
@@ -182,7 +178,7 @@ const makeInitialContext = () =>
         schemas: {},
         endpoints: [],
         types: {},
-        typeNameByRefHash: {},
+        circularTypeByName: {},
         options: {
             withAlias: false,
             baseUrl: "",
@@ -194,7 +190,7 @@ export interface TemplateContext {
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
     types: Record<string, string>;
-    typeNameByRefHash: Record<string, string>;
+    circularTypeByName: Record<string, true>;
     options?: {
         /** @see https://www.zodios.org/docs/client#baseurl */
         baseUrl?: string;

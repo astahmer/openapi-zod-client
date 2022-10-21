@@ -30,6 +30,7 @@ test("handle-refs-without-var-name", () => {
         })
     ).toMatchInlineSnapshot(`
       {
+          "circularTypeByName": {},
           "endpoints": [
               {
                   "alias": "getSomething",
@@ -50,7 +51,6 @@ test("handle-refs-without-var-name", () => {
               "Basic": "z.object({}).partial()",
               "getSomething": "z.array(Basic)",
           },
-          "typeNameByRefHash": {},
           "types": {},
           "variables": {
               "getSomething": "getSomething",

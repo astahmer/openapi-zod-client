@@ -15,6 +15,7 @@ test("getZodClientTemplateContext", async () => {
     const result = getZodClientTemplateContext(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
+          "circularTypeByName": {},
           "endpoints": [
               {
                   "alias": "updatePet",
@@ -362,7 +363,6 @@ test("getZodClientTemplateContext", async () => {
               "status": "z.enum(["available", "pending", "sold"]).optional()",
               "tags": "z.array(z.string()).optional()",
           },
-          "typeNameByRefHash": {},
           "types": {},
           "variables": {
               "createUsersWithListInput_Body": "createUsersWithListInput_Body",
@@ -1582,6 +1582,10 @@ test("with optional, partial, all required objects", async () => {
 
     expect(data).toMatchInlineSnapshot(`
       {
+          "circularTypeByName": {
+              "Nested2": true,
+              "Root2": true,
+          },
           "endpoints": [
               {
                   "alias": "getDeeplyNested",
@@ -1638,10 +1642,6 @@ test("with optional, partial, all required objects", async () => {
               "getNested": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() })",
               "getRoot": "z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() })",
               "getVeryDeeplyNested": "z.enum(["aaa", "bbb", "ccc"])",
-          },
-          "typeNameByRefHash": {
-              "Nested2": "Nested2",
-              "Root2": "Root2",
           },
           "types": {
               "DeeplyNested": "type DeeplyNested = Array<VeryDeeplyNested>;",
