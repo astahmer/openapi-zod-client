@@ -1,38 +1,44 @@
+import { OpenAPIObject } from "openapi3-ts";
 import { expect, test } from "vitest";
-import { getZodClientTemplateContext } from "../src";
+import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "../src";
 
-test("export-schemas-option", () => {
-    const ctx = getZodClientTemplateContext(
-        {
-            openapi: "3.0.3",
-            info: { version: "1", title: "Example API" },
-            paths: {
-                "/export-schemas-option": {
-                    get: {
-                        operationId: "123_example",
-                        responses: {
-                            "200": {
-                                content: { "application/json": { schema: { $ref: "#/components/schemas/Basic" } } },
-                            },
-                        },
-                    },
-                },
-            },
-            components: {
-                schemas: {
-                    Basic: { type: "string" },
-                    UnusedSchemas: {
-                        type: "object",
-                        properties: {
-                            nested_prop: { type: "boolean" },
-                            another: { type: "string" },
+test("export-schemas-option", async () => {
+    const openApiDoc: OpenAPIObject = {
+        openapi: "3.0.3",
+        info: { version: "1", title: "Example API" },
+        paths: {
+            "/export-schemas-option": {
+                get: {
+                    operationId: "123_example",
+                    responses: {
+                        "200": {
+                            content: { "application/json": { schema: { $ref: "#/components/schemas/Basic" } } },
                         },
                     },
                 },
             },
         },
-        { shouldExportAllSchemas: true }
-    );
+        components: {
+            schemas: {
+                Basic: { type: "string" },
+                UnusedSchemas: {
+                    type: "object",
+                    properties: {
+                        nested_prop: { type: "boolean" },
+                        another: { type: "string" },
+                    },
+                },
+            },
+        },
+    };
+
+    expect(getZodClientTemplateContext(openApiDoc, { shouldExportAllSchemas: false }).schemas).toMatchInlineSnapshot(`
+      {
+          "Basic": "z.string()",
+      }
+    `);
+
+    const ctx = getZodClientTemplateContext(openApiDoc, { shouldExportAllSchemas: true });
     expect(ctx.endpoints).toMatchInlineSnapshot(`
       [
           {
@@ -48,17 +54,39 @@ test("export-schemas-option", () => {
       ]
     `);
 
-    expect(ctx.variables).toMatchInlineSnapshot(`
-      {
-          "Basic": "vZwdCSvA9Xq",
-          "UnusedSchemas": "vwpxzXzCh7o",
-      }
-    `);
     expect(ctx.schemas).toMatchInlineSnapshot(`
       {
           "Basic": "z.string()",
-          "vZwdCSvA9Xq": "z.string()",
-          "vwpxzXzCh7o": "z.object({ nested_prop: z.boolean(), another: z.string() }).partial()",
+          "UnusedSchemas": "z.object({ nested_prop: z.boolean(), another: z.string() }).partial()",
       }
+    `);
+
+    const result = await generateZodClientFromOpenAPI({
+        disableWriteToFile: true,
+        openApiDoc,
+        options: { shouldExportAllSchemas: true },
+    });
+    expect(result).toMatchInlineSnapshot(`
+      "import { makeApi, Zodios } from "@zodios/core";
+      import { z } from "zod";
+
+      const Basic = z.string();
+      const UnusedSchemas = z
+        .object({ nested_prop: z.boolean(), another: z.string() })
+        .partial();
+
+      const variables = {};
+
+      const endpoints = makeApi([
+        {
+          method: "get",
+          path: "/export-schemas-option",
+          requestFormat: "json",
+          response: Basic,
+        },
+      ]);
+
+      export const api = new Zodios(endpoints);
+      "
     `);
 });

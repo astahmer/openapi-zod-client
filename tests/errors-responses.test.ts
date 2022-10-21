@@ -56,12 +56,10 @@ it("includes errors-responses", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
-      const vnCsZAxBbBU = z.object({ is400: z.boolean() }).partial();
+      const getExample = z.object({ str: z.string(), nb: z.number() });
 
       const variables = {
-        getExample: vssLgQd9tqs,
-        getExample__2: vnCsZAxBbBU,
+        getExample: getExample,
       };
 
       const endpoints = makeApi([
@@ -183,12 +181,10 @@ it("determines which status are considered errors-responses", async () => {
         circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
-      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
-      const vbjg9h29P9L = z.object({ is400: z.boolean(), nested: Nested }).partial();
+      const getExample = z.object({ str: z.string(), nb: z.number() });
 
       const variables = {
-        getExample: vssLgQd9tqs,
-        getExample__2: vbjg9h29P9L,
+        getExample: getExample,
       };
 
       const endpoints = makeApi([
@@ -237,12 +233,10 @@ it("determines which status are considered errors-responses", async () => {
         circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
-      const vssLgQd9tqs = z.object({ str: z.string(), nb: z.number() });
-      const vbjg9h29P9L = z.object({ is400: z.boolean(), nested: Nested }).partial();
+      const getExample = z.object({ str: z.string(), nb: z.number() });
 
       const variables = {
-        getExample: vssLgQd9tqs,
-        getExample__2: vbjg9h29P9L,
+        getExample: getExample,
       };
 
       const endpoints = makeApi([

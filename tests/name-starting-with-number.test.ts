@@ -1,8 +1,9 @@
+import { OpenAPIObject } from "openapi3-ts";
 import { expect, test } from "vitest";
-import { getZodClientTemplateContext } from "../src";
+import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "../src";
 
-test("operationId-starting-with-number", () => {
-    const ctx = getZodClientTemplateContext({
+test("operationId-starting-with-number", async () => {
+    const openApiDoc: OpenAPIObject = {
         openapi: "3.0.3",
         info: { version: "1", title: "Example API" },
         paths: {
@@ -22,7 +23,8 @@ test("operationId-starting-with-number", () => {
                 Basic: { type: "string" },
             },
         },
-    });
+    };
+    const ctx = getZodClientTemplateContext(openApiDoc);
     expect(ctx.endpoints).toMatchInlineSnapshot(`
       [
           {
@@ -38,5 +40,31 @@ test("operationId-starting-with-number", () => {
       ]
     `);
 
-    expect(ctx.variables).toMatchInlineSnapshot('{}');
+    // TODO fix
+    const result = await generateZodClientFromOpenAPI({
+        disableWriteToFile: true,
+        openApiDoc,
+        options: { withAlias: true },
+    });
+    expect(result).toMatchInlineSnapshot(`
+      "import { makeApi, Zodios } from "@zodios/core";
+      import { z } from "zod";
+
+      const Basic = z.string();
+
+      const variables = {};
+
+      const endpoints = makeApi([
+        {
+          method: "get",
+          path: "/operationId-starting-with-number",
+          alias: "123_example",
+          requestFormat: "json",
+          response: Basic,
+        },
+      ]);
+
+      export const api = new Zodios(endpoints);
+      "
+    `);
 });

@@ -356,19 +356,20 @@ test("getZodClientTemplateContext", async () => {
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
-              "vGqL1kemtHF": "z.array(z.string()).optional()",
-              "vhZunxssSBT": "z.array(User)",
-              "vlh4E1pXYTG": "z.enum(["available", "pending", "sold"]).optional()",
-              "vuJkCuHe8KS": "z.array(Pet)",
+              "createUsersWithListInput_Body": "z.array(User)",
+              "findPetsByStatus": "z.array(Pet)",
+              "findPetsByTags": "z.array(Pet)",
+              "status": "z.enum(["available", "pending", "sold"]).optional()",
+              "tags": "z.array(z.string()).optional()",
           },
           "typeNameByRefHash": {},
           "types": {},
           "variables": {
-              "createUsersWithListInput_Body": "vhZunxssSBT",
-              "findPetsByStatus": "vuJkCuHe8KS",
-              "findPetsByTags": "vuJkCuHe8KS",
-              "status": "vlh4E1pXYTG",
-              "tags": "vGqL1kemtHF",
+              "createUsersWithListInput_Body": "createUsersWithListInput_Body",
+              "findPetsByStatus": "findPetsByStatus",
+              "findPetsByTags": "findPetsByTags",
+              "status": "status",
+              "tags": "tags",
           },
       }
     `);
@@ -398,9 +399,10 @@ describe("generateZodClientFromOpenAPI", () => {
               tags: z.array(Tag).optional(),
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
-          const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const vuJkCuHe8KS = z.array(Pet);
-          const vGqL1kemtHF = z.array(z.string()).optional();
+          const status = z.enum(["available", "pending", "sold"]).optional();
+          const findPetsByStatus = z.array(Pet);
+          const tags = z.array(z.string()).optional();
+          const findPetsByTags = z.array(Pet);
           const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
           const Order = z
               .object({
@@ -424,14 +426,14 @@ describe("generateZodClientFromOpenAPI", () => {
                   userStatus: z.number().int(),
               })
               .partial();
-          const vhZunxssSBT = z.array(User);
+          const createUsersWithListInput_Body = z.array(User);
 
           const variables = {
-              createUsersWithListInput_Body: vhZunxssSBT,
-              findPetsByStatus: vuJkCuHe8KS,
-              findPetsByTags: vuJkCuHe8KS,
-              status: vlh4E1pXYTG,
-              tags: vGqL1kemtHF,
+              createUsersWithListInput_Body: createUsersWithListInput_Body,
+              findPetsByStatus: findPetsByStatus,
+              findPetsByTags: findPetsByTags,
+              status: status,
+              tags: tags,
           };
 
           const endpoints = makeApi([
@@ -764,9 +766,10 @@ describe("generateZodClientFromOpenAPI", () => {
               tags: z.array(Tag).optional(),
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
-          const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const vuJkCuHe8KS = z.array(Pet);
-          const vGqL1kemtHF = z.array(z.string()).optional();
+          const status = z.enum(["available", "pending", "sold"]).optional();
+          const findPetsByStatus = z.array(Pet);
+          const tags = z.array(z.string()).optional();
+          const findPetsByTags = z.array(Pet);
           const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
           const Order = z
               .object({
@@ -790,14 +793,14 @@ describe("generateZodClientFromOpenAPI", () => {
                   userStatus: z.number().int(),
               })
               .partial();
-          const vhZunxssSBT = z.array(User);
+          const createUsersWithListInput_Body = z.array(User);
 
           const variables = {
-              createUsersWithListInput_Body: vhZunxssSBT,
-              findPetsByStatus: vuJkCuHe8KS,
-              findPetsByTags: vuJkCuHe8KS,
-              status: vlh4E1pXYTG,
-              tags: vGqL1kemtHF,
+              createUsersWithListInput_Body: createUsersWithListInput_Body,
+              findPetsByStatus: findPetsByStatus,
+              findPetsByTags: findPetsByTags,
+              status: status,
+              tags: tags,
           };
 
           const endpoints = makeApi([
@@ -1145,9 +1148,10 @@ describe("generateZodClientFromOpenAPI", () => {
               tags: z.array(Tag).optional(),
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
-          const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-          const vuJkCuHe8KS = z.array(Pet);
-          const vGqL1kemtHF = z.array(z.string()).optional();
+          const status = z.enum(["available", "pending", "sold"]).optional();
+          const findPetsByStatus = z.array(Pet);
+          const tags = z.array(z.string()).optional();
+          const findPetsByTags = z.array(Pet);
           const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
           const Order = z
               .object({
@@ -1171,14 +1175,14 @@ describe("generateZodClientFromOpenAPI", () => {
                   userStatus: z.number().int(),
               })
               .partial();
-          const vhZunxssSBT = z.array(User);
+          const createUsersWithListInput_Body = z.array(User);
 
           const variables = {
-              createUsersWithListInput_Body: vhZunxssSBT,
-              findPetsByStatus: vuJkCuHe8KS,
-              findPetsByTags: vuJkCuHe8KS,
-              status: vlh4E1pXYTG,
-              tags: vGqL1kemtHF,
+              createUsersWithListInput_Body: createUsersWithListInput_Body,
+              findPetsByStatus: findPetsByStatus,
+              findPetsByTags: findPetsByTags,
+              status: status,
+              tags: tags,
           };
 
           const endpoints = makeApi([
@@ -1630,10 +1634,10 @@ test("with optional, partial, all required objects", async () => {
               "PartialObject": "z.object({ something: z.string(), another: z.number() }).partial()",
               "Root2": "z.lazy(() => z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() }))",
               "VeryDeeplyNested": "z.enum(["aaa", "bbb", "ccc"])",
-              "v0a43T4TEdB": "z.enum(["aaa", "bbb", "ccc"])",
-              "vD7Rw82zk4s": "z.array(VeryDeeplyNested)",
-              "vO1pZnSWOkR": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() })",
-              "vRvCWBriblb": "z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() })",
+              "getDeeplyNested": "z.array(VeryDeeplyNested)",
+              "getNested": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() })",
+              "getRoot": "z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() })",
+              "getVeryDeeplyNested": "z.enum(["aaa", "bbb", "ccc"])",
           },
           "typeNameByRefHash": {
               "Nested2": "Nested2",
@@ -1661,10 +1665,10 @@ test("with optional, partial, all required objects", async () => {
               "VeryDeeplyNested": "type VeryDeeplyNested = "aaa" | "bbb" | "ccc";",
           },
           "variables": {
-              "getDeeplyNested": "vD7Rw82zk4s",
-              "getNested": "vO1pZnSWOkR",
-              "getRoot": "vRvCWBriblb",
-              "getVeryDeeplyNested": "v0a43T4TEdB",
+              "getDeeplyNested": "getDeeplyNested",
+              "getNested": "getNested",
+              "getRoot": "getRoot",
+              "getVeryDeeplyNested": "getVeryDeeplyNested",
           },
       }
     `);
@@ -1719,27 +1723,27 @@ test("with optional, partial, all required objects", async () => {
               optionalProp: z.string().optional(),
           })
       );
-      const vRvCWBriblb = z.object({
+      const getRoot = z.object({
           str: z.string(),
           nb: z.number(),
           nested: Nested2,
           partial: PartialObject.optional(),
           optionalProp: z.string().optional(),
       });
-      const vO1pZnSWOkR = z.object({
+      const getNested = z.object({
           nested_prop: z.boolean().optional(),
           deeplyNested: DeeplyNested.optional(),
           circularToRoot: Root2.optional(),
           requiredProp: z.string(),
       });
-      const vD7Rw82zk4s = z.array(VeryDeeplyNested);
-      const v0a43T4TEdB = z.enum(["aaa", "bbb", "ccc"]);
+      const getDeeplyNested = z.array(VeryDeeplyNested);
+      const getVeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
 
       const variables = {
-          getDeeplyNested: vD7Rw82zk4s,
-          getNested: vO1pZnSWOkR,
-          getRoot: vRvCWBriblb,
-          getVeryDeeplyNested: v0a43T4TEdB,
+          getDeeplyNested: getDeeplyNested,
+          getNested: getNested,
+          getRoot: getRoot,
+          getVeryDeeplyNested: getVeryDeeplyNested,
       };
 
       const endpoints = makeApi([

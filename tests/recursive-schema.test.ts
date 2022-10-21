@@ -141,10 +141,10 @@ describe("recursive-schema", () => {
 
           const Middle: z.ZodType<Middle> = z.lazy(() => z.object({ user: User }).partial());
           const User: z.ZodType<User> = z.lazy(() => z.object({ name: z.string(), middle: Middle }).partial());
-          const vwUho2gz9xx = z.object({ recursive: User, basic: z.number() }).partial();
+          const getExample = z.object({ recursive: User, basic: z.number() }).partial();
 
           const variables = {
-              getExample: vwUho2gz9xx,
+              getExample: getExample,
           };
 
           const endpoints = makeApi([
@@ -229,7 +229,7 @@ describe("recursive-schema", () => {
                   ],
                   "getSchemaByRef": [Function],
                   "hashByVariableName": {
-                      "@var/getExample": "@ref__vaoMU01Shfe__",
+                      "@var/getExample": "getExample",
                   },
                   "refsDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
@@ -245,8 +245,8 @@ describe("recursive-schema", () => {
                       "#/components/schemas/ObjectWithRecursiveArray": "ObjectWithRecursiveArray",
                   },
                   "zodSchemaByHash": {
-                      "@ref__vaoMU01Shfe__": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
                       "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
+                      "getExample": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
                   },
               }
             `);
@@ -368,7 +368,7 @@ describe("recursive-schema", () => {
               ],
               "getSchemaByRef": [Function],
               "hashByVariableName": {
-                  "@var/getExample": "@ref__v8T5EgXYMnN__",
+                  "@var/getExample": "getExample",
               },
               "refsDependencyGraph": {
                   "#/components/schemas/Friend": Set {
@@ -390,9 +390,9 @@ describe("recursive-schema", () => {
                   "#/components/schemas/UserWithFriends": "UserWithFriends",
               },
               "zodSchemaByHash": {
-                  "@ref__v8T5EgXYMnN__": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
                   "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
                   "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
+                  "getExample": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
               },
           }
         `);
@@ -419,7 +419,7 @@ describe("recursive-schema", () => {
               "schemas": {
                   "Friend": "z.lazy(() => z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial())",
                   "UserWithFriends": "z.lazy(() => z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial())",
-                  "v8T5EgXYMnN": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
+                  "getExample": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
               },
               "typeNameByRefHash": {
                   "Friend": "Friend",
@@ -439,7 +439,7 @@ describe("recursive-schema", () => {
           }>;",
               },
               "variables": {
-                  "getExample": "v8T5EgXYMnN",
+                  "getExample": "getExample",
               },
           }
         `);
@@ -472,10 +472,10 @@ describe("recursive-schema", () => {
           const UserWithFriends: z.ZodType<UserWithFriends> = z.lazy(() =>
               z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()
           );
-          const v8T5EgXYMnN = z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial();
+          const getExample = z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial();
 
           const variables = {
-              getExample: v8T5EgXYMnN,
+              getExample: getExample,
           };
 
           const endpoints = makeApi([
@@ -600,10 +600,10 @@ describe("recursive-schema", () => {
           const Playlist: z.ZodType<Playlist> = z.lazy(() =>
               z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()
           );
-          const vU9RHMjAlTj = z.object({ playlist: Playlist, by_author: Author }).partial();
+          const getExample = z.object({ playlist: Playlist, by_author: Author }).partial();
 
           const variables = {
-              getExample: vU9RHMjAlTj,
+              getExample: getExample,
           };
 
           const endpoints = makeApi([
