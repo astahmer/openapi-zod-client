@@ -721,6 +721,8 @@ test("group-strategy with complex schemas + split files", async () => {
               ],
               "schemas": {
                   "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial())",
+                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial())",
+                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
               },
               "types": {
                   "Country": "type Country = Partial<{
@@ -728,6 +730,20 @@ test("group-strategy with complex schemas + split files", async () => {
           name: string;
           code: string;
           store_list: Array<Store>;
+      }>;",
+                  "Store": "type Store = Partial<{
+          id: number;
+          name: string;
+          address: string;
+          country: Country;
+          owner: User;
+      }>;",
+                  "User": "type User = Partial<{
+          id: number;
+          firstname: string;
+          lastname: string;
+          email: string;
+          friends: Array<User>;
       }>;",
               },
           },
@@ -777,8 +793,17 @@ test("group-strategy with complex schemas + split files", async () => {
               ],
               "schemas": {
                   "Pet": "z.object({ id: z.number().int(), nickname: z.string(), owner: User }).partial()",
+                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
               },
-              "types": {},
+              "types": {
+                  "User": "type User = Partial<{
+          id: number;
+          firstname: string;
+          lastname: string;
+          email: string;
+          friends: Array<User>;
+      }>;",
+              },
           },
           "store": {
               "circularTypeByName": {},
@@ -805,15 +830,30 @@ test("group-strategy with complex schemas + split files", async () => {
                   },
               ],
               "schemas": {
+                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial())",
                   "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial())",
+                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
               },
               "types": {
+                  "Country": "type Country = Partial<{
+          id: number;
+          name: string;
+          code: string;
+          store_list: Array<Store>;
+      }>;",
                   "Store": "type Store = Partial<{
           id: number;
           name: string;
           address: string;
           country: Country;
           owner: User;
+      }>;",
+                  "User": "type User = Partial<{
+          id: number;
+          firstname: string;
+          lastname: string;
+          email: string;
+          friends: Array<User>;
       }>;",
               },
           },
@@ -874,7 +914,32 @@ test("group-strategy with complex schemas + split files", async () => {
         code: string;
         store_list: Array<Store>;
       }>;
+      type Store = Partial<{
+        id: number;
+        name: string;
+        address: string;
+        country: Country;
+        owner: User;
+      }>;
+      type User = Partial<{
+        id: number;
+        firstname: string;
+        lastname: string;
+        email: string;
+        friends: Array<User>;
+      }>;
 
+      const User = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            firstname: z.string(),
+            lastname: z.string(),
+            email: z.string(),
+            friends: z.array(User),
+          })
+          .partial()
+      );
       const Country = z.lazy(() =>
         z
           .object({
@@ -882,6 +947,17 @@ test("group-strategy with complex schemas + split files", async () => {
             name: z.string(),
             code: z.string(),
             store_list: z.array(Store),
+          })
+          .partial()
+      );
+      const Store = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            name: z.string(),
+            address: z.string(),
+            country: Country,
+            owner: User,
           })
           .partial()
       );
@@ -900,6 +976,25 @@ test("group-strategy with complex schemas + split files", async () => {
           "pet": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
+      type User = Partial<{
+        id: number;
+        firstname: string;
+        lastname: string;
+        email: string;
+        friends: Array<User>;
+      }>;
+
+      const User = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            firstname: z.string(),
+            lastname: z.string(),
+            email: z.string(),
+            friends: z.array(User),
+          })
+          .partial()
+      );
       const Pet = z
         .object({ id: z.number().int(), nickname: z.string(), owner: User })
         .partial();
@@ -943,7 +1038,41 @@ test("group-strategy with complex schemas + split files", async () => {
         country: Country;
         owner: User;
       }>;
+      type Country = Partial<{
+        id: number;
+        name: string;
+        code: string;
+        store_list: Array<Store>;
+      }>;
+      type User = Partial<{
+        id: number;
+        firstname: string;
+        lastname: string;
+        email: string;
+        friends: Array<User>;
+      }>;
 
+      const User = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            firstname: z.string(),
+            lastname: z.string(),
+            email: z.string(),
+            friends: z.array(User),
+          })
+          .partial()
+      );
+      const Country = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            name: z.string(),
+            code: z.string(),
+            store_list: z.array(Store),
+          })
+          .partial()
+      );
       const Store = z.lazy(() =>
         z
           .object({

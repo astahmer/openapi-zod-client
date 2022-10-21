@@ -14,7 +14,7 @@ import {
 } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
-import { getRefName, normalizeString } from "./tokens";
+import { getRefFromName, getRefName, normalizeString } from "./tokens";
 import { topologicalSort } from "./topologicalSort";
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
@@ -30,7 +30,7 @@ export const getZodClientTemplateContext = (
 
     const docSchemas = openApiDoc.components?.schemas || {};
     const depsGraphs = getOpenApiDependencyGraph(
-        Object.keys(docSchemas).map((name) => `#/components/schemas/${name}`),
+        Object.keys(docSchemas).map((name) => getRefFromName(name)),
         result.getSchemaByRef
     );
 
@@ -43,7 +43,7 @@ export const getZodClientTemplateContext = (
     }
 
     const wrapWithLazyIfNeeded = (name: string) => {
-        const [code, ref] = [result.zodSchemaByName[name], `#/components/schemas/${name}`];
+        const [code, ref] = [result.zodSchemaByName[name], getRefFromName(name)];
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         if (isCircular) {
             data.circularTypeByName[name] = true;
@@ -117,32 +117,42 @@ export const getZodClientTemplateContext = (
             }
             data.endpointsGroups[groupName].endpoints.push(endpoint);
 
-            const operationDeps = new Set<string>();
-            const addDependencyIfNeeded = (schema: string) => {
-                if (schema.startsWith("z.")) return;
-                operationDeps.add(schema);
+            const dependencies = new Set<string>();
+            const addDependencyIfNeeded = (schemaName: string) => {
+                if (schemaName.startsWith("z.")) return;
+                dependencies.add(schemaName);
             };
             addDependencyIfNeeded(endpoint.response);
             endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
             endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
-            operationDeps.forEach(
+            dependencies.forEach(
                 (ref) => (data.endpointsGroups[groupName].schemas[getRefName(ref)] = data.schemas[getRefName(ref)])
             );
 
             // reduce types/schemas for each group using prev computed deep dependencies
             if (groupStrategy.includes("file")) {
-                operationDeps.forEach((depRef) => {
-                    const depRefName = getRefName(depRef);
-                    if (data.types[depRefName]) {
-                        data.endpointsGroups[groupName].types[depRefName] = data.types[depRefName];
+                dependencies.forEach((refName) => {
+                    if (data.types[refName]) {
+                        data.endpointsGroups[groupName].types[refName] = data.types[refName];
                     }
-                    data.endpointsGroups[groupName].schemas[depRefName] = data.schemas[depRefName];
+                    data.endpointsGroups[groupName].schemas[refName] = data.schemas[refName];
+
+                    depsGraphs.deepDependencyGraph[getRefFromName(refName)]?.forEach((transitiveRef) => {
+                        const transitiveRefName = getRefName(transitiveRef);
+                        data.endpointsGroups[groupName].types[transitiveRefName] = data.types[transitiveRefName];
+                        data.endpointsGroups[groupName].schemas[transitiveRefName] = data.schemas[transitiveRefName];
+                    });
                 });
-                // depsGraphs.deepDependencyGraph[] .forEach((ref) => (data.endpointsGroups[groupName].types[ref] = data.types[ref]));
             }
         }
     });
     data.endpoints = sortBy(data.endpoints, "path");
+    Object.keys(data.endpointsGroups).forEach((groupName) => {
+        data.endpointsGroups[groupName].schemas = sortObjKeysFromArray(
+            data.endpointsGroups[groupName].schemas,
+            schemaOrderedByDependencies
+        );
+    });
 
     return data;
 };
