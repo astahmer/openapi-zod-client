@@ -400,6 +400,10 @@ describe("recursive-schema", () => {
         const templateCtx = getZodClientTemplateContext(openApiDoc);
         expect(templateCtx).toMatchInlineSnapshot(`
           {
+              "circularTypeByName": {
+                  "Friend": true,
+                  "UserWithFriends": true,
+              },
               "endpoints": [
                   {
                       "alias": "getExample",
@@ -420,10 +424,6 @@ describe("recursive-schema", () => {
                   "Friend": "z.lazy(() => z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial())",
                   "UserWithFriends": "z.lazy(() => z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial())",
                   "getExample": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
-              },
-              "typeNameByRefHash": {
-                  "Friend": "Friend",
-                  "UserWithFriends": "UserWithFriends",
               },
               "types": {
                   "Friend": "type Friend = Partial<{
