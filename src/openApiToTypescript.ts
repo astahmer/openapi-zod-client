@@ -1,7 +1,7 @@
 import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 import { t, ts } from "tanu";
 import { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
-import { normalizeString } from "./tokens";
+import { getRefName, normalizeString } from "./tokens";
 
 interface TsConversionArgs {
     schema: SchemaObject | ReferenceObject;
@@ -39,9 +39,9 @@ export const getTypescriptFromOpenApi = ({
             if (!ctx?.visitedsRefs) throw new Error("Context is required for OpenAPI $ref");
 
             let result = ctx.nodeByRef[schema.$ref];
-            const typeRefToken = `@type__${schema.$ref}`;
+            const refName = getRefName(schema.$ref);
             if (ctx.visitedsRefs[schema.$ref]) {
-                return typeRefToken;
+                return refName;
             }
 
             if (!result) {
@@ -54,7 +54,7 @@ export const getTypescriptFromOpenApi = ({
                 result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
             }
 
-            return typeRefToken;
+            return refName;
         }
 
         if (schema.oneOf) {
@@ -106,7 +106,7 @@ export const getTypescriptFromOpenApi = ({
                 let arrayOfType = getTypescriptFromOpenApi({ schema: schema.items, ctx, meta }) as TypeDefinition;
                 if (typeof arrayOfType === "string") {
                     if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
-                    arrayOfType = t.reference(arrayOfType.replace("@type__", "").split("/").at(-1)!);
+                    arrayOfType = t.reference(arrayOfType);
                 }
 
                 return t.array(arrayOfType);
@@ -163,7 +163,7 @@ export const getTypescriptFromOpenApi = ({
                     if (typeof propType === "string") {
                         if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
                         // TODO Partial ?
-                        propType = t.reference(propType.replace("@type__", "").split("/").at(-1)!);
+                        propType = t.reference(propType);
                     }
 
                     const isRequired = isPartial ? true : schema.required?.includes(prop);
