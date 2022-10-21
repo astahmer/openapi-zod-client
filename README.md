@@ -216,8 +216,6 @@ const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().o
 const Pets = z.array(Pet);
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
-const variables = {};
-
 const endpoints = makeApi([
     {
         method: "get",

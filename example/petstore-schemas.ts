@@ -1,70 +1,54 @@
 import { z } from "zod";
 
-const vjRfEADnJZ8 = z.object({ street: z.string(), city: z.string(), state: z.string(), zip: z.string() }).partial();
-const vR1x0k5qaLk = z.object({ id: z.number(), name: z.string() }).partial();
-const v8JbFEq2fUl = z.object({
-    id: z.number().optional(),
+const Address = z.object({ street: z.string(), city: z.string(), state: z.string(), zip: z.string() }).partial();
+const Customer = z.object({ id: z.number().int(), username: z.string(), address: z.array(Address) }).partial();
+const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
+const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
+const Pet = z.object({
+    id: z.number().int().optional(),
     name: z.string(),
-    category: vR1x0k5qaLk.optional(),
+    category: Category.optional(),
     photoUrls: z.array(z.string()),
-    tags: z.array(vR1x0k5qaLk).optional(),
+    tags: z.array(Tag).optional(),
     status: z.enum(["available", "pending", "sold"]).optional(),
 });
-const vlh4E1pXYTG = z.enum(["available", "pending", "sold"]).optional();
-const vh4fxCvnN1b = z.array(v8JbFEq2fUl);
-const vGqL1kemtHF = z.array(z.string()).optional();
-const vBaxCoPHbgy = z.object({ code: z.number(), type: z.string(), message: z.string() }).partial();
-const vLBYC40hXo1 = z
+const status = z.enum(["available", "pending", "sold"]).optional();
+const tags = z.array(z.string()).optional();
+const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+const Order = z
     .object({
-        id: z.number(),
-        petId: z.number(),
-        quantity: z.number(),
+        id: z.number().int(),
+        petId: z.number().int(),
+        quantity: z.number().int(),
         shipDate: z.string(),
         status: z.enum(["placed", "approved", "delivered"]),
         complete: z.boolean(),
     })
     .partial();
-const veNKKR5W6KW = z
+const User = z
     .object({
-        id: z.number(),
+        id: z.number().int(),
         username: z.string(),
         firstName: z.string(),
         lastName: z.string(),
         email: z.string(),
         password: z.string(),
         phone: z.string(),
-        userStatus: z.number(),
+        userStatus: z.number().int(),
     })
     .partial();
-const vVrSPZVa6q7 = z.array(veNKKR5W6KW);
-const v0AfiYWQf6S = z.object({ id: z.number(), username: z.string(), address: z.array(vjRfEADnJZ8) }).partial();
+const createUsersWithListInput_Body = z.array(User);
 
 export const schemas = {
-    Address: vjRfEADnJZ8,
-    ApiResponse: vBaxCoPHbgy,
-    Category: vR1x0k5qaLk,
-    Customer: v0AfiYWQf6S,
-    Order: vLBYC40hXo1,
-    Pet: v8JbFEq2fUl,
-    Tag: vR1x0k5qaLk,
-    User: veNKKR5W6KW,
-    addPet: v8JbFEq2fUl,
-    addPet_Body: v8JbFEq2fUl,
-    createUser: veNKKR5W6KW,
-    createUser_Body: veNKKR5W6KW,
-    createUsersWithListInput: veNKKR5W6KW,
-    createUsersWithListInput_Body: vVrSPZVa6q7,
-    findPetsByStatus: vh4fxCvnN1b,
-    findPetsByTags: vh4fxCvnN1b,
-    getOrderById: vLBYC40hXo1,
-    getPetById: v8JbFEq2fUl,
-    getUserByName: veNKKR5W6KW,
-    placeOrder: vLBYC40hXo1,
-    placeOrder_Body: vLBYC40hXo1,
-    status: vlh4E1pXYTG,
-    tags: vGqL1kemtHF,
-    updatePet: v8JbFEq2fUl,
-    updatePet_Body: v8JbFEq2fUl,
-    updateUser_Body: veNKKR5W6KW,
-    uploadFile: vBaxCoPHbgy,
+    Address,
+    Customer,
+    Category,
+    Tag,
+    Pet,
+    status,
+    tags,
+    ApiResponse,
+    Order,
+    User,
+    createUsersWithListInput_Body,
 };
