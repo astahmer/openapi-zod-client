@@ -13,7 +13,7 @@ import {
 } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
-import { tokens } from "./tokens";
+import { getRefName } from "./tokens";
 import { topologicalSort } from "./topologicalSort";
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
@@ -54,15 +54,15 @@ export const getZodClientTemplateContext = (
         return actualCode;
     };
 
-    for (const refHash in result.zodSchemaByHash) {
-        data.schemas[refHash] = wrapWithLazyIfNeeded(refHash);
+    for (const name in result.zodSchemaByHash) {
+        data.schemas[name] = wrapWithLazyIfNeeded(name);
     }
 
     for (const ref in depsGraphs.deepDependencyGraph) {
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         const ctx: TsConversionContext = { nodeByRef: {}, getSchemaByRef: result.getSchemaByRef, visitedsRefs: {} };
 
-        const refName = isCircular ? tokens.getRefName(ref) : undefined;
+        const refName = isCircular ? getRefName(ref) : undefined;
         if (isCircular && refName && !data.types[refName]) {
             const node = getTypescriptFromOpenApi({
                 schema: result.getSchemaByRef(ref),
@@ -72,7 +72,7 @@ export const getZodClientTemplateContext = (
             data.types[refName] = printTs(node).replace("export ", "");
 
             for (const depRef of depsGraphs.deepDependencyGraph[ref] ?? []) {
-                const depRefName = tokens.getRefName(depRef);
+                const depRefName = getRefName(depRef);
                 const isDepCircular = depsGraphs.deepDependencyGraph[depRef]?.has(depRef);
 
                 if (!isDepCircular && !data.types[depRefName]) {
