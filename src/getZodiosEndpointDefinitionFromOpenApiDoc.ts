@@ -14,7 +14,7 @@ import { match } from "ts-pattern";
 import type { TemplateContext } from "./generateZodClientFromOpenAPI";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
-import { normalizeString, pathToVariableName } from "./tokens";
+import { getRefFromName, normalizeString, pathToVariableName } from "./tokens";
 
 import { sync } from "whence";
 
@@ -200,7 +200,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
     }
 
     const graphs = getOpenApiDependencyGraph(
-        Object.keys(ctx.zodSchemaByName).map((name) => `#/components/schemas/${name}`),
+        Object.keys(ctx.zodSchemaByName).map((name) => getRefFromName(name)),
         ctx.getSchemaByRef
     );
 
