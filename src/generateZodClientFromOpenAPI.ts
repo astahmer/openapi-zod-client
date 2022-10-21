@@ -40,32 +40,14 @@ export const getZodClientTemplateContext = (
 
         if (isCircular) {
             const refName = tokens.getRefName(ref);
-            data.typeNameByRefHash[tokens.rmToken(refHash, tokens.refToken)] = refName;
+            data.typeNameByRefHash[refHash] = refName;
         }
 
         return actualCode;
     };
-    const replaceRefTokenWithVariableRef = (code: string) =>
-        code.replaceAll(tokens.refTokenHashRegex, (match) => tokens.rmToken(match, tokens.refToken));
-
-    const varNameByHashRef = reverse(result.hashByVariableName) as Record<string, string>;
     const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string, fallbackVarName?: string): string => {
-        if (unknownRef.includes(tokens.refToken)) {
-            return unknownRef.replaceAll(tokens.refTokenHashRegex, (match) => {
-                const varNameWithToken = varNameByHashRef[match];
-                if (!varNameWithToken) {
-                    return `variables["${fallbackVarName}"]`;
-                }
-
-                return `variables["${tokens.rmToken(varNameByHashRef[match], tokens.varPrefix)}"]`;
-            });
-        }
         if (tokens.isToken(unknownRef, tokens.varPrefix)) {
             return `variables["${tokens.rmToken(unknownRef, tokens.varPrefix)}"]`;
-        }
-
-        if (unknownRef[0] === "#") {
-            return result.schemaHashByRef[unknownRef];
         }
 
         return unknownRef;
@@ -73,21 +55,15 @@ export const getZodClientTemplateContext = (
 
     if (options?.shouldExportAllSchemas) {
         Object.entries(docSchemas).map(([name, schema]) => {
-            const varName = tokens.makeVar(name);
-            if (!result.hashByVariableName[varName]) {
-                const code = getZodSchema({ schema, ctx: result }).toString();
-                const hashed = tokens.makeRefHash(code);
-                result.hashByVariableName[varName] = hashed;
-                result.zodSchemaByHash[hashed] = code;
+            if (!result.zodSchemaByHash[name]) {
+                result.zodSchemaByHash[name] = getZodSchema({ schema, ctx: result }).toString();
             }
         });
     }
 
     const refByHash = reverse(result.schemaHashByRef) as Record<string, string>;
     for (const refHash in result.zodSchemaByHash) {
-        data.schemas[tokens.rmToken(refHash, tokens.refToken)] = replaceRefTokenWithVariableRef(
-            wrapWithLazyIfNeeded(refHash)
-        );
+        data.schemas[refHash] = wrapWithLazyIfNeeded(refHash);
     }
 
     for (const ref in depsGraphs.deepDependencyGraph) {
@@ -121,14 +97,11 @@ export const getZodClientTemplateContext = (
 
     const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph)
         .filter((ref) => result.zodSchemaByHash[result.schemaHashByRef[ref]])
-        .map((ref) => tokens.rmToken(result.schemaHashByRef[ref], tokens.refToken));
+        .map((ref) => result.schemaHashByRef[ref]);
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
     for (const variableRef in result.hashByVariableName) {
-        data.variables[tokens.rmToken(variableRef, tokens.varPrefix)] = tokens.rmToken(
-            result.hashByVariableName[variableRef],
-            tokens.refToken
-        );
+        data.variables[tokens.rmToken(variableRef, tokens.varPrefix)] = result.hashByVariableName[variableRef];
     }
     data.variables = sortObjectKeys(data.variables);
 
