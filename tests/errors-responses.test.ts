@@ -58,10 +58,6 @@ it("includes errors-responses", async () => {
 
       const getExample = z.object({ str: z.string(), nb: z.number() });
 
-      const variables = {
-        getExample: getExample,
-      };
-
       const endpoints = makeApi([
         {
           method: "get",
@@ -183,10 +179,6 @@ it("determines which status are considered errors-responses", async () => {
       });
       const getExample = z.object({ str: z.string(), nb: z.number() });
 
-      const variables = {
-        getExample: getExample,
-      };
-
       const endpoints = makeApi([
         {
           method: "get",
@@ -234,10 +226,6 @@ it("determines which status are considered errors-responses", async () => {
         requiredProp: z.string(),
       });
       const getExample = z.object({ str: z.string(), nb: z.number() });
-
-      const variables = {
-        getExample: getExample,
-      };
 
       const endpoints = makeApi([
         {

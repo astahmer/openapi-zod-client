@@ -25,12 +25,12 @@ test("ref-in-another-file", async () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/getRobots_txt": "getRobots_txt",
+              "getRobots_txt": "getRobots_txt",
           },
           "refsDependencyGraph": {},
           "responsesByOperationId": {
               "getRobots_txt": {
-                  "200": "@var/getRobots_txt",
+                  "200": "getRobots_txt",
               },
           },
           "schemaHashByRef": {},

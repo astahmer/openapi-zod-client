@@ -444,7 +444,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "@var/status",
+                          "schema": "status",
                           "type": "Query",
                       },
                   ],
@@ -466,7 +466,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "@var/tags",
+                          "schema": "tags",
                           "type": "Query",
                       },
                   ],
@@ -477,10 +477,10 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/findPetsByStatus": "findPetsByStatus",
-              "@var/findPetsByTags": "findPetsByTags",
-              "@var/status": "status",
-              "@var/tags": "tags",
+              "findPetsByStatus": "findPetsByStatus",
+              "findPetsByTags": "findPetsByTags",
+              "status": "status",
+              "tags": "tags",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -490,11 +490,11 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
           },
           "responsesByOperationId": {
               "findPetsByStatus": {
-                  "200": "@var/findPetsByStatus",
+                  "200": "findPetsByStatus",
                   "400": "z.void()",
               },
               "findPetsByTags": {
-                  "200": "@var/findPetsByTags",
+                  "200": "findPetsByTags",
                   "400": "z.void()",
               },
           },
@@ -598,7 +598,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "@var/status",
+                          "schema": "status",
                           "type": "Query",
                       },
                   ],
@@ -620,7 +620,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "@var/tags",
+                          "schema": "tags",
                           "type": "Query",
                       },
                   ],
@@ -845,7 +845,7 @@ test("petstore.yaml", async () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "@var/createUsersWithListInput_Body",
+                          "schema": "createUsersWithListInput_Body",
                           "type": "Body",
                       },
                   ],
@@ -968,11 +968,11 @@ test("petstore.yaml", async () => {
           ],
           "getSchemaByRef": [Function],
           "hashByVariableName": {
-              "@var/createUsersWithListInput_Body": "createUsersWithListInput_Body",
-              "@var/findPetsByStatus": "findPetsByStatus",
-              "@var/findPetsByTags": "findPetsByTags",
-              "@var/status": "status",
-              "@var/tags": "tags",
+              "createUsersWithListInput_Body": "createUsersWithListInput_Body",
+              "findPetsByStatus": "findPetsByStatus",
+              "findPetsByTags": "findPetsByTags",
+              "status": "status",
+              "tags": "tags",
           },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
@@ -1004,11 +1004,11 @@ test("petstore.yaml", async () => {
                   "404": "z.void()",
               },
               "findPetsByStatus": {
-                  "200": "@var/findPetsByStatus",
+                  "200": "findPetsByStatus",
                   "400": "z.void()",
               },
               "findPetsByTags": {
-                  "200": "@var/findPetsByTags",
+                  "200": "findPetsByTags",
                   "400": "z.void()",
               },
               "getInventory": {

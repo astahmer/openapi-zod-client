@@ -4,8 +4,6 @@ exports[`samples-generator > ./samples/v3.0/api-with-examples.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const variables = {};
-
 const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
@@ -17,10 +15,6 @@ exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
 import { z } from "zod";
 
 const postStreams = z.object({ subscriptionId: z.string() });
-
-const variables = {
-    postStreams: postStreams,
-};
 
 const endpoints = makeApi([]);
 
@@ -40,12 +34,6 @@ const pullrequest = z
 const getRepositoriesByOwner = z.array(repository);
 const state = z.enum(["open", "merged", "declined"]).optional();
 const getPullRequestsByRepository = z.array(pullrequest);
-
-const variables = {
-    getPullRequestsByRepository: getPullRequestsByRepository,
-    getRepositoriesByOwner: getRepositoriesByOwner,
-    state: state,
-};
 
 const endpoints = makeApi([
     {
@@ -97,7 +85,7 @@ const endpoints = makeApi([
             {
                 name: "state",
                 type: "Query",
-                schema: variables["state"],
+                schema: state,
             },
         ],
         response: z.array(pullrequest),
@@ -152,8 +140,6 @@ const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().o
 const Pets = z.array(Pet);
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
-const variables = {};
-
 const endpoints = makeApi([
     {
         method: "get",
@@ -203,11 +189,6 @@ const tags = z.array(z.string()).optional();
 const findPets = z.array(Pet);
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
-const variables = {
-    findPets: findPets,
-    tags: tags,
-};
-
 const endpoints = makeApi([
     {
         method: "get",
@@ -222,7 +203,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             {
                 name: "tags",
                 type: "Query",
-                schema: variables["tags"],
+                schema: tags,
             },
             {
                 name: "limit",
@@ -302,10 +283,6 @@ const dataSetList = z
     .partial();
 const perform_search = z.array(z.record(z.object({}).partial()));
 
-const variables = {
-    perform_search: perform_search,
-};
-
 const endpoints = makeApi([
     {
         method: "get",
@@ -375,8 +352,6 @@ exports[`samples-generator > ./samples/v3.1/non-oauth-scopes.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const variables = {};
-
 const endpoints = makeApi([]);
 
 export const api = new Zodios(endpoints);
@@ -386,8 +361,6 @@ export const api = new Zodios(endpoints);
 exports[`samples-generator > ./samples/v3.1/webhook-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
-
-const variables = {};
 
 const endpoints = makeApi([]);
 
