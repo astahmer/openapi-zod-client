@@ -66,7 +66,6 @@ describe("recursive-schema", () => {
             },
         } as SchemasObject;
         const ctx: ConversionTypeContext = {
-            hashByVariableName: {},
             zodSchemaByName: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
@@ -76,7 +75,6 @@ describe("recursive-schema", () => {
         expect(ctx).toMatchInlineSnapshot(`
           {
               "getSchemaByRef": [Function],
-              "hashByVariableName": {},
               "zodSchemaByName": {
                   "Middle": "z.object({ user: User }).partial()",
                   "User": "z.object({ name: z.string(), middle: Middle }).partial()",
@@ -179,7 +177,6 @@ describe("recursive-schema", () => {
 
     test("recursive array", () => {
         const ctx: ConversionTypeContext = {
-            hashByVariableName: {},
             zodSchemaByName: {},
             getSchemaByRef: (ref) => schemas2[ref.split("/").at(-1)!],
         };
@@ -189,7 +186,6 @@ describe("recursive-schema", () => {
         expect(ctx).toMatchInlineSnapshot(`
           {
               "getSchemaByRef": [Function],
-              "hashByVariableName": {},
               "zodSchemaByName": {
                   "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
               },
@@ -217,7 +213,6 @@ describe("recursive-schema", () => {
                       },
                   ],
                   "getSchemaByRef": [Function],
-                  "hashByVariableName": {},
                   "refsDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
                           "#/components/schemas/ObjectWithRecursiveArray",
@@ -232,7 +227,6 @@ describe("recursive-schema", () => {
 
     test("direct recursive", () => {
         const ctx: ConversionTypeContext = {
-            hashByVariableName: {},
             zodSchemaByName: {},
             getSchemaByRef: (ref) => UserSchema,
         };
@@ -242,7 +236,6 @@ describe("recursive-schema", () => {
         expect(ctx).toMatchInlineSnapshot(`
           {
               "getSchemaByRef": [Function],
-              "hashByVariableName": {},
               "zodSchemaByName": {
                   "User": "z.object({ name: z.string(), parent: User }).partial()",
               },
@@ -272,7 +265,6 @@ describe("recursive-schema", () => {
 
     test("multiple recursive in one root schema", async () => {
         const ctx: ConversionTypeContext = {
-            hashByVariableName: {},
             zodSchemaByName: {},
             getSchemaByRef: (ref: string) => schemas[ref.replace("#/components/schemas/", "")],
         };
@@ -293,7 +285,6 @@ describe("recursive-schema", () => {
         expect(ctx).toMatchInlineSnapshot(`
           {
               "getSchemaByRef": [Function],
-              "hashByVariableName": {},
               "zodSchemaByName": {
                   "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
                   "UserWithFriends": "z.object({ name: z.string(), parent: UserWithFriends, friends: z.array(Friend), bestFriend: Friend }).partial()",
@@ -336,7 +327,6 @@ describe("recursive-schema", () => {
                   },
               ],
               "getSchemaByRef": [Function],
-              "hashByVariableName": {},
               "refsDependencyGraph": {
                   "#/components/schemas/Friend": Set {
                       "#/components/schemas/UserWithFriends",
@@ -477,7 +467,6 @@ describe("recursive-schema", () => {
         const schemas = { Playlist, Song, Author, Settings };
 
         const ctx: ConversionTypeContext = {
-            hashByVariableName: {},
             zodSchemaByName: {},
             getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
         };
@@ -495,7 +484,6 @@ describe("recursive-schema", () => {
         expect(ctx).toMatchInlineSnapshot(`
           {
               "getSchemaByRef": [Function],
-              "hashByVariableName": {},
               "zodSchemaByName": {
                   "Author": "z.object({ name: z.string(), mail: z.string(), settings: Settings }).partial()",
                   "Playlist": "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()",

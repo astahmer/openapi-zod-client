@@ -173,7 +173,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 export interface ConversionTypeContext {
     getSchemaByRef: ($ref: string) => SchemaObject;
     zodSchemaByName: Record<string, string>;
-    hashByVariableName: Record<string, string>;
 }
 
 export interface CodeMetaData {

@@ -60,7 +60,6 @@ test("autofix-unusual-ref-format", () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {},
           "refsDependencyGraph": {},
           "zodSchemaByName": {
               "Basic": "z.string()",
