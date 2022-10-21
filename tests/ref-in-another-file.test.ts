@@ -24,19 +24,10 @@ test("ref-in-another-file", async () => {
               },
           ],
           "getSchemaByRef": [Function],
-          "hashByVariableName": {
-              "getRobots_txt": "getRobots_txt",
-          },
+          "hashByVariableName": {},
           "refsDependencyGraph": {},
-          "responsesByOperationId": {
-              "getRobots_txt": {
-                  "200": "getRobots_txt",
-              },
-          },
           "schemaHashByRef": {},
-          "zodSchemaByHash": {
-              "getRobots_txt": "z.object({ name: z.string(), completed: z.boolean() })",
-          },
+          "zodSchemaByHash": {},
       }
     `);
 });

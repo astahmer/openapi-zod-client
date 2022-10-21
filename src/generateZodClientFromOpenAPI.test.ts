@@ -358,8 +358,6 @@ test("getZodClientTemplateContext", async () => {
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
               "createUsersWithListInput_Body": "z.array(User)",
-              "findPetsByStatus": "z.array(Pet)",
-              "findPetsByTags": "z.array(Pet)",
               "status": "z.enum(["available", "pending", "sold"]).optional()",
               "tags": "z.array(z.string()).optional()",
           },
@@ -394,9 +392,7 @@ describe("generateZodClientFromOpenAPI", () => {
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const status = z.enum(["available", "pending", "sold"]).optional();
-          const findPetsByStatus = z.array(Pet);
           const tags = z.array(z.string()).optional();
-          const findPetsByTags = z.array(Pet);
           const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
           const Order = z
               .object({
@@ -753,9 +749,7 @@ describe("generateZodClientFromOpenAPI", () => {
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const status = z.enum(["available", "pending", "sold"]).optional();
-          const findPetsByStatus = z.array(Pet);
           const tags = z.array(z.string()).optional();
-          const findPetsByTags = z.array(Pet);
           const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
           const Order = z
               .object({
@@ -1127,9 +1121,7 @@ describe("generateZodClientFromOpenAPI", () => {
               status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const status = z.enum(["available", "pending", "sold"]).optional();
-          const findPetsByStatus = z.array(Pet);
           const tags = z.array(z.string()).optional();
-          const findPetsByTags = z.array(Pet);
           const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
           const Order = z
               .object({
@@ -1608,10 +1600,6 @@ test("with optional, partial, all required objects", async () => {
               "PartialObject": "z.object({ something: z.string(), another: z.number() }).partial()",
               "Root2": "z.lazy(() => z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() }))",
               "VeryDeeplyNested": "z.enum(["aaa", "bbb", "ccc"])",
-              "getDeeplyNested": "z.array(VeryDeeplyNested)",
-              "getNested": "z.object({ nested_prop: z.boolean().optional(), deeplyNested: DeeplyNested.optional(), circularToRoot: Root2.optional(), requiredProp: z.string() })",
-              "getRoot": "z.object({ str: z.string(), nb: z.number(), nested: Nested2, partial: PartialObject.optional(), optionalProp: z.string().optional() })",
-              "getVeryDeeplyNested": "z.enum(["aaa", "bbb", "ccc"])",
           },
           "types": {
               "DeeplyNested": "type DeeplyNested = Array<VeryDeeplyNested>;",
@@ -1688,21 +1676,6 @@ test("with optional, partial, all required objects", async () => {
               optionalProp: z.string().optional(),
           })
       );
-      const getRoot = z.object({
-          str: z.string(),
-          nb: z.number(),
-          nested: Nested2,
-          partial: PartialObject.optional(),
-          optionalProp: z.string().optional(),
-      });
-      const getNested = z.object({
-          nested_prop: z.boolean().optional(),
-          deeplyNested: DeeplyNested.optional(),
-          circularToRoot: Root2.optional(),
-          requiredProp: z.string(),
-      });
-      const getDeeplyNested = z.array(VeryDeeplyNested);
-      const getVeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
 
       const endpoints = makeApi([
           {

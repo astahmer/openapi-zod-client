@@ -200,13 +200,6 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                             description: responseItem.description,
                         });
                     }
-
-                    if (endpointDescription.alias) {
-                        responsesByOperationId[endpointDescription.alias] = {
-                            ...responsesByOperationId[endpointDescription.alias],
-                            [statusCode]: schema ? getZodVarName(schema, endpointDescription.alias) : schemaString,
-                        };
-                    }
                 }
             }
 
@@ -222,7 +215,6 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
     return {
         ...(ctx as Required<ConversionTypeContext>),
         endpoints,
-        responsesByOperationId,
         refsDependencyGraph,
         deepDependencyGraph,
     };
