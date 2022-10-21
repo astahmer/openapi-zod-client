@@ -52,9 +52,7 @@ test("handle-refs-without-var-name", () => {
               "getSomething": "z.array(Basic)",
           },
           "types": {},
-          "variables": {
-              "getSomething": "getSomething",
-          },
+          "variables": {},
       }
     `);
 });

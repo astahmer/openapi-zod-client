@@ -51,8 +51,6 @@ test("name-with-special-characters", async () => {
 
       const _1Name_With_Special_Characters = z.string();
 
-      const variables = {};
-
       const endpoints = makeApi([
         {
           method: "get",

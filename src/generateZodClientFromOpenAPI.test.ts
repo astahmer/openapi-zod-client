@@ -135,7 +135,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "variables["status"]",
+                          "schema": "status",
                           "type": "Query",
                       },
                   ],
@@ -157,7 +157,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "variables["tags"]",
+                          "schema": "tags",
                           "type": "Query",
                       },
                   ],
@@ -300,7 +300,7 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "variables["createUsersWithListInput_Body"]",
+                          "schema": "createUsersWithListInput_Body",
                           "type": "Body",
                       },
                   ],
@@ -364,13 +364,7 @@ test("getZodClientTemplateContext", async () => {
               "tags": "z.array(z.string()).optional()",
           },
           "types": {},
-          "variables": {
-              "createUsersWithListInput_Body": "createUsersWithListInput_Body",
-              "findPetsByStatus": "findPetsByStatus",
-              "findPetsByTags": "findPetsByTags",
-              "status": "status",
-              "tags": "tags",
-          },
+          "variables": {},
       }
     `);
 });
@@ -427,14 +421,6 @@ describe("generateZodClientFromOpenAPI", () => {
               })
               .partial();
           const createUsersWithListInput_Body = z.array(User);
-
-          const variables = {
-              createUsersWithListInput_Body: createUsersWithListInput_Body,
-              findPetsByStatus: findPetsByStatus,
-              findPetsByTags: findPetsByTags,
-              status: status,
-              tags: tags,
-          };
 
           const endpoints = makeApi([
               {
@@ -544,7 +530,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "status",
                           type: "Query",
-                          schema: variables["status"],
+                          schema: status,
                       },
                   ],
                   response: z.array(Pet),
@@ -565,7 +551,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "tags",
                           type: "Query",
-                          schema: variables["tags"],
+                          schema: tags,
                       },
                   ],
                   response: z.array(Pet),
@@ -700,7 +686,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "body",
                           type: "Body",
-                          schema: variables["createUsersWithListInput_Body"],
+                          schema: createUsersWithListInput_Body,
                       },
                   ],
                   response: User,
@@ -794,14 +780,6 @@ describe("generateZodClientFromOpenAPI", () => {
               })
               .partial();
           const createUsersWithListInput_Body = z.array(User);
-
-          const variables = {
-              createUsersWithListInput_Body: createUsersWithListInput_Body,
-              findPetsByStatus: findPetsByStatus,
-              findPetsByTags: findPetsByTags,
-              status: status,
-              tags: tags,
-          };
 
           const endpoints = makeApi([
               {
@@ -916,7 +894,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "status",
                           type: "Query",
-                          schema: variables["status"],
+                          schema: status,
                       },
                   ],
                   response: z.array(Pet),
@@ -938,7 +916,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "tags",
                           type: "Query",
-                          schema: variables["tags"],
+                          schema: tags,
                       },
                   ],
                   response: z.array(Pet),
@@ -1080,7 +1058,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "body",
                           type: "Body",
-                          schema: variables["createUsersWithListInput_Body"],
+                          schema: createUsersWithListInput_Body,
                       },
                   ],
                   response: User,
@@ -1176,14 +1154,6 @@ describe("generateZodClientFromOpenAPI", () => {
               })
               .partial();
           const createUsersWithListInput_Body = z.array(User);
-
-          const variables = {
-              createUsersWithListInput_Body: createUsersWithListInput_Body,
-              findPetsByStatus: findPetsByStatus,
-              findPetsByTags: findPetsByTags,
-              status: status,
-              tags: tags,
-          };
 
           const endpoints = makeApi([
               {
@@ -1293,7 +1263,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "status",
                           type: "Query",
-                          schema: variables["status"],
+                          schema: status,
                       },
                   ],
                   response: z.array(Pet),
@@ -1314,7 +1284,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "tags",
                           type: "Query",
-                          schema: variables["tags"],
+                          schema: tags,
                       },
                   ],
                   response: z.array(Pet),
@@ -1449,7 +1419,7 @@ describe("generateZodClientFromOpenAPI", () => {
                       {
                           name: "body",
                           type: "Body",
-                          schema: variables["createUsersWithListInput_Body"],
+                          schema: createUsersWithListInput_Body,
                       },
                   ],
                   response: User,
@@ -1664,12 +1634,7 @@ test("with optional, partial, all required objects", async () => {
       };",
               "VeryDeeplyNested": "type VeryDeeplyNested = "aaa" | "bbb" | "ccc";",
           },
-          "variables": {
-              "getDeeplyNested": "getDeeplyNested",
-              "getNested": "getNested",
-              "getRoot": "getRoot",
-              "getVeryDeeplyNested": "getVeryDeeplyNested",
-          },
+          "variables": {},
       }
     `);
 
@@ -1738,13 +1703,6 @@ test("with optional, partial, all required objects", async () => {
       });
       const getDeeplyNested = z.array(VeryDeeplyNested);
       const getVeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
-
-      const variables = {
-          getDeeplyNested: getDeeplyNested,
-          getNested: getNested,
-          getRoot: getRoot,
-          getVeryDeeplyNested: getVeryDeeplyNested,
-      };
 
       const endpoints = makeApi([
           {

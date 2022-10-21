@@ -45,10 +45,6 @@ it("use main-description-as-fallback", async () => {
 
       const getExample = z.object({ str: z.string(), nb: z.number() });
 
-      const variables = {
-        getExample: getExample,
-      };
-
       const endpoints = makeApi([
         {
           method: "get",

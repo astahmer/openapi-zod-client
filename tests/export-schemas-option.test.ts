@@ -75,8 +75,6 @@ test("export-schemas-option", async () => {
         .object({ nested_prop: z.boolean(), another: z.string() })
         .partial();
 
-      const variables = {};
-
       const endpoints = makeApi([
         {
           method: "get",

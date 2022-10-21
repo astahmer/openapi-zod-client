@@ -52,8 +52,6 @@ test("operationId-starting-with-number", async () => {
 
       const Basic = z.string();
 
-      const variables = {};
-
       const endpoints = makeApi([
         {
           method: "get",

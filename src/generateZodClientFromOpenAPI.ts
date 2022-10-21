@@ -92,31 +92,13 @@ export const getZodClientTemplateContext = (
         .map((ref) => result.schemaHashByRef[ref]);
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
-    for (const variableRef in result.hashByVariableName) {
-        data.variables[tokens.rmToken(variableRef, tokens.varPrefix)] = result.hashByVariableName[variableRef];
-    }
-    data.variables = sortObjectKeys(data.variables);
-
-    const maybeReplaceTokenOrVarnameWithRef = (unknownRef: string): string => {
-        if (tokens.isToken(unknownRef, tokens.varPrefix)) {
-            return `variables["${tokens.rmToken(unknownRef, tokens.varPrefix)}"]`;
-        }
-
-        return unknownRef;
-    };
     result.endpoints.forEach((endpoint) => {
         if (!endpoint.response) return;
         data.endpoints.push({
             ...endpoint,
-            parameters: endpoint.parameters.map((param) => ({
-                ...param,
-                schema: maybeReplaceTokenOrVarnameWithRef(param.schema),
-            })),
-            response: maybeReplaceTokenOrVarnameWithRef(endpoint.response),
-            errors: endpoint.errors.map((error) => ({
-                ...error,
-                schema: maybeReplaceTokenOrVarnameWithRef(error.schema as any),
-            })) as any,
+            parameters: endpoint.parameters.map((param) => ({ ...param, schema: param.schema })),
+            response: endpoint.response,
+            errors: endpoint.errors.map((error) => ({ ...error, schema: error.schema as any })) as any,
         });
     });
     data.endpoints = sortBy(data.endpoints, "path");

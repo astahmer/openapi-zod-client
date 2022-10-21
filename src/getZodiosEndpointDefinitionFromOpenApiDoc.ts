@@ -14,7 +14,7 @@ import { match } from "ts-pattern";
 import type { TemplateContext } from "./generateZodClientFromOpenAPI";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
-import { normalizeString, tokens } from "./tokens";
+import { normalizeString } from "./tokens";
 
 import { sync } from "whence";
 
@@ -66,21 +66,21 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                 return result;
             }
 
-            const hashed = normalizeString(fallbackName);
+            const safeName = normalizeString(fallbackName);
 
             // result is complex and would benefit from being re-used
-            let formatedName = tokens.makeVar(fallbackName);
+            let formatedName = safeName;
             const isVarNameAlreadyUsed = Boolean(ctx.hashByVariableName[formatedName]);
             if (isVarNameAlreadyUsed) {
-                if (ctx.hashByVariableName[formatedName] === hashed) {
+                if (ctx.hashByVariableName[formatedName] === safeName) {
                     return formatedName;
                 } else {
                     formatedName += "__2";
                 }
             }
 
-            ctx.hashByVariableName[formatedName] = hashed;
-            ctx.zodSchemaByHash[hashed] = result;
+            ctx.hashByVariableName[formatedName] = safeName;
+            ctx.zodSchemaByHash[safeName] = result;
             return formatedName;
         }
 

@@ -11,12 +11,6 @@ import { z } from "zod";
 const {{@key}}{{#if (lookup ../circularTypeByName @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
 {{/each}}
 
-const variables = {
-{{#each variables}}
-	{{@key}}: {{{this}}},
-{{/each}}
-};
-
 const endpoints = makeApi([
 {{#each endpoints}}
 	{
