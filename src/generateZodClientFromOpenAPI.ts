@@ -2,7 +2,7 @@ import { compile } from "handlebars";
 import fs from "fs-extra";
 import path from "node:path";
 import { OpenAPIObject, PathItemObject } from "openapi3-ts";
-import { sortBy, sortObjKeysFromArray } from "pastable/server";
+import { capitalize, sortBy, sortObjKeysFromArray } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
 import { ts } from "tanu";
@@ -156,11 +156,11 @@ export const getZodClientTemplateContext = (
 
     return data;
 };
-type GenerateZodClientFromOpenApiArgs = {
+type GenerateZodClientFromOpenApiArgs<TOptions extends TemplateContext["options"] = TemplateContext["options"]> = {
     openApiDoc: OpenAPIObject;
     templatePath?: string;
     prettierConfig?: Options | null;
-    options?: TemplateContext["options"];
+    options?: TOptions;
 } & (
     | {
           distPath?: never;
@@ -170,14 +170,22 @@ type GenerateZodClientFromOpenApiArgs = {
     | { distPath: string; disableWriteToFile?: false }
 );
 
-export const generateZodClientFromOpenAPI = async ({
+export const generateZodClientFromOpenAPI = async <TOptions extends TemplateContext["options"]>({
     openApiDoc,
     distPath,
     templatePath,
     prettierConfig,
     options,
     disableWriteToFile,
-}: GenerateZodClientFromOpenApiArgs) => {
+}: GenerateZodClientFromOpenApiArgs<TOptions>): Promise<
+    TOptions extends NonNullable<TemplateContext["options"]>
+        ? undefined extends TOptions["groupStrategy"]
+            ? string
+            : TOptions["groupStrategy"] extends "none" | "tag" | "method"
+            ? string
+            : Record<string, string>
+        : string
+> => {
     const data = getZodClientTemplateContext(openApiDoc, options);
     const groupStrategy = options?.groupStrategy ?? "none";
 
@@ -189,10 +197,6 @@ export const generateZodClientFromOpenAPI = async ({
     }
     const source = await fs.readFile(templatePath, "utf-8");
     const template = compile(source);
-
-    const output = template({ ...data, options });
-    const prettyOutput = maybePretty(output, prettierConfig);
-
     const willWriteToFile = !disableWriteToFile && distPath;
 
     if (groupStrategy.includes("file")) {
@@ -206,7 +210,11 @@ export const generateZodClientFromOpenAPI = async ({
             const groupOutput = template({
                 ...data,
                 ...data.endpointsGroups[groupName],
-                options: { ...options, groupStrategy: "none" },
+                options: {
+                    ...options,
+                    groupStrategy: "none",
+                    apiClientName: options?.apiClientName ?? `${capitalize(groupName)}Api`,
+                },
             });
             const prettyGroupOutput = maybePretty(groupOutput, prettierConfig);
             outputByGroupName[groupName] = prettyGroupOutput;
@@ -217,12 +225,17 @@ export const generateZodClientFromOpenAPI = async ({
             }
         }
 
-        return outputByGroupName;
-    } else if (willWriteToFile) {
+        return outputByGroupName as any;
+    }
+
+    const output = template({ ...data, options: { ...options, apiClientName: options?.apiClientName || "api" } });
+    const prettyOutput = maybePretty(output, prettierConfig);
+
+    if (willWriteToFile) {
         await fs.writeFile(distPath, prettyOutput);
     }
 
-    return prettyOutput;
+    return prettyOutput as any;
 };
 
 /** @see https://github.dev/stephenh/ts-poet/blob/5ea0dbb3c9f1f4b0ee51a54abb2d758102eda4a2/src/Code.ts#L231 */
@@ -258,6 +271,12 @@ export interface TemplateContext {
         baseUrl?: string;
         /** @see https://www.zodios.org/docs/client#zodiosalias */
         withAlias?: boolean;
+        /**
+         * when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
+         *
+         * @default "api"
+         */
+        apiClientName?: string;
         /**
          * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
          * will use `default` status code as fallback

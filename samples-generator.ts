@@ -1,13 +1,11 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { OpenAPIObject } from "openapi3-ts";
-import { resolveConfig } from "prettier";
-import { getZodClientTemplateContext, maybePretty } from "./src/generateZodClientFromOpenAPI";
+import { generateZodClientFromOpenAPI } from "./src/generateZodClientFromOpenAPI";
 
 import fg from "fast-glob";
 
 import degit from "degit";
-import { readFileSync, unlinkSync, writeFileSync } from "fs";
-import Handlebars from "handlebars";
+import { unlinkSync, writeFileSync } from "fs";
 import { spawnSync } from "child_process";
 
 const emitter = degit("https://github.com/OAI/OpenAPI-Specification/examples", {
@@ -33,18 +31,12 @@ emitter.clone("./samples").then(() => {
 });
 
 const generateTsClients = async () => {
-    const prettierConfig = await resolveConfig("./");
     const list = fg.sync(["./samples/v3\\.*/**/*.yaml"]);
-
-    const template = Handlebars.compile(readFileSync("./src/template.hbs", "utf-8"));
 
     for (const docPath of list) {
         try {
             const openApiDoc = (await SwaggerParser.parse(docPath)) as OpenAPIObject;
-            const data = getZodClientTemplateContext(openApiDoc);
-
-            const output = template(data);
-            const prettyOutput = maybePretty(output, prettierConfig);
+            const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
 
             writeFileSync(docPath.replace("yaml", "") + "ts", prettyOutput);
         } catch (error) {

@@ -971,7 +971,7 @@ test("group-strategy with complex schemas + split files", async () => {
         },
       ]);
 
-      export const api = new Zodios(endpoints);
+      export const NoTagsApi = new Zodios(endpoints);
       ",
           "pet": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
@@ -1026,7 +1026,7 @@ test("group-strategy with complex schemas + split files", async () => {
         },
       ]);
 
-      export const api = new Zodios(endpoints);
+      export const PetApi = new Zodios(endpoints);
       ",
           "store": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
@@ -1100,7 +1100,7 @@ test("group-strategy with complex schemas + split files", async () => {
         },
       ]);
 
-      export const api = new Zodios(endpoints);
+      export const StoreApi = new Zodios(endpoints);
       ",
           "user": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
@@ -1140,7 +1140,7 @@ test("group-strategy with complex schemas + split files", async () => {
         },
       ]);
 
-      export const api = new Zodios(endpoints);
+      export const UserApi = new Zodios(endpoints);
       ",
       }
     `);

@@ -61,4 +61,4 @@ const endpoints = makeApi([
 {{/each}}
 ]);
 
-export const api = new Zodios({{#if options.baseUrl}}"{{options.baseUrl}}", {{/if}}endpoints);
+export const {{options.apiClientName}} = new Zodios({{#if options.baseUrl}}"{{options.baseUrl}}", {{/if}}endpoints);
