@@ -2,7 +2,7 @@ import { compile } from "handlebars";
 import fs from "fs-extra";
 import path from "node:path";
 import { OpenAPIObject, PathItemObject } from "openapi3-ts";
-import { capitalize, sortBy, sortObjKeysFromArray } from "pastable/server";
+import { capitalize, pick, sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
 import prettier, { Options } from "prettier";
 import parserTypescript from "prettier/parser-typescript";
 import { ts } from "tanu";
@@ -91,6 +91,7 @@ export const getZodClientTemplateContext = (
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
     const groupStrategy = options?.groupStrategy ?? "none";
+    const dependenciesByGroupName = new Map<string, Set<string>>();
 
     result.endpoints.forEach((endpoint) => {
         if (!endpoint.response) return;
@@ -107,7 +108,7 @@ export const getZodClientTemplateContext = (
 
             const operation = pathItemObject[endpoint.method]!;
             const baseName = match(groupStrategy)
-                .with("tag", "tag-file", () => operation.tags?.[0] ?? "default")
+                .with("tag", "tag-file", () => operation.tags?.[0] ?? "Default")
                 .with("method", "method-file", () => endpoint.method)
                 .exhaustive();
             const groupName = normalizeString(baseName);
@@ -117,7 +118,12 @@ export const getZodClientTemplateContext = (
             }
             data.endpointsGroups[groupName].endpoints.push(endpoint);
 
-            const dependencies = new Set<string>();
+            if (!dependenciesByGroupName.has(groupName)) {
+                dependenciesByGroupName.set(groupName, new Set());
+            }
+
+            const dependencies = dependenciesByGroupName.get(groupName)!;
+
             const addDependencyIfNeeded = (schemaName: string) => {
                 if (schemaName.startsWith("z.")) return;
                 dependencies.add(schemaName);
@@ -131,7 +137,7 @@ export const getZodClientTemplateContext = (
 
             // reduce types/schemas for each group using prev computed deep dependencies
             if (groupStrategy.includes("file")) {
-                dependencies.forEach((refName) => {
+                [...dependencies].forEach((refName) => {
                     if (data.types[refName]) {
                         data.endpointsGroups[groupName].types[refName] = data.types[refName];
                     }
@@ -139,6 +145,7 @@ export const getZodClientTemplateContext = (
 
                     depsGraphs.deepDependencyGraph[getRefFromName(refName)]?.forEach((transitiveRef) => {
                         const transitiveRefName = getRefName(transitiveRef);
+                        addDependencyIfNeeded(transitiveRefName);
                         data.endpointsGroups[groupName].types[transitiveRefName] = data.types[transitiveRefName];
                         data.endpointsGroups[groupName].schemas[transitiveRefName] = data.schemas[transitiveRefName];
                     });
@@ -146,13 +153,44 @@ export const getZodClientTemplateContext = (
             }
         }
     });
+
     data.endpoints = sortBy(data.endpoints, "path");
-    Object.keys(data.endpointsGroups).forEach((groupName) => {
-        data.endpointsGroups[groupName].schemas = sortObjKeysFromArray(
-            data.endpointsGroups[groupName].schemas,
-            schemaOrderedByDependencies
+
+    if (groupStrategy.includes("file")) {
+        const dependenciesCount = new Map<string, number>();
+        dependenciesByGroupName.forEach((deps) => {
+            deps.forEach((dep) => {
+                dependenciesCount.set(dep, (dependenciesCount.get(dep) ?? -1) + 1);
+            });
+        });
+
+        const commonSchemaNames = new Set<string>();
+        Object.keys(data.endpointsGroups).forEach((groupName) => {
+            data.endpointsGroups[groupName].imports = {};
+
+            const groupSchemas = {} as Record<string, string>;
+            const groupTypes = {} as Record<string, string>;
+            Object.entries(data.endpointsGroups[groupName].schemas).forEach(([name, schema]) => {
+                const count = dependenciesCount.get(name) ?? 0;
+                if (count > 1) {
+                    data.endpointsGroups[groupName].imports![name] = "common";
+                    commonSchemaNames.add(name);
+                } else {
+                    groupSchemas[name] = schema;
+
+                    if (data.endpointsGroups[groupName].types[name]) {
+                        groupTypes[name] = data.endpointsGroups[groupName].types[name];
+                    }
+                }
+            });
+
+            data.endpointsGroups[groupName].schemas = sortObjKeysFromArray(groupSchemas, schemaOrderedByDependencies);
+            data.endpointsGroups[groupName].types = groupTypes;
+        });
+        data.commonSchemaNames = new Set(
+            sortListFromRefArray(Array.from(commonSchemaNames), schemaOrderedByDependencies)
         );
-    });
+    }
 
     return data;
 };
@@ -198,12 +236,45 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     const source = await fs.readFile(templatePath, "utf-8");
     const template = compile(source);
     const willWriteToFile = !disableWriteToFile && distPath;
+    // TODO parallel writes ? does it really matter here ?
 
     if (groupStrategy.includes("file")) {
         const outputByGroupName: Record<string, string> = {};
 
         if (willWriteToFile) {
             await fs.ensureDir(distPath);
+        }
+
+        const groupNames = Object.fromEntries(
+            Object.keys(data.endpointsGroups).map((groupName) => [
+                options?.apiClientName ?? `${capitalize(groupName)}Api`,
+                groupName,
+            ])
+        );
+
+        const indexSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-index.hbs"), "utf-8");
+        const indexTemplate = compile(indexSource);
+        const indexOutput = maybePretty(indexTemplate({ groupNames }), prettierConfig);
+        outputByGroupName["__index"] = indexOutput;
+
+        if (willWriteToFile) {
+            await fs.writeFile(path.join(distPath, `index.ts`), indexOutput);
+        }
+
+        const commonSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-common.hbs"), "utf-8");
+        const commonTemplate = compile(commonSource);
+        const commonSchemaNames = [...(data.commonSchemaNames ?? [])];
+        const commonOutput = maybePretty(
+            commonTemplate({
+                schemas: pick(data.schemas, commonSchemaNames),
+                types: pick(data.types, commonSchemaNames),
+            }),
+            prettierConfig
+        );
+        outputByGroupName["__common"] = commonOutput;
+
+        if (willWriteToFile) {
+            await fs.writeFile(path.join(distPath, `common.ts`), commonOutput);
         }
 
         for (const groupName in data.endpointsGroups) {
@@ -248,17 +319,20 @@ export function maybePretty(input: string, options?: Options | null): string {
 }
 
 const makeEndpointTemplateContext = (): MinimalTemplateContext => {
-    return { schemas: {}, endpoints: [], types: {}, circularTypeByName: {} };
+    return { schemas: {}, endpoints: [], types: {} };
 };
 const makeTemplateContext = (): TemplateContext => {
     return {
         ...makeEndpointTemplateContext(),
+        circularTypeByName: {},
         endpointsGroups: {},
         options: { withAlias: false, baseUrl: "" },
     };
 };
 
-type MinimalTemplateContext = Pick<TemplateContext, "endpoints" | "schemas" | "types" | "circularTypeByName">;
+type MinimalTemplateContext = Pick<TemplateContext, "endpoints" | "schemas" | "types"> & {
+    imports?: Record<string, string>;
+};
 
 export interface TemplateContext {
     schemas: Record<string, string>;
@@ -266,6 +340,7 @@ export interface TemplateContext {
     endpointsGroups: Record<string, MinimalTemplateContext>;
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
+    commonSchemaNames?: Set<string>;
     options?: {
         /** @see https://www.zodios.org/docs/client#baseurl */
         baseUrl?: string;

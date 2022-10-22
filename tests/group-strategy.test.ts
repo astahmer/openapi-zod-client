@@ -83,8 +83,7 @@ test("group-strategy", async () => {
     const ctxByTag = getZodClientTemplateContext(openApiDoc, { groupStrategy: "tag" });
     expect(ctxByTag.endpointsGroups).toMatchInlineSnapshot(`
       {
-          "default": {
-              "circularTypeByName": {},
+          "Default": {
               "endpoints": [
                   {
                       "alias": "noTagsGet",
@@ -111,7 +110,6 @@ test("group-strategy", async () => {
               "types": {},
           },
           "pet": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "petGet",
@@ -158,7 +156,6 @@ test("group-strategy", async () => {
               "types": {},
           },
           "store": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "storeGet",
@@ -185,7 +182,6 @@ test("group-strategy", async () => {
               "types": {},
           },
           "user": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "userGet",
@@ -318,7 +314,7 @@ test("group-strategy", async () => {
 
       export const userApi = new Zodios(userEndpoints);
 
-      const defaultEndpoints = makeApi([
+      const DefaultEndpoints = makeApi([
         {
           method: "get",
           path: "/no-tags",
@@ -333,7 +329,7 @@ test("group-strategy", async () => {
         },
       ]);
 
-      export const defaultApi = new Zodios(defaultEndpoints);
+      export const DefaultApi = new Zodios(DefaultEndpoints);
       "
     `);
 
@@ -341,7 +337,6 @@ test("group-strategy", async () => {
     expect(ctxByMethod.endpointsGroups).toMatchInlineSnapshot(`
       {
           "get": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "petGet",
@@ -408,7 +403,6 @@ test("group-strategy", async () => {
               "types": {},
           },
           "put": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "petPut",
@@ -691,7 +685,6 @@ test("group-strategy with complex schemas + split files", async () => {
             "/countries": {
                 get: {
                     operationId: "noTagsGet",
-                    tags: ["noTags"],
                     responses: {
                         "200": {
                             content: { "application/json": { schema: { $ref: "#/components/schemas/Country" } } },
@@ -705,8 +698,7 @@ test("group-strategy with complex schemas + split files", async () => {
     const ctxByTag = getZodClientTemplateContext(openApiDoc, { groupStrategy: "tag-file" });
     expect(ctxByTag.endpointsGroups).toMatchInlineSnapshot(`
       {
-          "noTags": {
-              "circularTypeByName": {},
+          "Default": {
               "endpoints": [
                   {
                       "alias": "noTagsGet",
@@ -719,10 +711,12 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "Country",
                   },
               ],
+              "imports": {
+                  "User": "common",
+              },
               "schemas": {
                   "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial())",
                   "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial())",
-                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
               },
               "types": {
                   "Country": "type Country = Partial<{
@@ -738,17 +732,9 @@ test("group-strategy with complex schemas + split files", async () => {
           country: Country;
           owner: User;
       }>;",
-                  "User": "type User = Partial<{
-          id: number;
-          firstname: string;
-          lastname: string;
-          email: string;
-          friends: Array<User>;
-      }>;",
               },
           },
           "pet": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "petGet",
@@ -791,22 +777,15 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "Pet",
                   },
               ],
+              "imports": {
+                  "User": "common",
+              },
               "schemas": {
                   "Pet": "z.object({ id: z.number().int(), nickname: z.string(), owner: User }).partial()",
-                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
               },
-              "types": {
-                  "User": "type User = Partial<{
-          id: number;
-          firstname: string;
-          lastname: string;
-          email: string;
-          friends: Array<User>;
-      }>;",
-              },
+              "types": {},
           },
           "store": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "storeGet",
@@ -829,10 +808,12 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "Store",
                   },
               ],
+              "imports": {
+                  "User": "common",
+              },
               "schemas": {
                   "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial())",
                   "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial())",
-                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
               },
               "types": {
                   "Country": "type Country = Partial<{
@@ -848,17 +829,9 @@ test("group-strategy with complex schemas + split files", async () => {
           country: Country;
           owner: User;
       }>;",
-                  "User": "type User = Partial<{
-          id: number;
-          firstname: string;
-          lastname: string;
-          email: string;
-          friends: Array<User>;
-      }>;",
               },
           },
           "user": {
-              "circularTypeByName": {},
               "endpoints": [
                   {
                       "alias": "userGet",
@@ -881,18 +854,11 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "User",
                   },
               ],
-              "schemas": {
-                  "User": "z.lazy(() => z.object({ id: z.number().int(), firstname: z.string(), lastname: z.string(), email: z.string(), friends: z.array(User) }).partial())",
+              "imports": {
+                  "User": "common",
               },
-              "types": {
-                  "User": "type User = Partial<{
-          id: number;
-          firstname: string;
-          lastname: string;
-          email: string;
-          friends: Array<User>;
-      }>;",
-              },
+              "schemas": {},
+              "types": {},
           },
       }
     `);
@@ -905,8 +871,10 @@ test("group-strategy with complex schemas + split files", async () => {
 
     expect(resultGroupedByTagSplitByFiles).toMatchInlineSnapshot(`
       {
-          "noTags": "import { makeApi, Zodios } from "@zodios/core";
+          "Default": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
+
+      import { User } from "./common";
 
       type Country = Partial<{
         id: number;
@@ -921,26 +889,8 @@ test("group-strategy with complex schemas + split files", async () => {
         country: Country;
         owner: User;
       }>;
-      type User = Partial<{
-        id: number;
-        firstname: string;
-        lastname: string;
-        email: string;
-        friends: Array<User>;
-      }>;
 
-      const User = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            firstname: z.string(),
-            lastname: z.string(),
-            email: z.string(),
-            friends: z.array(User),
-          })
-          .partial()
-      );
-      const Country = z.lazy(() =>
+      const Country: z.ZodType<Country> = z.lazy(() =>
         z
           .object({
             id: z.number().int(),
@@ -950,7 +900,7 @@ test("group-strategy with complex schemas + split files", async () => {
           })
           .partial()
       );
-      const Store = z.lazy(() =>
+      const Store: z.ZodType<Store> = z.lazy(() =>
         z
           .object({
             id: z.number().int(),
@@ -971,12 +921,11 @@ test("group-strategy with complex schemas + split files", async () => {
         },
       ]);
 
-      export const NoTagsApi = new Zodios(endpoints);
+      export const DefaultApi = new Zodios(endpoints);
       ",
-          "pet": "import { makeApi, Zodios } from "@zodios/core";
-      import { z } from "zod";
+          "__common": "import { z } from "zod";
 
-      type User = Partial<{
+      export type User = Partial<{
         id: number;
         firstname: string;
         lastname: string;
@@ -984,7 +933,7 @@ test("group-strategy with complex schemas + split files", async () => {
         friends: Array<User>;
       }>;
 
-      const User = z.lazy(() =>
+      export const User = z.lazy(() =>
         z
           .object({
             id: z.number().int(),
@@ -995,6 +944,17 @@ test("group-strategy with complex schemas + split files", async () => {
           })
           .partial()
       );
+      ",
+          "__index": "export { PetApi } from "./pet";
+      export { UserApi } from "./user";
+      export { StoreApi } from "./store";
+      export { DefaultApi } from "./Default";
+      ",
+          "pet": "import { makeApi, Zodios } from "@zodios/core";
+      import { z } from "zod";
+
+      import { User } from "./common";
+
       const Pet = z
         .object({ id: z.number().int(), nickname: z.string(), owner: User })
         .partial();
@@ -1031,6 +991,8 @@ test("group-strategy with complex schemas + split files", async () => {
           "store": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
+      import { User } from "./common";
+
       type Store = Partial<{
         id: number;
         name: string;
@@ -1044,26 +1006,8 @@ test("group-strategy with complex schemas + split files", async () => {
         code: string;
         store_list: Array<Store>;
       }>;
-      type User = Partial<{
-        id: number;
-        firstname: string;
-        lastname: string;
-        email: string;
-        friends: Array<User>;
-      }>;
 
-      const User = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            firstname: z.string(),
-            lastname: z.string(),
-            email: z.string(),
-            friends: z.array(User),
-          })
-          .partial()
-      );
-      const Country = z.lazy(() =>
+      const Country: z.ZodType<Country> = z.lazy(() =>
         z
           .object({
             id: z.number().int(),
@@ -1073,7 +1017,7 @@ test("group-strategy with complex schemas + split files", async () => {
           })
           .partial()
       );
-      const Store = z.lazy(() =>
+      const Store: z.ZodType<Store> = z.lazy(() =>
         z
           .object({
             id: z.number().int(),
@@ -1105,25 +1049,7 @@ test("group-strategy with complex schemas + split files", async () => {
           "user": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      type User = Partial<{
-        id: number;
-        firstname: string;
-        lastname: string;
-        email: string;
-        friends: Array<User>;
-      }>;
-
-      const User = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            firstname: z.string(),
-            lastname: z.string(),
-            email: z.string(),
-            friends: z.array(User),
-          })
-          .partial()
-      );
+      import { User } from "./common";
 
       const endpoints = makeApi([
         {

@@ -1,6 +1,13 @@
 import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
+{{#if imports}}
+{{#each imports}}
+import { {{{@key}}} } from "./{{{this}}}"
+{{/each}}
+{{/if}}
+
+
 {{#if types}}
 {{#each types}}
 {{{this}}};
