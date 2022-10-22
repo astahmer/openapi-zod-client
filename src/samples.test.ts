@@ -26,7 +26,7 @@ describe("samples-generator", async () => {
             const openApiDoc = (await SwaggerParser.parse(docPath)) as OpenAPIObject;
             const data = getZodClientTemplateContext(openApiDoc);
 
-            const output = template(data);
+            const output = template({ ...data, options: { ...data.options, apiClientName: "api" } });
             const prettyOutput = maybePretty(output, prettierConfig);
             const fileName = docPath.replace("yaml", "");
 

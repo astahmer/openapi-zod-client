@@ -1,10 +1,7 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
-import { compile } from "handlebars";
-import { readFile } from "node:fs/promises";
 import { OpenAPIObject, SchemasObject } from "openapi3-ts";
-import { resolveConfig } from "prettier";
 import { beforeAll, describe, expect, test } from "vitest";
-import { getZodClientTemplateContext, maybePretty, TemplateContext } from "./generateZodClientFromOpenAPI";
+import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "./generateZodClientFromOpenAPI";
 
 let openApiDoc: OpenAPIObject;
 beforeAll(async () => {
@@ -369,14 +366,7 @@ test("getZodClientTemplateContext", async () => {
 
 describe("generateZodClientFromOpenAPI", () => {
     test("without options", async () => {
-        const data = getZodClientTemplateContext(openApiDoc);
-
-        const source = await readFile("./src/template.hbs", "utf-8");
-        const template = compile(source);
-        const prettierConfig = await resolveConfig("./");
-
-        const output = template(data);
-        const prettyOutput = maybePretty(output, prettierConfig);
+        const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
         expect(prettyOutput).toMatchInlineSnapshot(`
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -384,340 +374,342 @@ describe("generateZodClientFromOpenAPI", () => {
           const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
           const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
           const Pet = z.object({
-              id: z.number().int().optional(),
-              name: z.string(),
-              category: Category.optional(),
-              photoUrls: z.array(z.string()),
-              tags: z.array(Tag).optional(),
-              status: z.enum(["available", "pending", "sold"]).optional(),
+            id: z.number().int().optional(),
+            name: z.string(),
+            category: Category.optional(),
+            photoUrls: z.array(z.string()),
+            tags: z.array(Tag).optional(),
+            status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const status = z.enum(["available", "pending", "sold"]).optional();
           const tags = z.array(z.string()).optional();
-          const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+          const ApiResponse = z
+            .object({ code: z.number().int(), type: z.string(), message: z.string() })
+            .partial();
           const Order = z
-              .object({
-                  id: z.number().int(),
-                  petId: z.number().int(),
-                  quantity: z.number().int(),
-                  shipDate: z.string(),
-                  status: z.enum(["placed", "approved", "delivered"]),
-                  complete: z.boolean(),
-              })
-              .partial();
+            .object({
+              id: z.number().int(),
+              petId: z.number().int(),
+              quantity: z.number().int(),
+              shipDate: z.string(),
+              status: z.enum(["placed", "approved", "delivered"]),
+              complete: z.boolean(),
+            })
+            .partial();
           const User = z
-              .object({
-                  id: z.number().int(),
-                  username: z.string(),
-                  firstName: z.string(),
-                  lastName: z.string(),
-                  email: z.string(),
-                  password: z.string(),
-                  phone: z.string(),
-                  userStatus: z.number().int(),
-              })
-              .partial();
+            .object({
+              id: z.number().int(),
+              username: z.string(),
+              firstName: z.string(),
+              lastName: z.string(),
+              email: z.string(),
+              password: z.string(),
+              phone: z.string(),
+              userStatus: z.number().int(),
+            })
+            .partial();
           const createUsersWithListInput_Body = z.array(User);
 
           const endpoints = makeApi([
-              {
-                  method: "put",
-                  path: "/pet",
-                  description: \`Update an existing pet by Id\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent pet in the store\`,
-                          type: "Body",
-                          schema: Pet,
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Pet not found\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 405,
-                          description: \`Validation exception\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/pet",
-                  description: \`Add a new pet to the store\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Create a new pet in the store\`,
-                          type: "Body",
-                          schema: Pet,
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 405,
-                          description: \`Invalid input\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/pet/:petId",
-                  description: \`Returns a single pet\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "petId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Pet not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/pet/:petId/uploadImage",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "petId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                      {
-                          name: "additionalMetadata",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                  ],
-                  response: ApiResponse,
-              },
-              {
-                  method: "get",
-                  path: "/pet/findByStatus",
-                  description: \`Multiple status values can be provided with comma separated strings\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "status",
-                          type: "Query",
-                          schema: status,
-                      },
-                  ],
-                  response: z.array(Pet),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid status value\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/pet/findByTags",
-                  description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "tags",
-                          type: "Query",
-                          schema: tags,
-                      },
-                  ],
-                  response: z.array(Pet),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid tag value\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/store/inventory",
-                  description: \`Returns a map of status codes to quantities\`,
-                  requestFormat: "json",
-                  response: z.record(z.number()),
-              },
-              {
-                  method: "post",
-                  path: "/store/order",
-                  description: \`Place a new order in the store\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          type: "Body",
-                          schema: Order,
-                      },
-                  ],
-                  response: Order,
-                  errors: [
-                      {
-                          status: 405,
-                          description: \`Invalid input\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/store/order/:orderId",
-                  description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "orderId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                  ],
-                  response: Order,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Order not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/user",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Created user object\`,
-                          type: "Body",
-                          schema: User,
-                      },
-                  ],
-                  response: User,
-              },
-              {
-                  method: "get",
-                  path: "/user/:username",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: User,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid username supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`User not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "put",
-                  path: "/user/:username",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent user in the store\`,
-                          type: "Body",
-                          schema: User,
-                      },
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: z.void(),
-              },
-              {
-                  method: "post",
-                  path: "/user/createWithList",
-                  description: \`Creates list of users with given input array\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          type: "Body",
-                          schema: createUsersWithListInput_Body,
-                      },
-                  ],
-                  response: User,
-              },
-              {
-                  method: "get",
-                  path: "/user/login",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "username",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                      {
-                          name: "password",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                  ],
-                  response: z.string(),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid username/password supplied\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/user/logout",
-                  requestFormat: "json",
-                  response: z.void(),
-              },
+            {
+              method: "put",
+              path: "/pet",
+              description: \`Update an existing pet by Id\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Update an existent pet in the store\`,
+                  type: "Body",
+                  schema: Pet,
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Pet not found\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 405,
+                  description: \`Validation exception\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/pet",
+              description: \`Add a new pet to the store\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Create a new pet in the store\`,
+                  type: "Body",
+                  schema: Pet,
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 405,
+                  description: \`Invalid input\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/pet/:petId",
+              description: \`Returns a single pet\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "petId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Pet not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/pet/:petId/uploadImage",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "petId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+                {
+                  name: "additionalMetadata",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+              ],
+              response: ApiResponse,
+            },
+            {
+              method: "get",
+              path: "/pet/findByStatus",
+              description: \`Multiple status values can be provided with comma separated strings\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "status",
+                  type: "Query",
+                  schema: status,
+                },
+              ],
+              response: z.array(Pet),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid status value\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/pet/findByTags",
+              description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "tags",
+                  type: "Query",
+                  schema: tags,
+                },
+              ],
+              response: z.array(Pet),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid tag value\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/store/inventory",
+              description: \`Returns a map of status codes to quantities\`,
+              requestFormat: "json",
+              response: z.record(z.number()),
+            },
+            {
+              method: "post",
+              path: "/store/order",
+              description: \`Place a new order in the store\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: Order,
+                },
+              ],
+              response: Order,
+              errors: [
+                {
+                  status: 405,
+                  description: \`Invalid input\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/store/order/:orderId",
+              description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "orderId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+              ],
+              response: Order,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Order not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/user",
+              description: \`This can only be done by the logged in user.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Created user object\`,
+                  type: "Body",
+                  schema: User,
+                },
+              ],
+              response: User,
+            },
+            {
+              method: "get",
+              path: "/user/:username",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "username",
+                  type: "Path",
+                  schema: z.string(),
+                },
+              ],
+              response: User,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid username supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`User not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "put",
+              path: "/user/:username",
+              description: \`This can only be done by the logged in user.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Update an existent user in the store\`,
+                  type: "Body",
+                  schema: User,
+                },
+                {
+                  name: "username",
+                  type: "Path",
+                  schema: z.string(),
+                },
+              ],
+              response: z.void(),
+            },
+            {
+              method: "post",
+              path: "/user/createWithList",
+              description: \`Creates list of users with given input array\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: createUsersWithListInput_Body,
+                },
+              ],
+              response: User,
+            },
+            {
+              method: "get",
+              path: "/user/login",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "username",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+                {
+                  name: "password",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+              ],
+              response: z.string(),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid username/password supplied\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/user/logout",
+              requestFormat: "json",
+              response: z.void(),
+            },
           ]);
 
           export const api = new Zodios(endpoints);
@@ -726,14 +718,11 @@ describe("generateZodClientFromOpenAPI", () => {
     });
 
     test("withAlias", async () => {
-        const data = getZodClientTemplateContext(openApiDoc);
-
-        const source = await readFile("./src/template.hbs", "utf-8");
-        const template = compile(source);
-        const prettierConfig = await resolveConfig("./");
-
-        const output = template({ ...data, options: { withAlias: true } } as TemplateContext);
-        const prettyOutput = maybePretty(output, prettierConfig);
+        const prettyOutput = await generateZodClientFromOpenAPI({
+            openApiDoc,
+            disableWriteToFile: true,
+            options: { withAlias: true },
+        });
         expect(prettyOutput).toMatchInlineSnapshot(`
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -741,355 +730,357 @@ describe("generateZodClientFromOpenAPI", () => {
           const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
           const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
           const Pet = z.object({
-              id: z.number().int().optional(),
-              name: z.string(),
-              category: Category.optional(),
-              photoUrls: z.array(z.string()),
-              tags: z.array(Tag).optional(),
-              status: z.enum(["available", "pending", "sold"]).optional(),
+            id: z.number().int().optional(),
+            name: z.string(),
+            category: Category.optional(),
+            photoUrls: z.array(z.string()),
+            tags: z.array(Tag).optional(),
+            status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const status = z.enum(["available", "pending", "sold"]).optional();
           const tags = z.array(z.string()).optional();
-          const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+          const ApiResponse = z
+            .object({ code: z.number().int(), type: z.string(), message: z.string() })
+            .partial();
           const Order = z
-              .object({
-                  id: z.number().int(),
-                  petId: z.number().int(),
-                  quantity: z.number().int(),
-                  shipDate: z.string(),
-                  status: z.enum(["placed", "approved", "delivered"]),
-                  complete: z.boolean(),
-              })
-              .partial();
+            .object({
+              id: z.number().int(),
+              petId: z.number().int(),
+              quantity: z.number().int(),
+              shipDate: z.string(),
+              status: z.enum(["placed", "approved", "delivered"]),
+              complete: z.boolean(),
+            })
+            .partial();
           const User = z
-              .object({
-                  id: z.number().int(),
-                  username: z.string(),
-                  firstName: z.string(),
-                  lastName: z.string(),
-                  email: z.string(),
-                  password: z.string(),
-                  phone: z.string(),
-                  userStatus: z.number().int(),
-              })
-              .partial();
+            .object({
+              id: z.number().int(),
+              username: z.string(),
+              firstName: z.string(),
+              lastName: z.string(),
+              email: z.string(),
+              password: z.string(),
+              phone: z.string(),
+              userStatus: z.number().int(),
+            })
+            .partial();
           const createUsersWithListInput_Body = z.array(User);
 
           const endpoints = makeApi([
-              {
-                  method: "put",
-                  path: "/pet",
-                  alias: "updatePet",
-                  description: \`Update an existing pet by Id\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent pet in the store\`,
-                          type: "Body",
-                          schema: Pet,
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Pet not found\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 405,
-                          description: \`Validation exception\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/pet",
-                  alias: "addPet",
-                  description: \`Add a new pet to the store\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Create a new pet in the store\`,
-                          type: "Body",
-                          schema: Pet,
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 405,
-                          description: \`Invalid input\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/pet/:petId",
-                  alias: "getPetById",
-                  description: \`Returns a single pet\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "petId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Pet not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/pet/:petId/uploadImage",
-                  alias: "uploadFile",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "petId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                      {
-                          name: "additionalMetadata",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                  ],
-                  response: ApiResponse,
-              },
-              {
-                  method: "get",
-                  path: "/pet/findByStatus",
-                  alias: "findPetsByStatus",
-                  description: \`Multiple status values can be provided with comma separated strings\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "status",
-                          type: "Query",
-                          schema: status,
-                      },
-                  ],
-                  response: z.array(Pet),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid status value\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/pet/findByTags",
-                  alias: "findPetsByTags",
-                  description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "tags",
-                          type: "Query",
-                          schema: tags,
-                      },
-                  ],
-                  response: z.array(Pet),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid tag value\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/store/inventory",
-                  alias: "getInventory",
-                  description: \`Returns a map of status codes to quantities\`,
-                  requestFormat: "json",
-                  response: z.record(z.number()),
-              },
-              {
-                  method: "post",
-                  path: "/store/order",
-                  alias: "placeOrder",
-                  description: \`Place a new order in the store\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          type: "Body",
-                          schema: Order,
-                      },
-                  ],
-                  response: Order,
-                  errors: [
-                      {
-                          status: 405,
-                          description: \`Invalid input\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/store/order/:orderId",
-                  alias: "getOrderById",
-                  description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "orderId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                  ],
-                  response: Order,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Order not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/user",
-                  alias: "createUser",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Created user object\`,
-                          type: "Body",
-                          schema: User,
-                      },
-                  ],
-                  response: User,
-              },
-              {
-                  method: "get",
-                  path: "/user/:username",
-                  alias: "getUserByName",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: User,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid username supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`User not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "put",
-                  path: "/user/:username",
-                  alias: "updateUser",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent user in the store\`,
-                          type: "Body",
-                          schema: User,
-                      },
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: z.void(),
-              },
-              {
-                  method: "post",
-                  path: "/user/createWithList",
-                  alias: "createUsersWithListInput",
-                  description: \`Creates list of users with given input array\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          type: "Body",
-                          schema: createUsersWithListInput_Body,
-                      },
-                  ],
-                  response: User,
-              },
-              {
-                  method: "get",
-                  path: "/user/login",
-                  alias: "loginUser",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "username",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                      {
-                          name: "password",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                  ],
-                  response: z.string(),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid username/password supplied\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/user/logout",
-                  alias: "logoutUser",
-                  requestFormat: "json",
-                  response: z.void(),
-              },
+            {
+              method: "put",
+              path: "/pet",
+              alias: "updatePet",
+              description: \`Update an existing pet by Id\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Update an existent pet in the store\`,
+                  type: "Body",
+                  schema: Pet,
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Pet not found\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 405,
+                  description: \`Validation exception\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/pet",
+              alias: "addPet",
+              description: \`Add a new pet to the store\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Create a new pet in the store\`,
+                  type: "Body",
+                  schema: Pet,
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 405,
+                  description: \`Invalid input\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/pet/:petId",
+              alias: "getPetById",
+              description: \`Returns a single pet\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "petId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Pet not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/pet/:petId/uploadImage",
+              alias: "uploadFile",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "petId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+                {
+                  name: "additionalMetadata",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+              ],
+              response: ApiResponse,
+            },
+            {
+              method: "get",
+              path: "/pet/findByStatus",
+              alias: "findPetsByStatus",
+              description: \`Multiple status values can be provided with comma separated strings\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "status",
+                  type: "Query",
+                  schema: status,
+                },
+              ],
+              response: z.array(Pet),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid status value\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/pet/findByTags",
+              alias: "findPetsByTags",
+              description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "tags",
+                  type: "Query",
+                  schema: tags,
+                },
+              ],
+              response: z.array(Pet),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid tag value\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/store/inventory",
+              alias: "getInventory",
+              description: \`Returns a map of status codes to quantities\`,
+              requestFormat: "json",
+              response: z.record(z.number()),
+            },
+            {
+              method: "post",
+              path: "/store/order",
+              alias: "placeOrder",
+              description: \`Place a new order in the store\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: Order,
+                },
+              ],
+              response: Order,
+              errors: [
+                {
+                  status: 405,
+                  description: \`Invalid input\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/store/order/:orderId",
+              alias: "getOrderById",
+              description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "orderId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+              ],
+              response: Order,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Order not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/user",
+              alias: "createUser",
+              description: \`This can only be done by the logged in user.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Created user object\`,
+                  type: "Body",
+                  schema: User,
+                },
+              ],
+              response: User,
+            },
+            {
+              method: "get",
+              path: "/user/:username",
+              alias: "getUserByName",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "username",
+                  type: "Path",
+                  schema: z.string(),
+                },
+              ],
+              response: User,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid username supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`User not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "put",
+              path: "/user/:username",
+              alias: "updateUser",
+              description: \`This can only be done by the logged in user.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Update an existent user in the store\`,
+                  type: "Body",
+                  schema: User,
+                },
+                {
+                  name: "username",
+                  type: "Path",
+                  schema: z.string(),
+                },
+              ],
+              response: z.void(),
+            },
+            {
+              method: "post",
+              path: "/user/createWithList",
+              alias: "createUsersWithListInput",
+              description: \`Creates list of users with given input array\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: createUsersWithListInput_Body,
+                },
+              ],
+              response: User,
+            },
+            {
+              method: "get",
+              path: "/user/login",
+              alias: "loginUser",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "username",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+                {
+                  name: "password",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+              ],
+              response: z.string(),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid username/password supplied\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/user/logout",
+              alias: "logoutUser",
+              requestFormat: "json",
+              response: z.void(),
+            },
           ]);
 
           export const api = new Zodios(endpoints);
@@ -1098,14 +1089,13 @@ describe("generateZodClientFromOpenAPI", () => {
     });
 
     test("with baseUrl", async () => {
-        const data = getZodClientTemplateContext(openApiDoc);
-
-        const source = await readFile("./src/template.hbs", "utf-8");
-        const template = compile(source);
-        const prettierConfig = await resolveConfig("./");
-
-        const output = template({ ...data, options: { baseUrl: "http://example.com" } } as TemplateContext);
-        const prettyOutput = maybePretty(output, prettierConfig);
+        const prettyOutput = await generateZodClientFromOpenAPI({
+            openApiDoc,
+            disableWriteToFile: true,
+            options: {
+                baseUrl: "http://example.com",
+            },
+        });
         expect(prettyOutput).toMatchInlineSnapshot(`
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -1113,340 +1103,342 @@ describe("generateZodClientFromOpenAPI", () => {
           const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
           const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
           const Pet = z.object({
-              id: z.number().int().optional(),
-              name: z.string(),
-              category: Category.optional(),
-              photoUrls: z.array(z.string()),
-              tags: z.array(Tag).optional(),
-              status: z.enum(["available", "pending", "sold"]).optional(),
+            id: z.number().int().optional(),
+            name: z.string(),
+            category: Category.optional(),
+            photoUrls: z.array(z.string()),
+            tags: z.array(Tag).optional(),
+            status: z.enum(["available", "pending", "sold"]).optional(),
           });
           const status = z.enum(["available", "pending", "sold"]).optional();
           const tags = z.array(z.string()).optional();
-          const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
+          const ApiResponse = z
+            .object({ code: z.number().int(), type: z.string(), message: z.string() })
+            .partial();
           const Order = z
-              .object({
-                  id: z.number().int(),
-                  petId: z.number().int(),
-                  quantity: z.number().int(),
-                  shipDate: z.string(),
-                  status: z.enum(["placed", "approved", "delivered"]),
-                  complete: z.boolean(),
-              })
-              .partial();
+            .object({
+              id: z.number().int(),
+              petId: z.number().int(),
+              quantity: z.number().int(),
+              shipDate: z.string(),
+              status: z.enum(["placed", "approved", "delivered"]),
+              complete: z.boolean(),
+            })
+            .partial();
           const User = z
-              .object({
-                  id: z.number().int(),
-                  username: z.string(),
-                  firstName: z.string(),
-                  lastName: z.string(),
-                  email: z.string(),
-                  password: z.string(),
-                  phone: z.string(),
-                  userStatus: z.number().int(),
-              })
-              .partial();
+            .object({
+              id: z.number().int(),
+              username: z.string(),
+              firstName: z.string(),
+              lastName: z.string(),
+              email: z.string(),
+              password: z.string(),
+              phone: z.string(),
+              userStatus: z.number().int(),
+            })
+            .partial();
           const createUsersWithListInput_Body = z.array(User);
 
           const endpoints = makeApi([
-              {
-                  method: "put",
-                  path: "/pet",
-                  description: \`Update an existing pet by Id\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent pet in the store\`,
-                          type: "Body",
-                          schema: Pet,
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Pet not found\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 405,
-                          description: \`Validation exception\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/pet",
-                  description: \`Add a new pet to the store\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Create a new pet in the store\`,
-                          type: "Body",
-                          schema: Pet,
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 405,
-                          description: \`Invalid input\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/pet/:petId",
-                  description: \`Returns a single pet\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "petId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                  ],
-                  response: Pet,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Pet not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/pet/:petId/uploadImage",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "petId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                      {
-                          name: "additionalMetadata",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                  ],
-                  response: ApiResponse,
-              },
-              {
-                  method: "get",
-                  path: "/pet/findByStatus",
-                  description: \`Multiple status values can be provided with comma separated strings\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "status",
-                          type: "Query",
-                          schema: status,
-                      },
-                  ],
-                  response: z.array(Pet),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid status value\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/pet/findByTags",
-                  description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "tags",
-                          type: "Query",
-                          schema: tags,
-                      },
-                  ],
-                  response: z.array(Pet),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid tag value\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/store/inventory",
-                  description: \`Returns a map of status codes to quantities\`,
-                  requestFormat: "json",
-                  response: z.record(z.number()),
-              },
-              {
-                  method: "post",
-                  path: "/store/order",
-                  description: \`Place a new order in the store\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          type: "Body",
-                          schema: Order,
-                      },
-                  ],
-                  response: Order,
-                  errors: [
-                      {
-                          status: 405,
-                          description: \`Invalid input\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/store/order/:orderId",
-                  description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "orderId",
-                          type: "Path",
-                          schema: z.number(),
-                      },
-                  ],
-                  response: Order,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid ID supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`Order not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "post",
-                  path: "/user",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Created user object\`,
-                          type: "Body",
-                          schema: User,
-                      },
-                  ],
-                  response: User,
-              },
-              {
-                  method: "get",
-                  path: "/user/:username",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: User,
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid username supplied\`,
-                          schema: z.void(),
-                      },
-                      {
-                          status: 404,
-                          description: \`User not found\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "put",
-                  path: "/user/:username",
-                  description: \`This can only be done by the logged in user.\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          description: \`Update an existent user in the store\`,
-                          type: "Body",
-                          schema: User,
-                      },
-                      {
-                          name: "username",
-                          type: "Path",
-                          schema: z.string(),
-                      },
-                  ],
-                  response: z.void(),
-              },
-              {
-                  method: "post",
-                  path: "/user/createWithList",
-                  description: \`Creates list of users with given input array\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "body",
-                          type: "Body",
-                          schema: createUsersWithListInput_Body,
-                      },
-                  ],
-                  response: User,
-              },
-              {
-                  method: "get",
-                  path: "/user/login",
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "username",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                      {
-                          name: "password",
-                          type: "Query",
-                          schema: z.string().optional(),
-                      },
-                  ],
-                  response: z.string(),
-                  errors: [
-                      {
-                          status: 400,
-                          description: \`Invalid username/password supplied\`,
-                          schema: z.void(),
-                      },
-                  ],
-              },
-              {
-                  method: "get",
-                  path: "/user/logout",
-                  requestFormat: "json",
-                  response: z.void(),
-              },
+            {
+              method: "put",
+              path: "/pet",
+              description: \`Update an existing pet by Id\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Update an existent pet in the store\`,
+                  type: "Body",
+                  schema: Pet,
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Pet not found\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 405,
+                  description: \`Validation exception\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/pet",
+              description: \`Add a new pet to the store\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Create a new pet in the store\`,
+                  type: "Body",
+                  schema: Pet,
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 405,
+                  description: \`Invalid input\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/pet/:petId",
+              description: \`Returns a single pet\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "petId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+              ],
+              response: Pet,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Pet not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/pet/:petId/uploadImage",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "petId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+                {
+                  name: "additionalMetadata",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+              ],
+              response: ApiResponse,
+            },
+            {
+              method: "get",
+              path: "/pet/findByStatus",
+              description: \`Multiple status values can be provided with comma separated strings\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "status",
+                  type: "Query",
+                  schema: status,
+                },
+              ],
+              response: z.array(Pet),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid status value\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/pet/findByTags",
+              description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "tags",
+                  type: "Query",
+                  schema: tags,
+                },
+              ],
+              response: z.array(Pet),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid tag value\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/store/inventory",
+              description: \`Returns a map of status codes to quantities\`,
+              requestFormat: "json",
+              response: z.record(z.number()),
+            },
+            {
+              method: "post",
+              path: "/store/order",
+              description: \`Place a new order in the store\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: Order,
+                },
+              ],
+              response: Order,
+              errors: [
+                {
+                  status: 405,
+                  description: \`Invalid input\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/store/order/:orderId",
+              description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "orderId",
+                  type: "Path",
+                  schema: z.number(),
+                },
+              ],
+              response: Order,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid ID supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`Order not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "post",
+              path: "/user",
+              description: \`This can only be done by the logged in user.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Created user object\`,
+                  type: "Body",
+                  schema: User,
+                },
+              ],
+              response: User,
+            },
+            {
+              method: "get",
+              path: "/user/:username",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "username",
+                  type: "Path",
+                  schema: z.string(),
+                },
+              ],
+              response: User,
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid username supplied\`,
+                  schema: z.void(),
+                },
+                {
+                  status: 404,
+                  description: \`User not found\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "put",
+              path: "/user/:username",
+              description: \`This can only be done by the logged in user.\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  description: \`Update an existent user in the store\`,
+                  type: "Body",
+                  schema: User,
+                },
+                {
+                  name: "username",
+                  type: "Path",
+                  schema: z.string(),
+                },
+              ],
+              response: z.void(),
+            },
+            {
+              method: "post",
+              path: "/user/createWithList",
+              description: \`Creates list of users with given input array\`,
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: createUsersWithListInput_Body,
+                },
+              ],
+              response: User,
+            },
+            {
+              method: "get",
+              path: "/user/login",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "username",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+                {
+                  name: "password",
+                  type: "Query",
+                  schema: z.string().optional(),
+                },
+              ],
+              response: z.string(),
+              errors: [
+                {
+                  status: 400,
+                  description: \`Invalid username/password supplied\`,
+                  schema: z.void(),
+                },
+              ],
+            },
+            {
+              method: "get",
+              path: "/user/logout",
+              requestFormat: "json",
+              response: z.void(),
+            },
           ]);
 
           export const api = new Zodios("http://example.com", endpoints);
@@ -1626,93 +1618,90 @@ test("with optional, partial, all required objects", async () => {
       }
     `);
 
-    const source = await readFile("./src/template.hbs", "utf-8");
-    const template = compile(source);
-    const prettierConfig = await resolveConfig("./");
-
-    const output = template(data);
-    const prettyOutput = maybePretty(output, prettierConfig);
+    const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
     expect(prettyOutput).toMatchInlineSnapshot(`
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       type Root2 = {
-          str: string;
-          nb: number;
-          nested: Nested2;
-          partial?: PartialObject | undefined;
-          optionalProp?: string | undefined;
+        str: string;
+        nb: number;
+        nested: Nested2;
+        partial?: PartialObject | undefined;
+        optionalProp?: string | undefined;
       };
       type DeeplyNested = Array<VeryDeeplyNested>;
       type VeryDeeplyNested = "aaa" | "bbb" | "ccc";
       type PartialObject = Partial<{
-          something: string;
-          another: number;
+        something: string;
+        another: number;
       }>;
       type Nested2 = {
-          nested_prop?: boolean | undefined;
-          deeplyNested?: DeeplyNested | undefined;
-          circularToRoot?: Root2 | undefined;
-          requiredProp: string;
+        nested_prop?: boolean | undefined;
+        deeplyNested?: DeeplyNested | undefined;
+        circularToRoot?: Root2 | undefined;
+        requiredProp: string;
       };
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
       const DeeplyNested = z.array(VeryDeeplyNested);
       const Nested2: z.ZodType<Nested2> = z.lazy(() =>
-          z.object({
-              nested_prop: z.boolean().optional(),
-              deeplyNested: DeeplyNested.optional(),
-              circularToRoot: Root2.optional(),
-              requiredProp: z.string(),
-          })
+        z.object({
+          nested_prop: z.boolean().optional(),
+          deeplyNested: DeeplyNested.optional(),
+          circularToRoot: Root2.optional(),
+          requiredProp: z.string(),
+        })
       );
-      const PartialObject = z.object({ something: z.string(), another: z.number() }).partial();
+      const PartialObject = z
+        .object({ something: z.string(), another: z.number() })
+        .partial();
       const Root2: z.ZodType<Root2> = z.lazy(() =>
-          z.object({
-              str: z.string(),
-              nb: z.number(),
-              nested: Nested2,
-              partial: PartialObject.optional(),
-              optionalProp: z.string().optional(),
-          })
+        z.object({
+          str: z.string(),
+          nb: z.number(),
+          nested: Nested2,
+          partial: PartialObject.optional(),
+          optionalProp: z.string().optional(),
+        })
       );
 
       const endpoints = makeApi([
-          {
-              method: "get",
-              path: "/deeplyNested",
-              requestFormat: "json",
-              response: z.array(VeryDeeplyNested),
-          },
-          {
-              method: "get",
-              path: "/nested",
-              requestFormat: "json",
-              response: z.object({
-                  nested_prop: z.boolean().optional(),
-                  deeplyNested: DeeplyNested.optional(),
-                  circularToRoot: Root2.optional(),
-                  requiredProp: z.string(),
-              }),
-          },
-          {
-              method: "get",
-              path: "/root",
-              requestFormat: "json",
-              response: z.object({
-                  str: z.string(),
-                  nb: z.number(),
-                  nested: Nested2,
-                  partial: PartialObject.optional(),
-                  optionalProp: z.string().optional(),
-              }),
-          },
-          {
-              method: "get",
-              path: "/veryDeeplyNested",
-              requestFormat: "json",
-              response: z.enum(["aaa", "bbb", "ccc"]),
-          },
+        {
+          method: "get",
+          path: "/deeplyNested",
+          requestFormat: "json",
+          response: z.array(VeryDeeplyNested),
+        },
+        {
+          method: "get",
+          path: "/nested",
+          requestFormat: "json",
+          response: z.object({
+            nested_prop: z.boolean().optional(),
+            deeplyNested: DeeplyNested.optional(),
+            circularToRoot: Root2.optional(),
+            requiredProp: z.string(),
+          }),
+        },
+        {
+          method: "get",
+          path: "/root",
+          requestFormat: "json",
+          response: z.object({
+            str: z.string(),
+            nb: z.number(),
+            nested: Nested2,
+            partial: PartialObject.optional(),
+            optionalProp: z.string().optional(),
+          }),
+        },
+        {
+          method: "get",
+          path: "/veryDeeplyNested",
+          requestFormat: "json",
+          response: z.enum(["aaa", "bbb", "ccc"]),
+        },
       ]);
 
       export const api = new Zodios(endpoints);
