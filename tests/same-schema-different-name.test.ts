@@ -2,14 +2,14 @@ import { OpenAPIObject } from "openapi3-ts";
 import { expect, test } from "vitest";
 import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "../src";
 
-test("schema-name-already-used", async () => {
+test("same-schema-different-name", async () => {
     const openApiDoc: OpenAPIObject = {
         openapi: "3.0.3",
         info: { version: "1", title: "Example API" },
         paths: {
-            "/schema-name-already-used": {
-                get: {
-                    operationId: "getSchemaNameAlreadyUsed",
+            "/same-schema-different-name": {
+                put: {
+                    operationId: "putSameSchemaDifferentName",
                     responses: {
                         "200": {
                             content: {
@@ -21,14 +21,14 @@ test("schema-name-already-used", async () => {
                     },
                     parameters: [
                         {
-                            name: "schemaNameAlreadyUsed",
+                            name: "sameSchemaDifferentName",
                             in: "query",
-                            schema: { type: "string", enum: ["xxx", "yyy", "zzz"] },
+                            schema: { type: "string", enum: ["aaa", "bbb", "ccc"] },
                         },
                     ],
                 },
-                put: {
-                    operationId: "putSchemaNameAlreadyUsed",
+                post: {
+                    operationId: "postSameSchemaDifferentName",
                     responses: {
                         "200": {
                             content: {
@@ -40,7 +40,7 @@ test("schema-name-already-used", async () => {
                     },
                     parameters: [
                         {
-                            name: "schemaNameAlreadyUsed",
+                            name: "differentNameSameSchema",
                             in: "query",
                             schema: { type: "string", enum: ["aaa", "bbb", "ccc"] },
                         },
@@ -55,34 +55,34 @@ test("schema-name-already-used", async () => {
           "circularTypeByName": {},
           "endpoints": [
               {
-                  "alias": "getSchemaNameAlreadyUsed",
-                  "description": undefined,
-                  "errors": [],
-                  "method": "get",
-                  "parameters": [
-                      {
-                          "name": "schemaNameAlreadyUsed",
-                          "schema": "schemaNameAlreadyUsed",
-                          "type": "Query",
-                      },
-                  ],
-                  "path": "/schema-name-already-used",
-                  "requestFormat": "json",
-                  "response": "z.string()",
-              },
-              {
-                  "alias": "putSchemaNameAlreadyUsed",
+                  "alias": "putSameSchemaDifferentName",
                   "description": undefined,
                   "errors": [],
                   "method": "put",
                   "parameters": [
                       {
-                          "name": "schemaNameAlreadyUsed",
-                          "schema": "schemaNameAlreadyUsed__2",
+                          "name": "sameSchemaDifferentName",
+                          "schema": "sameSchemaDifferentName",
                           "type": "Query",
                       },
                   ],
-                  "path": "/schema-name-already-used",
+                  "path": "/same-schema-different-name",
+                  "requestFormat": "json",
+                  "response": "z.string()",
+              },
+              {
+                  "alias": "postSameSchemaDifferentName",
+                  "description": undefined,
+                  "errors": [],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "name": "differentNameSameSchema",
+                          "schema": "sameSchemaDifferentName",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/same-schema-different-name",
                   "requestFormat": "json",
                   "response": "z.string()",
               },
@@ -93,8 +93,7 @@ test("schema-name-already-used", async () => {
               "withAlias": false,
           },
           "schemas": {
-              "schemaNameAlreadyUsed": "z.enum(["xxx", "yyy", "zzz"]).optional()",
-              "schemaNameAlreadyUsed__2": "z.enum(["aaa", "bbb", "ccc"]).optional()",
+              "sameSchemaDifferentName": "z.enum(["aaa", "bbb", "ccc"]).optional()",
           },
           "types": {},
       }
@@ -105,32 +104,31 @@ test("schema-name-already-used", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const schemaNameAlreadyUsed = z.enum(["xxx", "yyy", "zzz"]).optional();
-      const schemaNameAlreadyUsed__2 = z.enum(["aaa", "bbb", "ccc"]).optional();
+      const sameSchemaDifferentName = z.enum(["aaa", "bbb", "ccc"]).optional();
 
       const endpoints = makeApi([
         {
-          method: "get",
-          path: "/schema-name-already-used",
+          method: "put",
+          path: "/same-schema-different-name",
           requestFormat: "json",
           parameters: [
             {
-              name: "schemaNameAlreadyUsed",
+              name: "sameSchemaDifferentName",
               type: "Query",
-              schema: schemaNameAlreadyUsed,
+              schema: sameSchemaDifferentName,
             },
           ],
           response: z.string(),
         },
         {
-          method: "put",
-          path: "/schema-name-already-used",
+          method: "post",
+          path: "/same-schema-different-name",
           requestFormat: "json",
           parameters: [
             {
-              name: "schemaNameAlreadyUsed",
+              name: "differentNameSameSchema",
               type: "Query",
-              schema: schemaNameAlreadyUsed__2,
+              schema: sameSchemaDifferentName,
             },
           ],
           response: z.string(),

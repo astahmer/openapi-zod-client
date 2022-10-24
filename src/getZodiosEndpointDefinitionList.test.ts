@@ -124,6 +124,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
           ],
           "getSchemaByRef": [Function],
           "refsDependencyGraph": {},
+          "schemaByName": {},
           "zodSchemaByName": {
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
           },
@@ -268,6 +269,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
                   "#/components/schemas/Tag",
               },
           },
+          "schemaByName": {},
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
@@ -453,6 +455,10 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
               },
+          },
+          "schemaByName": {
+              "z.array(z.string()).optional()": "tags",
+              "z.enum(["available", "pending", "sold"]).optional()": "status",
           },
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
@@ -925,6 +931,11 @@ test("petstore.yaml", async () => {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
               },
+          },
+          "schemaByName": {
+              "z.array(User)": "createUsersWithListInput_Body",
+              "z.array(z.string()).optional()": "tags",
+              "z.enum(["available", "pending", "sold"]).optional()": "status",
           },
           "zodSchemaByName": {
               "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
