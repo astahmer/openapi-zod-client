@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.7.0
+openapi-zod-client/0.8.0
 
 Usage:
   $ openapi-zod-client <input>
@@ -55,7 +55,7 @@ Options:
   --export-schemas          When true, will export all `#/components/schemas`
   --implicit-required       When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
   --with-deprecated         when true, will keep deprecated endpoints in the api output
-  --group-strategy          groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method'
+  --group-strategy          groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'
   -v, --version             Display version number
   -h, --help                Display this message
 ```
