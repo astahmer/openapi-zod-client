@@ -1,0 +1,14 @@
+{
+    "parserOptions": {
+        "files": ["*.ts"],
+        "project": ["./tsconfig.json"]
+    },
+    "ignorePatterns": ["**/*.test.ts"],
+    "extends": "@astahmer/eslint-config-ts",
+    "settings": {
+        "import/extensions": [".ts"]
+    },
+    "rules": {
+        // "file-progress/activate": 1
+    }
+}
