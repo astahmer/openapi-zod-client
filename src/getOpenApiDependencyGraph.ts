@@ -16,7 +16,7 @@ export const getOpenApiDependencyGraph = (
                 refsDependencyGraph[fromRef] = new Set();
             }
 
-            refsDependencyGraph[fromRef].add(schema.$ref);
+            refsDependencyGraph[fromRef]!.add(schema.$ref);
 
             if (visitedsRefs[schema.$ref]) return;
 
@@ -57,7 +57,7 @@ export const getOpenApiDependencyGraph = (
         if (schema.type === "object" || schema.properties || schema.additionalProperties) {
             if (schema.properties) {
                 for (const property in schema.properties) {
-                    visit(schema.properties[property], fromRef);
+                    visit(schema.properties[property]!, fromRef);
                 }
             }
 
@@ -79,9 +79,9 @@ export const getOpenApiDependencyGraph = (
         }
 
         const visit = (dep: string) => {
-            deepDependencyGraph[ref].add(dep);
+            deepDependencyGraph[ref]!.add(dep);
             if (refsDependencyGraph[dep] && ref !== dep) {
-                refsDependencyGraph[dep].forEach((transitive) => {
+                refsDependencyGraph[dep]!.forEach((transitive) => {
                     if (visitedsDeepRefs[ref + "__" + transitive]) return;
                     visitedsDeepRefs[ref + "__" + transitive] = true;
                     visit(transitive);

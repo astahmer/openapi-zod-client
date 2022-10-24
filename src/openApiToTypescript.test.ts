@@ -1,6 +1,6 @@
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 
-import { SchemaObject, SchemasObject } from "openapi3-ts";
+import type { SchemaObject, SchemasObject } from "openapi3-ts";
 import { ts } from "tanu";
 import { describe, expect, test } from "vitest";
 
@@ -297,9 +297,9 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
         };
-        expect(printTs(getTypescriptFromOpenApi({ schema: schemas.Root, meta: { name: "Root" }, ctx }) as ts.Node))
+        expect(printTs(getTypescriptFromOpenApi({ schema: schemas["Root"]!, meta: { name: "Root" }, ctx }) as ts.Node))
             .toMatchInlineSnapshot(`
               "export type Root = Partial<{
                   str: string;
@@ -339,10 +339,11 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
         };
-        expect(printTs(getTypescriptFromOpenApi({ schema: schemas.Root2, meta: { name: "Root2" }, ctx }) as ts.Node))
-            .toMatchInlineSnapshot(`
+        expect(
+            printTs(getTypescriptFromOpenApi({ schema: schemas["Root2"]!, meta: { name: "Root2" }, ctx }) as ts.Node)
+        ).toMatchInlineSnapshot(`
               "export type Root2 = Partial<{
                   str: string;
                   nb: number;
@@ -374,13 +375,13 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
         };
 
         expect(
             printTs(
                 getTypescriptFromOpenApi({
-                    schema: schemas.Root3,
+                    schema: schemas["Root3"]!,
                     meta: { name: "Root3", $ref: "#/components/schemas/Root3" },
                     ctx,
                 }) as ts.Node
@@ -419,10 +420,10 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
         };
         const result = getTypescriptFromOpenApi({
-            schema: schemas.Root4,
+            schema: schemas["Root4"]!,
             meta: { name: "Root4", $ref: "#/components/schemas/Root4" },
             ctx,
         }) as ts.Node;
@@ -467,10 +468,10 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
         };
         const result = getTypescriptFromOpenApi({
-            schema: schemas.Root,
+            schema: schemas["Root"]!,
             meta: { name: "Root", $ref: "#/components/schemas/Root" },
             ctx,
         }) as ts.Node;

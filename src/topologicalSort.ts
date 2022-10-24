@@ -9,7 +9,7 @@ export function topologicalSort(graph: Record<string, Set<string>>) {
         visited[name] = true;
 
         if (graph[name]) {
-            graph[name].forEach((dep) => {
+            graph[name]!.forEach((dep) => {
                 if (ancestors.includes(dep)) {
                     // if already in ancestors, a closed chain (recursive relation) exists
                     return;
