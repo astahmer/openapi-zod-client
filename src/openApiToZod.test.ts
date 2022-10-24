@@ -1,6 +1,7 @@
 import type { SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
-import { CodeMetaData, ConversionTypeContext, getZodSchema } from "./openApiToZod";
+import { getZodSchema } from "./openApiToZod";
+import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
 
 const makeSchema = (schema: SchemaObject) => schema;
 const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData | undefined) =>

@@ -3,7 +3,7 @@ import { isReferenceObject } from "openapi3-ts";
 import { t, ts } from "tanu";
 import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
-import { getRefName, normalizeString } from "./tokens";
+import { getRefName, normalizeString } from "./utils";
 
 type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;

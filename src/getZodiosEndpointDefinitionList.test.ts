@@ -1,7 +1,7 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import type { OpenAPIObject, SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
-import { getZodiosEndpointDefinitionFromOpenApiDoc } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
+import { getZodiosEndpointDefinitionList } from "./getZodiosEndpointDefinitionList";
 
 const baseDoc = {
     openapi: "3.0.3",
@@ -66,7 +66,7 @@ const schemas = {
 
 test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
     expect(
-        getZodiosEndpointDefinitionFromOpenApiDoc({
+        getZodiosEndpointDefinitionList({
             ...baseDoc,
             components: { schemas: { Order: schemas.Order } },
             paths: {
@@ -133,7 +133,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
 
 test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
     expect(
-        getZodiosEndpointDefinitionFromOpenApiDoc({
+        getZodiosEndpointDefinitionList({
             ...baseDoc,
             components: { schemas: { Pet: schemas.Pet, Category: schemas.Category, Tag: schemas.Tag } },
             paths: {
@@ -279,7 +279,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
 
 test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
     expect(
-        getZodiosEndpointDefinitionFromOpenApiDoc({
+        getZodiosEndpointDefinitionList({
             ...baseDoc,
             components: { schemas: { Pet: schemas.Pet, Category: schemas.Category, Tag: schemas.Tag } },
             paths: {
@@ -467,7 +467,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
 
 test("petstore.yaml", async () => {
     const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
-    const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc);
+    const result = getZodiosEndpointDefinitionList(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {
           "deepDependencyGraph": {

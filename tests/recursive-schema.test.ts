@@ -1,17 +1,14 @@
-import {
-    getZodSchema,
-    getZodiosEndpointDefinitionFromOpenApiDoc,
-    getZodClientTemplateContext,
-    ConversionTypeContext,
-    getOpenApiDependencyGraph,
-} from "../src";
-import { test, expect, describe } from "vitest";
 import { SchemaObject, SchemasObject } from "openapi3-ts";
-import { generateZodClientFromOpenAPI, maybePretty } from "../src/generateZodClientFromOpenAPI";
-import { resolveConfig } from "prettier";
-import { readFileSync } from "fs";
-import { compile } from "handlebars";
+import { describe, expect, test } from "vitest";
+import {
+    getOpenApiDependencyGraph,
+    getZodClientTemplateContext,
+    getZodiosEndpointDefinitionFromOpenApiDoc,
+    getZodSchema,
+} from "../src";
+import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
 import { topologicalSort } from "../src/topologicalSort";
+import type { ConversionTypeContext } from "../src/CodeMeta";
 
 // TODO recursive inline response/param ?
 

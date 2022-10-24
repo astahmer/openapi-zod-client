@@ -1,7 +1,8 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import type { OpenAPIObject } from "openapi3-ts";
 import { Options, resolveConfig } from "prettier";
-import { getZodClientTemplateContext, maybePretty } from "./generateZodClientFromOpenAPI";
+import { getZodClientTemplateContext } from "../src/template-context";
+import { maybePretty } from "../src/maybePretty";
 
 import fg from "fast-glob";
 

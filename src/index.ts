@@ -1,7 +1,11 @@
-export { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "./generateZodClientFromOpenAPI";
+export { type CodeMeta, type CodeMetaData, type ConversionTypeContext } from "./CodeMeta";
+export { generateZodClientFromOpenAPI } from "./generateZodClientFromOpenAPI";
 export { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 export {
     type EndpointDescriptionWithRefs,
-    getZodiosEndpointDefinitionFromOpenApiDoc,
-} from "./getZodiosEndpointDefinitionFromOpenApiDoc";
-export { type CodeMeta, type CodeMetaData, type ConversionTypeContext, getZodSchema } from "./openApiToZod";
+    // TODO remove when v1
+    getZodiosEndpointDefinitionList as getZodiosEndpointDefinitionFromOpenApiDoc,
+    getZodiosEndpointDefinitionList,
+} from "./getZodiosEndpointDefinitionList";
+export { getZodSchema } from "./openApiToZod";
+export { getZodClientTemplateContext } from "./template-context";

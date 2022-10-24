@@ -2,8 +2,10 @@ import type { ReferenceObject, SchemaObject } from "openapi3-ts";
 import { isReferenceObject } from "openapi3-ts";
 import { match } from "ts-pattern";
 
-import type { TemplateContext } from "./generateZodClientFromOpenAPI";
-import { getRefName, normalizeString } from "./tokens";
+import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
+import { CodeMeta } from "./CodeMeta";
+import type { TemplateContext } from "./template-context";
+import { getRefName, isPrimitiveType, normalizeString } from "./utils";
 
 type ConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -177,22 +179,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     throw new Error(`Unsupported schema type: ${schema.type}`);
 }
 
-export type ConversionTypeContext = {
-    getSchemaByRef: ($ref: string) => SchemaObject;
-    zodSchemaByName: Record<string, string>;
-};
-
-export type CodeMetaData = {
-    isRequired?: boolean;
-    name?: string;
-    parent?: CodeMeta;
-    referencedBy?: CodeMeta[];
-};
-
-type DefinedCodeMetaProps = "referencedBy";
-type DefinedCodeMetaData = Pick<Required<CodeMetaData>, DefinedCodeMetaProps> &
-    Omit<CodeMetaData, DefinedCodeMetaProps>;
-
 const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
     const chains: string[] = [];
 
@@ -322,62 +308,3 @@ const getZodChainableArrayValidations = (schema: SchemaObject) => {
 
     return validations.join(".");
 };
-
-type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
-const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
-
-const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as const;
-type PrimitiveType = typeof primitiveTypeList[number];
-
-export class CodeMeta {
-    private code?: string;
-    ref?: string;
-
-    children: CodeMeta[] = [];
-    meta: DefinedCodeMetaData;
-
-    constructor(
-        public schema: SchemaObject | ReferenceObject,
-        public ctx?: ConversionTypeContext,
-        meta: CodeMetaData = {}
-    ) {
-        if (isReferenceObject(schema)) {
-            this.ref = schema.$ref;
-        }
-
-        // @ts-expect-error
-        this.meta = { ...meta };
-        this.meta.referencedBy = [...(meta?.referencedBy ?? [])];
-
-        if (this.ref) {
-            this.meta.referencedBy.push(this);
-        }
-    }
-
-    get codeString(): string {
-        if (this.code) return this.code;
-
-        return getRefName(this.ref!);
-    }
-
-    assign(code: string) {
-        this.code = code;
-
-        return this;
-    }
-
-    inherit(parent?: CodeMeta) {
-        if (parent) {
-            parent.children.push(this);
-        }
-
-        return this;
-    }
-
-    toString() {
-        return this.codeString;
-    }
-    toJSON() {
-        return this.codeString;
-    }
-}
