@@ -229,7 +229,7 @@ const endpoints = makeApi([
                 schema: z.number().optional(),
             },
         ],
-        response: Pets,
+        response: z.array(Pet),
     },
     {
         method: "post",

@@ -133,7 +133,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "status",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional()",
                           "type": "Query",
                       },
                   ],
@@ -155,7 +155,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "tags",
+                          "schema": "z.array(z.string()).optional()",
                           "type": "Query",
                       },
                   ],
@@ -298,7 +298,7 @@ test("getZodClientTemplateContext", async () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "createUsersWithListInput_Body",
+                          "schema": "z.array(User)",
                           "type": "Body",
                       },
                   ],
@@ -356,9 +356,6 @@ test("getZodClientTemplateContext", async () => {
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
-              "createUsersWithListInput_Body": "z.array(User)",
-              "status": "z.enum(["available", "pending", "sold"]).optional()",
-              "tags": "z.array(z.string()).optional()",
           },
           "types": {},
       }
@@ -382,8 +379,6 @@ describe("generateZodClientFromOpenAPI", () => {
             tags: z.array(Tag).optional(),
             status: z.enum(["available", "pending", "sold"]).optional(),
           });
-          const status = z.enum(["available", "pending", "sold"]).optional();
-          const tags = z.array(z.string()).optional();
           const ApiResponse = z
             .object({ code: z.number().int(), type: z.string(), message: z.string() })
             .partial();
@@ -409,7 +404,6 @@ describe("generateZodClientFromOpenAPI", () => {
               userStatus: z.number().int(),
             })
             .partial();
-          const createUsersWithListInput_Body = z.array(User);
 
           const endpoints = makeApi([
             {
@@ -519,7 +513,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "status",
                   type: "Query",
-                  schema: status,
+                  schema: z.enum(["available", "pending", "sold"]).optional(),
                 },
               ],
               response: z.array(Pet),
@@ -540,7 +534,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "tags",
                   type: "Query",
-                  schema: tags,
+                  schema: z.array(z.string()).optional(),
                 },
               ],
               response: z.array(Pet),
@@ -675,7 +669,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "body",
                   type: "Body",
-                  schema: createUsersWithListInput_Body,
+                  schema: z.array(User),
                 },
               ],
               response: User,
@@ -738,8 +732,6 @@ describe("generateZodClientFromOpenAPI", () => {
             tags: z.array(Tag).optional(),
             status: z.enum(["available", "pending", "sold"]).optional(),
           });
-          const status = z.enum(["available", "pending", "sold"]).optional();
-          const tags = z.array(z.string()).optional();
           const ApiResponse = z
             .object({ code: z.number().int(), type: z.string(), message: z.string() })
             .partial();
@@ -765,7 +757,6 @@ describe("generateZodClientFromOpenAPI", () => {
               userStatus: z.number().int(),
             })
             .partial();
-          const createUsersWithListInput_Body = z.array(User);
 
           const endpoints = makeApi([
             {
@@ -880,7 +871,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "status",
                   type: "Query",
-                  schema: status,
+                  schema: z.enum(["available", "pending", "sold"]).optional(),
                 },
               ],
               response: z.array(Pet),
@@ -902,7 +893,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "tags",
                   type: "Query",
-                  schema: tags,
+                  schema: z.array(z.string()).optional(),
                 },
               ],
               response: z.array(Pet),
@@ -1044,7 +1035,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "body",
                   type: "Body",
-                  schema: createUsersWithListInput_Body,
+                  schema: z.array(User),
                 },
               ],
               response: User,
@@ -1111,8 +1102,6 @@ describe("generateZodClientFromOpenAPI", () => {
             tags: z.array(Tag).optional(),
             status: z.enum(["available", "pending", "sold"]).optional(),
           });
-          const status = z.enum(["available", "pending", "sold"]).optional();
-          const tags = z.array(z.string()).optional();
           const ApiResponse = z
             .object({ code: z.number().int(), type: z.string(), message: z.string() })
             .partial();
@@ -1138,7 +1127,6 @@ describe("generateZodClientFromOpenAPI", () => {
               userStatus: z.number().int(),
             })
             .partial();
-          const createUsersWithListInput_Body = z.array(User);
 
           const endpoints = makeApi([
             {
@@ -1248,7 +1236,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "status",
                   type: "Query",
-                  schema: status,
+                  schema: z.enum(["available", "pending", "sold"]).optional(),
                 },
               ],
               response: z.array(Pet),
@@ -1269,7 +1257,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "tags",
                   type: "Query",
-                  schema: tags,
+                  schema: z.array(z.string()).optional(),
                 },
               ],
               response: z.array(Pet),
@@ -1404,7 +1392,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "body",
                   type: "Body",
-                  schema: createUsersWithListInput_Body,
+                  schema: z.array(User),
                 },
               ],
               response: User,

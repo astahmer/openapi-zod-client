@@ -418,7 +418,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "status",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional()",
                           "type": "Query",
                       },
                   ],
@@ -440,7 +440,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "tags",
+                          "schema": "z.array(z.string()).optional()",
                           "type": "Query",
                       },
                   ],
@@ -456,16 +456,11 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "#/components/schemas/Tag",
               },
           },
-          "schemaByName": {
-              "z.array(z.string()).optional()": "tags",
-              "z.enum(["available", "pending", "sold"]).optional()": "status",
-          },
+          "schemaByName": {},
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "status": "z.enum(["available", "pending", "sold"]).optional()",
-              "tags": "z.array(z.string()).optional()",
           },
       }
     `);
@@ -553,7 +548,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "status",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional()",
                           "type": "Query",
                       },
                   ],
@@ -575,7 +570,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "tags",
+                          "schema": "z.array(z.string()).optional()",
                           "type": "Query",
                       },
                   ],
@@ -803,7 +798,7 @@ test("petstore.yaml", async () => {
                       {
                           "description": undefined,
                           "name": "body",
-                          "schema": "createUsersWithListInput_Body",
+                          "schema": "z.array(User)",
                           "type": "Body",
                       },
                   ],
@@ -932,11 +927,7 @@ test("petstore.yaml", async () => {
                   "#/components/schemas/Tag",
               },
           },
-          "schemaByName": {
-              "z.array(User)": "createUsersWithListInput_Body",
-              "z.array(z.string()).optional()": "tags",
-              "z.enum(["available", "pending", "sold"]).optional()": "status",
-          },
+          "schemaByName": {},
           "zodSchemaByName": {
               "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
@@ -944,9 +935,6 @@ test("petstore.yaml", async () => {
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
-              "createUsersWithListInput_Body": "z.array(User)",
-              "status": "z.enum(["available", "pending", "sold"]).optional()",
-              "tags": "z.array(z.string()).optional()",
           },
       }
     `);

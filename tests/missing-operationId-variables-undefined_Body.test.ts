@@ -37,13 +37,13 @@ test("missing operationId outputs variables['undefined_Body']", () => {
                   {
                       "description": undefined,
                       "name": "body",
-                      "schema": "Basic",
+                      "schema": "z.string()",
                       "type": "Body",
                   },
               ],
               "path": "/media-objects/:id",
               "requestFormat": "json",
-              "response": "Basic",
+              "response": "z.string()",
           },
       ]
     `);

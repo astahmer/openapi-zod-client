@@ -39,7 +39,7 @@ test("name-with-special-characters", async () => {
               "parameters": [],
               "path": "/name-with-special-characters",
               "requestFormat": "json",
-              "response": "_1Name_With_Special_Characters",
+              "response": "z.string()",
           },
       ]
     `);
@@ -56,7 +56,7 @@ test("name-with-special-characters", async () => {
           method: "get",
           path: "/name-with-special-characters",
           requestFormat: "json",
-          response: _1Name_With_Special_Characters,
+          response: z.string(),
         },
       ]);
 

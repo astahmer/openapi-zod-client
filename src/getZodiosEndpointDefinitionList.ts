@@ -16,6 +16,7 @@ import { sync } from "whence";
 import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { getZodChainablePresence, getZodSchema } from "./openApiToZod";
+import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";
 import { getRefFromName, normalizeString, pathToVariableName } from "./utils";
 
@@ -53,19 +54,24 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
     }
 
     const ctx: ConversionTypeContext = { getSchemaByRef, zodSchemaByName: {}, schemaByName: {} };
+    const complexityThreshold = options?.complexityThreshold ?? 4;
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
 
+        // special value, inline everything (= no variable used)
+        if (complexityThreshold === -1) {
+            return input.ref ? ctx.zodSchemaByName[result]! : result;
+        }
+
         if (result.startsWith("z.") && fallbackName) {
             // result is simple enough that it doesn't need to be assigned to a variable
-            if (!complexType.some((type) => result.startsWith(type))) {
-                // if (input.complexity < 10) {
+            if (input.complexity < complexityThreshold) {
                 return result;
             }
 
             const safeName = normalizeString(fallbackName);
 
-            // if schema is already assigned to a variable, re-use that variable
+            // if schema is already assigned to a variable, re-use that variable name
             if (ctx.schemaByName[result]) {
                 return ctx.schemaByName[result]!;
             }
@@ -87,7 +93,14 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         }
 
         // result is a reference to another schema
-        if (ctx.zodSchemaByName[result]) {
+        if (input.ref && ctx.zodSchemaByName[result]) {
+            const complexity = getSchemaComplexity({ current: 0, schema: getSchemaByRef(input.ref) });
+
+            // ref result is simple enough that it doesn't need to be assigned to a variable
+            if (complexity < complexityThreshold) {
+                return ctx.zodSchemaByName[result]!;
+            }
+
             return result;
         }
 
@@ -186,7 +199,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                     if (isMainResponseStatus(status) || (statusCode === "default" && !endpointDescription.response)) {
                         endpointDescription.response = schemaString;
-                        // console.log({ schema, schemaString });
 
                         if (
                             !endpointDescription.description &&
@@ -235,5 +247,4 @@ export type EndpointDescriptionWithRefs = Omit<
     errors: Array<Omit<Required<ZodiosEndpointDefinition<any>>["errors"][number], "schema"> & { schema: string }>;
 };
 
-const complexType = ["z.object", "z.array", "z.union", "z.enum"] as const;
 const pathParamRegex = /{(\w+)}/g;

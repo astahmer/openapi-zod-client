@@ -35,7 +35,7 @@ test("operationId-starting-with-number", async () => {
               "parameters": [],
               "path": "/operationId-starting-with-number",
               "requestFormat": "json",
-              "response": "Basic",
+              "response": "z.string()",
           },
       ]
     `);
@@ -58,7 +58,7 @@ test("operationId-starting-with-number", async () => {
           path: "/operationId-starting-with-number",
           alias: "123_example",
           requestFormat: "json",
-          response: Basic,
+          response: z.string(),
         },
       ]);
 

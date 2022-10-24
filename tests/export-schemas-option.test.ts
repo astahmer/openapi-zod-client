@@ -49,7 +49,7 @@ test("export-schemas-option", async () => {
               "parameters": [],
               "path": "/export-schemas-option",
               "requestFormat": "json",
-              "response": "Basic",
+              "response": "z.string()",
           },
       ]
     `);
@@ -80,7 +80,7 @@ test("export-schemas-option", async () => {
           method: "get",
           path: "/export-schemas-option",
           requestFormat: "json",
-          response: Basic,
+          response: z.string(),
         },
       ]);
 
