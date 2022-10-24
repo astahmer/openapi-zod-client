@@ -13,16 +13,16 @@ import { get } from "pastable/server";
 import { match } from "ts-pattern";
 import { sync } from "whence";
 
-import type { TemplateContext } from "./generateZodClientFromOpenAPI";
+import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
-import type { CodeMeta, ConversionTypeContext } from "./openApiToZod";
 import { getZodChainablePresence, getZodSchema } from "./openApiToZod";
-import { getRefFromName, normalizeString, pathToVariableName } from "./tokens";
+import type { TemplateContext } from "./template-context";
+import { getRefFromName, normalizeString, pathToVariableName } from "./utils";
 
 const voidSchema = "z.void()";
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
+export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
     const getSchemaByRef: ConversionTypeContext["getSchemaByRef"] = (ref: string) =>
         get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", "."));
 
@@ -59,6 +59,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
         if (result.startsWith("z.") && fallbackName) {
             // result is simple enough that it doesn't need to be assigned to a variable
             if (!complexType.some((type) => result.startsWith(type))) {
+                // if (input.complexity < 10) {
                 return result;
             }
 
@@ -179,6 +180,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
 
                     if (isMainResponseStatus(status) || (statusCode === "default" && !endpointDescription.response)) {
                         endpointDescription.response = schemaString;
+                        // console.log({ schema, schemaString });
 
                         if (
                             !endpointDescription.description &&
