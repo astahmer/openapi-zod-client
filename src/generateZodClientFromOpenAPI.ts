@@ -23,6 +23,7 @@ const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export const getZodClientTemplateContext = (
     openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"],
     options?: TemplateContext["options"]
@@ -30,14 +31,14 @@ export const getZodClientTemplateContext = (
     const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc, options);
     const data = makeTemplateContext();
 
-    const docSchemas = openApiDoc.components?.schemas || {};
+    const docSchemas = openApiDoc.components?.schemas ?? {};
     const depsGraphs = getOpenApiDependencyGraph(
         Object.keys(docSchemas).map((name) => getRefFromName(name)),
         result.getSchemaByRef
     );
 
     if (options?.shouldExportAllSchemas) {
-        Object.entries(docSchemas).map(([name, schema]) => {
+        Object.entries(docSchemas).forEach(([name, schema]) => {
             if (!result.zodSchemaByName[name]) {
                 result.zodSchemaByName[name] = getZodSchema({ schema, ctx: result }).toString();
             }
@@ -304,7 +305,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         return outputByGroupName as any;
     }
 
-    const output = template({ ...data, options: { ...options, apiClientName: options?.apiClientName || "api" } });
+    const output = template({ ...data, options: { ...options, apiClientName: options?.apiClientName ?? "api" } });
     const prettyOutput = maybePretty(output, prettierConfig);
 
     if (willWriteToFile) {
@@ -315,6 +316,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
 };
 
 /** @see https://github.dev/stephenh/ts-poet/blob/5ea0dbb3c9f1f4b0ee51a54abb2d758102eda4a2/src/Code.ts#L231 */
+// eslint-disable-next-line import/no-unused-modules
 export function maybePretty(input: string, options?: Options | null): string {
     try {
         return prettier.format(input.trim(), { parser: "typescript", plugins: [parserTypescript], ...options });

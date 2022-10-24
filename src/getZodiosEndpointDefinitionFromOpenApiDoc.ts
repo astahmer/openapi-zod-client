@@ -21,6 +21,7 @@ import { getRefFromName, normalizeString, pathToVariableName } from "./tokens";
 
 const voidSchema = "z.void()";
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
     const getSchemaByRef: ConversionTypeContext["getSchemaByRef"] = (ref: string) =>
         get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", "."));
@@ -95,7 +96,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
 
             if (options?.withDeprecatedEndpoints ? false : operation.deprecated) continue;
 
-            const parameters = operation.parameters || [];
+            const parameters = operation.parameters ?? [];
             const operationName = operation.operationId ?? method + pathToVariableName(path);
             const endpointDescription: EndpointDescriptionWithRefs = {
                 method: method as EndpointDescriptionWithRefs["method"],
@@ -123,7 +124,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                             getZodSchema({
                                 schema: bodySchema,
                                 ctx,
-                                meta: { isRequired: requestBody.required || true },
+                                meta: { isRequired: requestBody.required ?? true },
                                 options,
                             }),
                             operationName + "_Body"
@@ -139,7 +140,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                     const paramCode = getZodSchema({
                         schema: paramSchema,
                         ctx,
-                        meta: { isRequired: paramItem.in === "path" ? true : paramItem.required || false },
+                        meta: { isRequired: paramItem.in === "path" ? true : paramItem.required ?? false },
                     });
                     const chainablePresence = getZodChainablePresence(paramSchema, paramCode.meta);
 

@@ -64,8 +64,6 @@ export const getOpenApiDependencyGraph = (
             if (schema.additionalProperties && typeof schema.additionalProperties === "object") {
                 visit(schema.additionalProperties, fromRef);
             }
-
-            return;
         }
     };
 

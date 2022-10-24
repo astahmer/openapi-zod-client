@@ -10,7 +10,7 @@ import { resolveConfig } from "prettier";
 import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
 
 const cli = cac("openapi-zod-client");
-const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf-8"));
+const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf8"));
 
 cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     .option("-o, --output <path>", "Output path for the zodios api client ts file (defaults to `<input>.client.ts`)")

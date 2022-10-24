@@ -16,7 +16,7 @@ export function normalizeString(text: string) {
 
 const prefixStringStartingWithNumberIfNeeded = (str: string) => {
     const firstAsNumber = Number(str[0]);
-    if (typeof firstAsNumber === "number" && !isNaN(firstAsNumber)) {
+    if (typeof firstAsNumber === "number" && !Number.isNaN(firstAsNumber)) {
         return "_" + str;
     }
 
