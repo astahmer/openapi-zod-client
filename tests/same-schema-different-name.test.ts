@@ -49,7 +49,7 @@ test("same-schema-different-name", async () => {
             },
         },
     };
-    const ctx = getZodClientTemplateContext(openApiDoc);
+    const ctx = getZodClientTemplateContext(openApiDoc, { complexityThreshold: 2 });
     expect(ctx).toMatchInlineSnapshot(`
       {
           "circularTypeByName": {},
@@ -99,7 +99,11 @@ test("same-schema-different-name", async () => {
       }
     `);
 
-    const result = await generateZodClientFromOpenAPI({ disableWriteToFile: true, openApiDoc });
+    const result = await generateZodClientFromOpenAPI({
+        disableWriteToFile: true,
+        openApiDoc,
+        options: { complexityThreshold: 2 },
+    });
     expect(result).toMatchInlineSnapshot(`
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";

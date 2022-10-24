@@ -46,7 +46,7 @@ test("autofix-unusual-ref-format", () => {
                   "parameters": [],
                   "path": "/usual-ref-format",
                   "requestFormat": "json",
-                  "response": "Basic",
+                  "response": "z.string()",
               },
               {
                   "alias": "getWithUnusualRefFormat",
@@ -56,7 +56,7 @@ test("autofix-unusual-ref-format", () => {
                   "parameters": [],
                   "path": "/unusual-ref-format",
                   "requestFormat": "json",
-                  "response": "Basic",
+                  "response": "z.string()",
               },
           ],
           "getSchemaByRef": [Function],

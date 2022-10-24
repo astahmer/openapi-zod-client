@@ -29,7 +29,6 @@ const repository = z.object({ slug: z.string(), owner: user }).partial();
 const pullrequest = z
     .object({ id: z.number().int(), title: z.string(), repository: repository, author: user })
     .partial();
-const state = z.enum(["open", "merged", "declined"]).optional();
 
 const endpoints = makeApi([
     {
@@ -81,7 +80,7 @@ const endpoints = makeApi([
             {
                 name: "state",
                 type: "Query",
-                schema: state,
+                schema: z.enum(["open", "merged", "declined"]).optional(),
             },
         ],
         response: z.array(pullrequest),
@@ -148,7 +147,7 @@ const endpoints = makeApi([
                 schema: z.number().optional(),
             },
         ],
-        response: Pets,
+        response: z.array(Pet),
     },
     {
         method: "post",
@@ -181,7 +180,6 @@ import { z } from "zod";
 
 const NewPet = z.object({ name: z.string(), tag: z.string().optional() });
 const Pet = NewPet.and(z.object({ id: z.number().int() }));
-const tags = z.array(z.string()).optional();
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
 const endpoints = makeApi([
@@ -198,7 +196,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             {
                 name: "tags",
                 type: "Query",
-                schema: tags,
+                schema: z.array(z.string()).optional(),
             },
             {
                 name: "limit",

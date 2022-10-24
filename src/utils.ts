@@ -37,4 +37,4 @@ type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 export const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
 
 const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as const;
-type PrimitiveType = typeof primitiveTypeList[number];
+export type PrimitiveType = typeof primitiveTypeList[number];

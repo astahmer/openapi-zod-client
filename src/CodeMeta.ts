@@ -1,6 +1,7 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
 import { isReferenceObject } from "openapi3-ts";
 
+import { getSchemaComplexity } from "./schema-complexity";
 import { getRefName } from "./utils";
 
 export type ConversionTypeContext = {
@@ -49,6 +50,10 @@ export class CodeMeta {
         if (this.code) return this.code;
 
         return getRefName(this.ref!);
+    }
+
+    get complexity(): number {
+        return getSchemaComplexity({ current: 0, schema: this.schema });
     }
 
     assign(code: string) {

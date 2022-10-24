@@ -34,6 +34,10 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "--group-strategy",
         "groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'"
     )
+    .option(
+        "--complexity-threshold",
+        "schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable"
+    )
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -55,6 +59,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 withImplicitRequiredProps: options.implicitRequired,
                 withDeprecatedEndpoints: options.withDeprecated,
                 groupStrategy: options.groupStrategy,
+                complexityThreshold: options.complexityThreshold,
             },
         });
         console.log(`Done generating <${distPath}> !`);
