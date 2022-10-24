@@ -6,6 +6,7 @@ import { getRefName } from "./utils";
 export type ConversionTypeContext = {
     getSchemaByRef: ($ref: string) => SchemaObject;
     zodSchemaByName: Record<string, string>;
+    schemaByName: Record<string, string>;
 };
 
 export type CodeMetaData = {

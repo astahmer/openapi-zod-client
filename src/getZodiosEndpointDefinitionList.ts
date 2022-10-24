@@ -52,7 +52,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 : options.isMediaTypeAllowed;
     }
 
-    const ctx: ConversionTypeContext = { getSchemaByRef, zodSchemaByName: {} };
+    const ctx: ConversionTypeContext = { getSchemaByRef, zodSchemaByName: {}, schemaByName: {} };
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
 
@@ -64,6 +64,11 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             }
 
             const safeName = normalizeString(fallbackName);
+
+            // if schema is already assigned to a variable, re-use that variable
+            if (ctx.schemaByName[result]) {
+                return ctx.schemaByName[result]!;
+            }
 
             // result is complex and would benefit from being re-used
             let formatedName = safeName;
@@ -77,6 +82,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             }
 
             ctx.zodSchemaByName[formatedName] = result;
+            ctx.schemaByName[result] = formatedName;
             return formatedName;
         }
 
