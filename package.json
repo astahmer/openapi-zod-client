@@ -19,8 +19,8 @@
         "dev": "preconstruct watch",
         "build": "preconstruct build",
         "test": "vitest",
-        "lint": "eslint './src/**/*.ts' --cache",
-        "lint:fix": "eslint './src/**/*.ts' --cache --fix",
+        "lint": "eslint './src/**/*.ts' --cache --format=pretty",
+        "lint:fix": "eslint './src/**/*.ts' --cache --format=pretty --fix",
         "lint:ts": "tsc --noEmit",
         "release": "pnpm test && pnpm build && pnpm publish && git push"
     },
@@ -56,6 +56,7 @@
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "degit": "^2.8.4",
         "eslint": "^8.26.0",
+        "eslint-formatter-pretty": "^4.1.0",
         "fast-glob": "^3.2.12",
         "nodemon": "^2.0.20",
         "tsx": "^3.9.0",

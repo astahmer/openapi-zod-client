@@ -18,7 +18,7 @@ beforeAll(async () => {
 describe("samples-generator", async () => {
     const list = fg.sync(["./samples/v3\\.*/**/*.yaml"]);
 
-    const template = Handlebars.compile(readFileSync("./src/template.hbs", "utf-8"));
+    const template = Handlebars.compile(readFileSync("./src/template.hbs", "utf8"));
     const resultByFile = {} as Record<string, string>;
 
     for (const docPath of list) {

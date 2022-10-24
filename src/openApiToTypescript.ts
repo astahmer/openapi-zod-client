@@ -18,11 +18,12 @@ export type TsConversionContext = {
     visitedsRefs?: Record<string, boolean>;
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
     ctx,
-}: TsConversionArgs): ts.Node | TypeDefinitionObject | (string | ({} & `@type__${string}`)) => {
+}: TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     const meta = {} as TsConversionArgs["meta"];
     const isInline = !inheritedMeta?.name;
 
@@ -36,7 +37,7 @@ export const getTypescriptFromOpenApi = ({
     }
 
     let canBeWrapped = !isInline;
-    const getTs = (): ts.Node | TypeDefinitionObject | (string | ({} & `@type__${string}`)) => {
+    const getTs = (): ts.Node | TypeDefinitionObject | string => {
         if (isReferenceObject(schema)) {
             if (!ctx?.visitedsRefs) throw new Error("Context is required for OpenAPI $ref");
 
@@ -191,6 +192,7 @@ export const getTypescriptFromOpenApi = ({
 
         if (!schema.type) return t.unknown();
 
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unsupported schema type: ${schema.type}`);
     };
 

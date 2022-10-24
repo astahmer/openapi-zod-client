@@ -16,6 +16,7 @@ type ConversionArgs = {
  * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
  * @see https://github.com/colinhacks/zod
  */
+// eslint-disable-next-line sonarjs/cognitive-complexity
 export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: ConversionArgs): CodeMeta {
     if (!schema) {
         throw new Error("Schema is required");
@@ -89,22 +90,24 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         const types = schema.allOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options }));
         const first = types.at(0)!;
-        return code.assign(
-            `${first.toString()}.${types
-                .slice(1)
-                .map((type) => `and(${type})`)
-                .join("")}`
-        );
+        const rest = types
+            .slice(1)
+            .map((type) => `and(${type.toString()})`)
+            .join("");
+
+        return code.assign(`${first.toString()}.${rest}`);
     }
 
     if (schema.type && isPrimitiveType(schema.type)) {
         if (schema.enum) {
             if (schema.type === "string") {
+                // eslint-disable-next-line sonarjs/no-nested-template-literals
                 return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
             }
 
             return code.assign(
                 `z.union([${schema.enum
+                    // eslint-disable-next-line sonarjs/no-nested-template-literals
                     .map((value) => `z.literal(${value === null ? "null" : `"${value}"`})`)
                     .join(", ")}])`
             );
@@ -170,6 +173,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (!schema.type) return code.assign("z.unknown()");
 
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`Unsupported schema type: ${schema.type}`);
 }
 
@@ -194,24 +198,27 @@ const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
 
     switch (schema.type) {
         case "string": {
-            chains.push(getZodChainableStringValidations(schema, meta));
+            chains.push(getZodChainableStringValidations(schema));
 
             break;
         }
 
         case "number":
         case "integer": {
-            chains.push(getZodChainableNumberValidations(schema, meta));
+            chains.push(getZodChainableNumberValidations(schema));
 
             break;
         }
 
         case "array": {
-            chains.push(getZodChainableArrayValidations(schema, meta));
+            chains.push(getZodChainableArrayValidations(schema));
 
             break;
         }
-        // No default
+
+        default: {
+            break;
+        }
     }
 
     const output = chains.concat(getZodChainablePresence(schema, meta)).filter(Boolean).join(".");
@@ -237,7 +244,7 @@ export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaDat
 // TODO z.default()
 // TODO OA prefixItems -> z.tuple
 
-const getZodChainableStringValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
+const getZodChainableStringValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
     if (schema.minLength && schema.maxLength) {
@@ -268,7 +275,7 @@ const getZodChainableStringValidations = (schema: SchemaObject, meta?: CodeMetaD
     return validations.join(".");
 };
 
-const getZodChainableNumberValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
+const getZodChainableNumberValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
     if (schema.type === "integer") {
@@ -302,7 +309,7 @@ const getZodChainableNumberValidations = (schema: SchemaObject, meta?: CodeMetaD
     return validations.join(".");
 };
 
-const getZodChainableArrayValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
+const getZodChainableArrayValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
     if (schema.minItems && schema.maxItems) {
@@ -340,7 +347,7 @@ export class CodeMeta {
 
         // @ts-expect-error
         this.meta = { ...meta };
-        this.meta.referencedBy = [...(meta?.referencedBy || [])];
+        this.meta.referencedBy = [...(meta?.referencedBy ?? [])];
 
         if (this.ref) {
             this.meta.referencedBy.push(this);
