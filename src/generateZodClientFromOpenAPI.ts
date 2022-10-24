@@ -23,10 +23,10 @@ const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export const getZodClientTemplateContext = (
     openApiDoc: GenerateZodClientFromOpenApiArgs["openApiDoc"],
     options?: TemplateContext["options"]
+    // eslint-disable-next-line sonarjs/cognitive-complexity
 ) => {
     const result = getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc, options);
     const data = makeTemplateContext();
@@ -52,7 +52,7 @@ export const getZodClientTemplateContext = (
             data.circularTypeByName[name] = true;
         }
 
-        return isCircular ? `z.lazy(() => ${code})` : code;
+        return isCircular ? `z.lazy(() => ${code})` : code!;
     };
 
     for (const name in result.zodSchemaByName) {
@@ -118,7 +118,8 @@ export const getZodClientTemplateContext = (
                 data.endpointsGroups[groupName] = makeEndpointTemplateContext();
             }
 
-            data.endpointsGroups[groupName].endpoints.push(endpoint);
+            const group = data.endpointsGroups[groupName]!;
+            group.endpoints.push(endpoint);
 
             if (!dependenciesByGroupName.has(groupName)) {
                 dependenciesByGroupName.set(groupName, new Set());
@@ -134,24 +135,22 @@ export const getZodClientTemplateContext = (
             addDependencyIfNeeded(endpoint.response);
             endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
             endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
-            dependencies.forEach(
-                (ref) => (data.endpointsGroups[groupName].schemas[getRefName(ref)] = data.schemas[getRefName(ref)])
-            );
+            dependencies.forEach((ref) => (group.schemas[getRefName(ref)] = data.schemas[getRefName(ref)]!));
 
             // reduce types/schemas for each group using prev computed deep dependencies
             if (groupStrategy.includes("file")) {
                 [...dependencies].forEach((refName) => {
                     if (data.types[refName]) {
-                        data.endpointsGroups[groupName].types[refName] = data.types[refName];
+                        group.types[refName] = data.types[refName]!;
                     }
 
-                    data.endpointsGroups[groupName].schemas[refName] = data.schemas[refName];
+                    group.schemas[refName] = data.schemas[refName]!;
 
                     depsGraphs.deepDependencyGraph[getRefFromName(refName)]?.forEach((transitiveRef) => {
                         const transitiveRefName = getRefName(transitiveRef);
                         addDependencyIfNeeded(transitiveRefName);
-                        data.endpointsGroups[groupName].types[transitiveRefName] = data.types[transitiveRefName];
-                        data.endpointsGroups[groupName].schemas[transitiveRefName] = data.schemas[transitiveRefName];
+                        group.types[transitiveRefName] = data.types[transitiveRefName]!;
+                        group.schemas[transitiveRefName] = data.schemas[transitiveRefName]!;
                     });
                 });
             }
@@ -170,26 +169,27 @@ export const getZodClientTemplateContext = (
 
         const commonSchemaNames = new Set<string>();
         Object.keys(data.endpointsGroups).forEach((groupName) => {
-            data.endpointsGroups[groupName].imports = {};
+            const group = data.endpointsGroups[groupName]!;
+            group.imports = {};
 
             const groupSchemas = {} as Record<string, string>;
             const groupTypes = {} as Record<string, string>;
-            Object.entries(data.endpointsGroups[groupName].schemas).forEach(([name, schema]) => {
+            Object.entries(group.schemas).forEach(([name, schema]) => {
                 const count = dependenciesCount.get(name) ?? 0;
                 if (count > 1) {
-                    data.endpointsGroups[groupName].imports![name] = "common";
+                    group.imports![name] = "common";
                     commonSchemaNames.add(name);
                 } else {
                     groupSchemas[name] = schema;
 
-                    if (data.endpointsGroups[groupName].types[name]) {
-                        groupTypes[name] = data.endpointsGroups[groupName].types[name];
+                    if (group.types[name]) {
+                        groupTypes[name] = group.types[name]!;
                     }
                 }
             });
 
-            data.endpointsGroups[groupName].schemas = sortObjKeysFromArray(groupSchemas, schemaOrderedByDependencies);
-            data.endpointsGroups[groupName].types = groupTypes;
+            group.schemas = sortObjKeysFromArray(groupSchemas, schemaOrderedByDependencies);
+            group.types = groupTypes;
         });
         data.commonSchemaNames = new Set(
             sortListFromRefArray(Array.from(commonSchemaNames), schemaOrderedByDependencies)
@@ -349,78 +349,80 @@ export type TemplateContext = {
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
     commonSchemaNames?: Set<string>;
-    options?: {
-        /** @see https://www.zodios.org/docs/client#baseurl */
-        baseUrl?: string;
-        /** @see https://www.zodios.org/docs/client#zodiosalias */
-        withAlias?: boolean;
-        /**
-         * when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
-         *
-         * @default "api"
-         */
-        apiClientName?: string;
-        /**
-         * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
-         * will use `default` status code as fallback
-         *
-         * @see https://www.zodios.org/docs/api/api-definition#api-definition-structure
-         *
-         * works like `validateStatus` from axios
-         * @see https://github.com/axios/axios#handling-errors
-         *
-         * @default `(status >= 200 && status < 300)`
-         */
-        isMainResponseStatus?: string | ((status: number) => boolean);
-        /**
-         * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDefinition["errors"]` array
-         * ignores `default` status
-         *
-         * @see https://www.zodios.org/docs/api/api-definition#errors
-         *
-         * works like `validateStatus` from axios
-         * @see https://github.com/axios/axios#handling-errors
-         *
-         * @default `!(status >= 200 && status < 300)`
-         */
-        isErrorStatus?: string | ((status: number) => boolean);
-        /**
-         * when defined, will be used to pick the first MediaType found in (ResponseObject|RequestBodyObject)["content"] map matching the given expression
-         *
-         * context: some APIs returns multiple media types for the same response, this option allows you to pick which one to use
-         * or allows you to define a custom media type to use like `application/json-ld` or `application/vnd.api+json`) etc...
-         * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#response-object
-         * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-types
-         *
-         * @default `mediaType === "application/json"`
-         */
-        isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
-        /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDefinition["description"] */
-        useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
-        /**
-         * when true, will export all `#/components/schemas` even when not used in any PathItemObject
-         * @see https://github.com/astahmer/openapi-zod-client/issues/19
-         */
-        shouldExportAllSchemas?: boolean;
-        /**
-         * when true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
-         * @see https://github.com/astahmer/openapi-zod-client/issues/23
-         */
-        withImplicitRequiredProps?: boolean;
-        /**
-         * when true, will keep deprecated endpoints in the api output
-         * @default false
-         */
-        withDeprecatedEndpoints?: boolean;
-        /**
-         * groups endpoints by a given strategy
-         *
-         * when strategy is "tag" and multiple tags are defined for an endpoint, the first one will be used
-         *
-         * @default "none"
-         */
-        groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
-    };
+    options?:
+        | {
+              /** @see https://www.zodios.org/docs/client#baseurl */
+              baseUrl?: string;
+              /** @see https://www.zodios.org/docs/client#zodiosalias */
+              withAlias?: boolean;
+              /**
+               * when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
+               *
+               * @default "api"
+               */
+              apiClientName?: string;
+              /**
+               * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
+               * will use `default` status code as fallback
+               *
+               * @see https://www.zodios.org/docs/api/api-definition#api-definition-structure
+               *
+               * works like `validateStatus` from axios
+               * @see https://github.com/axios/axios#handling-errors
+               *
+               * @default `(status >= 200 && status < 300)`
+               */
+              isMainResponseStatus?: string | ((status: number) => boolean);
+              /**
+               * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDefinition["errors"]` array
+               * ignores `default` status
+               *
+               * @see https://www.zodios.org/docs/api/api-definition#errors
+               *
+               * works like `validateStatus` from axios
+               * @see https://github.com/axios/axios#handling-errors
+               *
+               * @default `!(status >= 200 && status < 300)`
+               */
+              isErrorStatus?: string | ((status: number) => boolean);
+              /**
+               * when defined, will be used to pick the first MediaType found in (ResponseObject|RequestBodyObject)["content"] map matching the given expression
+               *
+               * context: some APIs returns multiple media types for the same response, this option allows you to pick which one to use
+               * or allows you to define a custom media type to use like `application/json-ld` or `application/vnd.api+json`) etc...
+               * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#response-object
+               * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-types
+               *
+               * @default `mediaType === "application/json"`
+               */
+              isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
+              /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDefinition["description"] */
+              useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
+              /**
+               * when true, will export all `#/components/schemas` even when not used in any PathItemObject
+               * @see https://github.com/astahmer/openapi-zod-client/issues/19
+               */
+              shouldExportAllSchemas?: boolean;
+              /**
+               * when true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
+               * @see https://github.com/astahmer/openapi-zod-client/issues/23
+               */
+              withImplicitRequiredProps?: boolean;
+              /**
+               * when true, will keep deprecated endpoints in the api output
+               * @default false
+               */
+              withDeprecatedEndpoints?: boolean;
+              /**
+               * groups endpoints by a given strategy
+               *
+               * when strategy is "tag" and multiple tags are defined for an endpoint, the first one will be used
+               *
+               * @default "none"
+               */
+              groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
+          }
+        | undefined;
 };
 
 const originalPathParam = /:(\w+)/g;

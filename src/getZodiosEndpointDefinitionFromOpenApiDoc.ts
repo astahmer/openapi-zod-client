@@ -119,7 +119,7 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
                     endpointDescription.parameters.push({
                         name: "body",
                         type: "Body",
-                        description: requestBody.description,
+                        description: requestBody.description!,
                         schema: getZodVarName(
                             getZodSchema({
                                 schema: bodySchema,
@@ -215,8 +215,12 @@ export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, op
 
 const allowedPathInValues = ["query", "header", "path"] as Array<ParameterObject["in"]>;
 
-export type EndpointDescriptionWithRefs = Omit<ZodiosEndpointDefinition<any>, "response" | "parameters" | "errors"> & {
+export type EndpointDescriptionWithRefs = Omit<
+    ZodiosEndpointDefinition<any>,
+    "response" | "parameters" | "errors" | "description"
+> & {
     response: string;
+    description?: string | undefined;
     parameters: Array<
         Omit<Required<ZodiosEndpointDefinition<any>>["parameters"][number], "schema"> & { schema: string }
     >;

@@ -7,8 +7,8 @@ import { getRefName, normalizeString } from "./tokens";
 
 type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;
-    ctx?: TsConversionContext;
-    meta?: { name?: string; $ref?: string; isInline?: boolean };
+    ctx?: TsConversionContext | undefined;
+    meta?: { name?: string; $ref?: string; isInline?: boolean } | undefined;
 };
 
 export type TsConversionContext = {
@@ -18,12 +18,12 @@ export type TsConversionContext = {
     visitedsRefs?: Record<string, boolean>;
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
     ctx,
-}: TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
+}: // eslint-disable-next-line sonarjs/cognitive-complexity
+TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     const meta = {} as TsConversionArgs["meta"];
     const isInline = !inheritedMeta?.name;
 
@@ -62,7 +62,7 @@ export const getTypescriptFromOpenApi = ({
 
         if (schema.oneOf) {
             if (schema.oneOf.length === 1) {
-                return getTypescriptFromOpenApi({ schema: schema.oneOf[0], ctx, meta });
+                return getTypescriptFromOpenApi({ schema: schema.oneOf[0]!, ctx, meta });
             }
 
             return t.union(
@@ -73,7 +73,7 @@ export const getTypescriptFromOpenApi = ({
         // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
         if (schema.anyOf) {
             if (schema.anyOf.length === 1) {
-                return getTypescriptFromOpenApi({ schema: schema.anyOf[0], ctx, meta });
+                return getTypescriptFromOpenApi({ schema: schema.anyOf[0]!, ctx, meta });
             }
 
             const oneOf = t.union(
@@ -84,7 +84,7 @@ export const getTypescriptFromOpenApi = ({
 
         if (schema.allOf) {
             if (schema.allOf.length === 1) {
-                return getTypescriptFromOpenApi({ schema: schema.allOf[0], ctx, meta });
+                return getTypescriptFromOpenApi({ schema: schema.allOf[0]!, ctx, meta });
             }
 
             const types = schema.allOf.map(

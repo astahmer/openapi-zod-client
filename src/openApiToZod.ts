@@ -7,9 +7,9 @@ import { getRefName, normalizeString } from "./tokens";
 
 type ConversionArgs = {
     schema: SchemaObject | ReferenceObject;
-    ctx?: ConversionTypeContext;
-    meta?: CodeMetaData;
-    options?: TemplateContext["options"];
+    ctx?: ConversionTypeContext | undefined;
+    meta?: CodeMetaData | undefined;
+    options?: TemplateContext["options"] | undefined;
 };
 
 /**
@@ -40,7 +40,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         // circular(=recursive) reference
         if (nestingPath.split("_|_").length > 1 && nestingPath.includes("_|_" + refName)) {
-            return code.assign(ctx.zodSchemaByName[code.ref!]);
+            return code.assign(ctx.zodSchemaByName[code.ref!]!);
         }
 
         let result = ctx.zodSchemaByName[schema.$ref];
@@ -64,7 +64,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
-            return getZodSchema({ schema: schema.oneOf[0], ctx, meta, options });
+            return getZodSchema({ schema: schema.oneOf[0]!, ctx, meta, options });
         }
 
         return code.assign(
@@ -75,7 +75,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
     if (schema.anyOf) {
         if (schema.anyOf.length === 1) {
-            return getZodSchema({ schema: schema.anyOf[0], ctx, meta, options });
+            return getZodSchema({ schema: schema.anyOf[0]!, ctx, meta, options });
         }
 
         const types = schema.anyOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ");
@@ -85,7 +85,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (schema.allOf) {
         if (schema.allOf.length === 1) {
-            return getZodSchema({ schema: schema.allOf[0], ctx, meta, options });
+            return getZodSchema({ schema: schema.allOf[0]!, ctx, meta, options });
         }
 
         const types = schema.allOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options }));
@@ -164,7 +164,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
             properties =
                 "{ " +
-                propsMap.map(([prop, propSchema]) => `${normalizeString(prop)}: ${propSchema}`).join(", ") +
+                propsMap.map(([prop, propSchema]) => `${normalizeString(prop!)}: ${propSchema}`).join(", ") +
                 " }";
         }
 

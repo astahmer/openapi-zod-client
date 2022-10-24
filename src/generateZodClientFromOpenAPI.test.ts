@@ -1,5 +1,5 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
-import { OpenAPIObject, SchemasObject } from "openapi3-ts";
+import type { OpenAPIObject, SchemasObject } from "openapi3-ts";
 import { beforeAll, describe, expect, test } from "vitest";
 import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "./generateZodClientFromOpenAPI";
 
@@ -1494,7 +1494,7 @@ test("with optional, partial, all required objects", async () => {
                 get: {
                     operationId: "getRoot",
                     responses: {
-                        "200": { description: "OK", content: { "application/json": { schema: schemas.Root2 } } },
+                        "200": { description: "OK", content: { "application/json": { schema: schemas["Root2"] } } },
                     },
                 },
             },
@@ -1502,7 +1502,7 @@ test("with optional, partial, all required objects", async () => {
                 get: {
                     operationId: "getNested",
                     responses: {
-                        "200": { description: "OK", content: { "application/json": { schema: schemas.Nested2 } } },
+                        "200": { description: "OK", content: { "application/json": { schema: schemas["Nested2"] } } },
                     },
                 },
             },
@@ -1512,7 +1512,7 @@ test("with optional, partial, all required objects", async () => {
                     responses: {
                         "200": {
                             description: "OK",
-                            content: { "application/json": { schema: schemas.DeeplyNested } },
+                            content: { "application/json": { schema: schemas["DeeplyNested"] } },
                         },
                     },
                 },
@@ -1523,7 +1523,7 @@ test("with optional, partial, all required objects", async () => {
                     responses: {
                         "200": {
                             description: "OK",
-                            content: { "application/json": { schema: schemas.VeryDeeplyNested } },
+                            content: { "application/json": { schema: schemas["VeryDeeplyNested"] } },
                         },
                     },
                 },

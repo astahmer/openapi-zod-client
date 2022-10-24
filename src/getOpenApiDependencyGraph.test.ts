@@ -1,5 +1,5 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
-import { OpenAPIObject, SchemaObject } from "openapi3-ts";
+import type { OpenAPIObject, SchemaObject } from "openapi3-ts";
 import { get } from "pastable/server";
 import { expect, test } from "vitest";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
@@ -88,7 +88,7 @@ test("complex relations", () => {
         },
     } as Record<string, SchemaObject>;
 
-    const getSchemaByRef = (ref: string) => schemas[ref];
+    const getSchemaByRef = (ref: string) => schemas[ref]!;
     const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
         Object.keys(schemas),
         getSchemaByRef
@@ -168,7 +168,7 @@ test("recursive relations", () => {
     } as SchemaObject;
     const schemas = { UserWithFriends, Friend } as Record<string, SchemaObject>;
 
-    const getSchemaByRef = (ref: string) => schemas[ref];
+    const getSchemaByRef = (ref: string) => schemas[ref]!;
     const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
         Object.keys(schemas),
         getSchemaByRef
@@ -264,7 +264,7 @@ test("recursive relations along with some basics schemas", () => {
         },
     } as Record<string, SchemaObject>;
 
-    const getSchemaByRef = (ref: string) => schemas[ref];
+    const getSchemaByRef = (ref: string) => schemas[ref]!;
     const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
         Object.keys(schemas),
         getSchemaByRef

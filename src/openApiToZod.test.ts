@@ -1,9 +1,9 @@
-import { SchemaObject } from "openapi3-ts";
+import type { SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
 import { CodeMetaData, ConversionTypeContext, getZodSchema } from "./openApiToZod";
 
 const makeSchema = (schema: SchemaObject) => schema;
-const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData) =>
+const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData | undefined) =>
     getZodSchema({ schema: makeSchema(schema), meta }).toString();
 
 test("getSchemaAsZodString", () => {
@@ -117,7 +117,7 @@ test("getSchemaWithChainableAsZodString", () => {
 
 test("CodeMeta with ref", () => {
     const ctx: ConversionTypeContext = {
-        getSchemaByRef: (ref) => null as any,
+        getSchemaByRef: () => null as any,
         zodSchemaByName: {},
     };
 
@@ -154,7 +154,7 @@ test("CodeMeta with missing ref", () => {
         },
     } as Record<string, SchemaObject>;
     const ctx: ConversionTypeContext = {
-        getSchemaByRef: (ref) => schemas[ref],
+        getSchemaByRef: (ref) => schemas[ref]!,
         zodSchemaByName: {},
     };
 
@@ -204,7 +204,7 @@ test("CodeMeta with nested refs", () => {
         DeepNested: { type: "object", properties: { deep: { type: "boolean" } } },
     } as Record<string, SchemaObject>;
     const ctx: ConversionTypeContext = {
-        getSchemaByRef: (ref) => schemas[ref],
+        getSchemaByRef: (ref) => schemas[ref]!,
         zodSchemaByName: {},
     };
 
