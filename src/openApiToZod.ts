@@ -116,7 +116,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(
             match(schema.type)
                 .with("integer", () => "z.number()")
-                .otherwise(() => `z.${schema.type}()`)
+                .otherwise((type) => `z.${type}()`)
         );
     }
 
