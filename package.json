@@ -19,8 +19,8 @@
         "dev": "preconstruct watch",
         "build": "preconstruct build",
         "test": "vitest",
-        "lint": "eslint './src/**/*.ts' --cache --format=pretty",
-        "lint:fix": "eslint './src/**/*.ts' --cache --format=pretty --fix",
+        "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
+        "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix",
         "lint:ts": "tsc --noEmit",
         "release": "pnpm test && pnpm build && pnpm publish && git push"
     },
