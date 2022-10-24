@@ -1,18 +1,20 @@
-import { compile } from "handlebars";
-import fs from "fs-extra";
 import path from "node:path";
-import { OpenAPIObject, PathItemObject } from "openapi3-ts";
+
+import fs from "fs-extra";
+import { compile } from "handlebars";
+import type { OpenAPIObject, PathItemObject } from "openapi3-ts";
 import { capitalize, pick, sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
-import prettier, { Options } from "prettier";
+import type { Options } from "prettier";
+import prettier from "prettier";
 import parserTypescript from "prettier/parser-typescript";
 import { ts } from "tanu";
 import { match } from "ts-pattern";
+
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
-import {
-    EndpointDescriptionWithRefs,
-    getZodiosEndpointDefinitionFromOpenApiDoc,
-} from "./getZodiosEndpointDefinitionFromOpenApiDoc";
-import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
+import type { EndpointDescriptionWithRefs } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
+import { getZodiosEndpointDefinitionFromOpenApiDoc } from "./getZodiosEndpointDefinitionFromOpenApiDoc";
+import type { TsConversionContext } from "./openApiToTypescript";
+import { getTypescriptFromOpenApi } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
 import { getRefFromName, getRefName, normalizeString } from "./tokens";
 import { topologicalSort } from "./topologicalSort";
@@ -49,9 +51,7 @@ export const getZodClientTemplateContext = (
             data.circularTypeByName[name] = true;
         }
 
-        const actualCode = isCircular ? `z.lazy(() => ${code})` : code;
-
-        return actualCode;
+        return isCircular ? `z.lazy(() => ${code})` : code;
     };
 
     for (const name in result.zodSchemaByName) {
@@ -116,6 +116,7 @@ export const getZodClientTemplateContext = (
             if (!data.endpointsGroups[groupName]) {
                 data.endpointsGroups[groupName] = makeEndpointTemplateContext();
             }
+
             data.endpointsGroups[groupName].endpoints.push(endpoint);
 
             if (!dependenciesByGroupName.has(groupName)) {
@@ -128,6 +129,7 @@ export const getZodClientTemplateContext = (
                 if (schemaName.startsWith("z.")) return;
                 dependencies.add(schemaName);
             };
+
             addDependencyIfNeeded(endpoint.response);
             endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
             endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
@@ -141,6 +143,7 @@ export const getZodClientTemplateContext = (
                     if (data.types[refName]) {
                         data.endpointsGroups[groupName].types[refName] = data.types[refName];
                     }
+
                     data.endpointsGroups[groupName].schemas[refName] = data.schemas[refName];
 
                     depsGraphs.deepDependencyGraph[getRefFromName(refName)]?.forEach((transitiveRef) => {
@@ -194,6 +197,7 @@ export const getZodClientTemplateContext = (
 
     return data;
 };
+
 type GenerateZodClientFromOpenApiArgs<TOptions extends TemplateContext["options"] = TemplateContext["options"]> = {
     openApiDoc: OpenAPIObject;
     templatePath?: string;
@@ -233,7 +237,8 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
             .with("tag", "method", () => path.join(__dirname, "../src/template-grouped.hbs"))
             .exhaustive();
     }
-    const source = await fs.readFile(templatePath, "utf-8");
+
+    const source = await fs.readFile(templatePath, "utf8");
     const template = compile(source);
     const willWriteToFile = !disableWriteToFile && distPath;
     // TODO parallel writes ? does it really matter here ?
@@ -252,16 +257,16 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
             ])
         );
 
-        const indexSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-index.hbs"), "utf-8");
+        const indexSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-index.hbs"), "utf8");
         const indexTemplate = compile(indexSource);
         const indexOutput = maybePretty(indexTemplate({ groupNames }), prettierConfig);
         outputByGroupName["__index"] = indexOutput;
 
         if (willWriteToFile) {
-            await fs.writeFile(path.join(distPath, `index.ts`), indexOutput);
+            await fs.writeFile(path.join(distPath, "index.ts"), indexOutput);
         }
 
-        const commonSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-common.hbs"), "utf-8");
+        const commonSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-common.hbs"), "utf8");
         const commonTemplate = compile(commonSource);
         const commonSchemaNames = [...(data.commonSchemaNames ?? [])];
         const commonOutput = maybePretty(
@@ -274,7 +279,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         outputByGroupName["__common"] = commonOutput;
 
         if (willWriteToFile) {
-            await fs.writeFile(path.join(distPath, `common.ts`), commonOutput);
+            await fs.writeFile(path.join(distPath, "common.ts"), commonOutput);
         }
 
         for (const groupName in data.endpointsGroups) {
@@ -313,7 +318,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
 export function maybePretty(input: string, options?: Options | null): string {
     try {
         return prettier.format(input.trim(), { parser: "typescript", plugins: [parserTypescript], ...options });
-    } catch (e) {
+    } catch {
         return input; // assume it's invalid syntax and ignore
     }
 }
@@ -321,6 +326,7 @@ export function maybePretty(input: string, options?: Options | null): string {
 const makeEndpointTemplateContext = (): MinimalTemplateContext => {
     return { schemas: {}, endpoints: [], types: {} };
 };
+
 const makeTemplateContext = (): TemplateContext => {
     return {
         ...makeEndpointTemplateContext(),
@@ -334,7 +340,7 @@ type MinimalTemplateContext = Pick<TemplateContext, "endpoints" | "schemas" | "t
     imports?: Record<string, string>;
 };
 
-export interface TemplateContext {
+export type TemplateContext = {
     schemas: Record<string, string>;
     endpoints: EndpointDescriptionWithRefs[];
     endpointsGroups: Record<string, MinimalTemplateContext>;
@@ -413,7 +419,7 @@ export interface TemplateContext {
          */
         groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
     };
-}
+};
 
 const originalPathParam = /:(\w+)/g;
 const getOriginalPathWithBrackets = (path: string) => path.replaceAll(originalPathParam, "{$1}");

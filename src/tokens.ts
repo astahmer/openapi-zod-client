@@ -11,7 +11,7 @@ export function normalizeString(text: string) {
         .replace(/\s+/g, "_") // Replace spaces with _
         .replace(/-+/g, "_") // Replace - with _
         .replace(/[^\w\-]+/g, "") // Remove all non-word chars
-        .replace(/\-\-+/g, "-"); // Replace multiple - with single -
+        .replace(/--+/g, "-"); // Replace multiple - with single -
 }
 
 const prefixStringStartingWithNumberIfNeeded = (str: string) => {

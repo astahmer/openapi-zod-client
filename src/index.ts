@@ -1,5 +1,5 @@
-export { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 export { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "./generateZodClientFromOpenAPI";
+export { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 export {
     type EndpointDescriptionWithRefs,
     getZodiosEndpointDefinitionFromOpenApiDoc,
