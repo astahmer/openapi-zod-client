@@ -1,6 +1,5 @@
-import { ZodiosEndpointDefinition } from "@zodios/core";
-import {
-    isReferenceObject,
+import type { ZodiosEndpointDefinition } from "@zodios/core";
+import type {
     OpenAPIObject,
     OperationObject,
     ParameterObject,
@@ -9,20 +8,22 @@ import {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
+import { isReferenceObject } from "openapi3-ts";
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
+import { sync } from "whence";
+
 import type { TemplateContext } from "./generateZodClientFromOpenAPI";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
-import { CodeMeta, ConversionTypeContext, getZodChainablePresence, getZodSchema } from "./openApiToZod";
+import type { CodeMeta, ConversionTypeContext } from "./openApiToZod";
+import { getZodChainablePresence, getZodSchema } from "./openApiToZod";
 import { getRefFromName, normalizeString, pathToVariableName } from "./tokens";
-
-import { sync } from "whence";
 
 const voidSchema = "z.void()";
 
 export const getZodiosEndpointDefinitionFromOpenApiDoc = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
-    const getSchemaByRef = (ref: string) =>
-        get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", ".")) as SchemaObject;
+    const getSchemaByRef: ConversionTypeContext["getSchemaByRef"] = (ref: string) =>
+        get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", "."));
 
     const endpoints = [];
 

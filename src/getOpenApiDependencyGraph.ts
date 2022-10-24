@@ -1,4 +1,5 @@
-import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
+import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+import { isReferenceObject } from "openapi3-ts";
 
 export const getOpenApiDependencyGraph = (
     schemaRef: string[],
@@ -14,6 +15,7 @@ export const getOpenApiDependencyGraph = (
             if (!refsDependencyGraph[fromRef]) {
                 refsDependencyGraph[fromRef] = new Set();
             }
+
             refsDependencyGraph[fromRef].add(schema.$ref);
 
             if (visitedsRefs[schema.$ref]) return;
@@ -27,6 +29,7 @@ export const getOpenApiDependencyGraph = (
             for (const allOf of schema.allOf) {
                 visit(allOf, fromRef);
             }
+
             return;
         }
 
@@ -34,6 +37,7 @@ export const getOpenApiDependencyGraph = (
             for (const oneOf of schema.oneOf) {
                 visit(oneOf, fromRef);
             }
+
             return;
         }
 
@@ -41,12 +45,13 @@ export const getOpenApiDependencyGraph = (
             for (const anyOf of schema.anyOf) {
                 visit(anyOf, fromRef);
             }
+
             return;
         }
 
         if (schema.type === "array") {
             if (!schema.items) return;
-            return visit(schema.items, fromRef);
+            return void visit(schema.items, fromRef);
         }
 
         if (schema.type === "object" || schema.properties || schema.additionalProperties) {
@@ -85,6 +90,7 @@ export const getOpenApiDependencyGraph = (
                 });
             }
         };
+
         deps.forEach((dep) => visit(dep));
     });
 

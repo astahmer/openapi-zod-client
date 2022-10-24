@@ -1,20 +1,22 @@
-import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
+import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+import { isReferenceObject } from "openapi3-ts";
 import { t, ts } from "tanu";
-import { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
+import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
+
 import { getRefName, normalizeString } from "./tokens";
 
-interface TsConversionArgs {
+type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;
     ctx?: TsConversionContext;
     meta?: { name?: string; $ref?: string; isInline?: boolean };
-}
+};
 
-export interface TsConversionContext {
+export type TsConversionContext = {
     nodeByRef: Record<string, ts.Node>;
     getSchemaByRef: (ref: string) => SchemaObject | ReferenceObject;
     rootRef?: string;
     visitedsRefs?: Record<string, boolean>;
-}
+};
 
 export const getTypescriptFromOpenApi = ({
     schema,
@@ -111,6 +113,7 @@ export const getTypescriptFromOpenApi = ({
 
                 return t.array(arrayOfType);
             }
+
             return t.array(t.any());
         }
 
@@ -148,8 +151,7 @@ export const getTypescriptFromOpenApi = ({
                                 undefined,
                                 ts.factory.createIdentifier("key"),
                                 undefined,
-                                ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword),
-                                undefined
+                                ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword)
                             ),
                         ],
                         additionalPropertiesType as ts.TypeNode
@@ -158,7 +160,7 @@ export const getTypescriptFromOpenApi = ({
             }
 
             const props = Object.fromEntries(
-                Object.entries(schema.properties!).map(([prop, propSchema]) => {
+                Object.entries(schema.properties).map(([prop, propSchema]) => {
                     let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta }) as TypeDefinition;
                     if (typeof propType === "string") {
                         if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
@@ -197,6 +199,7 @@ export const getTypescriptFromOpenApi = ({
         ? wrapTypeIfInline({ isInline, name: inheritedMeta?.name, typeDef: tsResult as TypeDefinition })
         : tsResult;
 };
+
 type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
 

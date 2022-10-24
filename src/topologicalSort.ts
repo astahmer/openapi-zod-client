@@ -10,7 +10,7 @@ export function topologicalSort(graph: Record<string, Set<string>>) {
 
         if (graph[name]) {
             graph[name].forEach((dep) => {
-                if (ancestors.indexOf(dep) >= 0) {
+                if (ancestors.includes(dep)) {
                     // if already in ancestors, a closed chain (recursive relation) exists
                     return;
                     // throw new Error(
@@ -24,7 +24,7 @@ export function topologicalSort(graph: Record<string, Set<string>>) {
             });
         }
 
-        if (sorted.indexOf(name) < 0) sorted.push(name);
+        if (!sorted.includes(name)) sorted.push(name);
     }
 
     // 2. topological sort

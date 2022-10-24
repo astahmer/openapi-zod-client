@@ -1,15 +1,16 @@
-import SwaggerParser from "@apidevtools/swagger-parser";
-import { OpenAPIObject } from "openapi3-ts";
-import { resolveConfig } from "prettier";
-import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
-import cac from "cac";
-import { resolve } from "node:path";
 import { readFileSync } from "node:fs";
-import type { PackageJson } from "type-fest";
+import { resolve } from "node:path";
+
+import SwaggerParser from "@apidevtools/swagger-parser";
+import cac from "cac";
+import type { OpenAPIObject } from "openapi3-ts";
 import { safeJSONParse } from "pastable/server";
+import { resolveConfig } from "prettier";
+
+import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
 
 const cli = cac("openapi-zod-client");
-const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf-8")) as PackageJson;
+const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf-8"));
 
 cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     .option("-o, --output <path>", "Output path for the zodios api client ts file (defaults to `<input>.client.ts`)")

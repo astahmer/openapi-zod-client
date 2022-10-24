@@ -1,14 +1,16 @@
-import { isReferenceObject, ReferenceObject, SchemaObject } from "openapi3-ts";
+import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+import { isReferenceObject } from "openapi3-ts";
 import { match } from "ts-pattern";
-import { TemplateContext } from "./generateZodClientFromOpenAPI";
+
+import type { TemplateContext } from "./generateZodClientFromOpenAPI";
 import { getRefName, normalizeString } from "./tokens";
 
-interface ConversionArgs {
+type ConversionArgs = {
     schema: SchemaObject | ReferenceObject;
     ctx?: ConversionTypeContext;
     meta?: CodeMetaData;
     options?: TemplateContext["options"];
-}
+};
 
 /**
  * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#schemaObject
@@ -110,7 +112,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         return code.assign(
             match(schema.type)
-                .with("integer", () => `z.number()`)
+                .with("integer", () => "z.number()")
                 .otherwise(() => `z.${schema.type}()`)
         );
     }
@@ -119,7 +121,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         if (schema.items) {
             return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})`);
         }
-        return code.assign(`z.array(z.any())`);
+
+        return code.assign("z.array(z.any())");
     }
 
     if (schema.type === "object" || schema.properties || schema.additionalProperties) {
@@ -165,22 +168,22 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
 
-    if (!schema.type) return code.assign(`z.unknown()`);
+    if (!schema.type) return code.assign("z.unknown()");
 
     throw new Error(`Unsupported schema type: ${schema.type}`);
 }
 
-export interface ConversionTypeContext {
+export type ConversionTypeContext = {
     getSchemaByRef: ($ref: string) => SchemaObject;
     zodSchemaByName: Record<string, string>;
-}
+};
 
-export interface CodeMetaData {
+export type CodeMetaData = {
     isRequired?: boolean;
     name?: string;
     parent?: CodeMeta;
     referencedBy?: CodeMeta[];
-}
+};
 
 type DefinedCodeMetaProps = "referencedBy";
 type DefinedCodeMetaData = Pick<Required<CodeMetaData>, DefinedCodeMetaProps> &
@@ -189,12 +192,26 @@ type DefinedCodeMetaData = Pick<Required<CodeMetaData>, DefinedCodeMetaProps> &
 const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
     const chains: string[] = [];
 
-    if (schema.type === "string") {
-        chains.push(getZodChainableStringValidations(schema, meta));
-    } else if (schema.type === "number" || schema.type === "integer") {
-        chains.push(getZodChainableNumberValidations(schema, meta));
-    } else if (schema.type === "array") {
-        chains.push(getZodChainableArrayValidations(schema, meta));
+    switch (schema.type) {
+        case "string": {
+            chains.push(getZodChainableStringValidations(schema, meta));
+
+            break;
+        }
+
+        case "number":
+        case "integer": {
+            chains.push(getZodChainableNumberValidations(schema, meta));
+
+            break;
+        }
+
+        case "array": {
+            chains.push(getZodChainableArrayValidations(schema, meta));
+
+            break;
+        }
+        // No default
     }
 
     const output = chains.concat(getZodChainablePresence(schema, meta)).filter(Boolean).join(".");
@@ -203,15 +220,15 @@ const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
 
 export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
     if (schema.nullable && !meta?.isRequired) {
-        return `nullish()`;
+        return "nullish()";
     }
 
     if (schema.nullable) {
-        return `nullable()`;
+        return "nullable()";
     }
 
     if (!meta?.isRequired) {
-        return `optional()`;
+        return "optional()";
     }
 
     return "";
@@ -237,10 +254,10 @@ const getZodChainableStringValidations = (schema: SchemaObject, meta?: CodeMetaD
 
     if (schema.format) {
         const chain = match(schema.format)
-            .with("email", () => `email()`)
-            .with("hostname", () => `url()`)
-            .with("uri", () => `url()`)
-            .with("uuid", () => `uuid()`)
+            .with("email", () => "email()")
+            .with("hostname", () => "url()")
+            .with("uri", () => "url()")
+            .with("uuid", () => "uuid()")
             .otherwise(() => "");
 
         if (chain) {
@@ -250,12 +267,14 @@ const getZodChainableStringValidations = (schema: SchemaObject, meta?: CodeMetaD
 
     return validations.join(".");
 };
+
 const getZodChainableNumberValidations = (schema: SchemaObject, meta?: CodeMetaData) => {
     const validations: string[] = [];
 
     if (schema.type === "integer") {
-        validations.push(`int()`);
+        validations.push("int()");
     }
+
     if (schema.minimum) {
         if (schema.exclusiveMinimum) {
             validations.push(`gt(${schema.minimum})`);
@@ -319,7 +338,7 @@ export class CodeMeta {
             this.ref = schema.$ref;
         }
 
-        // @ts-ignore
+        // @ts-expect-error
         this.meta = { ...meta };
         this.meta.referencedBy = [...(meta?.referencedBy || [])];
 
