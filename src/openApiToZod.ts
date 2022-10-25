@@ -118,6 +118,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(
             match(schema.type)
                 .with("integer", () => "z.number()")
+                .with("string", () =>
+                    match(schema.format)
+                        .with("binary", () => "z.instanceof(File)")
+                        .otherwise(() => "z.string()")
+                )
                 .otherwise((type) => `z.${type}()`)
         );
     }

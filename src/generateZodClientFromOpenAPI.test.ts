@@ -105,6 +105,12 @@ test("getZodClientTemplateContext", async () => {
                   "method": "post",
                   "parameters": [
                       {
+                          "description": undefined,
+                          "name": "body",
+                          "schema": "z.instanceof(File)",
+                          "type": "Body",
+                      },
+                      {
                           "name": "petId",
                           "schema": "z.number().int()",
                           "type": "Path",
@@ -116,7 +122,7 @@ test("getZodClientTemplateContext", async () => {
                       },
                   ],
                   "path": "/pet/:petId/uploadImage",
-                  "requestFormat": "json",
+                  "requestFormat": "binary",
                   "response": "ApiResponse",
               },
               {
@@ -489,8 +495,13 @@ describe("generateZodClientFromOpenAPI", () => {
             {
               method: "post",
               path: "/pet/:petId/uploadImage",
-              requestFormat: "json",
+              requestFormat: "binary",
               parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: z.instanceof(File),
+                },
                 {
                   name: "petId",
                   type: "Path",
@@ -849,8 +860,13 @@ describe("generateZodClientFromOpenAPI", () => {
               method: "post",
               path: "/pet/:petId/uploadImage",
               alias: "uploadFile",
-              requestFormat: "json",
+              requestFormat: "binary",
               parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: z.instanceof(File),
+                },
                 {
                   name: "petId",
                   type: "Path",
@@ -1218,8 +1234,13 @@ describe("generateZodClientFromOpenAPI", () => {
             {
               method: "post",
               path: "/pet/:petId/uploadImage",
-              requestFormat: "json",
+              requestFormat: "binary",
               parameters: [
+                {
+                  name: "body",
+                  type: "Body",
+                  schema: z.instanceof(File),
+                },
                 {
                   name: "petId",
                   type: "Path",
