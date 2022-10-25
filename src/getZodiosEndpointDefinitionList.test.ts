@@ -597,7 +597,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                   ],
@@ -619,7 +619,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                       {
@@ -656,7 +656,7 @@ test("petstore.yaml", async () => {
                       },
                       {
                           "name": "petId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                   ],
@@ -672,7 +672,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                       {
@@ -737,7 +737,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "orderId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                   ],
@@ -764,7 +764,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "orderId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                   ],
