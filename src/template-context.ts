@@ -298,6 +298,18 @@ export type TemplateContext = {
                * @default 4
                */
               complexityThreshold?: number;
+              /**
+               * when defined as "auto-correct", will automatically try to correct some common mistakes in the parsed OpenAPI spec
+               * tl;dr: use `default` as fallback for `response` undeclared responses
+               *
+               * - if no main response has been found, this should be considered it as a fallback
+               * - else this will be added as an error response
+               *
+               * @see https://github.com/astahmer/openapi-zod-client/pull/30#issuecomment-1280434068
+               *
+               * @default "spec-compliant"
+               */
+              defaultStatusBehavior?: "spec-compliant" | "auto-correct";
           }
         | undefined;
 };

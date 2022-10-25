@@ -1,7 +1,7 @@
 import path from "node:path";
 
 import fs from "fs-extra";
-import { compile } from "handlebars";
+import { HelperOptions, create } from "handlebars";
 import type { OpenAPIObject } from "openapi3-ts";
 import { capitalize, pick } from "pastable/server";
 import type { Options } from "prettier";
@@ -52,7 +52,8 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     }
 
     const source = await fs.readFile(templatePath, "utf8");
-    const template = compile(source);
+    const hbs = getHandlebars();
+    const template = hbs.compile(source);
     const willWriteToFile = !disableWriteToFile && distPath;
     // TODO parallel writes ? does it really matter here ?
 
@@ -71,7 +72,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         );
 
         const indexSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-index.hbs"), "utf8");
-        const indexTemplate = compile(indexSource);
+        const indexTemplate = hbs.compile(indexSource);
         const indexOutput = maybePretty(indexTemplate({ groupNames }), prettierConfig);
         outputByGroupName["__index"] = indexOutput;
 
@@ -80,7 +81,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         }
 
         const commonSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-common.hbs"), "utf8");
-        const commonTemplate = compile(commonSource);
+        const commonTemplate = hbs.compile(commonSource);
         const commonSchemaNames = [...(data.commonSchemaNames ?? [])];
         const commonOutput = maybePretty(
             commonTemplate({
@@ -125,4 +126,19 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     }
 
     return prettyOutput as any;
+};
+
+export const getHandlebars = () => {
+    const instance = create();
+    instance.registerHelper("ifeq", function (a: string, b: string, options: HelperOptions) {
+        if (a === b) {
+            // @ts-expect-error
+            return options.fn(this);
+        }
+
+        // @ts-expect-error
+        return options.inverse(this);
+    });
+
+    return instance;
 };
