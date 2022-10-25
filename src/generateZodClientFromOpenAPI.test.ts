@@ -133,7 +133,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "z.enum(["available", "pending", "sold"]).optional()",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional().default("available")",
                           "type": "Query",
                       },
                   ],
@@ -513,7 +513,10 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "status",
                   type: "Query",
-                  schema: z.enum(["available", "pending", "sold"]).optional(),
+                  schema: z
+                    .enum(["available", "pending", "sold"])
+                    .optional()
+                    .default("available"),
                 },
               ],
               response: z.array(Pet),
@@ -871,7 +874,10 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "status",
                   type: "Query",
-                  schema: z.enum(["available", "pending", "sold"]).optional(),
+                  schema: z
+                    .enum(["available", "pending", "sold"])
+                    .optional()
+                    .default("available"),
                 },
               ],
               response: z.array(Pet),
@@ -1236,7 +1242,10 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "status",
                   type: "Query",
-                  schema: z.enum(["available", "pending", "sold"]).optional(),
+                  schema: z
+                    .enum(["available", "pending", "sold"])
+                    .optional()
+                    .default("available"),
                 },
               ],
               response: z.array(Pet),
