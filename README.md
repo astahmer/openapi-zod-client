@@ -56,6 +56,7 @@ Options:
   --implicit-required       When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
   --with-deprecated         when true, will keep deprecated endpoints in the api output
   --group-strategy          groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'
+  --complexity-threshold    schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
   -v, --version             Display version number
   -h, --help                Display this message
 ```
