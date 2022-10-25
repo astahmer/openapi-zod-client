@@ -179,7 +179,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     throw new Error(`Unsupported schema type: ${schema.type}`);
 }
 
-const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
+export const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
     const chains: string[] = [];
 
     match(schema.type)
@@ -195,7 +195,7 @@ const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
     return output ? `.${output}` : "";
 };
 
-export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
+const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
     if (schema.nullable && !meta?.isRequired) {
         return "nullish()";
     }
@@ -213,7 +213,7 @@ export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaDat
 
 // TODO OA prefixItems -> z.tuple
 
-export const getZodChainableDefault = (schema: SchemaObject) => {
+const getZodChainableDefault = (schema: SchemaObject) => {
     if (schema.default) {
         const value = typeof schema.default === "string" ? `"${schema.default}"` : schema.default;
         return `default(${value})`;

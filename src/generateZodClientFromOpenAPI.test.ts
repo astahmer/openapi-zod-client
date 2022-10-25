@@ -90,7 +90,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                   ],
@@ -106,7 +106,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                       {
@@ -215,7 +215,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [
                       {
                           "name": "orderId",
-                          "schema": "z.number()",
+                          "schema": "z.number().int()",
                           "type": "Path",
                       },
                   ],
@@ -469,7 +469,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "petId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
               ],
               response: Pet,
@@ -494,7 +494,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "petId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
                 {
                   name: "additionalMetadata",
@@ -586,7 +586,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "orderId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
               ],
               response: Order,
@@ -828,7 +828,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "petId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
               ],
               response: Pet,
@@ -854,7 +854,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "petId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
                 {
                   name: "additionalMetadata",
@@ -951,7 +951,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "orderId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
               ],
               response: Order,
@@ -1198,7 +1198,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "petId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
               ],
               response: Pet,
@@ -1223,7 +1223,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "petId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
                 {
                   name: "additionalMetadata",
@@ -1315,7 +1315,7 @@ describe("generateZodClientFromOpenAPI", () => {
                 {
                   name: "orderId",
                   type: "Path",
-                  schema: z.number(),
+                  schema: z.number().int(),
                 },
               ],
               response: Order,

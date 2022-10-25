@@ -144,7 +144,7 @@ const endpoints = makeApi([
             {
                 name: "limit",
                 type: "Query",
-                schema: z.number().optional(),
+                schema: z.number().int().optional(),
             },
         ],
         response: z.array(Pet),
@@ -201,7 +201,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             {
                 name: "limit",
                 type: "Query",
-                schema: z.number().optional(),
+                schema: z.number().int().optional(),
             },
         ],
         response: z.array(Pet),
@@ -230,7 +230,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             {
                 name: "id",
                 type: "Path",
-                schema: z.number(),
+                schema: z.number().int(),
             },
         ],
         response: Pet,
@@ -244,7 +244,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
             {
                 name: "id",
                 type: "Path",
-                schema: z.number(),
+                schema: z.number().int(),
             },
         ],
         response: Error,

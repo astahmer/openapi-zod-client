@@ -15,7 +15,7 @@ import { sync } from "whence";
 
 import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
-import { getZodChainableDefault, getZodChainablePresence, getZodSchema } from "./openApiToZod";
+import { getZodChain, getZodSchema } from "./openApiToZod";
 import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";
 import { getRefFromName, normalizeString, pathToVariableName } from "./utils";
@@ -162,12 +162,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         ctx,
                         meta: { isRequired: paramItem.in === "path" ? true : paramItem.required ?? false },
                     });
-                    const chains = [
-                        getZodChainablePresence(paramSchema, paramCode.meta),
-                        getZodChainableDefault(paramSchema),
-                    ]
-                        .filter(Boolean)
-                        .join(".");
 
                     endpointDescription.parameters.push({
                         name: paramItem.name,
@@ -177,7 +171,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                             .with("path", () => "Path")
                             .run() as "Header" | "Query" | "Path",
                         schema: getZodVarName(
-                            paramCode.assign(paramCode.toString() + (chains ? "." + chains : "")),
+                            paramCode.assign(paramCode.toString() + getZodChain(paramSchema, paramCode.meta)),
                             paramItem.name
                         ),
                     });
