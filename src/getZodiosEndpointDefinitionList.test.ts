@@ -418,7 +418,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "z.enum(["available", "pending", "sold"]).optional()",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional().default("available")",
                           "type": "Query",
                       },
                   ],
@@ -548,7 +548,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "z.enum(["available", "pending", "sold"]).optional()",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional().default("available")",
                           "type": "Query",
                       },
                   ],

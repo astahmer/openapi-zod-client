@@ -182,32 +182,16 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
     const chains: string[] = [];
 
-    switch (schema.type) {
-        case "string": {
-            chains.push(getZodChainableStringValidations(schema));
+    match(schema.type)
+        .with("string", () => chains.push(getZodChainableStringValidations(schema)))
+        .with("number", "integer", () => chains.push(getZodChainableNumberValidations(schema)))
+        .with("array", () => chains.push(getZodChainableArrayValidations(schema)))
+        .otherwise(() => void 0);
 
-            break;
-        }
-
-        case "number":
-        case "integer": {
-            chains.push(getZodChainableNumberValidations(schema));
-
-            break;
-        }
-
-        case "array": {
-            chains.push(getZodChainableArrayValidations(schema));
-
-            break;
-        }
-
-        default: {
-            break;
-        }
-    }
-
-    const output = chains.concat(getZodChainablePresence(schema, meta)).filter(Boolean).join(".");
+    const output = chains
+        .concat(getZodChainablePresence(schema, meta), getZodChainableDefault(schema))
+        .filter(Boolean)
+        .join(".");
     return output ? `.${output}` : "";
 };
 
@@ -227,8 +211,16 @@ export const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaDat
     return "";
 };
 
-// TODO z.default()
 // TODO OA prefixItems -> z.tuple
+
+export const getZodChainableDefault = (schema: SchemaObject) => {
+    if (schema.default) {
+        const value = typeof schema.default === "string" ? `"${schema.default}"` : schema.default;
+        return `default(${value})`;
+    }
+
+    return "";
+};
 
 const getZodChainableStringValidations = (schema: SchemaObject) => {
     const validations: string[] = [];

@@ -317,12 +317,12 @@ const endpoints = makeApi([
             {
                 name: "version",
                 type: "Path",
-                schema: z.string(),
+                schema: z.string().default("v1"),
             },
             {
                 name: "dataset",
                 type: "Path",
-                schema: z.string(),
+                schema: z.string().default("oa_citations"),
             },
         ],
         response: z.array(z.record(z.object({}).partial())),
