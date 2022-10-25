@@ -14,7 +14,22 @@ exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
-const endpoints = makeApi([]);
+const endpoints = makeApi([
+    {
+        method: "post",
+        path: "/streams",
+        description: \`subscribes a client to receive out-of-band data\`,
+        requestFormat: "json",
+        parameters: [
+            {
+                name: "callbackUrl",
+                type: "Query",
+                schema: z.string().url(),
+            },
+        ],
+        response: z.object({ subscriptionId: z.string() }),
+    },
+]);
 
 export const api = new Zodios(endpoints);
 "
@@ -109,6 +124,29 @@ const endpoints = makeApi([
         response: pullrequest,
     },
     {
+        method: "post",
+        path: "/2.0/repositories/:username/:slug/pullrequests/:pid/merge",
+        requestFormat: "json",
+        parameters: [
+            {
+                name: "username",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "slug",
+                type: "Path",
+                schema: z.string(),
+            },
+            {
+                name: "pid",
+                type: "Path",
+                schema: z.string(),
+            },
+        ],
+        response: z.void(),
+    },
+    {
         method: "get",
         path: "/2.0/users/:username",
         requestFormat: "json",
@@ -153,7 +191,7 @@ const endpoints = makeApi([
         method: "post",
         path: "/pets",
         requestFormat: "json",
-        response: Error,
+        response: z.void(),
     },
     {
         method: "get",
@@ -247,7 +285,7 @@ Sed tempus felis lobortis leo pulvinar rutrum. Nam mattis velit nisl, eu condime
                 schema: z.number().int(),
             },
         ],
-        response: Error,
+        response: z.void(),
     },
 ]);
 

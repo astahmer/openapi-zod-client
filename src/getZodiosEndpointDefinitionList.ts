@@ -29,7 +29,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
     const endpoints = [];
 
-    let isMainResponseStatus = (status: number) => status === 200;
+    let isMainResponseStatus = (status: number) => status >= 200 && status < 300;
     if (options?.isMainResponseStatus) {
         isMainResponseStatus =
             typeof options.isMainResponseStatus === "string"
@@ -215,7 +215,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 if (schemaString) {
                     const status = Number(statusCode);
 
-                    if (isMainResponseStatus(status) || (statusCode === "default" && !endpointDescription.response)) {
+                    if (isMainResponseStatus(status) && !endpointDescription.response) {
                         endpointDescription.response = schemaString;
 
                         if (
