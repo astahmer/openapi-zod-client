@@ -132,10 +132,29 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
                 const mediaTypes = Object.keys(requestBody.content ?? {});
-                const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
+                const matchingMediaType = mediaTypes.find(isAllowedBodyMediaTypes);
 
                 const bodySchema = matchingMediaType && requestBody.content?.[matchingMediaType]?.schema;
                 if (bodySchema) {
+                    match(matchingMediaType)
+                        .with("application/octet-stream", () => {
+                            endpointDescription.requestFormat = "binary";
+                        })
+                        .with("application/x-www-form-urlencoded", () => {
+                            endpointDescription.requestFormat = "form-url";
+                        })
+                        .with("multipart/form-data", () => {
+                            endpointDescription.requestFormat = "form-data";
+                        })
+                        .otherwise((value) => {
+                            if (value.includes("json")) {
+                                endpointDescription.requestFormat = "json";
+                                return;
+                            }
+
+                            endpointDescription.requestFormat = "text";
+                        });
+
                     endpointDescription.parameters.push({
                         name: "body",
                         type: "Body",
@@ -247,3 +266,15 @@ export type EndpointDescriptionWithRefs = Omit<
 };
 
 const pathParamRegex = /{(\w+)}/g;
+
+const allowedBodyMediaTypes = [
+    "application/octet-stream",
+    "multipart/form-data",
+    "application/x-www-form-urlencoded",
+] as const;
+const isAllowedBodyMediaTypes = (
+    mediaType: string
+): mediaType is typeof allowedBodyMediaTypes[number] | `application/${string}json${string}` | `text/${string}` =>
+    (mediaType.includes("application/") && mediaType.includes("json")) ||
+    allowedBodyMediaTypes.includes(mediaType as any) ||
+    mediaType.includes("text/");

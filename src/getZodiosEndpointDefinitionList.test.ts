@@ -671,6 +671,12 @@ test("petstore.yaml", async () => {
                   "method": "post",
                   "parameters": [
                       {
+                          "description": undefined,
+                          "name": "body",
+                          "schema": "z.instanceof(File)",
+                          "type": "Body",
+                      },
+                      {
                           "name": "petId",
                           "schema": "z.number().int()",
                           "type": "Path",
@@ -682,7 +688,7 @@ test("petstore.yaml", async () => {
                       },
                   ],
                   "path": "/pet/:petId/uploadImage",
-                  "requestFormat": "json",
+                  "requestFormat": "binary",
                   "response": "ApiResponse",
               },
               {

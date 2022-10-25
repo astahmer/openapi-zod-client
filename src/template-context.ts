@@ -254,7 +254,7 @@ export type TemplateContext = {
                */
               isErrorStatus?: string | ((status: number) => boolean);
               /**
-               * when defined, will be used to pick the first MediaType found in (ResponseObject|RequestBodyObject)["content"] map matching the given expression
+               * when defined, will be used to pick the first MediaType found in ResponseObject["content"] map matching the given expression
                *
                * context: some APIs returns multiple media types for the same response, this option allows you to pick which one to use
                * or allows you to define a custom media type to use like `application/json-ld` or `application/vnd.api+json`) etc...
