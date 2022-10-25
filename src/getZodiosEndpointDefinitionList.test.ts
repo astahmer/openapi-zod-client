@@ -793,7 +793,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user",
                   "requestFormat": "json",
-                  "response": "User",
+                  "response": "",
               },
               {
                   "alias": "createUsersWithListInput",
@@ -847,7 +847,7 @@ test("petstore.yaml", async () => {
                   "parameters": [],
                   "path": "/user/logout",
                   "requestFormat": "json",
-                  "response": "z.void()",
+                  "response": "",
               },
               {
                   "alias": "getUserByName",
@@ -896,7 +896,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
-                  "response": "z.void()",
+                  "response": "",
               },
               {
                   "alias": "deleteUser",

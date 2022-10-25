@@ -108,6 +108,11 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         throw new Error("Invalid ref: " + input.ref);
     };
 
+    const defaultStatusBehavior = options?.defaultStatusBehavior ?? "spec-compliant";
+
+    const ignoredFallbackResponse = [] as string[];
+    const ignoredGenericError = [] as string[];
+
     for (const path in doc.paths) {
         const pathItem = doc.paths[path] as PathItemObject;
 
@@ -235,7 +240,64 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 }
             }
 
+            // use `default` as fallback for `response` undeclared responses
+            // if no main response has been found, this should be considered it as a fallback
+            // else this will be added as an error response
+            if (operation.responses?.default) {
+                const responseItem = operation.responses.default as ResponseObject;
+
+                const mediaTypes = Object.keys(responseItem.content ?? {});
+                const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
+
+                const maybeSchema = matchingMediaType && responseItem.content?.[matchingMediaType]?.schema;
+                let schemaString = matchingMediaType ? undefined : voidSchema;
+                let schema: CodeMeta | undefined;
+
+                if (maybeSchema) {
+                    schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
+                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
+                }
+
+                if (schemaString) {
+                    if (defaultStatusBehavior === "auto-correct") {
+                        if (endpointDescription.response) {
+                            endpointDescription.errors.push({
+                                schema: schemaString as any,
+                                status: "default",
+                                description: responseItem.description,
+                            });
+                        } else {
+                            endpointDescription.response = schemaString;
+                        }
+                    } else {
+                        if (endpointDescription.response) {
+                            ignoredFallbackResponse.push(operationName);
+                        } else {
+                            ignoredGenericError.push(operationName);
+                        }
+                    }
+                }
+            }
+
             endpoints.push(endpointDescription);
+        }
+    }
+
+    if (!process.env["TEST"]) {
+        if (ignoredFallbackResponse.length > 0) {
+            console.warn(
+                `The following endpoints have no status code other than \`default\` and were ignored as the OpenAPI spec recommends. However they could be added by setting \`defaultStatusBehavior\` to \`auto-correct\`: ${ignoredGenericError.join(
+                    ", "
+                )}`
+            );
+        }
+
+        if (ignoredGenericError.length > 0) {
+            console.warn(
+                `The following endpoints could have had a generic error response added by setting \`defaultStatusBehavior\` to \`auto-correct\` ${ignoredGenericError.join(
+                    ", "
+                )}`
+            );
         }
     }
 

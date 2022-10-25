@@ -2,12 +2,12 @@ import SwaggerParser from "@apidevtools/swagger-parser";
 import type { OpenAPIObject } from "openapi3-ts";
 import { Options, resolveConfig } from "prettier";
 import { getZodClientTemplateContext } from "../src/template-context";
+import { getHandlebars } from "../src/generateZodClientFromOpenAPI";
 import { maybePretty } from "../src/maybePretty";
 
 import fg from "fast-glob";
 
 import { readFileSync } from "fs";
-import Handlebars from "handlebars";
 import { beforeAll, describe, expect, test } from "vitest";
 
 let prettierConfig: Options | null;
@@ -19,7 +19,7 @@ beforeAll(async () => {
 describe("samples-generator", async () => {
     const list = fg.sync(["./samples/v3\\.*/**/*.yaml"]);
 
-    const template = Handlebars.compile(readFileSync("./src/template.hbs", "utf8"));
+    const template = getHandlebars().compile(readFileSync("./src/template.hbs", "utf8"));
     const resultByFile = {} as Record<string, string>;
 
     for (const docPath of list) {

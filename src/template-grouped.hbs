@@ -49,7 +49,11 @@ const {{@key}}Endpoints = makeApi([
 		errors: [
 			{{#each errors}}
 			{
+				{{#ifeq status "default" }}
+				status: "default",
+				{{else}}
 				status: {{status}},
+				{{/ifeq}}
 				{{#if description}}
 				description: `{{description}}`,
 				{{/if}}
