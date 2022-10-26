@@ -1,9 +1,9 @@
-import { getZodiosEndpointDefinitionFromOpenApiDoc } from "../src";
+import { getZodiosEndpointDefinitionList } from "../src";
 import { expect, test } from "vitest";
 
 test("autofix-unusual-ref-format", () => {
     expect(
-        getZodiosEndpointDefinitionFromOpenApiDoc({
+        getZodiosEndpointDefinitionList({
             openapi: "3.0.3",
             info: { version: "1", title: "Example API" },
             paths: {

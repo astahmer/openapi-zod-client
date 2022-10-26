@@ -1,14 +1,14 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { OpenAPIObject } from "openapi3-ts";
 import { resolve } from "path";
-import { getZodiosEndpointDefinitionFromOpenApiDoc } from "../src";
+import { getZodiosEndpointDefinitionList } from "../src";
 import { expect, test } from "vitest";
 
 test("ref-in-another-file", async () => {
     const openApiDoc = (await SwaggerParser.bundle(
         resolve(__dirname, "ref-in-another-file", "partial.yaml")
     )) as OpenAPIObject;
-    expect(getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
+    expect(getZodiosEndpointDefinitionList(openApiDoc)).toMatchInlineSnapshot(`
       {
           "deepDependencyGraph": {},
           "endpoints": [

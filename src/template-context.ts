@@ -4,7 +4,7 @@ import { ts } from "tanu";
 import { match } from "ts-pattern";
 
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
-import type { EndpointDescriptionWithRefs } from "./getZodiosEndpointDefinitionList";
+import type { EndpointDefinitionWithRefs } from "./getZodiosEndpointDefinitionList";
 import { getZodiosEndpointDefinitionList } from "./getZodiosEndpointDefinitionList";
 import type { TsConversionContext } from "./openApiToTypescript";
 import { getTypescriptFromOpenApi } from "./openApiToTypescript";
@@ -212,7 +212,7 @@ const getOriginalPathWithBrackets = (path: string) => path.replaceAll(originalPa
 
 export type TemplateContext = {
     schemas: Record<string, string>;
-    endpoints: EndpointDescriptionWithRefs[];
+    endpoints: EndpointDefinitionWithRefs[];
     endpointsGroups: Record<string, MinimalTemplateContext>;
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
@@ -265,7 +265,7 @@ export type TemplateContext = {
                */
               isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
               /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDefinition["description"] */
-              useMainResponseDescriptionAsEndpointDescriptionFallback?: boolean;
+              useMainResponseDescriptionAsEndpointDefinitionFallback?: boolean;
               /**
                * when true, will export all `#/components/schemas` even when not used in any PathItemObject
                * @see https://github.com/astahmer/openapi-zod-client/issues/19

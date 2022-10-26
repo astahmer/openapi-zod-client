@@ -64,7 +64,7 @@ const schemas = {
     } as SchemaObject,
 } as const;
 
-test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
+test("getZodiosEndpointDefinitionList /store/order", () => {
     expect(
         getZodiosEndpointDefinitionList({
             ...baseDoc,
@@ -132,7 +132,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /store/order", () => {
     `);
 });
 
-test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
+test("getZodiosEndpointDefinitionList /pet", () => {
     expect(
         getZodiosEndpointDefinitionList({
             ...baseDoc,
@@ -279,7 +279,7 @@ test("getZodiosEndpointDefinitionFromOpenApiDoc /pet", () => {
     `);
 });
 
-test("getZodiosEndpointDefinitionFromOpenApiDoc /pet/findXXX", () => {
+test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
     expect(
         getZodiosEndpointDefinitionList({
             ...baseDoc,

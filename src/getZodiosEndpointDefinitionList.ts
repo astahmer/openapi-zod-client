@@ -123,8 +123,8 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             const parameters = operation.parameters ?? [];
             const operationName = operation.operationId ?? method + pathToVariableName(path);
-            const endpointDescription: EndpointDescriptionWithRefs = {
-                method: method as EndpointDescriptionWithRefs["method"],
+            const endpointDefinition: EndpointDefinitionWithRefs = {
+                method: method as EndpointDefinitionWithRefs["method"],
                 path: path.replaceAll(pathParamRegex, ":$1"),
                 alias: operationName,
                 description: operation.description,
@@ -143,24 +143,24 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 if (bodySchema) {
                     match(matchingMediaType)
                         .with("application/octet-stream", () => {
-                            endpointDescription.requestFormat = "binary";
+                            endpointDefinition.requestFormat = "binary";
                         })
                         .with("application/x-www-form-urlencoded", () => {
-                            endpointDescription.requestFormat = "form-url";
+                            endpointDefinition.requestFormat = "form-url";
                         })
                         .with("multipart/form-data", () => {
-                            endpointDescription.requestFormat = "form-data";
+                            endpointDefinition.requestFormat = "form-data";
                         })
                         .otherwise((value) => {
                             if (value.includes("json")) {
-                                endpointDescription.requestFormat = "json";
+                                endpointDefinition.requestFormat = "json";
                                 return;
                             }
 
-                            endpointDescription.requestFormat = "text";
+                            endpointDefinition.requestFormat = "text";
                         });
 
-                    endpointDescription.parameters.push({
+                    endpointDefinition.parameters.push({
                         name: "body",
                         type: "Body",
                         description: requestBody.description!,
@@ -187,7 +187,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         meta: { isRequired: paramItem.in === "path" ? true : paramItem.required ?? false },
                     });
 
-                    endpointDescription.parameters.push({
+                    endpointDefinition.parameters.push({
                         name: paramItem.name,
                         type: match(paramItem.in)
                             .with("header", () => "Header")
@@ -220,18 +220,18 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 if (schemaString) {
                     const status = Number(statusCode);
 
-                    if (isMainResponseStatus(status) && !endpointDescription.response) {
-                        endpointDescription.response = schemaString;
+                    if (isMainResponseStatus(status) && !endpointDefinition.response) {
+                        endpointDefinition.response = schemaString;
 
                         if (
-                            !endpointDescription.description &&
+                            !endpointDefinition.description &&
                             responseItem.description &&
-                            options?.useMainResponseDescriptionAsEndpointDescriptionFallback
+                            options?.useMainResponseDescriptionAsEndpointDefinitionFallback
                         ) {
-                            endpointDescription.description = responseItem.description;
+                            endpointDefinition.description = responseItem.description;
                         }
                     } else if (statusCode !== "default" && isErrorStatus(status)) {
-                        endpointDescription.errors.push({
+                        endpointDefinition.errors.push({
                             schema: schemaString as any,
                             status,
                             description: responseItem.description,
@@ -260,17 +260,17 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                 if (schemaString) {
                     if (defaultStatusBehavior === "auto-correct") {
-                        if (endpointDescription.response) {
-                            endpointDescription.errors.push({
+                        if (endpointDefinition.response) {
+                            endpointDefinition.errors.push({
                                 schema: schemaString as any,
                                 status: "default",
                                 description: responseItem.description,
                             });
                         } else {
-                            endpointDescription.response = schemaString;
+                            endpointDefinition.response = schemaString;
                         }
                     } else {
-                        if (endpointDescription.response) {
+                        if (endpointDefinition.response) {
                             ignoredFallbackResponse.push(operationName);
                         } else {
                             ignoredGenericError.push(operationName);
@@ -279,7 +279,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 }
             }
 
-            endpoints.push(endpointDescription);
+            endpoints.push(endpointDefinition);
         }
     }
 
@@ -315,7 +315,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
 const allowedPathInValues = ["query", "header", "path"] as Array<ParameterObject["in"]>;
 
-export type EndpointDescriptionWithRefs = Omit<
+export type EndpointDefinitionWithRefs = Omit<
     ZodiosEndpointDefinition<any>,
     "response" | "parameters" | "errors" | "description"
 > & {

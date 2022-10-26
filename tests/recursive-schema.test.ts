@@ -3,7 +3,7 @@ import { describe, expect, test } from "vitest";
 import {
     getOpenApiDependencyGraph,
     getZodClientTemplateContext,
-    getZodiosEndpointDefinitionFromOpenApiDoc,
+    getZodiosEndpointDefinitionList,
     getZodSchema,
 } from "../src";
 import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
@@ -192,8 +192,7 @@ describe("recursive-schema", () => {
           }
         `);
 
-        expect(getZodiosEndpointDefinitionFromOpenApiDoc(makeOpenApiDoc(schemas2, ResponseSchema)))
-            .toMatchInlineSnapshot(`
+        expect(getZodiosEndpointDefinitionList(makeOpenApiDoc(schemas2, ResponseSchema))).toMatchInlineSnapshot(`
               {
                   "deepDependencyGraph": {
                       "#/components/schemas/ObjectWithRecursiveArray": Set {
@@ -307,7 +306,7 @@ describe("recursive-schema", () => {
             },
         });
 
-        expect(getZodiosEndpointDefinitionFromOpenApiDoc(openApiDoc)).toMatchInlineSnapshot(`
+        expect(getZodiosEndpointDefinitionList(openApiDoc)).toMatchInlineSnapshot(`
           {
               "deepDependencyGraph": {
                   "#/components/schemas/Friend": Set {

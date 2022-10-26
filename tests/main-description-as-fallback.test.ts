@@ -36,7 +36,7 @@ it("use main-description-as-fallback", async () => {
     const result = await generateZodClientFromOpenAPI({
         disableWriteToFile: true,
         openApiDoc,
-        options: { useMainResponseDescriptionAsEndpointDescriptionFallback: true },
+        options: { useMainResponseDescriptionAsEndpointDefinitionFallback: true },
     });
 
     expect(result).toMatchInlineSnapshot(`
