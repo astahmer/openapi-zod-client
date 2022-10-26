@@ -299,8 +299,7 @@ export type TemplateContext = {
                */
               complexityThreshold?: number;
               /**
-               * when defined as "auto-correct", will automatically try to correct some common mistakes in the parsed OpenAPI spec
-               * tl;dr: use `default` as fallback for `response` undeclared responses
+               * when defined as "auto-correct", will automatically use `default` as fallback for `response` when no status code was declared
                *
                * - if no main response has been found, this should be considered it as a fallback
                * - else this will be added as an error response

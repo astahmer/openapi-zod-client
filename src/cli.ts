@@ -38,6 +38,10 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "--complexity-threshold",
         "schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable"
     )
+    .option(
+        "--default-status",
+        "when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared"
+    )
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -60,6 +64,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 withDeprecatedEndpoints: options.withDeprecated,
                 groupStrategy: options.groupStrategy,
                 complexityThreshold: options.complexityThreshold,
+                defaultStatusBehavior: options.defaultStatus,
             },
         });
         console.log(`Done generating <${distPath}> !`);
