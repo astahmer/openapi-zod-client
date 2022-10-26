@@ -11,8 +11,6 @@ const Pet = z.object({
     tags: z.array(Tag).optional(),
     status: z.enum(["available", "pending", "sold"]).optional(),
 });
-const status = z.enum(["available", "pending", "sold"]).optional();
-const tags = z.array(z.string()).optional();
 const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
 const Order = z
     .object({
@@ -36,7 +34,6 @@ const User = z
         userStatus: z.number().int(),
     })
     .partial();
-const createUsersWithListInput_Body = z.array(User);
 
 const endpoints = makeApi([
     {
@@ -102,7 +99,7 @@ const endpoints = makeApi([
             {
                 name: "petId",
                 type: "Path",
-                schema: z.number(),
+                schema: z.number().int(),
             },
         ],
         response: Pet,
@@ -122,12 +119,17 @@ const endpoints = makeApi([
     {
         method: "post",
         path: "/pet/:petId/uploadImage",
-        requestFormat: "json",
+        requestFormat: "binary",
         parameters: [
+            {
+                name: "body",
+                type: "Body",
+                schema: z.instanceof(File),
+            },
             {
                 name: "petId",
                 type: "Path",
-                schema: z.number(),
+                schema: z.number().int(),
             },
             {
                 name: "additionalMetadata",
@@ -146,7 +148,7 @@ const endpoints = makeApi([
             {
                 name: "status",
                 type: "Query",
-                schema: status,
+                schema: z.enum(["available", "pending", "sold"]).optional().default("available"),
             },
         ],
         response: z.array(Pet),
@@ -167,7 +169,7 @@ const endpoints = makeApi([
             {
                 name: "tags",
                 type: "Query",
-                schema: tags,
+                schema: z.array(z.string()).optional(),
             },
         ],
         response: z.array(Pet),
@@ -216,7 +218,7 @@ const endpoints = makeApi([
             {
                 name: "orderId",
                 type: "Path",
-                schema: z.number(),
+                schema: z.number().int(),
             },
         ],
         response: Order,
@@ -232,21 +234,6 @@ const endpoints = makeApi([
                 schema: z.void(),
             },
         ],
-    },
-    {
-        method: "post",
-        path: "/user",
-        description: `This can only be done by the logged in user.`,
-        requestFormat: "json",
-        parameters: [
-            {
-                name: "body",
-                description: `Created user object`,
-                type: "Body",
-                schema: User,
-            },
-        ],
-        response: User,
     },
     {
         method: "get",
@@ -274,26 +261,6 @@ const endpoints = makeApi([
         ],
     },
     {
-        method: "put",
-        path: "/user/:username",
-        description: `This can only be done by the logged in user.`,
-        requestFormat: "json",
-        parameters: [
-            {
-                name: "body",
-                description: `Update an existent user in the store`,
-                type: "Body",
-                schema: User,
-            },
-            {
-                name: "username",
-                type: "Path",
-                schema: z.string(),
-            },
-        ],
-        response: z.void(),
-    },
-    {
         method: "post",
         path: "/user/createWithList",
         description: `Creates list of users with given input array`,
@@ -302,7 +269,7 @@ const endpoints = makeApi([
             {
                 name: "body",
                 type: "Body",
-                schema: createUsersWithListInput_Body,
+                schema: z.array(User),
             },
         ],
         response: User,
@@ -331,12 +298,6 @@ const endpoints = makeApi([
                 schema: z.void(),
             },
         ],
-    },
-    {
-        method: "get",
-        path: "/user/logout",
-        requestFormat: "json",
-        response: z.void(),
     },
 ]);
 

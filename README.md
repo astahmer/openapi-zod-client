@@ -32,7 +32,7 @@ or directly
 ## CLI
 
 ```sh
-openapi-zod-client/0.8.0
+openapi-zod-client/0.9.0
 
 Usage:
   $ openapi-zod-client <input>
@@ -57,6 +57,7 @@ Options:
   --with-deprecated         when true, will keep deprecated endpoints in the api output
   --group-strategy          groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'
   --complexity-threshold    schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
+  --default-status          when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared
   -v, --version             Display version number
   -h, --help                Display this message
 ```
@@ -227,7 +228,7 @@ const endpoints = makeApi([
             {
                 name: "limit",
                 type: "Query",
-                schema: z.number().optional(),
+                schema: z.number().int().optional(),
             },
         ],
         response: z.array(Pet),
@@ -236,7 +237,7 @@ const endpoints = makeApi([
         method: "post",
         path: "/pets",
         requestFormat: "json",
-        response: Error,
+        response: z.void(),
     },
     {
         method: "get",

@@ -1,7 +1,8 @@
 import path from "node:path";
 
 import fs from "fs-extra";
-import { HelperOptions, create } from "handlebars";
+import type { HelperOptions } from "handlebars";
+import { create } from "handlebars";
 import type { OpenAPIObject } from "openapi3-ts";
 import { capitalize, pick } from "pastable/server";
 import type { Options } from "prettier";

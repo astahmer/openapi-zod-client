@@ -12,8 +12,6 @@ const Pet = z.object({
     tags: z.array(Tag).optional(),
     status: z.enum(["available", "pending", "sold"]).optional(),
 });
-const status = z.enum(["available", "pending", "sold"]).optional();
-const tags = z.array(z.string()).optional();
 const ApiResponse = z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial();
 const Order = z
     .object({
@@ -37,7 +35,6 @@ const User = z
         userStatus: z.number().int(),
     })
     .partial();
-const createUsersWithListInput_Body = z.array(User);
 
 export const schemas = {
     Address,
@@ -45,10 +42,7 @@ export const schemas = {
     Category,
     Tag,
     Pet,
-    status,
-    tags,
     ApiResponse,
     Order,
     User,
-    createUsersWithListInput_Body,
 };
