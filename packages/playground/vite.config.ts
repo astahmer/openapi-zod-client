@@ -11,20 +11,35 @@ export default defineConfig({
         commonjsOptions: {
             transformMixedEsModules: true,
         },
+        // rollupOptions: {
+        //     external: ["handlebars"],
+        // },
+    },
+    ssr: {
+        // format: "cjs",
+        // noExternal: ["handlebars"],
+        // external: ["handlebars"],
+        optimizeDeps: {
+            // exclude: ["handlebars"],
+            // exclude: ["handlebars"],
+            // exclude: ["tanu"],
+            // include: ["handlebars", "tanu"],
+        },
     },
     optimizeDeps: {
-        exclude: [
-            "fs-extra",
-            "openapi3-ts",
-            // "handlebars",
-            "pastable/server",
-            // "tanu",
-            // "whence",
-            // "prettier",
-            "yaml",
-            "yaml*",
-            "yaml@2.1.3",
-            "ts-toolbelt",
-        ],
+        // include: ["tanu"],
+        // exclude: [
+        //     "fs-extra",
+        //     "openapi3-ts",
+        //     // "handlebars",
+        //     "pastable/server",
+        //     // "tanu",
+        //     // "whence",
+        //     // "prettier",
+        //     "yaml",
+        //     "yaml*",
+        //     "yaml@2.1.3",
+        //     "ts-toolbelt",
+        // ],
     },
 });
