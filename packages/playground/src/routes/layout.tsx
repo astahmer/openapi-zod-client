@@ -41,6 +41,9 @@ const MainLayout: Layout = ({ children }) => (
                 <StyledLink href="/editor" className={navLinkClass} activeClass={activeClass}>
                     Editor
                 </StyledLink>
+                <StyledLink href="/play" className={navLinkClass} activeClass={activeClass}>
+                    Play
+                </StyledLink>
             </HStack>
         </Box>
 
