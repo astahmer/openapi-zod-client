@@ -6,7 +6,7 @@ import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { topologicalSort } from "./topologicalSort";
 
 test("petstore.yaml", async () => {
-    const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
+    const openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
     const getSchemaByRef = (ref: string) => get(openApiDoc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
     const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
         Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),

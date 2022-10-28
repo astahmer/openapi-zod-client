@@ -6,7 +6,7 @@ import { getZodClientTemplateContext } from "./template-context";
 
 let openApiDoc: OpenAPIObject;
 beforeAll(async () => {
-    openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
+    openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
 });
 
 test("getZodClientTemplateContext", async () => {

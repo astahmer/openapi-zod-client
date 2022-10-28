@@ -25,6 +25,7 @@
         "@vanilla-extract/recipes": "^0.2.5",
         "@vanilla-extract/sprinkles": "^1.5.0",
         "monaco-editor": "^0.34.1",
+        "openapi-zod-client": "workspace:^1.0.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0"
     }

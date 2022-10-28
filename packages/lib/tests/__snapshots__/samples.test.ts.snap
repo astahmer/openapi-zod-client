@@ -1,6 +1,6 @@
 // Vitest Snapshot v1
 
-exports[`samples-generator > ./samples/v3.0/api-with-examples.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.0/api-with-examples.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -10,7 +10,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.0/callback-example.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.0/callback-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -35,7 +35,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.0/link-example.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.0/link-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -165,7 +165,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.0/petstore.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.0/petstore.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -212,7 +212,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.0/petstore-expanded.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.0/petstore-expanded.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -293,7 +293,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.0/uspto.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.0/uspto.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -388,7 +388,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.1/non-oauth-scopes.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.1/non-oauth-scopes.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
@@ -398,7 +398,7 @@ export const api = new Zodios(endpoints);
 "
 `;
 
-exports[`samples-generator > ./samples/v3.1/webhook-example.yaml 1`] = `
+exports[`samples-generator > /Users/astahmer/dev/alex/openapi-zod-client/samples/v3.1/webhook-example.yaml 1`] = `
 "import { makeApi, Zodios } from "@zodios/core";
 import { z } from "zod";
 
