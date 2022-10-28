@@ -7,7 +7,8 @@ import { maybePretty } from "../src/maybePretty";
 
 import fg from "fast-glob";
 
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
+import * as path from "node:path";
 import { beforeAll, describe, expect, test } from "vitest";
 
 let prettierConfig: Options | null;
@@ -17,7 +18,9 @@ beforeAll(async () => {
 });
 
 describe("samples-generator", async () => {
-    const list = fg.sync(["./samples/v3\\.*/**/*.yaml"]);
+    const pkgRoot = process.cwd();
+    const samplesPath = path.resolve(pkgRoot, "../../", "./samples/v3\\.*/**/*.yaml");
+    const list = fg.sync([samplesPath]);
 
     const template = getHandlebars().compile(readFileSync("./src/template.hbs", "utf8"));
     const resultByFile = {} as Record<string, string>;

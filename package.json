@@ -1,93 +1,43 @@
 {
-    "name": "openapi-zod-client",
-    "version": "1.0.0",
+    "name": "openapi-zod-client-monorepo",
+    "private": true,
+    "version": "0.1.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/astahmer/openapi-zod-client.git"
     },
     "author": "Alexandre Stahmer <alexandre.stahmer@gmail.com>",
-    "main": "dist/openapi-zod-client.cjs.js",
-    "module": "dist/openapi-zod-client.esm.js",
-    "bin": {
-        "openapi-zod-client": "./bin.js"
-    },
     "scripts": {
-        "gen:petstore": "tsx example/petstore-generator.ts",
+        "gen:basic": "tsx examples/basic/petstore-generator.ts",
+        "gen:schemas-only": "node ./bin.js ./examples/schemas-only/petstore.yaml -o ./examples/schemas-only/petstore-schemas.ts -t ./examples/schemas-only/schemas-only.hbs -p ./examples/schemas-only/prettier-custom.json --export-schemas",
         "gen:samples": "rm -rf ./samples && tsx ./samples-generator.ts",
-        "gen:example": "node ./bin.js ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json --export-schemas",
-        "gen": "pnpm gen:petstore && pnpm gen:samples",
+        "gen": "pnpm gen:basic && gen:schemas-only && pnpm gen:samples",
         "dev": "preconstruct watch",
         "build": "preconstruct build",
-        "test": "vitest",
-        "lint": "eslint -c .eslintrc.build.js './{src,playground/src}/**/*.ts' --cache --format=pretty",
-        "lint:fix": "eslint -c .eslintrc.build.js './{src,playground/src}/**/*.ts' --cache --format=pretty --fix",
-        "lint:ts": "tsc --noEmit",
-        "release": "pnpm test && pnpm build && pnpm publish && git push"
+        "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
+        "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix",
+        "lint:ts": "tsc --noEmit"
+    },
+    "preconstruct": {
+        "packages": [
+            "packages/*"
+        ]
     },
     "license": "ISC",
     "dependencies": {
-        "@apidevtools/swagger-parser": "^10.1.0",
-        "@babel/core": "^7.19.6",
-        "@zodios/core": "^10.3.1",
-        "axios": "^0.27.2",
-        "cac": "^6.7.14",
-        "fs-extra": "^10.1.0",
-        "handlebars": "^4.7.7",
-        "openapi-types": "^12.0.2",
-        "openapi3-ts": "3.0.2",
-        "pastable": "^2.0.13",
-        "prettier": "^2.7.1",
-        "tanu": "^0.1.13",
-        "ts-pattern": "^4.0.5",
-        "whence": "^2.0.0",
-        "zod": "^3.19.1"
+        "@babel/core": "^7.19.1"
     },
     "devDependencies": {
         "@astahmer/eslint-config-ts": "^0.1.5",
-        "@babel/preset-env": "^7.19.4",
+        "@babel/preset-env": "^7.19.1",
         "@babel/preset-typescript": "^7.18.6",
-        "@preconstruct/cli": "^2.2.2",
-        "@trivago/prettier-plugin-sort-imports": "^3.4.0",
-        "@types/degit": "^2.8.3",
-        "@types/fs-extra": "^9.0.13",
-        "@types/js-yaml": "^4.0.5",
-        "@types/node": "^18.11.4",
-        "@types/prettier": "^2.7.1",
+        "@preconstruct/cli": "^2.2.1",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
-        "degit": "^2.8.4",
         "eslint": "^8.26.0",
         "eslint-formatter-pretty": "^4.1.0",
-        "fast-glob": "^3.2.12",
-        "nodemon": "^2.0.20",
+        "prettier": "^2.7.1",
         "tsx": "^3.11.0",
-        "type-fest": "^2.19.0",
-        "typescript": "^4.8.4",
-        "vitest": "^0.22.1"
-    },
-    "preconstruct": {
-        "entrypoints": [
-            "index.ts",
-            "cli.ts"
-        ]
-    },
-    "files": [
-        "bin.js",
-        "src",
-        "dist",
-        "cli"
-    ],
-    "keywords": [
-        "openapi",
-        "swagger",
-        "zod",
-        "client",
-        "zodios",
-        "generator",
-        "typescript"
-    ],
-    "sideEffects": false,
-    "publishConfig": {
-        "access": "public"
+        "typescript": "^4.8.3"
     }
 }

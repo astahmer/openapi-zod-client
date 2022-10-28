@@ -467,7 +467,7 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
 });
 
 test("petstore.yaml", async () => {
-    const openApiDoc = (await SwaggerParser.parse("./example/petstore.yaml")) as OpenAPIObject;
+    const openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
     const result = getZodiosEndpointDefinitionList(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
       {

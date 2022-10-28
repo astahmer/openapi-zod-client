@@ -1,0 +1,23 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "CommonJS",
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "sourceMap": true,
+        "declaration": true,
+        "pretty": true,
+        "strictNullChecks": true,
+        "resolveJsonModule": true,
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "lib": ["esnext"],
+        "allowSyntheticDefaultImports": true,
+        "strictPropertyInitialization": false,
+        "baseUrl": "./"
+    },
+    "include": ["src"],
+    "exclude": ["node_modules", "**/*.typegen.ts", "example", "tests"]
+}
