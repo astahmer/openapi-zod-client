@@ -4,7 +4,7 @@ const { defineConfig } = require("eslint-define-config");
 module.exports = defineConfig({
     parserOptions: {
         files: ["*.ts"],
-        project: ["./tsconfig.json"],
+        project: ["./tsconfig.json", "./playground/tsconfig.json"],
     },
     ignorePatterns: ["**/*.test.ts"],
     extends: "@astahmer/eslint-config-ts",
