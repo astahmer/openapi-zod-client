@@ -1,6 +1,5 @@
 import path from "node:path";
 
-import fs from "fs-extra";
 import type { HelperOptions } from "handlebars";
 import { create } from "handlebars";
 import type { OpenAPIObject } from "openapi3-ts";
@@ -52,6 +51,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
             .exhaustive();
     }
 
+    const fs = await import("fs-extra");
     const source = await fs.readFile(templatePath, "utf8");
     const hbs = getHandlebars();
     const template = hbs.compile(source);
