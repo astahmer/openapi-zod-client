@@ -8,7 +8,7 @@ import type {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { isReferenceObject } from "openapi3-ts";
+import { isReferenceObject } from "./isReferenceObject";
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
 import { sync } from "whence";

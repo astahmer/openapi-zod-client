@@ -1,5 +1,5 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
-import { isReferenceObject } from "openapi3-ts";
+import { isReferenceObject } from "./isReferenceObject";
 import { t, ts } from "tanu";
 import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
