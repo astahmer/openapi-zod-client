@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "rakkas",
         "build": "rakkas build",
-        "preview": "vite preview",
+        "preview": "rakkas preview",
         "start": "node dist/server",
         "test": "pnpm test:typecheck",
         "test:typecheck": "tsc -p tsconfig.json --noEmit"
@@ -14,7 +14,7 @@
         "@types/react": "^18.0.18",
         "@types/react-dom": "^18.0.6",
         "@vanilla-extract/vite-plugin": "^3.6.1",
-        "rakkasjs": "0.6.1",
+        "rakkasjs": "0.6.2-next.8",
         "ts-toolbelt": "^9.6.0",
         "typescript": "^4.8.2",
         "vite": "^3.1.0"
@@ -25,12 +25,10 @@
         "@vanilla-extract/css": "^1.9.1",
         "@vanilla-extract/recipes": "^0.2.5",
         "@vanilla-extract/sprinkles": "^1.5.0",
-        "handlebars": "^4.7.7",
         "monaco-editor": "^0.34.1",
         "openapi-zod-client": "workspace:^1.0.0",
+        "pastable": "^2.0.13",
         "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "tanu": "^0.1.13",
-        "whence": "^2.0.0"
+        "react-dom": "^18.2.0"
     }
 }
