@@ -1,7 +1,5 @@
 import path from "node:path";
 
-import type { HelperOptions } from "handlebars";
-import { create } from "handlebars";
 import type { OpenAPIObject } from "openapi3-ts";
 import { capitalize, pick } from "pastable/server";
 import type { Options } from "prettier";
@@ -10,6 +8,7 @@ import { match } from "ts-pattern";
 import { maybePretty } from "./maybePretty";
 import type { TemplateContext } from "./template-context";
 import { getZodClientTemplateContext } from "./template-context";
+import { getHandlebars } from "./getHandlebars";
 
 type GenerateZodClientFromOpenApiArgs<TOptions extends TemplateContext["options"] = TemplateContext["options"]> = {
     openApiDoc: OpenAPIObject;
@@ -127,19 +126,4 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     }
 
     return prettyOutput as any;
-};
-
-export const getHandlebars = () => {
-    const instance = create();
-    instance.registerHelper("ifeq", function (a: string, b: string, options: HelperOptions) {
-        if (a === b) {
-            // @ts-expect-error
-            return options.fn(this);
-        }
-
-        // @ts-expect-error
-        return options.inverse(this);
-    });
-
-    return instance;
 };
