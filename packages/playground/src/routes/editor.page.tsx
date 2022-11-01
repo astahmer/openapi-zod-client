@@ -1,21 +1,31 @@
+import { Box, Checkbox, Flex } from "@chakra-ui/react";
+import { getZodSchema } from "openapi-zod-client";
 import { FC } from "react";
-import { PlaygroundEditor } from "../PlaygroundEditor";
-import { Box } from "../theme/Box";
-import { VFlex } from "../theme/components";
+import { SplitPane } from "../components/SplitPane/SplitPane";
 
 const EditorPage: FC = () => {
+    const code = getZodSchema({ schema: { type: "string" } });
+
     return (
-        <VFlex d="flex" h="100%" style={{ minHeight: "500px" }}>
+        <Flex flexDirection="column" h="100%">
             <Box fontWeight="bold" color="teal.200">
-                Editor
+                Input
             </Box>
-            <Box h="100%" flexGrow={1}>
-                <PlaygroundEditor />
+            <Box display="flex" boxSize="100%">
+                <SplitPane>
+                    <Box h="100%" flexGrow={1}>
+                        {/* <PlaygroundEditor /> */}
+                        PlaygroundEditor
+                        <button onClick={() => import("../petstore.yaml")}></button>
+                    </Box>
+
+                    <Box fontWeight="bold" color="teal.200">
+                        {code.toString()}
+                        <Checkbox />
+                    </Box>
+                </SplitPane>
             </Box>
-            <Box fontWeight="bold" color="teal.200">
-                After
-            </Box>
-        </VFlex>
+        </Flex>
     );
 };
 
