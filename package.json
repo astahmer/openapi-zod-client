@@ -16,20 +16,21 @@
         "build": "preconstruct build",
         "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
         "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix",
-        "lint:ts": "tsc --noEmit"
+        "lint:ts": "tsc --noEmit",
+        "postinstall": "preconstruct dev"
     },
     "preconstruct": {
         "packages": [
-            "packages/*"
+            "packages/lib"
         ]
     },
     "license": "ISC",
     "dependencies": {
-        "@babel/core": "^7.19.1"
+        "@babel/core": "^7.19.6"
     },
     "devDependencies": {
         "@astahmer/eslint-config-ts": "^0.1.5",
-        "@babel/preset-env": "^7.19.1",
+        "@babel/preset-env": "^7.19.4",
         "@babel/preset-typescript": "^7.18.6",
         "@preconstruct/cli": "^2.2.1",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
