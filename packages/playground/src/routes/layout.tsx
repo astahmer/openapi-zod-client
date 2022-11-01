@@ -1,21 +1,13 @@
-// This is the main layout of our app. It renders the header and the footer.
-
+import { Box, Stack } from "@chakra-ui/react";
 import { Head, Link, StyledLink, Layout } from "rakkasjs";
-import { Box } from "../theme/Box";
-import { HStack } from "../theme/components";
 
-import { sprinkles } from "../theme/sprinkles.css";
-import { headerClass } from "./layout.css";
-
-const activeClass = sprinkles({ backgroundColor: "pink.200" });
-const navLinkClass = sprinkles({ p: 2, borderRadius: "md", backgroundColor: { hover: "pink.100" } });
+import "./layout.css";
 
 const MainLayout: Layout = ({ children }) => (
     <>
         <Head title="Rakkas" />
 
         <Box
-            className={headerClass}
             as="header"
             display="flex"
             alignItems="flex-end"
@@ -25,26 +17,51 @@ const MainLayout: Layout = ({ children }) => (
             py="5"
             px="4"
         >
-            <Box as={Link} href="/" fw="bold" fontSize={"2xl"}>
+            <Box as={Link} href="/" fontWeight="bold" fontSize={"2xl"}>
                 Rakkas Demo App
             </Box>
-            <HStack>
-                <StyledLink href="/" className={navLinkClass} activeClass={activeClass}>
+            <Stack direction="row">
+                <Box
+                    as={StyledLink}
+                    href="/"
+                    px="2"
+                    borderRadius="md"
+                    _hover={{ backgroundColor: "pink.100" }}
+                    activeClass="activeLink"
+                >
                     Home
-                </StyledLink>
-                <StyledLink href="/about" className={navLinkClass} activeClass={activeClass}>
+                </Box>
+                <Box
+                    as={StyledLink}
+                    href="/about"
+                    px="2"
+                    borderRadius="md"
+                    _hover={{ backgroundColor: "pink.100" }}
+                    activeClass="activeLink"
+                >
                     About
-                </StyledLink>
-                <StyledLink href="/todo" className={navLinkClass} activeClass={activeClass}>
+                </Box>
+                <Box
+                    as={StyledLink}
+                    href="/todo"
+                    px="2"
+                    borderRadius="md"
+                    _hover={{ backgroundColor: "pink.100" }}
+                    activeClass="activeLink"
+                >
                     Todo
-                </StyledLink>
-                <StyledLink href="/editor" className={navLinkClass} activeClass={activeClass}>
+                </Box>
+                <Box
+                    as={StyledLink}
+                    href="/editor"
+                    px="2"
+                    borderRadius="md"
+                    _hover={{ backgroundColor: "pink.100" }}
+                    activeClass="activeLink"
+                >
                     Editor
-                </StyledLink>
-                <StyledLink href="/play" className={navLinkClass} activeClass={activeClass}>
-                    Play
-                </StyledLink>
-            </HStack>
+                </Box>
+            </Stack>
         </Box>
 
         <Box as="section" pt="4" pl="4" flexGrow={1}>

@@ -1,12 +1,12 @@
 import Editor from "@monaco-editor/react";
+import { petstoreYaml } from "./petstore.yaml";
 
 export const PlaygroundEditor = () => {
     return (
         <Editor
             // theme={useColorModeValue("light", "vs-dark")}
-            // height="100%"
             defaultLanguage="typescript"
-            // defaultValue={textsProxy.ts}
+            defaultValue={petstoreYaml}
             // options={{ minimap: { enabled: true }, readOnly: false }}
             // onMount={(editorRef, monaco) => {
             //     editorRefs.ts = ref(editorRef!);
