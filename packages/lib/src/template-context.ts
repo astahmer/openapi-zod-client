@@ -217,98 +217,98 @@ export type TemplateContext = {
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
     commonSchemaNames?: Set<string>;
-    options?:
-        | {
-              /** @see https://www.zodios.org/docs/client#baseurl */
-              baseUrl?: string;
-              /** @see https://www.zodios.org/docs/client#zodiosalias */
-              withAlias?: boolean;
-              /**
-               * when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
-               *
-               * @default "api"
-               */
-              apiClientName?: string;
-              /**
-               * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
-               * will use `default` status code as fallback
-               *
-               * @see https://www.zodios.org/docs/api/api-definition#api-definition-structure
-               *
-               * works like `validateStatus` from axios
-               * @see https://github.com/axios/axios#handling-errors
-               *
-               * @default `(status >= 200 && status < 300)`
-               */
-              isMainResponseStatus?: string | ((status: number) => boolean);
-              /**
-               * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDefinition["errors"]` array
-               * ignores `default` status
-               *
-               * @see https://www.zodios.org/docs/api/api-definition#errors
-               *
-               * works like `validateStatus` from axios
-               * @see https://github.com/axios/axios#handling-errors
-               *
-               * @default `!(status >= 200 && status < 300)`
-               */
-              isErrorStatus?: string | ((status: number) => boolean);
-              /**
-               * when defined, will be used to pick the first MediaType found in ResponseObject["content"] map matching the given expression
-               *
-               * context: some APIs returns multiple media types for the same response, this option allows you to pick which one to use
-               * or allows you to define a custom media type to use like `application/json-ld` or `application/vnd.api+json`) etc...
-               * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#response-object
-               * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-types
-               *
-               * @default `mediaType === "application/json"`
-               */
-              isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
-              /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDefinition["description"] */
-              useMainResponseDescriptionAsEndpointDefinitionFallback?: boolean;
-              /**
-               * when true, will export all `#/components/schemas` even when not used in any PathItemObject
-               * @see https://github.com/astahmer/openapi-zod-client/issues/19
-               */
-              shouldExportAllSchemas?: boolean;
-              /**
-               * when true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
-               * @see https://github.com/astahmer/openapi-zod-client/issues/23
-               */
-              withImplicitRequiredProps?: boolean;
-              /**
-               * when true, will keep deprecated endpoints in the api output
-               * @default false
-               */
-              withDeprecatedEndpoints?: boolean;
-              /**
-               * groups endpoints by a given strategy
-               *
-               * when strategy is "tag" and multiple tags are defined for an endpoint, the first one will be used
-               *
-               * @default "none"
-               */
-              groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
-              /**
-               * schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
-               * tl;dr higher means more schemas will be inlined (rather than assigned to a variable)
-               * ^ if you want to always inline schemas, set it to `-1` (special value) or a high value such as `1000`
-               * v if you want to assign all schemas to a variable, set it to `0`
-               *
-               * @default 4
-               */
-              complexityThreshold?: number;
-              /**
-               * when defined as "auto-correct", will automatically use `default` as fallback for `response` when no status code was declared
-               *
-               * - if no main response has been found, this should be considered it as a fallback
-               * - else this will be added as an error response
-               *
-               * @see https://github.com/astahmer/openapi-zod-client/pull/30#issuecomment-1280434068
-               *
-               * @default "spec-compliant"
-               */
-              defaultStatusBehavior?: "spec-compliant" | "auto-correct";
-          }
-        | undefined;
+    options?: TemplateContextOptions | undefined;
+};
+
+export type TemplateContextOptions = {
+    /** @see https://www.zodios.org/docs/client#baseurl */
+    baseUrl?: string;
+    /** @see https://www.zodios.org/docs/client#zodiosalias */
+    withAlias?: boolean;
+    /**
+     * when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
+     *
+     * @default "api"
+     */
+    apiClientName?: string;
+    /**
+     * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
+     * will use `default` status code as fallback
+     *
+     * @see https://www.zodios.org/docs/api/api-definition#api-definition-structure
+     *
+     * works like `validateStatus` from axios
+     * @see https://github.com/axios/axios#handling-errors
+     *
+     * @default `(status >= 200 && status < 300)`
+     */
+    isMainResponseStatus?: string | ((status: number) => boolean);
+    /**
+     * when defined, will be used to pick which endpoints should be included in the `ZodiosEndpointDefinition["errors"]` array
+     * ignores `default` status
+     *
+     * @see https://www.zodios.org/docs/api/api-definition#errors
+     *
+     * works like `validateStatus` from axios
+     * @see https://github.com/axios/axios#handling-errors
+     *
+     * @default `!(status >= 200 && status < 300)`
+     */
+    isErrorStatus?: string | ((status: number) => boolean);
+    /**
+     * when defined, will be used to pick the first MediaType found in ResponseObject["content"] map matching the given expression
+     *
+     * context: some APIs returns multiple media types for the same response, this option allows you to pick which one to use
+     * or allows you to define a custom media type to use like `application/json-ld` or `application/vnd.api+json`) etc...
+     * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#response-object
+     * @see https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#media-types
+     *
+     * @default `mediaType === "application/json"`
+     */
+    isMediaTypeAllowed?: string | ((mediaType: string) => boolean);
+    /** if OperationObject["description"] is not defined but the main ResponseObject["description"] is defined, use the latter as ZodiosEndpointDefinition["description"] */
+    useMainResponseDescriptionAsEndpointDefinitionFallback?: boolean;
+    /**
+     * when true, will export all `#/components/schemas` even when not used in any PathItemObject
+     * @see https://github.com/astahmer/openapi-zod-client/issues/19
+     */
+    shouldExportAllSchemas?: boolean;
+    /**
+     * when true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
+     * @see https://github.com/astahmer/openapi-zod-client/issues/23
+     */
+    withImplicitRequiredProps?: boolean;
+    /**
+     * when true, will keep deprecated endpoints in the api output
+     * @default false
+     */
+    withDeprecatedEndpoints?: boolean;
+    /**
+     * groups endpoints by a given strategy
+     *
+     * when strategy is "tag" and multiple tags are defined for an endpoint, the first one will be used
+     *
+     * @default "none"
+     */
+    groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
+    /**
+     * schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
+     * tl;dr higher means more schemas will be inlined (rather than assigned to a variable)
+     * ^ if you want to always inline schemas, set it to `-1` (special value) or a high value such as `1000`
+     * v if you want to assign all schemas to a variable, set it to `0`
+     *
+     * @default 4
+     */
+    complexityThreshold?: number;
+    /**
+     * when defined as "auto-correct", will automatically use `default` as fallback for `response` when no status code was declared
+     *
+     * - if no main response has been found, this should be considered it as a fallback
+     * - else this will be added as an error response
+     *
+     * @see https://github.com/astahmer/openapi-zod-client/pull/30#issuecomment-1280434068
+     *
+     * @default "spec-compliant"
+     */
+    defaultStatusBehavior?: "spec-compliant" | "auto-correct";
 };
