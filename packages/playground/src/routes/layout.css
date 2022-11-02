@@ -22,20 +22,6 @@ body,
     margin: 0;
 }
 
-a {
-    color: #924;
-    text-decoration: none;
-}
-
-a:hover {
-    color: #c06;
-    text-decoration: underline;
-}
-
-header a {
-    text-decoration: none;
-}
-
 main {
     max-width: 40em;
     margin: auto;

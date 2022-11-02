@@ -1,5 +1,6 @@
-export const petstoreYaml = `
-openapi: 3.0.3
+export const petstoreYaml =
+    "" +
+    `openapi: 3.0.3
 info:
   title: Swagger Petstore - OpenAPI 3.0
   description: |-

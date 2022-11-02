@@ -1,17 +1,26 @@
 import React from "react";
 import { assign, createMachine } from "xstate";
+import { limit } from "pastable";
 
 type ResizablePanesContext = {
-    resizerRef: React.RefObject<HTMLDivElement>;
-    direction: "horizontal" | "vertical";
-    pointerx: number;
-    pointery: number;
-    dx: number;
-    dy: number;
+    resizerRef: HTMLDivElement;
+    direction: "row" | "column";
+    pointerX: number;
+    pointerY: number;
+    deltaX: number;
+    deltaY: number;
+    position: number;
+    draggedSize: number;
+    containerSize: number;
 };
 
 type ResizablePanesEvent =
-    | { type: "start"; event: MouseEvent | React.MouseEvent }
+    | {
+          type: "start";
+          event: MouseEvent | React.MouseEvent;
+          resizerRef: HTMLDivElement;
+          direction: ResizablePanesContext["direction"];
+      }
     | { type: "move"; event: MouseEvent | React.MouseEvent }
     | { type: "stop"; event: MouseEvent | React.MouseEvent };
 
@@ -29,18 +38,20 @@ export const resizablePanesMachine =
             },
             context: {
                 resizerRef: null as any,
-                containerRef: null as any,
-                direction: "horizontal",
-                pointerx: 0,
-                pointery: 0,
-                dx: 0,
-                dy: 0,
+                direction: "row",
+                pointerX: 0,
+                pointerY: 0,
+                deltaX: 0,
+                deltaY: 0,
+                position: 0,
+                draggedSize: 0,
+                containerSize: 0,
             },
             initial: "idle",
             states: {
                 idle: {
                     on: {
-                        start: { target: "dragging", actions: "assignContext" },
+                        start: { target: "dragging", actions: "setInitialContext" },
                     },
                 },
                 dragging: {
@@ -54,16 +65,77 @@ export const resizablePanesMachine =
         },
         {
             actions: {
-                assignContext: assign((context, event) => {
-                    const paneResizer = context.resizerRef.current!;
-                    const resizerWidth = paneResizer.offsetWidth ?? 0;
+                setInitialContext: assign({
+                    position: (ctx, event) => (ctx.direction === "row" ? event.event.clientX : event.event.clientY),
+                    containerSize: (ctx, event) => {
+                        const container = event.resizerRef.parentElement;
+                        if (!container) return ctx.containerSize;
+
+                        const containerSize =
+                            ctx.direction === "row"
+                                ? container.getBoundingClientRect().width
+                                : container.getBoundingClientRect().height;
+
+                        return containerSize;
+                    },
+                    resizerRef: (_ctx, event) => event.resizerRef,
+                }),
+                // adapted from https://github.dev/tomkp/react-split-pane/blob/master/src/SplitPane.js#L205
+                assignContext: assign((ctx, event) => {
+                    const paneResizer = ctx.resizerRef;
+                    const position = ctx.position;
+
+                    const isRow = ctx.direction === "row";
+                    const containerSize = ctx.containerSize;
+                    const paneResizerSize = isRow ? paneResizer.offsetWidth : paneResizer.offsetHeight;
+
+                    // TODO
+                    const isPrimaryFirst = undefined ?? true;
+                    const minSize = undefined ?? 0;
+                    const maxSize = (undefined ?? containerSize) - paneResizerSize * 2;
+                    const step = undefined;
+
+                    const node = isPrimaryFirst ? paneResizer.previousElementSibling! : paneResizer.nextElementSibling!;
                     const pointerEvent = event.event;
 
+                    const current = isRow ? pointerEvent.clientX : pointerEvent.clientY;
+                    const size = isRow ? node.getBoundingClientRect().width : node.getBoundingClientRect().height;
+
+                    let positionDelta = position - current;
+                    if (step) {
+                        if (Math.abs(positionDelta) < step) {
+                            return ctx;
+                        }
+                        // Integer division
+                        // eslint-disable-next-line no-bitwise
+                        positionDelta = ~~(positionDelta / step) * step;
+                    }
+
+                    const sizeDelta = isPrimaryFirst ? positionDelta : -positionDelta;
+                    const newSize = limit(size - sizeDelta, [minSize, maxSize]);
+                    const newPosition = position - positionDelta;
+
+                    if (ctx.direction === "row") {
+                        const resizerWidth = paneResizer.offsetWidth ?? 0;
+
+                        return {
+                            pointerX: pointerEvent.clientX - resizerWidth / 2,
+                            pointerY: pointerEvent.clientY,
+                            deltaX: pointerEvent.clientX - ctx.pointerX,
+                            deltaY: pointerEvent.clientY - ctx.pointerY,
+                            position: newPosition,
+                            draggedSize: newSize,
+                        };
+                    }
+
+                    const resizerHeight = paneResizer.offsetHeight ?? 0;
                     return {
-                        pointerx: pointerEvent.clientX - resizerWidth / 2,
-                        pointery: pointerEvent.clientY,
-                        dx: pointerEvent.clientX - context.pointerx,
-                        dy: pointerEvent.clientY - context.pointery,
+                        pointerX: pointerEvent.clientX,
+                        pointerY: pointerEvent.clientY - resizerHeight / 2,
+                        deltaX: pointerEvent.clientX - ctx.pointerX,
+                        deltaY: pointerEvent.clientY - ctx.pointerY,
+                        position: newPosition,
+                        draggedSize: newSize,
                     };
                 }),
             },

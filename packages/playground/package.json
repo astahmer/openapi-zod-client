@@ -24,6 +24,8 @@
         "@emotion/react": "^11.10.5",
         "@emotion/styled": "^11.10.5",
         "@monaco-editor/react": "^4.4.6",
+        "@saas-ui/react": "^1.4.5",
+        "@tanstack/react-query": "^4.14.1",
         "@xstate/react": "^3.0.1",
         "framer-motion": "^7.6.2",
         "monaco-editor": "^0.34.1",
@@ -31,6 +33,8 @@
         "pastable": "^2.0.13",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
-        "xstate": "^4.34.0"
+        "xstate": "^4.34.0",
+        "yaml": "^2.1.3",
+        "zod": "^3.19.1"
     }
 }
