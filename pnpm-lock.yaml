@@ -100,7 +100,7 @@ importers:
       monaco-editor: ^0.34.1
       openapi-zod-client: workspace:^1.0.0
       pastable: ^2.0.13
-      rakkasjs: 0.6.3
+      rakkasjs: 0.6.4
       react: ^18.2.0
       react-dom: ^18.2.0
       rollup: ^3.2.5
@@ -127,7 +127,7 @@ importers:
       monaco-editor: 0.34.1
       openapi-zod-client: link:../lib
       pastable: 2.0.13_react@18.2.0+xstate@4.34.0
-      rakkasjs: 0.6.3_ennvkk7rybblqiueb2nsfr7rky
+      rakkasjs: 0.6.4_ennvkk7rybblqiueb2nsfr7rky
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       xstate: 4.34.0
@@ -3760,8 +3760,8 @@ packages:
       eslint-visitor-keys: 3.3.0
     dev: true
 
-  /@vavite/connect/1.5.0_vite@3.2.2:
-    resolution: {integrity: sha512-J83EmZ2SJv0+EjRzdTmRjgH4Ov+/oA5oqEVodyXV5qeiBT4IYto19CGOPy1E/kZm5hAKhsE7JPxHkHHbudwX7A==}
+  /@vavite/connect/1.5.1_vite@3.2.2:
+    resolution: {integrity: sha512-/8qg1mSlnkpu3BNMSzq7ndMJpn0m/C8FD4S/vY0DRO9jggCgrUe00WwFEljXDQBMu5v+iQ42pxwRuTerfmXfnw==}
     peerDependencies:
       vite: '>=2.8.1'
     dependencies:
@@ -3769,16 +3769,16 @@ packages:
       vite: 3.2.2
     dev: false
 
-  /@vavite/expose-vite-dev-server/1.5.0_vite@3.2.2:
-    resolution: {integrity: sha512-XcrJHx1e19HaWHzC+z4HZh8PKtQu2IGcn2Sk+Jp6/AhZm/MSeSo/tBYj3TL4AMP/kAmhR1G71GrUvQ3H+3JnkQ==}
+  /@vavite/expose-vite-dev-server/1.5.1_vite@3.2.2:
+    resolution: {integrity: sha512-/d6LXGCFn43QnRpI1wE9OcNS56STgE4nO2lKBcSaNsU3/UdjeKd0NL0l+Ey6vsbbh0u6r7jlipYWzZJ1LEyeHw==}
     peerDependencies:
       vite: '>=2.8.1'
     dependencies:
       vite: 3.2.2
     dev: false
 
-  /@vavite/multibuild/1.5.0_vite@3.2.2:
-    resolution: {integrity: sha512-hN1n90XMwqhdfYQK9nLoWLZE7syFVJusYPOykkQ8+9ttkcxFXkaDJC/Pmi6YC19nZB1TxycdSobUyLWM2d3a7g==}
+  /@vavite/multibuild/1.5.1_vite@3.2.2:
+    resolution: {integrity: sha512-e3QsSY5+cE+22YyqfijGK1HWZIebq52gI0eNbGBjOcpyp7+mzGve/yKfA5O/QWU9sikmEBCVAkE220TDIktItQ==}
     peerDependencies:
       vite: '>=2.8.1'
     dependencies:
@@ -6630,8 +6630,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /rakkasjs/0.6.3_ennvkk7rybblqiueb2nsfr7rky:
-    resolution: {integrity: sha512-kf3he9DUpvH87UaSrxXBnaVf0I2CzI4pQ5fb2xOUr48uoTqTXptnSSiRro6ywhEWgB6WIrT/n/mvJreKFXf6qw==}
+  /rakkasjs/0.6.4_ennvkk7rybblqiueb2nsfr7rky:
+    resolution: {integrity: sha512-kp75yN+hM118FsbTmBGNV0q2FC2BhGI1BXithrgQ7rwqAuiLzpV6jxgIGN0hRcpxWZA+sd/gdBb2C0dpWB/AtQ==}
     hasBin: true
     peerDependencies:
       react: '18'
@@ -6651,9 +6651,9 @@ packages:
       '@types/node': 18.11.9
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
-      '@vavite/connect': 1.5.0_vite@3.2.2
-      '@vavite/expose-vite-dev-server': 1.5.0_vite@3.2.2
-      '@vavite/multibuild': 1.5.0_vite@3.2.2
+      '@vavite/connect': 1.5.1_vite@3.2.2
+      '@vavite/expose-vite-dev-server': 1.5.1_vite@3.2.2
+      '@vavite/multibuild': 1.5.1_vite@3.2.2
       '@vitejs/plugin-react': 2.2.0_vite@3.2.2
       cac: 6.7.14
       cheerio: 1.0.0-rc.12

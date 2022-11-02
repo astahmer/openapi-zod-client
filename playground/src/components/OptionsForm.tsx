@@ -3,9 +3,9 @@ import { Field, Form, FormLayout, FormProps } from "@saas-ui/react";
 import { z } from "zod";
 
 const schema = z.object({
-    baseUrl: z.string().describe("Base URL"),
+    baseUrl: z.string(),
     withAlias: z.boolean(),
-    apiClientName: z.string(),
+    apiClientName: z.string().default("api"),
     isMainResponseStatus: z.string(),
     isErrorStatus: z.string(),
     isMediaTypeAllowed: z.string(),
@@ -18,29 +18,45 @@ const schema = z.object({
     defaultStatusBehavior: z.enum(["spec-compliant", "auto-correct"]).default("spec-compliant"),
 });
 
+export const defaultOptionValues = {
+    baseUrl: "",
+    withAlias: false,
+    apiClientName: "api",
+    isMainResponseStatus: "status >= 200 && status < 300",
+    isErrorStatus: "!(status >= 200 && status < 300)",
+    isMediaTypeAllowed: "mediaType === 'application/json'",
+    useMainResponseDescriptionAsEndpointDefinitionFallback: false,
+    shouldExportAllSchemas: false,
+    withImplicitRequiredProps: false,
+    withDeprecatedEndpoints: false,
+    groupStrategy: "none",
+    complexityThreshold: 4,
+    defaultStatusBehavior: "spec-compliant",
+} as const;
+
 export const OptionsForm = (props: FormProps<z.infer<typeof schema>>) => {
     return (
-        <Form {...props}>
+        <Form defaultValues={defaultOptionValues} {...props}>
             <Stack spacing="4">
+                <Field name="baseUrl" label="Base URL" type="text" help="https://petstore.swagger.io/v2" />
                 <FormLayout columns={2}>
-                    <Field name="baseUrl" label="Base URL" type="text" />
                     <Field name="apiClientName" type="text" label="API Client Name" />
-                </FormLayout>
-                <FormLayout columns={3}>
-                    <Field name="withAlias" type="switch" label="With alias ?" />
-                    <Field name="shouldExportAllSchemas" type="switch" label="Should export all Schemas" />
-                    <Field name="withImplicitRequiredProps" type="switch" label="With implicit required props" />
-                </FormLayout>
-                <FormLayout columns={2}>
                     <Field
-                        name="isMainResponseStatus"
-                        type="text"
-                        label="Is Main Response Status"
-                        help="defaults to `(status >= 200 && status < 300)`"
+                        type="select"
+                        name="booleans"
+                        label="Booleans options"
+                        options={[
+                            { label: "With alias ?", value: "withAlias" },
+                            { label: "Should export all schemas ?", value: "shouldExportAllSchemas" },
+                            { label: "With implicit required props ?", value: "withImplicitRequiredProps" },
+                            { label: "With deprecated endpoints ?", value: "withDeprecatedEndpoints" },
+                            {
+                                label: "Use main response.description as endpoint definition fallback ?",
+                                value: "useMainResponseDescriptionAsEndpointDefinitionFallback",
+                            },
+                        ]}
+                        multiple
                     />
-                    <Field name="isErrorStatus" type="text" label="Is Error Status" />
-                    <Field name="isMediaTypeAllowed" type="text" label="Is Media Type Allowed" />
-                    <Field name="complexityThreshold" type="number" label="Complexity threshold" />
                     <Field
                         name="groupStrategy"
                         type="select"
@@ -62,12 +78,12 @@ export const OptionsForm = (props: FormProps<z.infer<typeof schema>>) => {
                         ]}
                         label="Default status behavior"
                     />
-                    <Field
-                        name="useMainResponseDescriptionAsEndpointDefinitionFallback"
-                        type="switch"
-                        label="Use main response.description as endpoint definition fallback ?"
-                    />
-                    <Field name="withDeprecatedEndpoints" type="switch" label="With deprecated endpoints" />
+                </FormLayout>
+                <FormLayout columns={2}>
+                    <Field name="isMainResponseStatus" type="text" label="Is Main Response Status" />
+                    <Field name="isErrorStatus" type="text" label="Is Error Status" />
+                    <Field name="isMediaTypeAllowed" type="text" label="Is Media Type Allowed" />
+                    <Field name="complexityThreshold" type="number" label="Complexity threshold" />
                 </FormLayout>
             </Stack>
         </Form>

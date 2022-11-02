@@ -34,7 +34,7 @@
         "monaco-editor": "^0.34.1",
         "openapi-zod-client": "workspace:^1.0.0",
         "pastable": "^2.0.13",
-        "rakkasjs": "0.6.3",
+        "rakkasjs": "0.6.4",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "xstate": "^4.34.0",

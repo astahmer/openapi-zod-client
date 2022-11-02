@@ -15,7 +15,7 @@ export default defineConfig({
         compileTime(),
     ],
     define: {
-        "process.env.TEST": false,
+        "process.env.TEST": true,
         global: {}, // for handlebars
     },
     ssr: {
