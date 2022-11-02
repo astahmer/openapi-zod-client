@@ -40,10 +40,9 @@ const EditorPage: FC = () => {
 
     const openApiDoc = useMemo(() => {
         if (!deferredInput) return;
-        if (deferredInput[0] === "{") {
+        if (deferredInput.startsWith("{")) {
             return safeJSONParse(deferredInput);
         }
-        console.log("yaml", parse(deferredInput));
 
         return parse(deferredInput);
     }, [deferredInput]);
@@ -62,7 +61,7 @@ const EditorPage: FC = () => {
         const template = hbs.compile(baseOutputTemplate);
 
         const output = template({ ...ctx, options });
-        const prettyOutput = maybePretty(output, {
+        return maybePretty(output, {
             printWidth: 120,
             tabWidth: 4,
             arrowParens: "always",
@@ -71,8 +70,6 @@ const EditorPage: FC = () => {
             singleQuote: false,
             trailingComma: "es5",
         });
-
-        return prettyOutput;
     }, [ctx]);
 
     console.log({ openApiDoc });
@@ -101,7 +98,12 @@ const EditorPage: FC = () => {
                 <DrawerContent>
                     <DrawerCloseButton />
                     <DrawerHeader>
-                        <Code>TemplateContext["options"]</Code>
+                        <Flex justifyContent="space-between" alignItems="center" mr="8">
+                            <Code>TemplateContext["options"]</Code>
+                            <Button type="submit" form="options-form">
+                                Save options
+                            </Button>
+                        </Flex>
                     </DrawerHeader>
 
                     <DrawerBody>
@@ -120,12 +122,6 @@ const EditorPage: FC = () => {
                             </Box>
                         </SplitPane>
                     </DrawerBody>
-
-                    <DrawerFooter>
-                        <Button type="submit" form="options-form">
-                            Save options
-                        </Button>
-                    </DrawerFooter>
                 </DrawerContent>
             </Drawer>
         </Flex>
