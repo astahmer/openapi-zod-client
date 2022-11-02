@@ -92,6 +92,7 @@ importers:
       '@emotion/styled': ^11.10.5
       '@monaco-editor/react': ^4.4.6
       '@saas-ui/react': ^1.4.5
+      '@tanstack/react-query': ^4.14.1
       '@types/react': ^18.0.18
       '@types/react-dom': ^18.0.6
       '@xstate/react': ^3.0.1
@@ -106,6 +107,7 @@ importers:
       typescript: ^4.8.2
       vite: ^3.1.0
       xstate: ^4.34.0
+      yaml: ^2.1.3
       zod: ^3.19.1
     dependencies:
       '@chakra-ui/react': 2.3.6_xvvq5h3dk2kufubnppcho6bcbq
@@ -114,6 +116,7 @@ importers:
       '@emotion/styled': 11.10.5_wm6ohc3abj5yburmg6pjdgzp24
       '@monaco-editor/react': 4.4.6_6vrjaj6ridxbohi43n7zt4gn7q
       '@saas-ui/react': 1.4.5_lulfi3mdcv3s7duh3duyrgnaiu
+      '@tanstack/react-query': 4.14.1_biqbaboplfbrettd7655fr4n2y
       '@xstate/react': 3.0.1_gohqadytld4h3x7jhliwfwobly
       framer-motion: 7.6.2_biqbaboplfbrettd7655fr4n2y
       monaco-editor: 0.34.1
@@ -122,6 +125,7 @@ importers:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       xstate: 4.34.0
+      yaml: 2.1.3
       zod: 3.19.1
     devDependencies:
       '@types/react': 18.0.24
@@ -3520,6 +3524,28 @@ packages:
       hoist-non-react-statics: 3.3.2
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@tanstack/query-core/4.14.1:
+    resolution: {integrity: sha512-mUejKoFDe4NZB8jQJR1uuAl6IwvkUpOD2m8NcuTVPOu0pcxeeFPdrnHaljwOEFPtlqXoiiIIQGYy6whjCMN+iQ==}
+    dev: false
+
+  /@tanstack/react-query/4.14.1_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-cRgNzigw4GSPwGlTEkXi8hi/xgUnSEt9jCkiC8oAT3PEIdsQ50onZcpXd+JNJcZk2RTh8KM1fGyWz6xYLiY8bg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@tanstack/query-core': 4.14.1
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /@types/chai-subset/1.3.3:

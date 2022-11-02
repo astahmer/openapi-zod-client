@@ -12,13 +12,13 @@ const MainLayout: Layout = ({ children }) => (
             display="flex"
             alignItems="flex-end"
             justifyContent="space-between"
-            borderBottomColor="gray.100"
             borderBottom="1px"
+            borderBottomColor="gray.100"
             py="5"
             px="4"
         >
             <Box as={Link} href="/" fontWeight="bold" fontSize={"2xl"}>
-                Rakkas Demo App
+                openapi-zod-client playground
             </Box>
             <Stack direction="row">
                 <Box
@@ -64,7 +64,7 @@ const MainLayout: Layout = ({ children }) => (
             </Stack>
         </Box>
 
-        <Box as="section" pt="4" pl="4" flexGrow={1}>
+        <Box as="section" pt="4" pl="4" h="100%" maxHeight="100%" overflow="auto">
             {children}
         </Box>
     </>

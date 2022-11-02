@@ -13,7 +13,8 @@ export interface Typegen0 {
         delays: never;
     };
     eventsCausingActions: {
-        assignContext: "move" | "start" | "stop";
+        assignContext: "move" | "stop";
+        setInitialContext: "start";
     };
     eventsCausingServices: {};
     eventsCausingGuards: {};

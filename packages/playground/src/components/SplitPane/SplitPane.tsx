@@ -1,27 +1,36 @@
 import { Box } from "@chakra-ui/react";
 import { useInterpret } from "@xstate/react";
-import { Children, PropsWithChildren, useEffect, useRef } from "react";
+import { Children, CSSProperties, PropsWithChildren, useEffect, useRef } from "react";
 import { resizablePanesMachine } from "./SplitPane.machine";
 
-export function SplitPane({ children }: PropsWithChildren) {
-    const firstPaneRef = useRef<HTMLDivElement>(null);
+export function SplitPane({
+    children,
+    direction = "row",
+    defaultSize,
+}: PropsWithChildren<{ direction?: "row" | "column"; defaultSize?: CSSProperties["width"] }>) {
+    const firstRef = useRef<HTMLDivElement>(null);
     const resizerRef = useRef<HTMLDivElement>(null);
 
-    const service = useInterpret(() =>
-        resizablePanesMachine.withContext({ ...resizablePanesMachine.initialState.context, resizerRef })
-    );
-
-    useEffect(() => {
-        service.start().subscribe((state) => {
+    const service = useInterpret(
+        () =>
+            resizablePanesMachine.withContext({
+                ...resizablePanesMachine.initialState.context,
+                direction,
+            }),
+        undefined,
+        (state) => {
             if (!state.changed) return;
-            if (firstPaneRef.current && state.context.pointerx !== 0) {
-                firstPaneRef.current.style.setProperty("--size", `${state.context.pointerx}px`);
+            if (!firstRef.current) return;
+            if (state.event.type !== "move") return;
+            if (state.context.draggedSize === 0) return;
+
+            if (direction === "row") {
+                firstRef.current.style.setProperty("--size", `${state.context.draggedSize}px`);
+            } else if (direction === "column") {
+                firstRef.current.style.setProperty("--size", `${state.context.draggedSize}px`);
             }
-        });
-        return () => {
-            service.stop();
-        };
-    }, [service]);
+        }
+    );
 
     useEffect(() => {
         const handleMouseMove = (event: MouseEvent) => service.send({ type: "move", event });
@@ -37,18 +46,38 @@ export function SplitPane({ children }: PropsWithChildren) {
     }, []);
 
     const [first, second] = Children.toArray(children);
+    const isRow = direction === "row";
+    const fallbackSize = defaultSize ?? "50%";
 
     return (
-        <Box flex={1} display="flex" flexDirection="row" width="100%" height="100%" userSelect="text">
+        <Box
+            flex="1 1 0%"
+            display="flex"
+            flexDirection={isRow ? "row" : "column"}
+            width="100%"
+            height="100%"
+            maxHeight="100%"
+            userSelect="text"
+            overflow="hidden"
+        >
             <Box
-                ref={firstPaneRef}
-                minWidth="300px"
-                maxWidth="calc(100% - 16px)"
+                ref={(ref) => {
+                    if (ref) {
+                        // @ts-expect-error
+                        firstRef.current = ref;
+                        // @ts-expect-error
+                        ref.style.setProperty("--size", fallbackSize);
+                    }
+                }}
                 flex="0 0 auto"
-                position="relative"
-                style={{ "--size": "50%", width: "var(--size)" } as any}
-                borderRight="1px"
-                borderRightColor="blackAlpha.300"
+                {...(isRow && { borderRight: "1px solid", borderRightColor: "blackAlpha.300" })}
+                {...(!isRow && { borderBottom: "1px solid", borderBottomColor: "blackAlpha.300" })}
+                style={
+                    {
+                        width: isRow ? `var(--size, ${fallbackSize})` : undefined,
+                        height: !isRow ? `var(--size, ${fallbackSize})` : undefined,
+                    } as any
+                }
                 data-pane
                 data-pane-index="1"
             >
@@ -56,26 +85,20 @@ export function SplitPane({ children }: PropsWithChildren) {
             </Box>
             <Box
                 ref={resizerRef}
-                onMouseDown={(event) => service.send({ type: "start", event })}
-                borderX="8px"
+                onMouseDown={(event) =>
+                    service.send({ type: "start", event, resizerRef: resizerRef.current!, direction })
+                }
+                borderX={isRow ? "8px" : undefined}
+                borderY={isRow ? undefined : "8px"}
                 borderColor="blackAlpha.50"
-                _hover={{ borderColor: "blackAlpha.300", cursor: "col-resize" }}
+                _hover={{ borderColor: "blackAlpha.300", cursor: isRow ? "col-resize" : "row-resize" }}
                 role="presentation"
                 userSelect="none"
                 data-pane-resizer
+                zIndex={1}
+                minHeight={0}
             />
-            <Box
-                maxWidth="100%"
-                width="100%"
-                overflow="hidden"
-                data-pane
-                data-pane-index="2"
-                // visibility="visible"
-                // zIndex="base"
-                // __flex="1 1 0% !important"
-                // position="relative"
-                // outline="none"
-            >
+            <Box data-pane data-pane-index="2" position="relative" flex="1 1 0%" backgroundColor="white" height="100%">
                 {second}
             </Box>
         </Box>
