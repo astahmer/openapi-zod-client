@@ -1,13 +1,28 @@
-import { Box } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import { useInterpret } from "@xstate/react";
 import { Children, CSSProperties, PropsWithChildren, useEffect, useRef } from "react";
-import { resizablePanesMachine } from "./SplitPane.machine";
+import { ResizablePanesContext, resizablePanesMachine } from "./SplitPane.machine";
+
+type SplitPaneProps = {
+    direction?: "row" | "column";
+    defaultSize?: CSSProperties["width"];
+    minSize?: number;
+    maxSize?: number;
+    step?: number;
+    wrapperProps?: BoxProps;
+    onResize?: (context: ResizablePanesContext) => void;
+};
 
 export function SplitPane({
     children,
     direction = "row",
     defaultSize,
-}: PropsWithChildren<{ direction?: "row" | "column"; defaultSize?: CSSProperties["width"] }>) {
+    minSize,
+    maxSize,
+    step,
+    wrapperProps,
+    onResize,
+}: PropsWithChildren<SplitPaneProps>) {
     const firstRef = useRef<HTMLDivElement>(null);
     const resizerRef = useRef<HTMLDivElement>(null);
 
@@ -16,6 +31,9 @@ export function SplitPane({
             resizablePanesMachine.withContext({
                 ...resizablePanesMachine.initialState.context,
                 direction,
+                minSize: minSize ?? resizablePanesMachine.initialState.context.minSize,
+                maxSize: maxSize ?? resizablePanesMachine.initialState.context.maxSize,
+                step: step ?? resizablePanesMachine.initialState.context.step,
             }),
         undefined,
         (state) => {
@@ -24,11 +42,8 @@ export function SplitPane({
             if (state.event.type !== "move") return;
             if (state.context.draggedSize === 0) return;
 
-            if (direction === "row") {
-                firstRef.current.style.setProperty("--size", `${state.context.draggedSize}px`);
-            } else if (direction === "column") {
-                firstRef.current.style.setProperty("--size", `${state.context.draggedSize}px`);
-            }
+            firstRef.current.style.setProperty("--size", `${state.context.draggedSize}px`);
+            onResize?.(state.context);
         }
     );
 
@@ -59,6 +74,7 @@ export function SplitPane({
             maxHeight="100%"
             userSelect="text"
             overflow="hidden"
+            {...wrapperProps}
         >
             <Box
                 ref={(ref) => {
@@ -98,7 +114,15 @@ export function SplitPane({
                 zIndex={1}
                 minHeight={0}
             />
-            <Box data-pane data-pane-index="2" position="relative" flex="1 1 0%" backgroundColor="white" height="100%">
+            <Box
+                data-pane
+                data-pane-index="2"
+                position="relative"
+                flex="1 1 0%"
+                backgroundColor="white"
+                height="100%"
+                minHeight={0}
+            >
                 {second}
             </Box>
         </Box>

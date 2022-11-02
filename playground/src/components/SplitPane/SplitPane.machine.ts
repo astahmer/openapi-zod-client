@@ -2,7 +2,7 @@ import React from "react";
 import { assign, createMachine } from "xstate";
 import { limit } from "pastable";
 
-type ResizablePanesContext = {
+export type ResizablePanesContext = {
     resizerRef: HTMLDivElement;
     direction: "row" | "column";
     pointerX: number;
@@ -12,6 +12,10 @@ type ResizablePanesContext = {
     position: number;
     draggedSize: number;
     containerSize: number;
+    minSize: number;
+    maxSize: number | undefined;
+    isPrimaryFirst: boolean;
+    step: number;
 };
 
 type ResizablePanesEvent =
@@ -46,6 +50,10 @@ export const resizablePanesMachine =
                 position: 0,
                 draggedSize: 0,
                 containerSize: 0,
+                minSize: 0,
+                maxSize: undefined,
+                isPrimaryFirst: true,
+                step: 0,
             },
             initial: "idle",
             states: {
@@ -71,12 +79,9 @@ export const resizablePanesMachine =
                         const container = event.resizerRef.parentElement;
                         if (!container) return ctx.containerSize;
 
-                        const containerSize =
-                            ctx.direction === "row"
-                                ? container.getBoundingClientRect().width
-                                : container.getBoundingClientRect().height;
-
-                        return containerSize;
+                        return ctx.direction === "row"
+                            ? container.getBoundingClientRect().width
+                            : container.getBoundingClientRect().height;
                     },
                     resizerRef: (_ctx, event) => event.resizerRef,
                 }),
@@ -89,11 +94,10 @@ export const resizablePanesMachine =
                     const containerSize = ctx.containerSize;
                     const paneResizerSize = isRow ? paneResizer.offsetWidth : paneResizer.offsetHeight;
 
-                    // TODO
-                    const isPrimaryFirst = undefined ?? true;
-                    const minSize = undefined ?? 0;
-                    const maxSize = (undefined ?? containerSize) - paneResizerSize * 2;
-                    const step = undefined;
+                    const isPrimaryFirst = ctx.isPrimaryFirst ?? true;
+                    const minSize = ctx.minSize ?? 0;
+                    const step = ctx.step;
+                    const maxSize = limit(ctx.maxSize ?? containerSize, [0, containerSize - paneResizerSize * 2]);
 
                     const node = isPrimaryFirst ? paneResizer.previousElementSibling! : paneResizer.nextElementSibling!;
                     const pointerEvent = event.event;
@@ -106,9 +110,9 @@ export const resizablePanesMachine =
                         if (Math.abs(positionDelta) < step) {
                             return ctx;
                         }
+
                         // Integer division
-                        // eslint-disable-next-line no-bitwise
-                        positionDelta = ~~(positionDelta / step) * step;
+                        positionDelta = Math.trunc(positionDelta / step) * step;
                     }
 
                     const sizeDelta = isPrimaryFirst ? positionDelta : -positionDelta;
@@ -119,6 +123,7 @@ export const resizablePanesMachine =
                         const resizerWidth = paneResizer.offsetWidth ?? 0;
 
                         return {
+                            ...ctx,
                             pointerX: pointerEvent.clientX - resizerWidth / 2,
                             pointerY: pointerEvent.clientY,
                             deltaX: pointerEvent.clientX - ctx.pointerX,
@@ -130,6 +135,7 @@ export const resizablePanesMachine =
 
                     const resizerHeight = paneResizer.offsetHeight ?? 0;
                     return {
+                        ...ctx,
                         pointerX: pointerEvent.clientX,
                         pointerY: pointerEvent.clientY - resizerHeight / 2,
                         deltaX: pointerEvent.clientX - ctx.pointerX,
