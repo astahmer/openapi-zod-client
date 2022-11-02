@@ -2,7 +2,7 @@ import SwaggerParser from "@apidevtools/swagger-parser";
 import type { OpenAPIObject } from "openapi3-ts";
 import { Options, resolveConfig } from "prettier";
 import { getZodClientTemplateContext } from "../src/template-context";
-import { getHandlebars } from "../src/generateZodClientFromOpenAPI";
+import { getHandlebars } from "../src/getHandlebars";
 import { maybePretty } from "../src/maybePretty";
 
 import fg from "fast-glob";
