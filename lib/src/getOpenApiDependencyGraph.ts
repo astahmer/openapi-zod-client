@@ -1,4 +1,5 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+
 import { isReferenceObject } from "./isReferenceObject";
 
 export const getOpenApiDependencyGraph = (

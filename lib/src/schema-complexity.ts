@@ -1,8 +1,8 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
-import { isReferenceObject } from "./isReferenceObject";
 import { getSum } from "pastable/server";
 import { match } from "ts-pattern";
 
+import { isReferenceObject } from "./isReferenceObject";
 import type { PrimitiveType } from "./utils";
 import { isPrimitiveType } from "./utils";
 

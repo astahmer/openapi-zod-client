@@ -7,8 +7,7 @@
         "build": "rakkas build",
         "preview": "rakkas preview",
         "start": "node dist/server",
-        "test": "pnpm test:typecheck",
-        "test:typecheck": "tsc -p tsconfig.json --noEmit"
+        "lint:ts": "tsc --noEmit"
     },
     "devDependencies": {
         "@types/react": "^18.0.18",

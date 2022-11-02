@@ -12,27 +12,13 @@
         "gen:schemas-only": "node ./bin.js ./examples/schemas-only/petstore.yaml -o ./examples/schemas-only/petstore-schemas.ts -t ./examples/schemas-only/schemas-only.hbs -p ./examples/schemas-only/prettier-custom.json --export-schemas",
         "gen:samples": "rm -rf ./samples && tsx ./samples-generator.ts",
         "gen": "pnpm gen:basic && gen:schemas-only && pnpm gen:samples",
-        "dev": "preconstruct watch",
-        "build": "preconstruct build",
-        "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
-        "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix",
-        "lint:ts": "tsc --noEmit",
-        "postinstall": "preconstruct dev"
-    },
-    "preconstruct": {
-        "packages": [
-            "packages/lib"
-        ]
+        "lint": "eslint -c .eslintrc.build.js './lib/src/**/*.ts' --cache --format=pretty",
+        "lint:fix": "eslint -c .eslintrc.build.js './lib/src/**/*.ts' --cache --format=pretty --fix"
     },
     "license": "ISC",
-    "dependencies": {
-        "@babel/core": "^7.19.6"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@astahmer/eslint-config-ts": "^0.1.5",
-        "@babel/preset-env": "^7.19.4",
-        "@babel/preset-typescript": "^7.18.6",
-        "@preconstruct/cli": "^2.2.1",
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
         "eslint": "^8.26.0",

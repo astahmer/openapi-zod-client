@@ -5,10 +5,10 @@ import { capitalize, pick } from "pastable/server";
 import type { Options } from "prettier";
 import { match } from "ts-pattern";
 
+import { getHandlebars } from "./getHandlebars";
 import { maybePretty } from "./maybePretty";
 import type { TemplateContext } from "./template-context";
 import { getZodClientTemplateContext } from "./template-context";
-import { getHandlebars } from "./getHandlebars";
 
 type GenerateZodClientFromOpenApiArgs<TOptions extends TemplateContext["options"] = TemplateContext["options"]> = {
     openApiDoc: OpenAPIObject;

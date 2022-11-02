@@ -8,13 +8,13 @@ import type {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { isReferenceObject } from "./isReferenceObject";
 import { get } from "pastable/server";
 import { match } from "ts-pattern";
 import { sync } from "whence";
 
 import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
+import { isReferenceObject } from "./isReferenceObject";
 import { getZodChain, getZodSchema } from "./openApiToZod";
 import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";

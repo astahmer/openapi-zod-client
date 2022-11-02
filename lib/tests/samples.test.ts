@@ -19,7 +19,7 @@ beforeAll(async () => {
 
 describe("samples-generator", async () => {
     const pkgRoot = process.cwd();
-    const samplesPath = path.resolve(pkgRoot, "../../", "./samples/v3\\.*/**/*.yaml");
+    const samplesPath = path.resolve(pkgRoot, "../", "./samples/v3\\.*/**/*.yaml");
     const list = fg.sync([samplesPath]);
 
     const template = getHandlebars().compile(readFileSync("./src/template.hbs", "utf8"));
