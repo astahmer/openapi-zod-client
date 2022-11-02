@@ -1,9 +1,9 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
-import { isReferenceObject } from "./isReferenceObject";
 import { match } from "ts-pattern";
 
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
 import { CodeMeta } from "./CodeMeta";
+import { isReferenceObject } from "./isReferenceObject";
 import type { TemplateContext } from "./template-context";
 import { getRefName, isPrimitiveType, normalizeString } from "./utils";
 

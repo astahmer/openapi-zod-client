@@ -1,6 +1,6 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
-import { isReferenceObject } from "./isReferenceObject";
 
+import { isReferenceObject } from "./isReferenceObject";
 import { getSchemaComplexity } from "./schema-complexity";
 import { getRefName } from "./utils";
 

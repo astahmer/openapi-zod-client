@@ -1,8 +1,8 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
-import { isReferenceObject } from "./isReferenceObject";
 import { t, ts } from "tanu";
 import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
+import { isReferenceObject } from "./isReferenceObject";
 import { getRefName, normalizeString } from "./utils";
 
 type TsConversionArgs = {
