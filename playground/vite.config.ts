@@ -1,7 +1,6 @@
-import { defineConfig } from "vite";
+import { defineConfig, PluginOption } from "vite";
 import rakkas from "rakkasjs/vite-plugin";
-
-// import path from "node:path";
+import compileTime from "vite-plugin-compile-time";
 
 export default defineConfig({
     plugins: [
@@ -13,6 +12,7 @@ export default defineConfig({
                 },
             },
         }),
+        compileTime(),
     ],
     define: {
         "process.env.TEST": false,

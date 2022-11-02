@@ -6,7 +6,6 @@ import {
     DrawerBody,
     DrawerCloseButton,
     DrawerContent,
-    DrawerFooter,
     DrawerHeader,
     DrawerOverlay,
     Flex,
@@ -18,10 +17,10 @@ import { getHandlebars, getZodClientTemplateContext, maybePretty } from "openapi
 import { safeJSONParse } from "pastable";
 import { FC, useDeferredValue, useMemo, useState } from "react";
 import { parse } from "yaml";
+import { default as petstoreYaml } from "../../../examples/petstore.yaml?raw";
+import { default as baseOutputTemplate } from "../../../lib/src/template.hbs?raw";
 import { OptionsForm } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
-import { petstoreYaml } from "../petstore.yaml";
-import { baseOutputTemplate } from "../template.hbs";
 
 // TODO: Add a way to pass in a custom template.
 // template context explorer
@@ -72,8 +71,6 @@ const EditorPage: FC = () => {
         });
     }, [ctx]);
 
-    console.log({ openApiDoc });
-
     return (
         <Flex flexDirection="column" h="100%" pos="relative">
             <Box display="flex" boxSize="100%" overflow="hidden">
@@ -88,7 +85,20 @@ const EditorPage: FC = () => {
                         <Box mb="4" fontWeight="bold">
                             Zodios client - Output
                         </Box>
-                        <Editor defaultLanguage="typescript" defaultValue={output} options={{ readOnly: true }} />
+                        <Editor
+                            defaultLanguage="typescript"
+                            defaultValue={output}
+                            options={{ readOnly: false }}
+                            beforeMount={(monaco) => {
+                                const declarations: Array<{ name: string; code: string }> = import.meta.compileTime(
+                                    "../../get-ts-declarations.ts"
+                                );
+
+                                declarations.forEach(({ name, code }) => {
+                                    monaco.languages.typescript.typescriptDefaults.addExtraLib(code, name);
+                                });
+                            }}
+                        />
                     </Box>
                 </SplitPane>
             </Box>
