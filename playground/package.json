@@ -12,10 +12,13 @@
     "devDependencies": {
         "@types/react": "^18.0.18",
         "@types/react-dom": "^18.0.6",
-        "rakkasjs": "0.6.2-next.8",
+        "rollup": "^3.2.5",
+        "rollup-plugin-dts": "^5.0.0",
         "ts-toolbelt": "^9.6.0",
+        "type-fest": "^2.19.0",
         "typescript": "^4.8.2",
-        "vite": "^3.1.0"
+        "vite": "^3.1.0",
+        "vite-plugin-compile-time": "^0.1.2"
     },
     "dependencies": {
         "@chakra-ui/react": "^2.3.6",
@@ -26,10 +29,12 @@
         "@saas-ui/react": "^1.4.5",
         "@tanstack/react-query": "^4.14.1",
         "@xstate/react": "^3.0.1",
+        "@zodios/core": "^10.3.1",
         "framer-motion": "^7.6.2",
         "monaco-editor": "^0.34.1",
         "openapi-zod-client": "workspace:^1.0.0",
         "pastable": "^2.0.13",
+        "rakkasjs": "0.6.3",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "xstate": "^4.34.0",
