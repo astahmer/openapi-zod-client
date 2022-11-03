@@ -1,8 +1,7 @@
-import { SaasProvider } from "@saas-ui/react";
+import { SaasProvider, baseTheme, ModalsProvider } from "@saas-ui/react";
 import type { CommonHooks } from "rakkasjs";
 
 import { extendTheme } from "@chakra-ui/react";
-import { baseTheme } from "@saas-ui/react"; // Only required if you use Saas UI components.
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const colors = {
@@ -38,7 +37,9 @@ const queryClient = new QueryClient();
 const hooks: CommonHooks = {
     wrapApp: (app) => (
         <QueryClientProvider client={queryClient}>
-            <SaasProvider theme={theme}>{app}</SaasProvider>
+            <SaasProvider theme={theme}>
+                <ModalsProvider>{app}</ModalsProvider>
+            </SaasProvider>
         </QueryClientProvider>
     ),
 };

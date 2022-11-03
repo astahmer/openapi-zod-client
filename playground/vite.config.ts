@@ -1,9 +1,14 @@
-import { defineConfig, PluginOption } from "vite";
+import { defineConfig } from "vite";
 import rakkas from "rakkasjs/vite-plugin";
 import compileTime from "vite-plugin-compile-time";
+import UnoCSS from "unocss/vite";
+import presetIcons from "@unocss/preset-icons";
 
 export default defineConfig({
     plugins: [
+        UnoCSS({
+            presets: [presetIcons({})],
+        }),
         rakkas({
             react: {
                 jsxImportSource: "/src/emotion",

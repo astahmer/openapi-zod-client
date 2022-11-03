@@ -10,13 +10,16 @@
         "lint:ts": "tsc --noEmit"
     },
     "devDependencies": {
+        "@iconify/json": "^2.1.132",
         "@types/react": "^18.0.18",
         "@types/react-dom": "^18.0.6",
+        "@unocss/preset-icons": "^0.46.3",
         "rollup": "^3.2.5",
         "rollup-plugin-dts": "^5.0.0",
         "ts-toolbelt": "^9.6.0",
         "type-fest": "^2.19.0",
         "typescript": "^4.8.2",
+        "unocss": "^0.46.3",
         "vite": "^3.1.0",
         "vite-plugin-compile-time": "^0.1.2"
     },
