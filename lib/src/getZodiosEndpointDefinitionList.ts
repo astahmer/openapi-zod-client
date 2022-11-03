@@ -208,7 +208,8 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 const mediaTypes = Object.keys(responseItem.content ?? {});
                 const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
 
-                const maybeSchema = matchingMediaType && responseItem.content?.[matchingMediaType]?.schema;
+                const maybeSchema = matchingMediaType ? responseItem.content?.[matchingMediaType]?.schema : null;
+
                 let schemaString = matchingMediaType ? undefined : voidSchema;
                 let schema: CodeMeta | undefined;
 
@@ -283,7 +284,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         }
     }
 
+    // TODO options to suppress warnings
     if (!process.env["TEST"]) {
+        // TODO return
         if (ignoredFallbackResponse.length > 0) {
             console.warn(
                 `The following endpoints have no status code other than \`default\` and were ignored as the OpenAPI spec recommends. However they could be added by setting \`defaultStatusBehavior\` to \`auto-correct\`: ${ignoredGenericError.join(
@@ -292,6 +295,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             );
         }
 
+        // TODO return
         if (ignoredGenericError.length > 0) {
             console.warn(
                 `The following endpoints could have had a generic error response added by setting \`defaultStatusBehavior\` to \`auto-correct\` ${ignoredGenericError.join(
@@ -302,7 +306,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
     }
 
     const graphs = getOpenApiDependencyGraph(
-        Object.keys(ctx.zodSchemaByName).map((name) => getRefFromName(name)),
+        Object.keys(doc.components?.schemas ?? {}).map((name) => getRefFromName(name)),
         ctx.getSchemaByRef
     );
 
