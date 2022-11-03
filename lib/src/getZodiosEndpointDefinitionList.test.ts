@@ -472,6 +472,9 @@ test("petstore.yaml", async () => {
     expect(result).toMatchInlineSnapshot(`
       {
           "deepDependencyGraph": {
+              "#/components/schemas/Customer": Set {
+                  "#/components/schemas/Address",
+              },
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
@@ -928,6 +931,9 @@ test("petstore.yaml", async () => {
           ],
           "getSchemaByRef": [Function],
           "refsDependencyGraph": {
+              "#/components/schemas/Customer": Set {
+                  "#/components/schemas/Address",
+              },
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",

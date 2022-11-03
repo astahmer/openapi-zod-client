@@ -111,8 +111,8 @@ describe("recursive-schema", () => {
 
         expect(topologicalSort(depsGraph.refsDependencyGraph)).toMatchInlineSnapshot(`
           [
-              "#/components/schemas/Middle",
               "#/components/schemas/User",
+              "#/components/schemas/Middle",
           ]
         `);
 
