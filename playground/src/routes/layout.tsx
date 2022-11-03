@@ -6,7 +6,7 @@ import "./layout.css";
 const MainLayout: Layout = ({ children }) => {
     return (
         <>
-            <Head title="Rakkas" />
+            <Head title="playground - openapi-zod-client" />
 
             <Box
                 as="header"
@@ -26,18 +26,20 @@ const MainLayout: Layout = ({ children }) => {
                         as={StyledLink}
                         href="/"
                         px="2"
+                        py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "pink.100" }}
+                        _hover={{ backgroundColor: "gray.200" }}
                         activeClass="activeLink"
                     >
-                        Home
+                        Playground
                     </Box>
                     <Box
                         as={StyledLink}
                         href="/docs"
                         px="2"
+                        py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "pink.100" }}
+                        _hover={{ backgroundColor: "gray.200" }}
                         activeClass="activeLink"
                     >
                         Documentation
@@ -46,18 +48,23 @@ const MainLayout: Layout = ({ children }) => {
                         as={StyledLink}
                         href="https://github.com/astahmer/openapi-zod-client/"
                         px="2"
+                        py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "pink.100" }}
+                        _hover={{ backgroundColor: "gray.200" }}
                     >
-                        Github
+                        <Box className="i-mdi-github" boxSize="1.5em" />
                     </Box>
                     <Box
                         as={StyledLink}
                         href="https://www.zodios.org/"
                         px="2"
+                        py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "pink.100" }}
+                        _hover={{ backgroundColor: "gray.200" }}
+                        display="flex"
+                        alignItems="center"
                     >
+                        <Box className="i-ic-outline-diamond" boxSize="1.5em" color="purple" mr="1" />
                         Zodios
                     </Box>
                 </Stack>

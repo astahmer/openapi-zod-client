@@ -29,10 +29,21 @@ main {
 }
 
 .activeLink {
-    background-color: #ddd;
+    background-color: var(--chakra-colors-gray-100);
 }
 
 .main {
     padding: 0 1em 1em;
     min-height: calc(100vh - 16rem);
+}
+
+.scrollbar::-webkit-scrollbar {
+    width: 7px;
+    height: 5px;
+    /* background-color: #efefef; */
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: #e3e3e3;
 }
