@@ -30,10 +30,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         referencedBy: [...code.meta.referencedBy],
     };
 
-    const nestingPath = code.meta.referencedBy
-        .slice(0, -1)
-        .map((prev) => getRefName(prev.ref!))
-        .join("_|_");
+    const refsPath = code.meta.referencedBy.slice(0, -1).map((prev) => getRefName(prev.ref!));
 
     if (isReferenceObject(schema)) {
         if (!ctx) throw new Error("Context is required");
@@ -41,7 +38,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         const refName = getRefName(schema.$ref);
 
         // circular(=recursive) reference
-        if (nestingPath.split("_|_").length > 1 && nestingPath.includes("_|_" + refName)) {
+        if (refsPath.length > 1 && refsPath.includes(refName)) {
             return code.assign(ctx.zodSchemaByName[code.ref!]!);
         }
 
