@@ -1,4 +1,4 @@
-import { Box, Stack } from "@chakra-ui/react";
+import { Box, Code, Stack } from "@chakra-ui/react";
 import { Head, Layout, Link, StyledLink } from "rakkasjs";
 
 import "./layout.css";
@@ -18,8 +18,17 @@ const MainLayout: Layout = ({ children }) => {
                 py="5"
                 px="4"
             >
-                <Box as={Link} href="/" fontWeight="bold" fontSize={"2xl"}>
-                    openapi-zod-client playground
+                <Box fontWeight="bold" fontSize={"2xl"}>
+                    <Code
+                        variant="solid"
+                        fontSize="2xl"
+                        as={Link}
+                        href="https://github.com/astahmer/openapi-zod-client/"
+                        rel="external"
+                        target="_blank"
+                    >
+                        openapi-zod-client
+                    </Code>
                 </Box>
                 <Stack direction="row">
                     <Box
@@ -47,6 +56,8 @@ const MainLayout: Layout = ({ children }) => {
                     <Box
                         as={StyledLink}
                         href="https://github.com/astahmer/openapi-zod-client/"
+                        rel="external"
+                        target="_blank"
                         px="2"
                         py="1"
                         borderRadius="md"
@@ -57,6 +68,8 @@ const MainLayout: Layout = ({ children }) => {
                     <Box
                         as={StyledLink}
                         href="https://www.zodios.org/"
+                        rel="external"
+                        target="_blank"
                         px="2"
                         py="1"
                         borderRadius="md"

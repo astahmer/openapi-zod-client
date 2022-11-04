@@ -14,8 +14,14 @@ import {
     Menu,
     MenuButton,
     MenuItem,
+    MenuItemOption,
     MenuList,
+    MenuOptionGroup,
     ModalFooter,
+    Popover,
+    PopoverBody,
+    PopoverContent,
+    PopoverTrigger,
     Tab,
     TabList,
     Tabs,
@@ -29,12 +35,11 @@ import { editor } from "monaco-editor";
 import type { TemplateContextOptions } from "openapi-zod-client";
 import { getHandlebars, getZodClientTemplateContext, maybePretty } from "openapi-zod-client";
 import { removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
-import { MouseEventHandler, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { parse } from "yaml";
-import { default as petstoreYaml } from "../../../examples/petstore.yaml?raw";
-import { default as baseOutputTemplate } from "../../../lib/src/template.hbs?raw";
 import { defaultOptionValues, OptionsForm } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
+import { presets } from "./presets";
 
 // TODO: Add a way to pass in a custom template.
 // template context explorer
@@ -43,6 +48,9 @@ import { SplitPane } from "../components/SplitPane/SplitPane";
 // localStorage persistence for input
 // TODO diff editor + collect warnings
 // test with json input
+// Save/share = generate link like ts playground
+// display openapi-zod-client version
+// use extension to determine input type (json|yaml = openapi doc, hbs = template)
 
 const useOpenApiZodClient = (input: string, options: TemplateContextOptions) => {
     const deferredInput = useDeferredValue(input);
@@ -58,7 +66,13 @@ const useOpenApiZodClient = (input: string, options: TemplateContextOptions) => 
 
     const ctx = useMemo(() => {
         if (!openApiDoc) return;
-        return getZodClientTemplateContext(openApiDoc, options);
+        const ctx = getZodClientTemplateContext(openApiDoc, options);
+        // logs the template context to the browser console so users can explore it
+        if (typeof window !== "undefined") {
+            console.log(ctx);
+        }
+
+        return ctx;
     }, [openApiDoc, options]);
 
     return useMemo(() => {
@@ -67,7 +81,8 @@ const useOpenApiZodClient = (input: string, options: TemplateContextOptions) => 
         const groupStrategy = options?.groupStrategy ?? "none";
 
         const hbs = getHandlebars();
-        const template = hbs.compile(baseOutputTemplate);
+        // TODO select template
+        const template = hbs.compile(presets.defaultTemplate);
 
         const output = template({ ...ctx, options: { ...options, apiClientName: options?.apiClientName ?? "api" } });
         return maybePretty(output, {
@@ -82,17 +97,28 @@ const useOpenApiZodClient = (input: string, options: TemplateContextOptions) => 
     }, [ctx, options]);
 };
 
+const initialInputList: FileTab[] = [
+    { name: "api.doc.yaml", content: presets.defaultInput, index: 0, isPreset: true },
+    { name: "template.hbs", content: presets.defaultTemplate, index: 1, isPreset: true },
+];
+const isValidInputName = (name: string) => name.endsWith(".yml") || name.endsWith(".yaml") || name.endsWith(".json");
+
 export const Playground = () => {
     const [options, setOptions] = useState<Partial<TemplateContextOptions>>({});
     const [previewOptions, setPreviewOptions] = useState<Partial<TemplateContextOptions & { booleans: string[] }>>({});
+    const [optionsFormKey, setOptionsFormKey] = useState(0);
 
-    const [activeInputTab, setActiveInputTab] = useState("openapi.doc.yaml");
-    const [inputList, setInputList] = useState<FileTab[]>([{ name: activeInputTab, content: petstoreYaml, index: 0 }]);
+    const [activeInputTab, setActiveInputTab] = useState(initialInputList[0].name);
+    const [inputList, setInputList] = useState<FileTab[]>(initialInputList);
 
-    const inputIndex = inputList.findIndex((tab) => tab.name === activeInputTab);
+    const activeIndex = inputList.findIndex((tab) => tab.name === activeInputTab);
+    const inputIndex = isValidInputName(inputList[activeIndex].name)
+        ? activeIndex
+        : inputList.findIndex((tab) => isValidInputName(tab.name));
     const input = inputList[inputIndex]?.content ?? "";
     const output = useOpenApiZodClient(input, options);
 
+    // update output editor preview value whenever output is re-computed
     useEffect(() => {
         outputEditorRef.current?.setValue(output);
     }, [output]);
@@ -111,7 +137,7 @@ export const Playground = () => {
     const outputEditorRef = useRef<editor.IStandaloneCodeEditor>();
 
     return (
-        <Flex flexDirection="column" h="100%" pos="relative">
+        <Flex h="100%" pos="relative">
             <Box display="flex" boxSize="100%">
                 <SplitPane
                     defaultSize="50%"
@@ -123,7 +149,8 @@ export const Playground = () => {
                     }}
                 >
                     <Box h="100%" flexGrow={1}>
-                        <Tabs variant="line" size="sm" h="42px" index={inputIndex}>
+                        <Tabs variant="line" size="sm" h="42px" index={activeIndex}>
+                            {/* TODO cursor pointer + onDoubleClick = create file action */}
                             <TabList
                                 pb="2"
                                 className="scrollbar"
@@ -133,23 +160,12 @@ export const Playground = () => {
                                 scrollSnapAlign="start"
                             >
                                 {inputList.map((file, index) => {
-                                    const openEditForm: MouseEventHandler = (e) => {
-                                        e.stopPropagation();
-                                        setFormModalDefaultValues(file);
-                                        formModal.onOpen();
-                                    };
-
                                     return (
                                         <Tab
                                             key={file.name}
                                             display="flex"
                                             alignItems="center"
-                                            onClick={(e) => {
-                                                setActiveInputTab(file.name);
-                                                // if (file.name === activeInputTab) {
-                                                //     openEditForm(e);
-                                                // }
-                                            }}
+                                            onClick={() => setActiveInputTab(file.name)}
                                             border="none"
                                             _selected={{ bg: "gray.100", fontWeight: "bold" }}
                                             borderRadius="md"
@@ -165,10 +181,16 @@ export const Playground = () => {
                                                     padding="0"
                                                     borderRadius="0"
                                                     minWidth="0"
-                                                    onClick={openEditForm}
+                                                    onClick={(e) => {
+                                                        if (file.isPreset) return;
+                                                        e.stopPropagation();
+                                                        setFormModalDefaultValues(file);
+                                                        formModal.onOpen();
+                                                    }}
                                                     backgroundColor="gray.400"
                                                     visibility="hidden"
                                                     _groupHover={{ visibility: "visible" }}
+                                                    isDisabled={file.isPreset}
                                                 />
                                                 <Button
                                                     as="div"
@@ -195,35 +217,6 @@ export const Playground = () => {
                                         </Tab>
                                     );
                                 })}
-                                <Menu>
-                                    <MenuButton
-                                        as={Button}
-                                        flexShrink={0}
-                                        ml="auto"
-                                        mr="4"
-                                        size="sm"
-                                        variant="outline"
-                                        rightIcon={<Box className="i-mdi-chevron-down" boxSize="1.25em" />}
-                                    >
-                                        Actions
-                                    </MenuButton>
-                                    <MenuList>
-                                        <MenuItem
-                                            onClick={() => {
-                                                setFormModalDefaultValues({
-                                                    name: "",
-                                                    content: "",
-                                                    index: inputList.length,
-                                                });
-                                                formModal.onOpen();
-                                            }}
-                                        >
-                                            Create input file
-                                        </MenuItem>
-                                        <MenuItem>Select handlebars template</MenuItem>
-                                        <MenuItem>Use OpenAPI samples</MenuItem>
-                                    </MenuList>
-                                </Menu>
                             </TabList>
                         </Tabs>
                         <Editor
@@ -252,16 +245,59 @@ export const Playground = () => {
                                         {file.name}
                                     </Tab>
                                 ))}
-                                <Button
-                                    variant="outline"
-                                    ml="auto"
-                                    mr="4"
-                                    mb="2"
-                                    size="sm"
-                                    onClick={optionsDrawer.onOpen}
-                                >
-                                    Edit options
-                                </Button>
+                                <Menu>
+                                    <MenuButton
+                                        as={Button}
+                                        flexShrink={0}
+                                        ml="auto"
+                                        mr="4"
+                                        size="sm"
+                                        variant="outline"
+                                        rightIcon={<Box className="i-mdi-chevron-down" boxSize="1.25em" />}
+                                    >
+                                        Actions
+                                    </MenuButton>
+                                    <MenuList>
+                                        <MenuItem
+                                            onClick={() => {
+                                                setFormModalDefaultValues({
+                                                    name: "",
+                                                    content: "",
+                                                    index: inputList.length,
+                                                });
+                                                formModal.onOpen();
+                                            }}
+                                        >
+                                            Create file
+                                        </MenuItem>
+                                        <Popover trigger="hover" placement="left" closeOnBlur={false}>
+                                            <PopoverTrigger>
+                                                <MenuItem>Select handlebars template</MenuItem>
+                                            </PopoverTrigger>
+                                            <PopoverContent>
+                                                <PopoverBody>
+                                                    <MenuOptionGroup
+                                                        defaultValue="default"
+                                                        title="Template"
+                                                        type="radio"
+                                                    >
+                                                        <MenuItemOption value="default">
+                                                            Default (zodios)
+                                                        </MenuItemOption>
+                                                        <MenuItemOption value="default-grouped">
+                                                            Grouped (zodios)
+                                                        </MenuItemOption>
+                                                        <MenuItemOption value="schemas-only">
+                                                            Schemas only (& types if circular)
+                                                        </MenuItemOption>
+                                                    </MenuOptionGroup>
+                                                </PopoverBody>
+                                            </PopoverContent>
+                                        </Popover>
+                                        <MenuItem>Use OpenAPI samples</MenuItem>
+                                        <MenuItem onClick={optionsDrawer.onOpen}>Edit options</MenuItem>
+                                    </MenuList>
+                                </Menu>
                             </TabList>
                         </Tabs>
                         <Editor
@@ -320,7 +356,7 @@ export const Playground = () => {
                     <Field name="content" type="textarea" label="Content" rows={14} />
                 </FormLayout>
             </FormDialog>
-            <Drawer isOpen={optionsDrawer.isOpen} onClose={optionsDrawer.onClose} size="lg">
+            <Drawer isOpen={optionsDrawer.isOpen} onClose={optionsDrawer.onClose} size="lg" placement="left">
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
@@ -333,6 +369,7 @@ export const Playground = () => {
                                     onClick={() => {
                                         setPreviewOptions(defaultOptionValues);
                                         setOptions(defaultOptionValues);
+                                        setOptionsFormKey((key) => key + 1);
                                     }}
                                 >
                                     Reset
@@ -348,6 +385,7 @@ export const Playground = () => {
                         <SplitPane direction="column" defaultSize="50%">
                             <Box height="100%" overflow="auto">
                                 <OptionsForm
+                                    key={optionsFormKey}
                                     id="options-form"
                                     mb="4"
                                     onChange={setPreviewOptions}
@@ -406,7 +444,7 @@ const optionNameToCliOptionName = {
     defaultStatusBehavior: "--default-status",
 } as const;
 
-type FileTab = { name: string; content: string; index: number };
+type FileTab = { name: string; content: string; index: number; isPreset?: boolean };
 
 const createPnpmCommand = (outputPath: string, relevantOptions: TemplateContextOptions) => {
     return `pnpx openapi-zod-client ./petstore.yaml -o ./${outputPath}
@@ -443,7 +481,7 @@ const CreateFileFormFooter = () => {
                 <Button variant="ghost" mr={3} onClick={modal.onClose}>
                     Cancel
                 </Button>
-                <Button variant="outline" onClick={() => form.setValue("content", petstoreYaml)}>
+                <Button variant="outline" onClick={() => form.setValue("content", presets.defaultInput)}>
                     Use petstore
                 </Button>
                 <Button type="submit">Save file</Button>

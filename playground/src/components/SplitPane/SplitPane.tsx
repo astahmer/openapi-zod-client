@@ -111,7 +111,6 @@ export function SplitPane({
                 role="presentation"
                 userSelect="none"
                 data-pane-resizer
-                zIndex={1}
                 minHeight={0}
             />
             <Box
