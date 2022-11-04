@@ -22,7 +22,7 @@ describe("samples-generator", async () => {
     const samplesPath = path.resolve(pkgRoot, "../", "./samples/v3\\.*/**/*.yaml");
     const list = fg.sync([samplesPath]);
 
-    const template = getHandlebars().compile(readFileSync("./src/template.hbs", "utf8"));
+    const template = getHandlebars().compile(readFileSync("./src/templates/default.hbs", "utf8"));
     const resultByFile = {} as Record<string, string>;
 
     for (const docPath of list) {

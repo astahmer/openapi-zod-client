@@ -45,8 +45,8 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
 
     if (!templatePath) {
         templatePath = match(groupStrategy)
-            .with("none", "tag-file", "method-file", () => path.join(__dirname, "../src/template.hbs"))
-            .with("tag", "method", () => path.join(__dirname, "../src/template-grouped.hbs"))
+            .with("none", "tag-file", "method-file", () => path.join(__dirname, "../src/templates/default.hbs"))
+            .with("tag", "method", () => path.join(__dirname, "../src/templates/grouped.hbs"))
             .exhaustive();
     }
 
@@ -71,7 +71,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
             ])
         );
 
-        const indexSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-index.hbs"), "utf8");
+        const indexSource = await fs.readFile(path.join(__dirname, "../src/templates/grouped-index.hbs"), "utf8");
         const indexTemplate = hbs.compile(indexSource);
         const indexOutput = maybePretty(indexTemplate({ groupNames }), prettierConfig);
         outputByGroupName["__index"] = indexOutput;
@@ -80,7 +80,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
             await fs.writeFile(path.join(distPath, "index.ts"), indexOutput);
         }
 
-        const commonSource = await fs.readFile(path.join(__dirname, "../src/template-grouped-common.hbs"), "utf8");
+        const commonSource = await fs.readFile(path.join(__dirname, "../src/templates/grouped-common.hbs"), "utf8");
         const commonTemplate = hbs.compile(commonSource);
         const commonSchemaNames = [...(data.commonSchemaNames ?? [])];
         const commonOutput = maybePretty(
