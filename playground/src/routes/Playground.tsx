@@ -32,11 +32,11 @@ import {
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { Field, FormDialog, FormLayout, useFormContext } from "@saas-ui/react";
-import { useMachine } from "@xstate/react";
+import { useActor } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
 import { defaultOptionValues, OptionsForm } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
-import { playgroundMachine } from "./Playground.machine";
+import { usePlaygroundContext } from "./Playground.machine";
 import { presets } from "./presets";
 
 // TODO
@@ -51,8 +51,8 @@ import { presets } from "./presets";
 // monaco settings (theme + inline diff or not / minimap / etc)
 
 export const Playground = () => {
-    const [state, send] = useMachine(() => playgroundMachine);
-    // console.log(state.value, state.context);
+    const service = usePlaygroundContext();
+    const [state, send] = useActor(service);
 
     const activeInputTab = state.context.activeInputTab;
     const activeIndex = state.context.activeInputIndex;
@@ -226,7 +226,9 @@ export const Playground = () => {
                                             </PopoverContent>
                                         </Popover>
                                         <MenuItem>Use OpenAPI samples</MenuItem>
-                                        <MenuItem onClick={() => send({ type: "Open options" })}>Edit options</MenuItem>
+                                        <MenuItem onClick={() => send({ type: "Open options" })}>
+                                            Edit lib options
+                                        </MenuItem>
                                         <MenuItem onClick={() => send({ type: "Open prettier config" })}>
                                             Edit prettier config
                                         </MenuItem>
