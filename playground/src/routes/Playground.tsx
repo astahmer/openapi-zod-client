@@ -62,15 +62,7 @@ export const Playground = () => {
     const activeOutputTab = state.context.activeOutputTab;
     const outputList = state.context.outputList;
 
-    const relevantOptions = getRelevantOptions(state.context.previewOptions);
-    const cliCode = createPnpmCommand(activeOutputTab, relevantOptions);
-
-    const formModalDefaultValues = state.context.fileForm;
     const { colorMode } = useColorMode();
-
-    const bg = useColorModeValue("gray.50", "gray.800");
-    const bgHover = useColorModeValue("gray.100", "gray.700");
-    const color = useColorModeValue("gray.800", "gray.50");
 
     return (
         <Flex h="100%" pos="relative">
@@ -101,9 +93,9 @@ export const Playground = () => {
                                             alignItems="center"
                                             onClick={() => send({ type: "Select input tab", tab: file })}
                                             borderWidth="1px"
-                                            borderColor={bgHover}
-                                            backgroundColor={bg}
-                                            _selected={{ bg: bgHover, fontWeight: "bold" }}
+                                            borderColor="bgHover"
+                                            backgroundColor="bg"
+                                            _selected={{ bg: "bgHover", fontWeight: "bold" }}
                                             data-group
                                         >
                                             <Box>{file.name}</Box>
@@ -153,8 +145,8 @@ export const Playground = () => {
                                     alignItems="center"
                                     onClick={() => send({ type: "Add file" })}
                                     borderWidth="none"
-                                    backgroundColor={bg}
-                                    _selected={{ bg: bgHover, fontWeight: "bold" }}
+                                    backgroundColor="bg"
+                                    _selected={{ bg: "bgHover", fontWeight: "bold" }}
                                     data-group
                                 >
                                     <Box display="flex" alignItems="center">
@@ -180,9 +172,9 @@ export const Playground = () => {
                                         key={file.name}
                                         onClick={() => send({ type: "Select output tab", tab: file })}
                                         borderWidth="1px"
-                                        borderColor={bgHover}
-                                        backgroundColor={bg}
-                                        _selected={{ bg: bgHover, fontWeight: "bold" }}
+                                        borderColor="bgHover"
+                                        backgroundColor="bg"
+                                        _selected={{ bg: "bgHover", fontWeight: "bold" }}
                                     >
                                         {file.name}
                                     </Tab>
@@ -252,94 +244,118 @@ export const Playground = () => {
                                     monaco.languages.typescript.typescriptDefaults.addExtraLib(code, name);
                                 });
                             }}
-                            onMount={(editor, monaco) => {
-                                return send({ type: "Editor Loaded", editor, name: "output" });
-                            }}
+                            onMount={(editor) => send({ type: "Editor Loaded", editor, name: "output" })}
                         />
                     </Box>
                 </SplitPane>
             </Box>
-            <FormDialog
-                size="2xl"
-                title={state.matches("ready.Creating file tab") ? "Add input file" : "Edit input file"}
-                defaultValues={formModalDefaultValues}
-                mode="onSubmit"
-                isOpen={state.matches("ready.Creating file tab") || state.matches("ready.Editing file tab")}
-                onClose={() => send({ type: "Close file modal" })}
-                onSubmit={(fileTab) => send({ type: "Submit file modal", tab: fileTab })}
-                footer={<CreateFileFormFooter />}
-            >
-                <FormLayout>
-                    <Field
-                        name="name"
-                        label="File name*"
-                        type="text"
-                        rules={{
-                            required: "File name is required",
-                            validate: {
-                                unique: (value: string) =>
-                                    inputList.some(
-                                        (file) => file.name === value && formModalDefaultValues.index !== file.index
-                                    )
-                                        ? "File name should be unique"
-                                        : true,
-                            },
-                        }}
-                        autoFocus
-                    />
-                    <Field name="content" type="textarea" label="Content" rows={14} />
-                </FormLayout>
-            </FormDialog>
-            <Drawer
-                isOpen={state.matches("ready.Editing options")}
-                onClose={() => send({ type: "Close options" })}
-                size="lg"
-                placement="left"
-            >
-                <DrawerOverlay />
-                <DrawerContent>
-                    <DrawerCloseButton />
-                    <DrawerHeader>
-                        <Flex justifyContent="space-between" alignItems="center" mr="8">
-                            <Code>TemplateContext["options"]</Code>
-                            <ButtonGroup>
-                                <Button variant="outline" onClick={() => send({ type: "Reset preview options" })}>
-                                    Reset
-                                </Button>
-                                <Button type="submit" form="options-form">
-                                    Save options
-                                </Button>
-                            </ButtonGroup>
-                        </Flex>
-                    </DrawerHeader>
-
-                    <DrawerBody>
-                        <SplitPane direction="column" defaultSize="50%">
-                            <Box height="100%" overflow="auto">
-                                <OptionsForm
-                                    key={state.context.optionsFormKey}
-                                    id="options-form"
-                                    mb="4"
-                                    onChange={(update) => send({ type: "Update preview options", options: update })}
-                                    onSubmit={(values) => send({ type: "Save options", options: values })}
-                                />
-                            </Box>
-                            <Box maxHeight="100%" overflow="auto" py="4" fontSize="small">
-                                <Box display="flex" alignItems="center">
-                                    <Code lang="sh" rounded="md" px="2" py="1" mr="4" fontSize="xs">
-                                        {cliCode}
-                                    </Code>
-                                    <CopyButton width="80px" ml="auto" code={cliCode} />
-                                </Box>
-                                <Box as="pre" padding="5" rounded="8px" my="4" bg={bgHover} color={color}>
-                                    {JSON.stringify(relevantOptions, null, 2)}
-                                </Box>
-                            </Box>
-                        </SplitPane>
-                    </DrawerBody>
-                </DrawerContent>
-            </Drawer>
+            <FileTabForm />
+            <OptionsDrawer />
         </Flex>
+    );
+};
+
+const FileTabForm = () => {
+    const service = usePlaygroundContext();
+    const [state, send] = useActor(service);
+
+    const formModalDefaultValues = state.context.fileForm;
+    const inputList = state.context.inputList;
+
+    return (
+        <FormDialog
+            size="2xl"
+            title={state.matches("ready.Creating file tab") ? "Add input file" : "Edit input file"}
+            defaultValues={formModalDefaultValues}
+            mode="onSubmit"
+            isOpen={state.matches("ready.Creating file tab") || state.matches("ready.Editing file tab")}
+            onClose={() => send({ type: "Close file modal" })}
+            onSubmit={(fileTab) => send({ type: "Submit file modal", tab: fileTab })}
+            footer={<CreateFileFormFooter />}
+        >
+            <FormLayout>
+                <Field
+                    name="name"
+                    label="File name*"
+                    type="text"
+                    rules={{
+                        required: "File name is required",
+                        validate: {
+                            unique: (value: string) =>
+                                inputList.some(
+                                    (file) => file.name === value && formModalDefaultValues.index !== file.index
+                                )
+                                    ? "File name should be unique"
+                                    : true,
+                        },
+                    }}
+                    autoFocus
+                />
+                <Field name="content" type="textarea" label="Content" rows={14} />
+            </FormLayout>
+        </FormDialog>
+    );
+};
+
+const OptionsDrawer = () => {
+    const service = usePlaygroundContext();
+    const [state, send] = useActor(service);
+
+    const activeOutputTab = state.context.activeOutputTab;
+
+    const relevantOptions = getRelevantOptions(state.context.previewOptions);
+    const cliCode = createPnpmCommand(activeOutputTab, relevantOptions);
+
+    return (
+        <Drawer
+            isOpen={state.matches("ready.Editing options")}
+            onClose={() => send({ type: "Close options" })}
+            size="lg"
+            placement="left"
+        >
+            <DrawerOverlay />
+            <DrawerContent>
+                <DrawerCloseButton />
+                <DrawerHeader>
+                    <Flex justifyContent="space-between" alignItems="center" mr="8">
+                        <Code>TemplateContext["options"]</Code>
+                        <ButtonGroup>
+                            <Button variant="outline" onClick={() => send({ type: "Reset preview options" })}>
+                                Reset
+                            </Button>
+                            <Button type="submit" form="options-form">
+                                Save options
+                            </Button>
+                        </ButtonGroup>
+                    </Flex>
+                </DrawerHeader>
+
+                <DrawerBody>
+                    <SplitPane direction="column" defaultSize="50%">
+                        <Box height="100%" overflow="auto">
+                            <OptionsForm
+                                key={state.context.optionsFormKey}
+                                id="options-form"
+                                mb="4"
+                                onChange={(update) => send({ type: "Update preview options", options: update })}
+                                onSubmit={(values) => send({ type: "Save options", options: values })}
+                            />
+                        </Box>
+                        <Box maxHeight="100%" overflow="auto" py="4" fontSize="small">
+                            <Box display="flex" alignItems="center">
+                                <Code lang="sh" rounded="md" px="2" py="1" mr="4" fontSize="xs">
+                                    {cliCode}
+                                </Code>
+                                <CopyButton width="80px" ml="auto" code={cliCode} />
+                            </Box>
+                            <Box as="pre" padding="5" rounded="8px" my="4" bg="bgHover" color="text">
+                                {JSON.stringify(relevantOptions, null, 2)}
+                            </Box>
+                        </Box>
+                    </SplitPane>
+                </DrawerBody>
+            </DrawerContent>
+        </Drawer>
     );
 };
 

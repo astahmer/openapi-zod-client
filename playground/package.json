@@ -1,15 +1,18 @@
 {
     "name": "openapi-zod-client-playground",
-    "type": "module",
     "private": true,
+    "type": "module",
     "scripts": {
         "dev": "rakkas",
         "build": "rakkas build",
         "preview": "rakkas preview",
         "start": "node dist/server",
-        "lint:ts": "tsc --noEmit"
+        "lint:ts": "tsc --noEmit",
+        "theme": "chakra-cli tokens ./src/theme.cts"
     },
     "devDependencies": {
+        "@chakra-ui/cli": "^2.1.8",
+        "@chakra-ui/styled-system": "^2.3.4",
         "@iconify/json": "^2.1.132",
         "@types/react": "^18.0.18",
         "@types/react-dom": "^18.0.6",

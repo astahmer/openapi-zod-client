@@ -4,9 +4,6 @@ import { Head, Layout, Link, StyledLink } from "rakkasjs";
 import "./layout.css";
 
 const MainLayout: Layout = ({ children }) => {
-    const bg = useColorModeValue("gray.200", "gray.600");
-    const borderBottomColor = useColorModeValue("gray.100", "gray.700");
-
     return (
         <>
             <Head title="playground - openapi-zod-client" />
@@ -17,7 +14,7 @@ const MainLayout: Layout = ({ children }) => {
                 alignItems="flex-end"
                 justifyContent="space-between"
                 borderBottom="1px"
-                borderBottomColor={borderBottomColor}
+                borderBottomColor="bgHover"
                 py="5"
                 px="4"
             >
@@ -40,7 +37,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: bg }}
+                        _hover={{ backgroundColor: "bg-darker" }}
                         activeClass="activeLink"
                     >
                         Playground
@@ -51,7 +48,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: bg }}
+                        _hover={{ backgroundColor: "bg-darker" }}
                         activeClass="activeLink"
                     >
                         Documentation
@@ -64,7 +61,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: bg }}
+                        _hover={{ backgroundColor: "bg-darker" }}
                     >
                         <Box className="i-mdi-github" boxSize="1.5em" />
                     </Box>
@@ -76,7 +73,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: bg }}
+                        _hover={{ backgroundColor: "bg-darker" }}
                         display="flex"
                         alignItems="center"
                     >
