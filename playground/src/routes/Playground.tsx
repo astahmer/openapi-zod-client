@@ -26,155 +26,91 @@ import {
     TabList,
     Tabs,
     useClipboard,
-    useDisclosure,
+    useColorMode,
+    useColorModeValue,
     useModalContext,
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { Field, FormDialog, FormLayout, useFormContext } from "@saas-ui/react";
-import { editor } from "monaco-editor";
+import { useMachine } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
-import { getHandlebars, getZodClientTemplateContext, maybePretty } from "openapi-zod-client";
-import { removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { parse } from "yaml";
 import { defaultOptionValues, OptionsForm } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
+import { playgroundMachine } from "./Playground.machine";
 import { presets } from "./presets";
 
-// TODO: Add a way to pass in a custom template.
-// template context explorer
-// browse examples from https://apis.guru/
+// TODO
+// template context explorer -> copy ctx as JSON to clipboard + open https://jsoncrack.com/editor
+// Save/share = generate link like ts playground
 // input = getZodSchema
 // localStorage persistence for input
 // TODO diff editor + collect warnings
-// test with json input
-// Save/share = generate link like ts playground
 // display openapi-zod-client version
-// use extension to determine input type (json|yaml = openapi doc, hbs = template)
-
-const useOpenApiZodClient = (input: string, options: TemplateContextOptions) => {
-    const deferredInput = useDeferredValue(input);
-
-    const openApiDoc = useMemo(() => {
-        if (!deferredInput) return;
-        if (deferredInput.startsWith("{")) {
-            return safeJSONParse(deferredInput);
-        }
-
-        return parse(deferredInput);
-    }, [deferredInput]);
-
-    const ctx = useMemo(() => {
-        if (!openApiDoc) return;
-        const ctx = getZodClientTemplateContext(openApiDoc, options);
-        // logs the template context to the browser console so users can explore it
-        if (typeof window !== "undefined") {
-            console.log(ctx);
-        }
-
-        return ctx;
-    }, [openApiDoc, options]);
-
-    return useMemo(() => {
-        if (!ctx) return "";
-        // TODO
-        const groupStrategy = options?.groupStrategy ?? "none";
-
-        const hbs = getHandlebars();
-        // TODO select template
-        const template = hbs.compile(presets.defaultTemplate);
-
-        const output = template({ ...ctx, options: { ...options, apiClientName: options?.apiClientName ?? "api" } });
-        return maybePretty(output, {
-            printWidth: 120,
-            tabWidth: 4,
-            arrowParens: "always",
-            useTabs: false,
-            semi: true,
-            singleQuote: false,
-            trailingComma: "es5",
-        });
-    }, [ctx, options]);
-};
-
-const initialInputList: FileTab[] = [
-    { name: "api.doc.yaml", content: presets.defaultInput, index: 0, isPreset: true },
-    { name: "template.hbs", content: presets.defaultTemplate, index: 1, isPreset: true },
-];
-const isValidInputName = (name: string) => name.endsWith(".yml") || name.endsWith(".yaml") || name.endsWith(".json");
+// customizable prettier config + add prettierc.json in inputList ?
+// https://reactflow.dev/ + dependency graph
+// monaco settings (theme + inline diff or not / minimap / etc)
 
 export const Playground = () => {
-    const [options, setOptions] = useState<Partial<TemplateContextOptions>>({});
-    const [previewOptions, setPreviewOptions] = useState<Partial<TemplateContextOptions & { booleans: string[] }>>({});
-    const [optionsFormKey, setOptionsFormKey] = useState(0);
+    const [state, send] = useMachine(() => playgroundMachine);
+    // console.log(state.value, state.context);
 
-    const [activeInputTab, setActiveInputTab] = useState(initialInputList[0].name);
-    const [inputList, setInputList] = useState<FileTab[]>(initialInputList);
+    const activeInputTab = state.context.activeInputTab;
+    const activeIndex = state.context.activeInputIndex;
 
-    const activeIndex = inputList.findIndex((tab) => tab.name === activeInputTab);
-    const inputIndex = isValidInputName(inputList[activeIndex].name)
-        ? activeIndex
-        : inputList.findIndex((tab) => isValidInputName(tab.name));
-    const input = inputList[inputIndex]?.content ?? "";
-    const output = useOpenApiZodClient(input, options);
+    const inputList = state.context.inputList;
 
-    // update output editor preview value whenever output is re-computed
-    useEffect(() => {
-        outputEditorRef.current?.setValue(output);
-    }, [output]);
-    // console.log({ input, output });
+    const activeOutputTab = state.context.activeOutputTab;
+    const outputList = state.context.outputList;
 
-    const [activeOutputTab, setActiveOutputTab] = useState("api.client.ts");
-    const [outputList, setOutputList] = useState<FileTab[]>([{ name: activeOutputTab, content: output, index: 0 }]);
-
-    const relevantOptions = getRelevantOptions(previewOptions);
+    const relevantOptions = getRelevantOptions(state.context.previewOptions);
     const cliCode = createPnpmCommand(activeOutputTab, relevantOptions);
 
-    const formModal = useDisclosure();
-    const [formModalDefaultValues, setFormModalDefaultValues] = useState<FileTab>({ name: "", content: "", index: -1 });
+    const formModalDefaultValues = state.context.fileForm;
+    const { colorMode } = useColorMode();
 
-    const optionsDrawer = useDisclosure();
-    const outputEditorRef = useRef<editor.IStandaloneCodeEditor>();
+    const bg = useColorModeValue("gray.50", "gray.800");
+    const bgHover = useColorModeValue("gray.100", "gray.700");
+    const color = useColorModeValue("gray.800", "gray.50");
 
     return (
         <Flex h="100%" pos="relative">
             <Box display="flex" boxSize="100%">
-                <SplitPane
-                    defaultSize="50%"
-                    onResize={(ctx) => {
-                        outputEditorRef.current?.layout({
-                            width: ctx.containerSize - ctx.draggedSize,
-                            height: outputEditorRef.current.getLayoutInfo().height,
-                        });
-                    }}
-                >
+                <SplitPane defaultSize="50%" onResize={(ctx) => send({ type: "Resize", context: ctx })}>
                     <Box h="100%" flexGrow={1}>
-                        <Tabs variant="line" size="sm" h="42px" index={activeIndex}>
-                            {/* TODO cursor pointer + onDoubleClick = create file action */}
+                        <Tabs variant="line" size="sm" index={activeIndex}>
                             <TabList
                                 pb="2"
+                                h="42px"
                                 className="scrollbar"
                                 overflowX="auto"
                                 overflowY="hidden"
                                 scrollSnapType="x"
                                 scrollSnapAlign="start"
+                                cursor="pointer"
+                                onDoubleClick={(e) => {
+                                    if (e.target === e.currentTarget) {
+                                        send({ type: "Add file" });
+                                    }
+                                }}
                             >
-                                {inputList.map((file, index) => {
+                                {inputList.map((file) => {
                                     return (
                                         <Tab
                                             key={file.name}
                                             display="flex"
                                             alignItems="center"
-                                            onClick={() => setActiveInputTab(file.name)}
-                                            border="none"
-                                            _selected={{ bg: "gray.100", fontWeight: "bold" }}
-                                            borderRadius="md"
+                                            onClick={() => send({ type: "Select input tab", tab: file })}
+                                            borderWidth="1px"
+                                            borderColor={bgHover}
+                                            backgroundColor={bg}
+                                            _selected={{ bg: bgHover, fontWeight: "bold" }}
                                             data-group
                                         >
                                             <Box>{file.name}</Box>
-                                            <ButtonGroup alignItems="center" ml="2">
+                                            <ButtonGroup alignItems="center" ml="2" hidden={Boolean(file.preset)}>
                                                 <Button
                                                     as="div"
+                                                    colorScheme="blue"
                                                     aria-label="Edit"
                                                     className="i-material-symbols-edit-square-outline"
                                                     boxSize="1.25em"
@@ -182,18 +118,17 @@ export const Playground = () => {
                                                     borderRadius="0"
                                                     minWidth="0"
                                                     onClick={(e) => {
-                                                        if (file.isPreset) return;
                                                         e.stopPropagation();
-                                                        setFormModalDefaultValues(file);
-                                                        formModal.onOpen();
+                                                        if (file.preset) return;
+                                                        send({ type: "Edit file", tab: file });
                                                     }}
-                                                    backgroundColor="gray.400"
                                                     visibility="hidden"
                                                     _groupHover={{ visibility: "visible" }}
-                                                    isDisabled={file.isPreset}
+                                                    isDisabled={Boolean(file.preset)}
                                                 />
                                                 <Button
                                                     as="div"
+                                                    colorScheme="red"
                                                     aria-label="Close"
                                                     className="i-material-symbols-close"
                                                     boxSize="1.25em"
@@ -203,12 +138,8 @@ export const Playground = () => {
                                                     mt="1"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        const next = removeAtIndex(inputList, index);
-                                                        console.log(next);
-                                                        setActiveInputTab(next[index === 0 ? 0 : index - 1]!.name);
-                                                        setInputList(next);
+                                                        send({ type: "Remove file", tab: file });
                                                     }}
-                                                    backgroundColor="red.300"
                                                     isDisabled={inputList.length < 2}
                                                     visibility="hidden"
                                                     _groupHover={{ visibility: "visible" }}
@@ -217,18 +148,28 @@ export const Playground = () => {
                                         </Tab>
                                     );
                                 })}
+                                <Tab
+                                    display="flex"
+                                    alignItems="center"
+                                    onClick={() => send({ type: "Add file" })}
+                                    borderWidth="none"
+                                    backgroundColor={bg}
+                                    _selected={{ bg: bgHover, fontWeight: "bold" }}
+                                    data-group
+                                >
+                                    <Box display="flex" alignItems="center">
+                                        <Box className="i-material-symbols-add" boxSize="1.25em" mt="1" />
+                                        Add file
+                                    </Box>
+                                </Tab>
                             </TabList>
                         </Tabs>
                         <Editor
                             path={activeInputTab}
-                            defaultLanguage="yaml"
-                            defaultValue={inputList.find((file) => file.name === activeInputTab)?.content}
-                            onChange={(content) =>
-                                setInputList((current) => {
-                                    const index = current.findIndex((file) => file.name === activeInputTab);
-                                    return updateAtIndex(current, index, { ...current[index], content } as FileTab);
-                                })
-                            }
+                            value={inputList.at(activeIndex)?.content}
+                            onChange={(content) => send({ type: "Update input", value: content ?? "" })}
+                            onMount={(editor) => send({ type: "Editor Loaded", editor, name: "input" })}
+                            theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                         />
                     </Box>
                     <Box h="100%" flexGrow={1}>
@@ -237,10 +178,11 @@ export const Playground = () => {
                                 {outputList.map((file) => (
                                     <Tab
                                         key={file.name}
-                                        onClick={() => setActiveOutputTab(file.name)}
-                                        border="none"
-                                        _selected={{ bg: "gray.100", fontWeight: "bold" }}
-                                        borderRadius="md"
+                                        onClick={() => send({ type: "Select output tab", tab: file })}
+                                        borderWidth="1px"
+                                        borderColor={bgHover}
+                                        backgroundColor={bg}
+                                        _selected={{ bg: bgHover, fontWeight: "bold" }}
                                     >
                                         {file.name}
                                     </Tab>
@@ -258,18 +200,7 @@ export const Playground = () => {
                                         Actions
                                     </MenuButton>
                                     <MenuList>
-                                        <MenuItem
-                                            onClick={() => {
-                                                setFormModalDefaultValues({
-                                                    name: "",
-                                                    content: "",
-                                                    index: inputList.length,
-                                                });
-                                                formModal.onOpen();
-                                            }}
-                                        >
-                                            Create file
-                                        </MenuItem>
+                                        <MenuItem onClick={() => send({ type: "Add file" })}>Add input file</MenuItem>
                                         <Popover trigger="hover" placement="left" closeOnBlur={false}>
                                             <PopoverTrigger>
                                                 <MenuItem>Select handlebars template</MenuItem>
@@ -295,16 +226,21 @@ export const Playground = () => {
                                             </PopoverContent>
                                         </Popover>
                                         <MenuItem>Use OpenAPI samples</MenuItem>
-                                        <MenuItem onClick={optionsDrawer.onOpen}>Edit options</MenuItem>
+                                        <MenuItem onClick={() => send({ type: "Open options" })}>Edit options</MenuItem>
+                                        <MenuItem onClick={() => send({ type: "Open prettier config" })}>
+                                            Edit prettier config
+                                        </MenuItem>
+                                        <MenuItem as="a" href="https://apis.guru/" target="_blank" rel="external">
+                                            Browse APIs.guru
+                                        </MenuItem>
                                     </MenuList>
                                 </Menu>
                             </TabList>
                         </Tabs>
                         <Editor
                             path={activeOutputTab}
-                            defaultLanguage="typescript"
-                            defaultValue={outputList.find((file) => file.name === activeOutputTab)?.content}
-                            options={{ readOnly: false }}
+                            defaultValue={inputList.at(activeIndex)?.content}
+                            theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                             beforeMount={(monaco) => {
                                 const declarations: Array<{ name: string; code: string }> = import.meta.compileTime(
                                     "../../get-ts-declarations.ts"
@@ -314,8 +250,8 @@ export const Playground = () => {
                                     monaco.languages.typescript.typescriptDefaults.addExtraLib(code, name);
                                 });
                             }}
-                            onMount={(editor) => {
-                                outputEditorRef.current = editor;
+                            onMount={(editor, monaco) => {
+                                return send({ type: "Editor Loaded", editor, name: "output" });
                             }}
                         />
                     </Box>
@@ -323,16 +259,12 @@ export const Playground = () => {
             </Box>
             <FormDialog
                 size="2xl"
-                title={!formModalDefaultValues.name ? "Create input file" : "Edit input file"}
+                title={state.matches("ready.Creating file tab") ? "Add input file" : "Edit input file"}
                 defaultValues={formModalDefaultValues}
                 mode="onSubmit"
-                {...formModal}
-                onSubmit={(fileTab) => {
-                    setInputList((current) => [...current, fileTab]);
-                    setActiveInputTab(fileTab.name);
-                    formModal.onClose();
-                    console.log(fileTab);
-                }}
+                isOpen={state.matches("ready.Creating file tab") || state.matches("ready.Editing file tab")}
+                onClose={() => send({ type: "Close file modal" })}
+                onSubmit={(fileTab) => send({ type: "Submit file modal", tab: fileTab })}
                 footer={<CreateFileFormFooter />}
             >
                 <FormLayout>
@@ -356,7 +288,12 @@ export const Playground = () => {
                     <Field name="content" type="textarea" label="Content" rows={14} />
                 </FormLayout>
             </FormDialog>
-            <Drawer isOpen={optionsDrawer.isOpen} onClose={optionsDrawer.onClose} size="lg" placement="left">
+            <Drawer
+                isOpen={state.matches("ready.Editing options")}
+                onClose={() => send({ type: "Close options" })}
+                size="lg"
+                placement="left"
+            >
                 <DrawerOverlay />
                 <DrawerContent>
                     <DrawerCloseButton />
@@ -364,14 +301,7 @@ export const Playground = () => {
                         <Flex justifyContent="space-between" alignItems="center" mr="8">
                             <Code>TemplateContext["options"]</Code>
                             <ButtonGroup>
-                                <Button
-                                    variant="outline"
-                                    onClick={() => {
-                                        setPreviewOptions(defaultOptionValues);
-                                        setOptions(defaultOptionValues);
-                                        setOptionsFormKey((key) => key + 1);
-                                    }}
-                                >
+                                <Button variant="outline" onClick={() => send({ type: "Reset preview options" })}>
                                     Reset
                                 </Button>
                                 <Button type="submit" form="options-form">
@@ -385,11 +315,11 @@ export const Playground = () => {
                         <SplitPane direction="column" defaultSize="50%">
                             <Box height="100%" overflow="auto">
                                 <OptionsForm
-                                    key={optionsFormKey}
+                                    key={state.context.optionsFormKey}
                                     id="options-form"
                                     mb="4"
-                                    onChange={setPreviewOptions}
-                                    onSubmit={setOptions}
+                                    onChange={(update) => send({ type: "Update preview options", options: update })}
+                                    onSubmit={(values) => send({ type: "Save options", options: values })}
                                 />
                             </Box>
                             <Box maxHeight="100%" overflow="auto" py="4" fontSize="small">
@@ -399,7 +329,7 @@ export const Playground = () => {
                                     </Code>
                                     <CopyButton width="80px" ml="auto" code={cliCode} />
                                 </Box>
-                                <Box as="pre" padding="5" rounded="8px" my="4" bg="gray.100" color="gray.800">
+                                <Box as="pre" padding="5" rounded="8px" my="4" bg={bgHover} color={color}>
                                     {JSON.stringify(relevantOptions, null, 2)}
                                 </Box>
                             </Box>
@@ -443,8 +373,6 @@ const optionNameToCliOptionName = {
     complexityThreshold: "--complexity-threshold",
     defaultStatusBehavior: "--default-status",
 } as const;
-
-type FileTab = { name: string; content: string; index: number; isPreset?: boolean };
 
 const createPnpmCommand = (outputPath: string, relevantOptions: TemplateContextOptions) => {
     return `pnpx openapi-zod-client ./petstore.yaml -o ./${outputPath}
