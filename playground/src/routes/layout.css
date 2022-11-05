@@ -32,6 +32,10 @@ main {
     background-color: var(--chakra-colors-gray-100);
 }
 
+html[data-theme="dark"] .activeLink {
+    background-color: var(--chakra-colors-gray-700);
+}
+
 .main {
     padding: 0 1em 1em;
     min-height: calc(100vh - 16rem);

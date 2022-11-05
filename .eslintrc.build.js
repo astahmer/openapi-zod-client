@@ -6,7 +6,7 @@ module.exports = defineConfig({
         files: ["*.ts"],
         project: ["./lib/tsconfig.json", "./playground/tsconfig.json"],
     },
-    ignorePatterns: ["**/*.test.ts"],
+    ignorePatterns: ["**/*.test.ts", "*.typegen.ts"],
     extends: "@astahmer/eslint-config-ts",
     settings: {
         "import/extensions": [".ts"],

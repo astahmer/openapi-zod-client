@@ -113,15 +113,7 @@ export function SplitPane({
                 data-pane-resizer
                 minHeight={0}
             />
-            <Box
-                data-pane
-                data-pane-index="2"
-                position="relative"
-                flex="1 1 0%"
-                backgroundColor="white"
-                height="100%"
-                minHeight={0}
-            >
+            <Box data-pane data-pane-index="2" position="relative" flex="1 1 0%" height="100%" minHeight={0}>
                 {second}
             </Box>
         </Box>

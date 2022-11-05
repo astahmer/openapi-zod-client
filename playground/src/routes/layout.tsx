@@ -1,9 +1,12 @@
-import { Box, Code, Stack } from "@chakra-ui/react";
+import { Box, Button, Code, IconButton, Stack, useColorMode, useColorModeValue } from "@chakra-ui/react";
 import { Head, Layout, Link, StyledLink } from "rakkasjs";
 
 import "./layout.css";
 
 const MainLayout: Layout = ({ children }) => {
+    const bg = useColorModeValue("gray.200", "gray.600");
+    const borderBottomColor = useColorModeValue("gray.100", "gray.700");
+
     return (
         <>
             <Head title="playground - openapi-zod-client" />
@@ -14,7 +17,7 @@ const MainLayout: Layout = ({ children }) => {
                 alignItems="flex-end"
                 justifyContent="space-between"
                 borderBottom="1px"
-                borderBottomColor="gray.100"
+                borderBottomColor={borderBottomColor}
                 py="5"
                 px="4"
             >
@@ -37,7 +40,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "gray.200" }}
+                        _hover={{ backgroundColor: bg }}
                         activeClass="activeLink"
                     >
                         Playground
@@ -48,7 +51,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "gray.200" }}
+                        _hover={{ backgroundColor: bg }}
                         activeClass="activeLink"
                     >
                         Documentation
@@ -61,7 +64,7 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "gray.200" }}
+                        _hover={{ backgroundColor: bg }}
                     >
                         <Box className="i-mdi-github" boxSize="1.5em" />
                     </Box>
@@ -73,13 +76,14 @@ const MainLayout: Layout = ({ children }) => {
                         px="2"
                         py="1"
                         borderRadius="md"
-                        _hover={{ backgroundColor: "gray.200" }}
+                        _hover={{ backgroundColor: bg }}
                         display="flex"
                         alignItems="center"
                     >
                         <Box className="i-ic-outline-diamond" boxSize="1.5em" color="purple" mr="1" />
                         Zodios
                     </Box>
+                    <ColorModeSwitchIconButton />
                 </Stack>
             </Box>
 
@@ -91,3 +95,21 @@ const MainLayout: Layout = ({ children }) => {
 };
 
 export default MainLayout;
+
+const ColorModeSwitchIconButton = () => {
+    const { colorMode, toggleColorMode } = useColorMode();
+    return (
+        <IconButton
+            aria-label="Color mode switch"
+            onClick={toggleColorMode}
+            size="sm"
+            icon={
+                colorMode === "light" ? (
+                    <Box className="i-material-symbols-sunny" boxSize="1em" />
+                ) : (
+                    <Box className="i-ri-moon-clear-fill" boxSize="1em" />
+                )
+            }
+        />
+    );
+};
