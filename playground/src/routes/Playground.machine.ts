@@ -6,10 +6,10 @@ import {
     TemplateContext,
     TemplateContextOptions,
 } from "openapi-zod-client";
-import { assign, createMachine } from "xstate";
+import { assign, createMachine, InterpreterFrom } from "xstate";
 import { Options as PrettierOptions } from "prettier";
 import { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
-import { limit, removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
+import { createContextWithHook, limit, removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
 import { defaultOptionValues } from "../components/OptionsForm";
 import { presets } from "./presets";
 import { parse } from "yaml";
@@ -292,7 +292,10 @@ export const playgroundMachine = createMachine(
             },
         },
         guards: {
-            willInputAndOutputEditorBothReady: (ctx) => Boolean(ctx.inputEditor || ctx.outputEditor),
+            willInputAndOutputEditorBothReady: (ctx) => Boolean(ctx.inputEditor ?? ctx.outputEditor),
         },
     }
 );
+
+export const [PlaygroundMachineProvider, usePlaygroundContext] =
+    createContextWithHook<InterpreterFrom<typeof playgroundMachine>>("PlaygroundMachineContext");
