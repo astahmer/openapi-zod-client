@@ -1,0 +1,11 @@
+import { z } from "zod";
+
+{{#each schemas}}
+const {{@key}} = {{{this}}};
+{{/each}}
+
+export const schemas = {
+{{#each schemas}}
+	{{@key}},
+{{/each}}
+};

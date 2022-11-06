@@ -65,10 +65,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         }
 
         const groupNames = Object.fromEntries(
-            Object.keys(data.endpointsGroups).map((groupName) => [
-                options?.apiClientName ?? `${capitalize(groupName)}Api`,
-                groupName,
-            ])
+            Object.keys(data.endpointsGroups).map((groupName) => [`${capitalize(groupName)}Api`, groupName])
         );
 
         const indexSource = await fs.readFile(path.join(__dirname, "../src/templates/grouped-index.hbs"), "utf8");
@@ -83,17 +80,20 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         const commonSource = await fs.readFile(path.join(__dirname, "../src/templates/grouped-common.hbs"), "utf8");
         const commonTemplate = hbs.compile(commonSource);
         const commonSchemaNames = [...(data.commonSchemaNames ?? [])];
-        const commonOutput = maybePretty(
-            commonTemplate({
-                schemas: pick(data.schemas, commonSchemaNames),
-                types: pick(data.types, commonSchemaNames),
-            }),
-            prettierConfig
-        );
-        outputByGroupName["__common"] = commonOutput;
 
-        if (willWriteToFile) {
-            await fs.writeFile(path.join(distPath, "common.ts"), commonOutput);
+        if (commonSchemaNames.length > 0) {
+            const commonOutput = maybePretty(
+                commonTemplate({
+                    schemas: pick(data.schemas, commonSchemaNames),
+                    types: pick(data.types, commonSchemaNames),
+                }),
+                prettierConfig
+            );
+            outputByGroupName["__common"] = commonOutput;
+
+            if (willWriteToFile) {
+                await fs.writeFile(path.join(distPath, "common.ts"), commonOutput);
+            }
         }
 
         for (const groupName in data.endpointsGroups) {
@@ -103,7 +103,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
                 options: {
                     ...options,
                     groupStrategy: "none",
-                    apiClientName: options?.apiClientName ?? `${capitalize(groupName)}Api`,
+                    apiClientName: `${capitalize(groupName)}Api`,
                 },
             });
             const prettyGroupOutput = maybePretty(groupOutput, prettierConfig);
