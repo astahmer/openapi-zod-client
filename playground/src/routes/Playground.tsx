@@ -34,7 +34,7 @@ import { Field, FormDialog, FormLayout, useFormContext } from "@saas-ui/react";
 import { useActor, useSelector } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
 import { PropsWithChildren } from "react";
-import { defaultOptionValues, OptionsForm } from "../components/OptionsForm";
+import { defaultOptionValues, OptionsForm, OptionsFormValues } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
 import { FileTabData, usePlaygroundContext } from "./Playground.machine";
 import { presets } from "./presets";
@@ -357,8 +357,11 @@ const OptionsDrawer = () => {
                                 key={state.context.optionsFormKey}
                                 id="options-form"
                                 mb="4"
-                                onChange={(update) => send({ type: "Update preview options", options: update })}
+                                onChange={(update) =>
+                                    send({ type: "Update preview options", options: update as OptionsFormValues })
+                                }
                                 onSubmit={(values) => send({ type: "Save options", options: values })}
+                                defaultValues={state.context.previewOptions}
                             />
                         </Box>
                         <Box maxHeight="100%" overflow="auto" py="4" fontSize="small">

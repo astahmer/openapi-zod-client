@@ -32,7 +32,15 @@ export interface Typegen0 {
         updateInput: "Update input";
         updateInputEditorValue: "Submit file modal";
         updateOptions: "Save options";
-        updateOutput: "Editor Loaded" | "Remove file" | "Select input tab" | "Submit file modal" | "Update input";
+        updateOutput:
+            | "Editor Loaded"
+            | "Remove file"
+            | "Save options"
+            | "Select input tab"
+            | "Select preset template"
+            | "Submit file modal"
+            | "Update input"
+            | "Update prettier config";
         updatePrettierConfig: "Update prettier config";
         updatePreviewOptions: "Update preview options";
         updateSelectedOpenApiFileName: "Remove file" | "Select input tab" | "Submit file modal";

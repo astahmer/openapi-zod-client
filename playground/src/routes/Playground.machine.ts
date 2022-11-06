@@ -1,16 +1,10 @@
 import { editor } from "monaco-editor";
-import {
-    getHandlebars,
-    getZodClientTemplateContext,
-    maybePretty,
-    TemplateContext,
-    TemplateContextOptions,
-} from "openapi-zod-client";
+import { getHandlebars, getZodClientTemplateContext, maybePretty, TemplateContext } from "openapi-zod-client";
 import { assign, createMachine, InterpreterFrom } from "xstate";
 import { Options as PrettierOptions } from "prettier";
 import { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
 import { AwaitFn, createContextWithHook, limit, removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
-import { defaultOptionValues } from "../components/OptionsForm";
+import { defaultOptionValues, OptionsFormValues } from "../components/OptionsForm";
 import { presets } from "./presets";
 import { parse } from "yaml";
 import { match } from "ts-pattern";
@@ -21,8 +15,8 @@ type PlaygroundContext = {
     inputEditor: editor.IStandaloneCodeEditor | null;
     outputEditor: editor.IStandaloneCodeEditor | null;
 
-    options: TemplateContextOptions;
-    previewOptions: TemplateContextOptions;
+    options: OptionsFormValues;
+    previewOptions: OptionsFormValues;
     optionsFormKey: number;
 
     templateContext: TemplateContext | null;
@@ -58,9 +52,9 @@ type PlaygroundEvent =
     | { type: "Remove file"; tab: FileTabData }
     | { type: "Save" }
     | { type: "Share" }
-    | { type: "Update preview options"; options: TemplateContextOptions }
+    | { type: "Update preview options"; options: OptionsFormValues }
     | { type: "Reset preview options" }
-    | { type: "Save options"; options: TemplateContextOptions }
+    | { type: "Save options"; options: OptionsFormValues }
     | { type: "Update prettier config"; options: PrettierOptions }
     | { type: "Update monaoc settings" }
     | { type: "Submit file modal"; tab: FileTabData }
@@ -142,7 +136,7 @@ export const playgroundMachine =
                                     { actions: "selectInputTab" },
                                 ],
                                 "Select output tab": { actions: "selectOutputTab" },
-                                "Select preset template": { actions: "selectPresetTemplate" },
+                                "Select preset template": { actions: ["selectPresetTemplate", "updateOutput"] },
                                 "Open options": { target: "Editing options" },
                                 "Open prettier config": { target: "Editing prettier config" },
                                 "Open monaco settings": { target: "Editing monaco settings" },
@@ -170,13 +164,13 @@ export const playgroundMachine =
                             on: {
                                 "Update preview options": { actions: "updatePreviewOptions" },
                                 "Reset preview options": { actions: "resetPreviewOptions" },
-                                "Save options": { target: "Playing", actions: "updateOptions" },
+                                "Save options": { target: "Playing", actions: ["updateOptions", "updateOutput"] },
                                 "Close options": { target: "Playing" },
                             },
                         },
                         "Editing prettier config": {
                             on: {
-                                "Update prettier config": { actions: "updatePrettierConfig" },
+                                "Update prettier config": { actions: ["updatePrettierConfig", "updateOutput"] },
                                 "Close modal": { target: "Playing" },
                             },
                         },
@@ -307,6 +301,8 @@ export const playgroundMachine =
                         if (!event.tab.content) return ctx.selectedOpenApiFileName;
 
                         const activeIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
+                        if (activeIndex === -1) return ctx.selectedOpenApiFileName;
+
                         return isValidDocumentName(ctx.inputList[activeIndex].name)
                             ? event.tab.name
                             : ctx.inputList.find((tab) => isValidDocumentName(tab.name))?.name ?? "";
@@ -349,16 +345,19 @@ export const playgroundMachine =
                     return {
                         ...ctx,
                         inputList: next,
-                        activeInputTab: next[nextIndex]!.name,
+                        activeInputTab: next[nextIndex].name,
                         activeInputIndex: nextIndex,
                     };
                 }),
                 updatePreviewOptions: assign({ previewOptions: (_ctx, event) => event.options }),
                 resetPreviewOptions: assign({
-                    previewOptions: (_ctx) => defaultOptionValues as TemplateContextOptions,
+                    previewOptions: (_ctx) => defaultOptionValues,
                     optionsFormKey: (ctx) => ctx.optionsFormKey + 1,
                 }),
-                updateOptions: assign({ options: (_ctx, event) => event.options }),
+                updateOptions: assign({
+                    options: (_ctx, event) => event.options,
+                    previewOptions: (_ctx, event) => event.options,
+                }),
                 updatePrettierConfig: assign({
                     options: (ctx, event) => ({ ...ctx.options, prettier: event.options }),
                 }),
