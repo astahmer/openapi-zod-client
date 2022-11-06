@@ -3,8 +3,8 @@
 export interface Typegen0 {
     "@@xstate/typegen": true;
     internalEvents: {
-        "done.invoke.playground.ready.Playing:invocation[0]": {
-            type: "done.invoke.playground.ready.Playing:invocation[0]";
+        "done.invoke.getPresetTemplates": {
+            type: "done.invoke.getPresetTemplates";
             data: unknown;
             __tip: "See the XState TS docs to learn how to strongly type this.";
         };
@@ -44,6 +44,7 @@ export interface Typegen0 {
         updatePrettierConfig: "Update prettier config";
         updatePreviewOptions: "Update preview options";
         updateSelectedOpenApiFileName: "Remove file" | "Select input tab" | "Submit file modal";
+        updateSelectedTemplateName: "Remove file" | "Select input tab" | "Submit file modal";
     };
     eventsCausingServices: {};
     eventsCausingGuards: {
