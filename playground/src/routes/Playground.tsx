@@ -27,16 +27,16 @@ import {
     Tabs,
     useClipboard,
     useColorMode,
-    useColorModeValue,
     useModalContext,
 } from "@chakra-ui/react";
 import Editor from "@monaco-editor/react";
 import { Field, FormDialog, FormLayout, useFormContext } from "@saas-ui/react";
-import { useActor } from "@xstate/react";
+import { useActor, useSelector } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
+import { PropsWithChildren } from "react";
 import { defaultOptionValues, OptionsForm } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
-import { usePlaygroundContext } from "./Playground.machine";
+import { FileTabData, usePlaygroundContext } from "./Playground.machine";
 import { presets } from "./presets";
 
 // TODO
@@ -71,10 +71,9 @@ export const Playground = () => {
                     <Box h="100%" flexGrow={1}>
                         <Tabs variant="line" size="sm" index={activeIndex}>
                             <TabList
-                                pb="2"
-                                h="42px"
+                                minH="42px"
                                 className="scrollbar"
-                                overflowX="auto"
+                                overflowX="scroll"
                                 overflowY="hidden"
                                 scrollSnapType="x"
                                 scrollSnapAlign="start"
@@ -85,75 +84,31 @@ export const Playground = () => {
                                     }
                                 }}
                             >
-                                {inputList.map((file) => {
+                                {inputList.map((fileTab) => {
+                                    const isSelectedAsOpenApiDoc =
+                                        fileTab.name === state.context.selectedOpenApiFileName;
+                                    const isSelectedAsTemplate = fileTab.preset === state.context.selectedTemplateName;
+                                    const isSelectedAsInput = isSelectedAsOpenApiDoc || isSelectedAsTemplate;
+
                                     return (
-                                        <Tab
-                                            key={file.name}
-                                            display="flex"
-                                            alignItems="center"
-                                            onClick={() => send({ type: "Select input tab", tab: file })}
-                                            borderWidth="1px"
-                                            borderColor="bgHover"
-                                            backgroundColor="bg"
-                                            _selected={{ bg: "bgHover", fontWeight: "bold" }}
-                                            data-group
+                                        <FileTab
+                                            key={fileTab.name}
+                                            onClick={() => send({ type: "Select input tab", tab: fileTab })}
                                         >
-                                            <Box>{file.name}</Box>
-                                            <ButtonGroup alignItems="center" ml="2" hidden={Boolean(file.preset)}>
-                                                <Button
-                                                    as="div"
-                                                    colorScheme="blue"
-                                                    aria-label="Edit"
-                                                    className="i-material-symbols-edit-square-outline"
-                                                    boxSize="1.25em"
-                                                    padding="0"
-                                                    borderRadius="0"
-                                                    minWidth="0"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        if (file.preset) return;
-                                                        send({ type: "Edit file", tab: file });
-                                                    }}
-                                                    visibility="hidden"
-                                                    _groupHover={{ visibility: "visible" }}
-                                                    isDisabled={Boolean(file.preset)}
-                                                />
-                                                <Button
-                                                    as="div"
-                                                    colorScheme="red"
-                                                    aria-label="Close"
-                                                    className="i-material-symbols-close"
-                                                    boxSize="1.25em"
-                                                    padding="0"
-                                                    borderRadius="0"
-                                                    minWidth="0"
-                                                    mt="1"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        send({ type: "Remove file", tab: file });
-                                                    }}
-                                                    isDisabled={inputList.length < 2}
-                                                    visibility="hidden"
-                                                    _groupHover={{ visibility: "visible" }}
-                                                />
-                                            </ButtonGroup>
-                                        </Tab>
+                                            {isSelectedAsInput ? (
+                                                <Box mr="1">{isSelectedAsOpenApiDoc ? "[o]" : "[t]"}</Box>
+                                            ) : null}
+                                            <Box>{fileTab.name}</Box>
+                                            <FileTabActions fileTab={fileTab} />
+                                        </FileTab>
                                     );
                                 })}
-                                <Tab
-                                    display="flex"
-                                    alignItems="center"
-                                    onClick={() => send({ type: "Add file" })}
-                                    borderWidth="none"
-                                    backgroundColor="bg"
-                                    _selected={{ bg: "bgHover", fontWeight: "bold" }}
-                                    data-group
-                                >
+                                <FileTab onClick={() => send({ type: "Add file" })}>
                                     <Box display="flex" alignItems="center">
                                         <Box className="i-material-symbols-add" boxSize="1.25em" mt="1" />
-                                        Add file
+                                        Add
                                     </Box>
-                                </Tab>
+                                </FileTab>
                             </TabList>
                         </Tabs>
                         <Editor
@@ -168,67 +123,14 @@ export const Playground = () => {
                         <Tabs variant="line" size="sm">
                             <TabList pb="2" h="42px">
                                 {outputList.map((file) => (
-                                    <Tab
+                                    <FileTab
                                         key={file.name}
                                         onClick={() => send({ type: "Select output tab", tab: file })}
-                                        borderWidth="1px"
-                                        borderColor="bgHover"
-                                        backgroundColor="bg"
-                                        _selected={{ bg: "bgHover", fontWeight: "bold" }}
                                     >
                                         {file.name}
-                                    </Tab>
+                                    </FileTab>
                                 ))}
-                                <Menu>
-                                    <MenuButton
-                                        as={Button}
-                                        flexShrink={0}
-                                        ml="auto"
-                                        mr="4"
-                                        size="sm"
-                                        variant="outline"
-                                        rightIcon={<Box className="i-mdi-chevron-down" boxSize="1.25em" />}
-                                    >
-                                        Actions
-                                    </MenuButton>
-                                    <MenuList>
-                                        <MenuItem onClick={() => send({ type: "Add file" })}>Add input file</MenuItem>
-                                        <Popover trigger="hover" placement="left" closeOnBlur={false}>
-                                            <PopoverTrigger>
-                                                <MenuItem>Select handlebars template</MenuItem>
-                                            </PopoverTrigger>
-                                            <PopoverContent>
-                                                <PopoverBody>
-                                                    <MenuOptionGroup
-                                                        defaultValue="default"
-                                                        title="Template"
-                                                        type="radio"
-                                                    >
-                                                        <MenuItemOption value="default">
-                                                            Default (zodios)
-                                                        </MenuItemOption>
-                                                        <MenuItemOption value="default-grouped">
-                                                            Grouped (zodios)
-                                                        </MenuItemOption>
-                                                        <MenuItemOption value="schemas-only">
-                                                            Schemas only (& types if circular)
-                                                        </MenuItemOption>
-                                                    </MenuOptionGroup>
-                                                </PopoverBody>
-                                            </PopoverContent>
-                                        </Popover>
-                                        <MenuItem>Use OpenAPI samples</MenuItem>
-                                        <MenuItem onClick={() => send({ type: "Open options" })}>
-                                            Edit lib options
-                                        </MenuItem>
-                                        <MenuItem onClick={() => send({ type: "Open prettier config" })}>
-                                            Edit prettier config
-                                        </MenuItem>
-                                        <MenuItem as="a" href="https://apis.guru/" target="_blank" rel="external">
-                                            Browse APIs.guru
-                                        </MenuItem>
-                                    </MenuList>
-                                </Menu>
+                                <PlaygroundActions />
                             </TabList>
                         </Tabs>
                         <Editor
@@ -255,6 +157,123 @@ export const Playground = () => {
     );
 };
 
+const FileTab = ({ children, onClick }: PropsWithChildren<{ onClick: () => void }>) => {
+    return (
+        <Tab
+            display="flex"
+            alignItems="center"
+            onClick={onClick}
+            borderWidth="1px"
+            borderColor="bgHover"
+            backgroundColor="bg"
+            _selected={{ bg: "bgHover", fontWeight: "bold" }}
+            data-group
+        >
+            {children}
+        </Tab>
+    );
+};
+
+const FileTabActions = ({ fileTab }: { fileTab: FileTabData }) => {
+    const file = fileTab;
+    const service = usePlaygroundContext();
+    const send = service.send;
+
+    return (
+        <ButtonGroup alignItems="center" ml="2" hidden={Boolean(file.preset)}>
+            <Button
+                as="div"
+                colorScheme="blue"
+                aria-label="Edit"
+                className="i-material-symbols-edit-square-outline"
+                boxSize="1.25em"
+                padding="0"
+                borderRadius="0"
+                minWidth="0"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    if (file.preset) return;
+                    send({ type: "Edit file", tab: file });
+                }}
+                visibility="hidden"
+                _groupHover={{ visibility: "visible" }}
+                isDisabled={Boolean(file.preset)}
+            />
+            <Button
+                as="div"
+                colorScheme="red"
+                aria-label="Close"
+                className="i-material-symbols-close"
+                boxSize="1.25em"
+                padding="0"
+                borderRadius="0"
+                minWidth="0"
+                mt="1"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    send({ type: "Remove file", tab: file });
+                }}
+                visibility="hidden"
+                _groupHover={{ visibility: "visible" }}
+            />
+        </ButtonGroup>
+    );
+};
+
+const PlaygroundActions = () => {
+    const service = usePlaygroundContext();
+    const send = service.send;
+
+    const selectedTemplateName = useSelector(service, (state) => state.context.selectedTemplateName);
+
+    return (
+        <Menu>
+            <MenuButton
+                as={Button}
+                flexShrink={0}
+                ml="auto"
+                mr="4"
+                size="sm"
+                variant="outline"
+                rightIcon={<Box className="i-mdi-chevron-down" boxSize="1.25em" />}
+            >
+                Actions
+            </MenuButton>
+            <MenuList>
+                <MenuItem onClick={() => send({ type: "Add file" })}>Add input file</MenuItem>
+                <Popover trigger="hover" placement="left" closeOnBlur={false}>
+                    <PopoverTrigger>
+                        <MenuItem>Select handlebars template</MenuItem>
+                    </PopoverTrigger>
+                    <PopoverContent>
+                        <PopoverBody>
+                            <MenuOptionGroup
+                                defaultValue={selectedTemplateName}
+                                title="Template"
+                                type="radio"
+                                onChange={(name) => send({ type: "Select preset template", name: name as string })}
+                            >
+                                <MenuItemOption value="template-default">Default (zodios)</MenuItemOption>
+                                <MenuItemOption value="template-grouped">Grouped (zodios)</MenuItemOption>
+                                <MenuItemOption value="template-schemas-only">
+                                    Schemas only (& types if circular)
+                                </MenuItemOption>
+                            </MenuOptionGroup>
+                        </PopoverBody>
+                    </PopoverContent>
+                </Popover>
+                <MenuItem>Use OpenAPI samples</MenuItem>
+                <MenuItem onClick={() => send({ type: "Open options" })}>Edit lib options</MenuItem>
+                <MenuItem onClick={() => send({ type: "Open prettier config" })}>Edit prettier config</MenuItem>
+                <MenuItem onClick={() => send({ type: "Open monaco settings" })}>Edit monaco settings</MenuItem>
+                <MenuItem as="a" href="https://apis.guru/" target="_blank" rel="external">
+                    Browse APIs.guru
+                </MenuItem>
+            </MenuList>
+        </Menu>
+    );
+};
+
 const FileTabForm = () => {
     const service = usePlaygroundContext();
     const [state, send] = useActor(service);
@@ -269,7 +288,7 @@ const FileTabForm = () => {
             defaultValues={formModalDefaultValues}
             mode="onSubmit"
             isOpen={state.matches("ready.Creating file tab") || state.matches("ready.Editing file tab")}
-            onClose={() => send({ type: "Close file modal" })}
+            onClose={() => send({ type: "Close modal" })}
             onSubmit={(fileTab) => send({ type: "Submit file modal", tab: fileTab })}
             footer={<CreateFileFormFooter />}
         >
@@ -278,6 +297,7 @@ const FileTabForm = () => {
                     name="name"
                     label="File name*"
                     type="text"
+                    help="The extension will be used to determine if it's an OpenAPI document `{.yaml,.yml,.json}`, an handlebars template `.hbs` or a prettier config `.prettierrc.json`"
                     rules={{
                         required: "File name is required",
                         validate: {
