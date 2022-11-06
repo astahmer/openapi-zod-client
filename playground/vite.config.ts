@@ -4,7 +4,7 @@ import compileTime from "vite-plugin-compile-time";
 import UnoCSS from "unocss/vite";
 import presetIcons from "@unocss/preset-icons";
 
-export default defineConfig({
+export default defineConfig((_env) => ({
     plugins: [
         UnoCSS({
             presets: [presetIcons({})],
@@ -33,4 +33,4 @@ export default defineConfig({
             // "openapi-zod-client": path.resolve(__dirname, "../lib"),
         },
     },
-});
+}));
