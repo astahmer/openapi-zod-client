@@ -77,6 +77,8 @@ const initialOuputTab = "api.client.ts";
 const isValidDocumentName = (name: string) =>
     !name.startsWith(".prettier") && (name.endsWith(".yml") || name.endsWith(".yaml") || name.endsWith(".json"));
 
+const isValidTemplateName = (name: string) => name.endsWith(".hbs");
+
 export const playgroundMachine =
     /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAnlATgewFcA7CAOlT3QgEsioBiAURoBc8cACAGUokgG0ADAF1EKPLGotqeImJAAPRAFoAHAEYAbKQDsAJgAsmzQFYAnJoDMJweYA0ITIgNmDpA4L0bXqgzvM6lgC+QQ5oWLiEJOS8tAzMUuzcvALqokggyBJSMnIZSgjK6oKqZqRm6qomqt4Glv4GDk4IJnrqulV6gSVaqpp6IWEY2PjEZDhgVJikAArDcfQQsmCktABueADWK+EjUeOTENNzWHEI63gAxujSskLC9-JZkrd5oAWWtrpdJi46FZZLHpLJomoh1OoTCZSKodH0DCZPrD-ppBplhpExqQJlNZvM6PQAKrICA3MAcWjIAgsR4ZZ45WTyArqAyqUiCdR6aqCEFeYzAsEIdRA9rAvQcnn6CF+NG7THRHFHPGnAkAZTAqDAlxYFKIVJ1LHQACNaeIXrkmYh6to+hUEZYzDoWTVBWYLLodJpBGYanorP1ZRjRgrDsd8Qx1Zrtbr9RxDSa0k9sq9LQhPYJSF4LBDfiZ-FZXe6dJ7Of8kYJNKpAxFgwdcSdMAtI1qdYQWLH46bMsmLflwao9LooWYTF6vII-KDHIg3Wz9F1-izXMZgqF0TX9tjQ8rG2qNS2OMgJrAwAawABbcIsMBd+kpvsITSs9kGAyGTT+VTe36CzmuGFwsWbrqMWIGrkMG5YoqYYqgwADyyBgEQHB4MgrywLePaMg+RQeOyno6AipjqG6-y-lY7SCJ4Bi9CUCKOtWexQduDYLAhSGHhMLDSGAnCXLIABm1BQJh5rYe8KggWUtimC44p5pyPK-vUg6fE6lYgoIxYmIx8p1kqrEEuxyHnrI6D8RwJ7cXEGEiEmYlvIokmwqQ-SVn4rQ+rCPq-lUZRZqolh+FoE48rptZbvW4b0AAghAEAcEJmqiQyjkFMohgZnoFQlBoJGBJ6v48myDrAkCFhupYLLhZu0E7gsCQ6klN52XSWFpSo-iWDCjq8kBEKuK6b74V0X7GKUfTqDVzFRbB9AAEoXngazks1KX3hJCBVdCrLCl+u1+o005CoC0JmJ4gJwhoXokdNIa4o1cQoWhuSwESJJkpxYBrNQYAAO7Peh629ptyiVtoxbBR+1gFeov4BK5Zg-EF5iOgYd36dMj10IDr0LXAp5fT9-247ItnpGaqWpsol3slp2XbV4xY6PDLKkK0eicyBdS+joGORUq2NQKTRBvaq6ArSL5P2VTOF+IOnJaP02VPpolRTs0IGmOynwcl4rSApU-N1ULUv0AAwhQJ5S8D4lOYUXhuJYVQroBzomL+hE6OzEKwhy13GOja5yhFJusE9R6njxfGCcJ72kteX3WbxHD8UQQkia1lMbfbYMIu4NEaYbQKWMpz4aDUJick+LITsb26m5Hycx+nceWxI5KmaSqC2x1hTO2UIIaFRo5vsPGvgq+0nnSCSNVzyo71w94c46ZRDmXgllRzZFtW53eDd731M0d1bRlVo-x8j+x0kTYrleEFskkaRS+CyvwvNXGxr0KqBBGueUhErUE1BwLu6Ae5Z27A5amxQBzlH8DYKuvtCKCkCG4KocIfDeTqAMYOQZaoN3fkAkB8Zd4d1AQfcBR8cKIm9k6cUJQvR5kdCzY6A42RM2qFCD8sJISv2mObHE0gcaf1Ib-f+gDP5gIgRTKBstQYuDKMKT0XpKwVF8CyV0WhSDCjqFXN0OUgr8NIIIyYwiP7APJKQ9u1tpHUNBlyGEthKh+kXJ8KqroPzszdOKHQWlXxaQxvjSQAAvFqsi7wg1ztmXQlY2iaDMECAcE8EBcnaAkx0xQ2i5hcKiNERAD5wCePgrEFAqBxBljndKEJKgdGok6JGH4jrNDqN1Ec2U-F1D+CyPJEEmL3QMuGSpUSCg1FICCYwcJxQeAdEYX80zyhBU+Nlb0mTenrn6ZjUgptULoWGXbdKHhoQkU+LJQKgRKjkTaDo4eDoahLL6MYxuXFo6p1jlAfZfdlBvkHFCXoVdRz6BKB7G+KlxlaWKH4lkej1khwIcvHIq8zIWSsuY+AbVoFy1KK5fQQIaJaBBJCEFms+glTFLCU6XQzBPKIaI40nzqaESyrip0HkeTO0FIFaETDfhwnMDUWExjTE3CenSo0DKcKGDcCySEVEKzO2sJ472qNgSQ38Co-hErQYQk+PAqEzjkHNMQE+aEGDShPg5COT0GMtW5whHCPViCamwiNVtV85RPJ9BsIpAcIQQhAA */
     createMachine(
@@ -115,7 +117,7 @@ export const playgroundMachine =
                             {
                                 target: "ready",
                                 actions: ["assignEditorRef", "updateOutput"],
-                                cond: "willInputAndOutputEditorBothReady",
+                                cond: "willInputAndOutputEditorBothBeReady",
                             },
                             {
                                 actions: "assignEditorRef",
@@ -134,7 +136,11 @@ export const playgroundMachine =
                                         actions: ["selectInputTab", "updateSelectedOpenApiFileName", "updateOutput"],
                                         cond: "isNextTabAnotherOpenApiDoc",
                                     },
-                                    { actions: ["selectInputTab", "updateSelectedTemplateName", "updateOutput"] },
+                                    {
+                                        actions: ["selectInputTab", "updateSelectedTemplateName", "updateOutput"],
+                                        cond: "isNextTabAnotherTemplate",
+                                    },
+                                    { actions: ["selectInputTab"] },
                                 ],
                                 "Select output tab": { actions: "selectOutputTab" },
                                 "Select preset template": { actions: ["selectPresetTemplate", "updateOutput"] },
@@ -325,7 +331,7 @@ export const playgroundMachine =
                         const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                         if (nextIndex === -1) return ctx.selectedTemplateName;
 
-                        return ctx.inputList[nextIndex].name.endsWith(".hbs")
+                        return isValidTemplateName(ctx.inputList[nextIndex].name)
                             ? event.tab.name
                             : ctx.selectedTemplateName;
                     },
@@ -405,12 +411,18 @@ export const playgroundMachine =
                 },
             },
             guards: {
-                willInputAndOutputEditorBothReady: (ctx) => Boolean(ctx.inputEditor ?? ctx.outputEditor),
+                willInputAndOutputEditorBothBeReady: (ctx) => Boolean(ctx.inputEditor ?? ctx.outputEditor),
                 isNextTabAnotherOpenApiDoc: (ctx, event) => {
                     if (event.tab.name === ctx.selectedOpenApiFileName) return false;
 
                     const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                     return isValidDocumentName(ctx.inputList[nextIndex].name);
+                },
+                isNextTabAnotherTemplate: (ctx, event) => {
+                    if (event.tab.name === ctx.selectedTemplateName) return false;
+
+                    const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
+                    return isValidTemplateName(ctx.inputList[nextIndex].name);
                 },
             },
         }
