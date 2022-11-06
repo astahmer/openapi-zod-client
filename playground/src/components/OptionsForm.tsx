@@ -17,6 +17,7 @@ const schema = z.object({
     complexityThreshold: z.number().default(4),
     defaultStatusBehavior: z.enum(["spec-compliant", "auto-correct"]).default("spec-compliant"),
 });
+export type OptionsFormValues = z.infer<typeof schema>;
 
 export const defaultOptionValues = {
     baseUrl: "",
@@ -34,7 +35,7 @@ export const defaultOptionValues = {
     defaultStatusBehavior: "spec-compliant",
 } as const;
 
-export const OptionsForm = (props: FormProps<z.infer<typeof schema>>) => {
+export const OptionsForm = (props: FormProps<OptionsFormValues>) => {
     return (
         <Form defaultValues={defaultOptionValues} {...props}>
             <Stack spacing="4">
@@ -55,6 +56,7 @@ export const OptionsForm = (props: FormProps<z.infer<typeof schema>>) => {
                                 value: "useMainResponseDescriptionAsEndpointDefinitionFallback",
                             },
                         ]}
+                        defaultValue={[]}
                         multiple
                     />
                     <Field
