@@ -36,6 +36,7 @@ import type { TemplateContextOptions } from "openapi-zod-client";
 import { PropsWithChildren } from "react";
 import { defaultOptionValues, OptionsForm, OptionsFormValues } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
+import { presetTemplateList } from "./Playground.consts";
 import { FileTabData, usePlaygroundContext } from "./Playground.machine";
 import { presets } from "./presets";
 
@@ -88,7 +89,10 @@ export const Playground = () => {
                                     const isSelectedAsOpenApiDoc =
                                         fileTab.name === state.context.selectedOpenApiFileName;
                                     const isSelectedAsTemplate = fileTab.preset === state.context.selectedTemplateName;
-                                    const isSelectedAsInput = isSelectedAsOpenApiDoc || isSelectedAsTemplate;
+                                    const isSelectedAsInput =
+                                        isSelectedAsOpenApiDoc ||
+                                        isSelectedAsTemplate ||
+                                        fileTab.name === state.context.selectedTemplateName;
 
                                     return (
                                         <FileTab
@@ -225,6 +229,8 @@ const PlaygroundActions = () => {
     const send = service.send;
 
     const selectedTemplateName = useSelector(service, (state) => state.context.selectedTemplateName);
+    const selectedPresetTemplate = presetTemplateList.find((t) => t.value === selectedTemplateName)!;
+    const defaultValue = selectedPresetTemplate?.value ?? "";
 
     return (
         <Menu>
@@ -248,16 +254,27 @@ const PlaygroundActions = () => {
                     <PopoverContent>
                         <PopoverBody>
                             <MenuOptionGroup
-                                defaultValue={selectedTemplateName}
+                                defaultValue={defaultValue}
                                 title="Template"
                                 type="radio"
-                                onChange={(name) => send({ type: "Select preset template", name: name as string })}
+                                onChange={(value) =>
+                                    send({
+                                        type: "Select preset template",
+                                        template: presetTemplateList.find(
+                                            (preset) => preset.value === (value as string)
+                                        )!,
+                                    })
+                                }
                             >
-                                <MenuItemOption value="template-default">Default (zodios)</MenuItemOption>
-                                <MenuItemOption value="template-grouped">Grouped (zodios)</MenuItemOption>
-                                <MenuItemOption value="template-schemas-only">
-                                    Schemas only (& types if circular)
-                                </MenuItemOption>
+                                {presetTemplateList.map((preset) => (
+                                    <MenuItemOption
+                                        key={preset.value}
+                                        value={preset.value}
+                                        isDisabled={preset.value === defaultValue}
+                                    >
+                                        {preset.name}
+                                    </MenuItemOption>
+                                ))}
                             </MenuOptionGroup>
                         </PopoverBody>
                     </PopoverContent>
