@@ -56,7 +56,7 @@ export const Playground = () => {
     const [state, send] = useActor(service);
 
     const activeInputTab = state.context.activeInputTab;
-    const activeIndex = state.context.activeInputIndex;
+    const activeInputIndex = state.context.activeInputIndex;
 
     const inputList = state.context.inputList;
 
@@ -70,7 +70,7 @@ export const Playground = () => {
             <Box display="flex" boxSize="100%">
                 <SplitPane defaultSize="50%" onResize={(ctx) => send({ type: "Resize", context: ctx })}>
                     <Box h="100%" flexGrow={1}>
-                        <Tabs variant="line" size="sm" index={activeIndex}>
+                        <Tabs variant="line" size="sm" index={activeInputIndex}>
                             <TabList
                                 minH="42px"
                                 className="scrollbar"
@@ -117,14 +117,14 @@ export const Playground = () => {
                         </Tabs>
                         <Editor
                             path={activeInputTab}
-                            value={inputList.at(activeIndex)?.content}
+                            value={inputList.at(activeInputIndex)?.content}
                             onChange={(content) => send({ type: "Update input", value: content ?? "" })}
                             onMount={(editor) => send({ type: "Editor Loaded", editor, name: "input" })}
                             theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                         />
                     </Box>
                     <Box h="100%" flexGrow={1}>
-                        <Tabs variant="line" size="sm">
+                        <Tabs variant="line" size="sm" index={state.context.activeOutputIndex}>
                             <TabList pb="2" h="42px">
                                 {outputList.map((file) => (
                                     <FileTab
@@ -139,7 +139,7 @@ export const Playground = () => {
                         </Tabs>
                         <Editor
                             path={activeOutputTab}
-                            defaultValue={inputList.at(activeIndex)?.content}
+                            value={outputList.at(state.context.activeOutputIndex)?.content}
                             theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                             beforeMount={(monaco) => {
                                 const declarations: Array<{ name: string; code: string }> = import.meta.compileTime(
@@ -150,7 +150,9 @@ export const Playground = () => {
                                     monaco.languages.typescript.typescriptDefaults.addExtraLib(code, name);
                                 });
                             }}
-                            onMount={(editor) => send({ type: "Editor Loaded", editor, name: "output" })}
+                            onMount={(editor, monaco) =>
+                                send({ type: "Editor Loaded", editor, name: "output", monaco })
+                            }
                         />
                     </Box>
                 </SplitPane>

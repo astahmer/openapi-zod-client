@@ -3,25 +3,33 @@ import { getHandlebars, getZodClientTemplateContext, maybePretty, TemplateContex
 import { assign, createMachine, InterpreterFrom } from "xstate";
 import { Options as PrettierOptions } from "prettier";
 import { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
-import { AwaitFn, createContextWithHook, limit, removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
+import {
+    AwaitFn,
+    capitalize,
+    createContextWithHook,
+    limit,
+    pick,
+    removeAtIndex,
+    safeJSONParse,
+    updateAtIndex,
+} from "pastable";
 import { defaultOptionValues, OptionsFormValues } from "../components/OptionsForm";
 import { presets } from "./presets";
 import { parse } from "yaml";
 import { match } from "ts-pattern";
 import { PresetTemplate, presetTemplateList } from "./Playground.consts";
+import type { Monaco } from "@monaco-editor/react";
 
 export type FileTabData = { name: string; content: string; index: number; preset?: string };
 
 type PlaygroundContext = {
+    monaco: Monaco | null;
     inputEditor: editor.IStandaloneCodeEditor | null;
     outputEditor: editor.IStandaloneCodeEditor | null;
 
     options: OptionsFormValues;
     previewOptions: OptionsFormValues;
     optionsFormKey: number;
-
-    templateContext: TemplateContext | null;
-    output: string;
 
     activeInputTab: string;
     activeInputIndex: number;
@@ -33,13 +41,15 @@ type PlaygroundContext = {
 
     selectedOpenApiFileName: string;
     selectedTemplateName: string;
+
+    templateContext: TemplateContext | null;
     presetTemplates: Record<string, string>;
 
     fileForm: FileTabData;
 };
 
 type PlaygroundEvent =
-    | { type: "Editor Loaded"; editor: editor.IStandaloneCodeEditor; name: "input" | "output" }
+    | { type: "Editor Loaded"; editor: editor.IStandaloneCodeEditor; name: "input" | "output"; monaco?: Monaco }
     | { type: "Update input"; value: string }
     | { type: "Select input tab"; tab: FileTabData }
     | { type: "Select output tab"; tab: FileTabData }
@@ -91,13 +101,13 @@ export const playgroundMachine =
                 events: {} as PlaygroundEvent,
             },
             context: {
+                monaco: null,
                 inputEditor: null,
                 outputEditor: null,
                 options: defaultOptionValues,
                 previewOptions: defaultOptionValues,
                 optionsFormKey: 0,
                 templateContext: null,
-                output: "",
                 activeInputTab: initialInputList[0].name,
                 activeInputIndex: 0,
                 inputList: initialInputList as any as FileTabData[], // TODO rm with ts 4.9 satisfies
@@ -242,7 +252,7 @@ export const playgroundMachine =
                         return { ...ctx, inputEditor: event.editor };
                     }
 
-                    return { ...ctx, outputEditor: event.editor };
+                    return { ...ctx, outputEditor: event.editor, monaco: event.monaco };
                 }),
                 updateInputEditorValue: (ctx) => {
                     if (!ctx.inputEditor) return;
@@ -273,10 +283,11 @@ export const playgroundMachine =
                     const openApiDoc = input.startsWith("{") ? safeJSONParse(input) : parse(input);
                     if (!openApiDoc) return ctx;
 
-                    const templateContext = getZodClientTemplateContext(openApiDoc, ctx.options);
+                    const options = ctx.options;
+                    const templateContext = getZodClientTemplateContext(openApiDoc, options);
                     // logs the template context to the browser console so users can explore it
                     if (typeof window !== "undefined") {
-                        console.log({ templateContext, options: ctx.options, openApiDoc });
+                        console.log({ templateContext, options, openApiDoc });
                     }
 
                     const hbs = getHandlebars();
@@ -295,7 +306,80 @@ export const playgroundMachine =
                     if (!templateString) return ctx;
                     const template = hbs.compile(templateString);
 
-                    const output = template({ ...templateContext, options: ctx.options });
+                    // adapted from lib/src/generateZodClientFromOpenAPI.ts:60-120
+                    if (options.groupStrategy.includes("file")) {
+                        // TODO
+                        const prettierConfig = presets.defaultPrettierConfig;
+
+                        const outputByGroupName: Record<string, string> = {};
+
+                        const groupNames = Object.fromEntries(
+                            Object.keys(templateContext.endpointsGroups).map((groupName) => [
+                                `${capitalize(groupName)}Api`,
+                                groupName,
+                            ])
+                        );
+
+                        const indexTemplate = hbs.compile(ctx.presetTemplates["template-grouped-index"]);
+                        const indexOutput = maybePretty(indexTemplate({ groupNames }), prettierConfig);
+                        outputByGroupName.index = indexOutput;
+
+                        const commonTemplate = hbs.compile(ctx.presetTemplates["template-grouped-common"]);
+                        const commonSchemaNames = [...(templateContext.commonSchemaNames ?? [])];
+
+                        if (commonSchemaNames.length > 0) {
+                            const commonOutput = maybePretty(
+                                commonTemplate({
+                                    schemas: pick(templateContext.schemas, commonSchemaNames),
+                                    types: pick(templateContext.types, commonSchemaNames),
+                                }),
+                                prettierConfig
+                            );
+                            outputByGroupName.common = commonOutput;
+                        }
+
+                        for (const groupName in templateContext.endpointsGroups) {
+                            const groupOutput = template({
+                                ...templateContext,
+                                ...templateContext.endpointsGroups[groupName],
+                                options: {
+                                    ...options,
+                                    groupStrategy: "none",
+                                    apiClientName: `${capitalize(groupName)}Api`,
+                                },
+                            });
+                            outputByGroupName[groupName] = maybePretty(groupOutput, prettierConfig);
+                        }
+
+                        const outputList = Object.entries(outputByGroupName).map(([name, content], index) => ({
+                            name: name + ".ts",
+                            content,
+                            index,
+                        })) as FileTabData[];
+
+                        const monaco = ctx.monaco;
+                        if (monaco) {
+                            outputList.forEach((tab) => {
+                                const uri = new monaco.Uri().with({ path: tab.name });
+                                if (!monaco.editor.getModel(uri)) {
+                                    monaco.editor.createModel(tab.content, "typescript", uri);
+                                }
+                            });
+                        }
+
+                        if (ctx.outputEditor) {
+                            ctx.outputEditor.setValue(outputList[0].content);
+                        }
+
+                        return {
+                            ...ctx,
+                            outputList,
+                            activeOutputIndex: 0,
+                            activeOutputTab: outputList[0].name,
+                        };
+                    }
+
+                    const output = template({ ...templateContext, options });
                     const prettyOutput = maybePretty(output, presets.defaultPrettierConfig);
 
                     if (ctx.outputEditor) {
@@ -305,7 +389,7 @@ export const playgroundMachine =
                     return {
                         ...ctx,
                         templateContext,
-                        output: prettyOutput,
+                        outputList: [{ name: initialOuputTab, content: prettyOutput, index: 0 }],
                     };
                 }),
                 selectInputTab: assign({

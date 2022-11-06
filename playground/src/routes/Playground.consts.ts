@@ -16,4 +16,16 @@ export const presetTemplateList = [
         template: "template-schemas-only",
         options: { shouldExportAllSchemas: true },
     },
+    {
+        name: "Grouped by tag (split files)",
+        value: "grouped-tag-file",
+        template: "template-default",
+        options: { groupStrategy: "tag-file" },
+    },
+    {
+        name: "Grouped by method (split files)",
+        value: "grouped-method-file",
+        template: "template-default",
+        options: { groupStrategy: "method-file" },
+    },
 ] as PresetTemplate[];
