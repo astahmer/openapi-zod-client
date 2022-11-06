@@ -33,7 +33,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
     if (options?.isMainResponseStatus) {
         isMainResponseStatus =
             typeof options.isMainResponseStatus === "string"
-                ? (status: number) => sync(options.isMainResponseStatus, { status })
+                ? (status: number) => sync(options.isMainResponseStatus, { status }, { functions: true })
                 : options.isMainResponseStatus;
     }
 
@@ -41,7 +41,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
     if (options?.isErrorStatus) {
         isErrorStatus =
             typeof options.isErrorStatus === "string"
-                ? (status: number) => sync(options.isErrorStatus, { status })
+                ? (status: number) => sync(options.isErrorStatus, { status }, { functions: true })
                 : options.isErrorStatus;
     }
 
@@ -49,7 +49,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
     if (options?.isMediaTypeAllowed) {
         isMediaTypeAllowed =
             typeof options.isMediaTypeAllowed === "string"
-                ? (mediaType: string) => sync(options.isMediaTypeAllowed, { mediaType })
+                ? (mediaType: string) => sync(options.isMediaTypeAllowed, { mediaType }, { functions: true })
                 : options.isMediaTypeAllowed;
     }
 
