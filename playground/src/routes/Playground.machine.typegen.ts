@@ -49,7 +49,8 @@ export interface Typegen0 {
     eventsCausingServices: {};
     eventsCausingGuards: {
         isNextTabAnotherOpenApiDoc: "Select input tab";
-        willInputAndOutputEditorBothReady: "Editor Loaded";
+        isNextTabAnotherTemplate: "Select input tab";
+        willInputAndOutputEditorBothBeReady: "Editor Loaded";
     };
     eventsCausingDelays: {};
     matchesStates:
