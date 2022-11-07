@@ -18,7 +18,8 @@ beforeAll(async () => {
 });
 
 describe("samples-generator", async () => {
-    const samplesPath = path.resolve(__dirname, "../../", "./samples/v3\\.*/**/*.yaml");
+    const pkgRoot = process.cwd();
+    const samplesPath = path.resolve(pkgRoot, "../", "./samples/v3\\.*/**/*.yaml");
     const list = fg.sync([samplesPath]);
     console.log(samplesPath);
 

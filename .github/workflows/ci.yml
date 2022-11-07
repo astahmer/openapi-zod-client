@@ -47,8 +47,7 @@ jobs:
         working-directory: ./lib
         run: pnpm build
       - name: Test
-        working-directory: ./lib
-        run: pnpm test
+        run: cd ./lib && pnpm test
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
