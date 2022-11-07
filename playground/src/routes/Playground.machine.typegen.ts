@@ -39,17 +39,17 @@ export interface Typegen0 {
             | "Select input tab"
             | "Select preset template"
             | "Submit file modal"
-            | "Update input"
-            | "Update prettier config";
-        updatePrettierConfig: "Update prettier config";
+            | "Update input";
         updatePreviewOptions: "Update preview options";
         updateSelectedDocOrTemplate: "Update input";
         updateSelectedOpenApiFileName: "Remove file" | "Select input tab" | "Submit file modal";
+        updateSelectedPrettierConfig: "Remove file" | "Select input tab" | "Submit file modal";
         updateSelectedTemplateName: "Remove file" | "Select input tab" | "Submit file modal";
     };
     eventsCausingServices: {};
     eventsCausingGuards: {
         isNextTabAnotherOpenApiDoc: "Select input tab";
+        isNextTabAnotherPrettierConfig: "Select input tab";
         isNextTabAnotherTemplate: "Select input tab";
         wasInputEmpty: "Update input";
         willInputAndOutputEditorBothBeReady: "Editor Loaded";
@@ -62,7 +62,6 @@ export interface Typegen0 {
         | "ready.Editing file tab"
         | "ready.Editing monaco settings"
         | "ready.Editing options"
-        | "ready.Editing prettier config"
         | "ready.Playing"
         | {
               ready?:
@@ -70,7 +69,6 @@ export interface Typegen0 {
                   | "Editing file tab"
                   | "Editing monaco settings"
                   | "Editing options"
-                  | "Editing prettier config"
                   | "Playing";
           };
     tags: "file";
