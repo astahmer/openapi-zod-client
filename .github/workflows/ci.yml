@@ -7,17 +7,17 @@ on:
   push:
     branches: [main]
     paths:
-      - src/**
-      - pnpm-lock.yaml
-      - package.json
-      - tsconfig.json
+      - lib/**
+      - lib/pnpm-lock.yaml
+      - lib/package.json
+      - lib/tsconfig.json
   pull_request:
     branches: [main]
     paths:
-      - src/**
-      - pnpm-lock.yaml
-      - package.json
-      - tsconfig.json
+      - lib/lib/**
+      - lib/pnpm-lock.yaml
+      - lib/package.json
+      - lib/tsconfig.json
 
 jobs:
   build:
@@ -41,10 +41,13 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "pnpm"
       - name: Install dependencies
+        working-directory: ./lib
         run: pnpm install --frozen-lockfile
       - name: Build
+        working-directory: ./lib
         run: pnpm build
       - name: Test
+        working-directory: ./lib
         run: pnpm test
   analyze:
     name: Analyze
