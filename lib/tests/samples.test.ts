@@ -12,13 +12,13 @@ import * as path from "node:path";
 import { beforeAll, describe, expect, test } from "vitest";
 
 let prettierConfig: Options | null;
+const pkgRoot = process.cwd();
 
 beforeAll(async () => {
-    prettierConfig = await resolveConfig("./");
+    prettierConfig = await resolveConfig(path.resolve(pkgRoot, "../"));
 });
 
 describe("samples-generator", async () => {
-    const pkgRoot = process.cwd();
     const samplesPath = path.resolve(pkgRoot, "../", "./samples/v3\\.*/**/*.yaml");
     const list = fg.sync([samplesPath]);
     console.log({ samplesPath, list, cwd: process.cwd(), url: import.meta.url });
@@ -43,6 +43,7 @@ describe("samples-generator", async () => {
                 expect(resultByFile[fileName]).toEqual(prettyOutput);
             }
 
+            console.log(resultByFile[fileName], prettyOutput);
             expect(prettyOutput).toMatchSnapshot();
 
             resultByFile[fileName] = prettyOutput;
