@@ -1,0 +1,20 @@
+{
+    "name": "openapi-zod-client-examples-basic",
+    "private": true,
+    "version": "1.0.0",
+    "scripts": {
+        "gen:basic": "tsx ./petstore-generator.ts",
+        "gen:schemas-only": "node ./cli/bin.js ./examples/schemas-only/petstore.yaml -o ./examples/schemas-only/petstore-schemas.ts -t ./examples/schemas-only/schemas-only.hbs -p ./examples/schemas-only/prettier-custom.json --export-schemas"
+    },
+    "devDependencies": {
+        "openapi3-ts": "3.0.2",
+        "tsx": "^3.11.0",
+        "typescript": "^4.8.4"
+    },
+    "dependencies": {
+        "@apidevtools/swagger-parser": "^10.1.0",
+        "@zodios/core": "^10.3.1",
+        "openapi-zod-client": "workspace:^1.0.0",
+        "zod": "^3.19.1"
+    }
+}

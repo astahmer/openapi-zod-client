@@ -8,10 +8,7 @@
     },
     "author": "Alexandre Stahmer <alexandre.stahmer@gmail.com>",
     "scripts": {
-        "gen:basic": "tsx examples/basic/petstore-generator.ts",
-        "gen:schemas-only": "node ./bin.js ./examples/schemas-only/petstore.yaml -o ./examples/schemas-only/petstore-schemas.ts -t ./examples/schemas-only/schemas-only.hbs -p ./examples/schemas-only/prettier-custom.json --export-schemas",
-        "gen:samples": "rm -rf ./samples && tsx ./samples-generator.ts",
-        "gen": "pnpm gen:basic && gen:schemas-only && pnpm gen:samples"
+        "gen:samples": "rm -rf ./samples && tsx ./lib/samples-generator.ts"
     },
     "license": "ISC",
     "devDependencies": {
