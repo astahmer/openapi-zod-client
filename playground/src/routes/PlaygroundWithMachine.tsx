@@ -44,7 +44,6 @@ export const PlaygroundWithMachine = () => {
 
     const activeInputIndex = pageContext.url.searchParams.get("activeInputIndex");
 
-    // console.log({ doc: hasDoc, code: getCodeStringFromUrl("doc"), initialInputList, pageContext });
     const service = useInterpret(
         initialInputList
             ? playgroundMachine.withContext({

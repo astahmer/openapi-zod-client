@@ -33,7 +33,6 @@ describe("samples-generator", async () => {
             const output = template({ ...data, options: { ...data.options, apiClientName: "api" } });
             const prettyOutput = maybePretty(output, prettierConfig);
             const fileName = docPath.replace("yaml", "");
-            console.log(fileName);
 
             // means the .ts file is valid
             expect(prettyOutput).not.toBe(output);
@@ -42,7 +41,6 @@ describe("samples-generator", async () => {
     }
 
     test("results by file", () => {
-        console.log(resultByFile);
         expect(
             Object.fromEntries(Object.entries(resultByFile).map(([key, value]) => [key.split("samples/").at(1), value]))
         ).toMatchInlineSnapshot(`
