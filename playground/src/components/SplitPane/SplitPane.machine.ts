@@ -1,6 +1,6 @@
-import React from "react";
-import { assign, createMachine } from "xstate";
 import { limit } from "pastable";
+import type React from "react";
+import { assign, createMachine } from "xstate";
 
 export type ResizablePanesContext = {
     resizerRef: HTMLDivElement;

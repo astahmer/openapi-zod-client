@@ -1,5 +1,5 @@
-import { default as defaultOutputTemplate } from "../../../lib/src/templates/default.hbs?raw";
 import { default as petstoreYaml } from "../../../examples/petstore.yaml?raw";
+import { default as defaultOutputTemplate } from "../../../lib/src/templates/default.hbs?raw";
 
 export const presets = {
     defaultTemplate: defaultOutputTemplate,
