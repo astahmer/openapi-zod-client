@@ -43,6 +43,7 @@ export interface Typegen0 {
             | "Update prettier config";
         updatePrettierConfig: "Update prettier config";
         updatePreviewOptions: "Update preview options";
+        updateSelectedDocOrTemplate: "Update input";
         updateSelectedOpenApiFileName: "Remove file" | "Select input tab" | "Submit file modal";
         updateSelectedTemplateName: "Remove file" | "Select input tab" | "Submit file modal";
     };
@@ -50,6 +51,7 @@ export interface Typegen0 {
     eventsCausingGuards: {
         isNextTabAnotherOpenApiDoc: "Select input tab";
         isNextTabAnotherTemplate: "Select input tab";
+        wasInputEmpty: "Update input";
         willInputAndOutputEditorBothBeReady: "Editor Loaded";
     };
     eventsCausingDelays: {};
