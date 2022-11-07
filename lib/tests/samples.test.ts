@@ -15,7 +15,9 @@ let prettierConfig: Options | null;
 const pkgRoot = process.cwd();
 
 beforeAll(async () => {
+    console.log({ prettierConfigPath: path.resolve(pkgRoot, "../") });
     prettierConfig = await resolveConfig(path.resolve(pkgRoot, "../"));
+    console.log({ prettierConfig });
 });
 
 describe("samples-generator", async () => {
@@ -32,6 +34,7 @@ describe("samples-generator", async () => {
             const data = getZodClientTemplateContext(openApiDoc);
 
             const output = template({ ...data, options: { ...data.options, apiClientName: "api" } });
+            console.log({ openApiDoc, data, output });
             const prettyOutput = maybePretty(output, prettierConfig);
             const fileName = docPath.replace("yaml", "");
 
