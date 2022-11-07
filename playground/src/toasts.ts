@@ -1,5 +1,7 @@
-import { ToastId, UseToastOptions, createStandaloneToast } from "@chakra-ui/react";
+import type { ToastId, UseToastOptions } from "@chakra-ui/react";
+import { createStandaloneToast } from "@chakra-ui/react";
 import { getRandomString } from "pastable";
+
 import theme from "./theme.cjs";
 
 const { ToastContainer, toast } = createStandaloneToast({ theme });
@@ -35,7 +37,11 @@ function makeToast(titleOrOptions: string | ToastOptions, options?: ToastOptions
     if (config.uniqueId) {
         config.id = getRandomString(10);
         const prevToast = toastMap.get(config.uniqueId);
-        prevToast && toast.close(prevToast.id!);
+
+        if (prevToast) {
+            toast.close(prevToast.id!);
+        }
+
         toastMap.set(config.uniqueId, config);
     } else if (config.unique) {
         toast.closeAll();

@@ -1,26 +1,23 @@
-import { editor } from "monaco-editor";
-import { getHandlebars, getZodClientTemplateContext, maybePretty, TemplateContext } from "openapi-zod-client";
-import { assign, createMachine, InterpreterFrom } from "xstate";
-import { Options as PrettierOptions } from "prettier";
-import { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
-import {
-    AwaitFn,
-    capitalize,
-    createContextWithHook,
-    limit,
-    pick,
-    removeAtIndex,
-    safeJSONParse,
-    updateAtIndex,
-} from "pastable";
-import { defaultOptionValues, OptionsFormValues } from "../components/OptionsForm";
-import { presets } from "./presets";
-import { parse } from "yaml";
-import { PresetTemplate, presetTemplateList } from "./Playground.consts";
 import type { Monaco } from "@monaco-editor/react";
-import { updateUrlWithParam, updateUrlWithCompressedString, resetUrl, deletingParamInUrl } from "../url-saver";
-import { toasts } from "../toasts";
+import type { editor } from "monaco-editor";
+import type { TemplateContext } from "openapi-zod-client";
+import { getHandlebars, getZodClientTemplateContext, maybePretty } from "openapi-zod-client";
+import type { AwaitFn } from "pastable";
+import { capitalize, createContextWithHook, limit, pick, removeAtIndex, safeJSONParse, updateAtIndex } from "pastable";
+import type { Options as PrettierOptions } from "prettier";
 import { match } from "ts-pattern";
+import type { InterpreterFrom } from "xstate";
+import { assign, createMachine } from "xstate";
+import { parse } from "yaml";
+
+import type { OptionsFormValues } from "../components/OptionsForm";
+import { defaultOptionValues } from "../components/OptionsForm";
+import type { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
+import { toasts } from "../toasts";
+import { deletingParamInUrl, resetUrl, updateUrlWithCompressedString, updateUrlWithParam } from "../url-saver";
+import type { PresetTemplate } from "./Playground.consts";
+import { presetTemplateList } from "./Playground.consts";
+import { presets } from "./presets";
 
 export type FileTabData = { name: string; content: string; index: number; preset?: string };
 
@@ -319,7 +316,7 @@ export const playgroundMachine =
                         toasts.info("Nothing changed");
                     }
                 },
-                reset: assign((ctx) => {
+                reset: assign((_ctx) => {
                     resetUrl();
                     return initialContext;
                 }),
@@ -520,7 +517,7 @@ export const playgroundMachine =
                         return event.tab.name;
                     },
                 }),
-                updateSelectedDocOrTemplate: assign((ctx, event) => {
+                updateSelectedDocOrTemplate: assign((ctx) => {
                     const tab = ctx.inputList[ctx.activeInputIndex];
 
                     return {

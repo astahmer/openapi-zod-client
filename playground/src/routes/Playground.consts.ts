@@ -1,4 +1,4 @@
-import { OptionsFormValues } from "../components/OptionsForm";
+import type { OptionsFormValues } from "../components/OptionsForm";
 
 export type PresetTemplate = { name: string; preset: string; template: string; options?: Partial<OptionsFormValues> };
 export const presetTemplateList = [
