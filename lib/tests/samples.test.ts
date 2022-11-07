@@ -44,19 +44,17 @@ describe("samples-generator", async () => {
     test("results by file", () => {
         console.log(resultByFile);
         expect(
-            Object.fromEntries(
-                Object.entries(resultByFile).map(([key, value]) => [key.split("openapi-zod-client").at(1), value])
-            )
+            Object.fromEntries(Object.entries(resultByFile).map(([key, value]) => [key.split("samples/").at(1), value]))
         ).toMatchInlineSnapshot(`
           {
-              "/samples/v3.0/api-with-examples.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.0/api-with-examples.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const endpoints = makeApi([]);
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.0/callback-example.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.0/callback-example.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const endpoints = makeApi([
@@ -78,7 +76,7 @@ describe("samples-generator", async () => {
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.0/link-example.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.0/link-example.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const user = z.object({ username: z.string(), uuid: z.string() }).partial();
@@ -205,7 +203,7 @@ describe("samples-generator", async () => {
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.0/petstore-expanded.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.0/petstore-expanded.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const NewPet = z.object({ name: z.string(), tag: z.string().optional() });
@@ -283,7 +281,7 @@ describe("samples-generator", async () => {
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.0/petstore.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.0/petstore.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
@@ -327,7 +325,7 @@ describe("samples-generator", async () => {
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.0/uspto.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.0/uspto.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const dataSetList = z
@@ -419,14 +417,14 @@ describe("samples-generator", async () => {
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.1/non-oauth-scopes.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.1/non-oauth-scopes.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const endpoints = makeApi([]);
 
           export const api = new Zodios(endpoints);
           ",
-              "/samples/v3.1/webhook-example.": "import { makeApi, Zodios } from "@zodios/core";
+              "v3.1/webhook-example.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
           const endpoints = makeApi([]);
