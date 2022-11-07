@@ -4,7 +4,7 @@ const { defineConfig } = require("eslint-define-config");
 module.exports = defineConfig({
     parserOptions: {
         files: ["*.ts"],
-        project: ["./lib/tsconfig.json", "./playground/tsconfig.json"],
+        project: ["./tsconfig.json"],
     },
     ignorePatterns: ["**/*.test.ts", "*.typegen.ts"],
     extends: "@astahmer/eslint-config-ts",
@@ -18,7 +18,7 @@ module.exports = defineConfig({
     },
     overrides: [
         {
-            files: ["lib/src/index.ts"],
+            files: ["src/entry-client.ts", "src/common-hooks.ts", "src/index.ts"],
             rules: {
                 "import/no-unused-modules": 0,
             },
