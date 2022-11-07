@@ -25,9 +25,13 @@ with local install:
 -   `pnpm i -D openapi-zod-client`
 -   `pnpm openapi-zod-client "./input/file.json" -o "./output/client.ts"`
 
-or directly
+or directly (no install)
 
 -   `pnpx openapi-zod-client "./input/file.yaml" -o "./output/client.ts"`
+
+# auto-generated doc
+
+https://paka.dev/npm/openapi-zod-client
 
 ## CLI
 

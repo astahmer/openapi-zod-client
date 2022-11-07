@@ -16,9 +16,11 @@ import {
 import { defaultOptionValues, OptionsFormValues } from "../components/OptionsForm";
 import { presets } from "./presets";
 import { parse } from "yaml";
-import { match } from "ts-pattern";
 import { PresetTemplate, presetTemplateList } from "./Playground.consts";
 import type { Monaco } from "@monaco-editor/react";
+import { updateUrlWithParam, updateUrlWithCompressedString, resetUrl, deletingParamInUrl } from "../url-saver";
+import { toasts } from "../toasts";
+import { match } from "ts-pattern";
 
 export type FileTabData = { name: string; content: string; index: number; preset?: string };
 
@@ -62,7 +64,7 @@ type PlaygroundEvent =
     | { type: "Edit file"; tab: FileTabData }
     | { type: "Remove file"; tab: FileTabData }
     | { type: "Save" }
-    | { type: "Share" }
+    | { type: "Reset" }
     | { type: "Update preview options"; options: OptionsFormValues }
     | { type: "Reset preview options" }
     | { type: "Save options"; options: OptionsFormValues }
@@ -89,8 +91,29 @@ const isValidDocumentName = (name: string) =>
 const isValidTemplateName = (name: string) => name.endsWith(".hbs");
 const isValidPrettierConfig = (name: string) => name.startsWith(".prettier") && name.endsWith(".json");
 
+const initialContext: PlaygroundContext = {
+    monaco: null,
+    inputEditor: null,
+    outputEditor: null,
+    options: defaultOptionValues,
+    previewOptions: defaultOptionValues,
+    optionsFormKey: 0,
+    templateContext: null,
+    activeInputTab: initialInputList[0].name,
+    activeInputIndex: 0,
+    inputList: initialInputList as any as FileTabData[], // TODO rm with ts 4.9 satisfies
+    selectedOpenApiFileName: initialInputList[0].name,
+    selectedTemplateName: initialInputList[1].name,
+    selectedPrettierConfig: initialInputList[2].name,
+    presetTemplates: {},
+    activeOutputTab: initialOuputTab,
+    activeOutputIndex: 0,
+    outputList: [{ name: initialOuputTab, content: "", index: 0 }],
+    fileForm: { name: "", content: "", index: -1 },
+};
+
 export const playgroundMachine =
-    /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAnlATgewFcA7CAOlT3QgEsioBiAURoBc8cACAGUokgG0ADAF1EKPLGotqeImJAAPRAFoAHAEYAbKQDsAJgAsmzQFYAnJoDMJweYA0ITIgNmDpA4L0bXqgzvM6lgC+QQ5oWLiEJOS8tAzMUuzcvALqokggyBJSMnIZSgjK6oKqZqRm6qomqt4Glv4GDk4IJnrqulV6gSVaqpp6IWEY2PjEZDhgVJikAArDcfQQsmCktABueADWK+EjUeOTENNzWHEI63gAxujSskLC9-JZkrd5oAWWtrpdJi46FZZLHpLJomoh1OoTCZSKodH0DCZPrD-ppBplhpExqQJlNZvM6PQAKrICA3MAcWjIAgsR4ZZ45WTyArqAyqUiCdR6aqCEFeYzAsEIdRA9rAvQcnn6CF+NG7THRHFHPGnAkAZTAqDAlxYFKIVJ1LHQACNaeIXrkmYh6to+hUEZYzDoWTVBWYLLodJpBGYanorP1ZRjRgrDsd8Qx1Zrtbr9RxDSa0k9sq9LQhPYJSF4LBDfiZ-FZXe6dJ7Of8kYJNKpAxFgwdcSdMAtI1qdYQWLH46bMsmLflwao9LooWYTF6vII-KDHIg3Wz9F1-izXMZgqF0TX9tjQ8rG2qNS2OMgJrAwAawABbcIsMBd+kpvsITSs9kGAyGTT+VTe36CzmuGFwsWbrqMWIGrkMG5YoqYYqgwADyyBgEQHB4MgrywLePaMg+RQeOyno6AipjqG6-y-lY7SCJ4Bi9CUCKOtWexQduDYLAhSGHhMLDSGAnCXLIABm1BQJh5rYe8KggWUtimC44p5pyPK-vUg6fE6lYgoIxYmIx8p1kqrEEuxyHnrI6D8RwJ7cXEGEiEmYlvIokmwqQ-SVn4rQ+rCPq-lUZRZqolh+FoE48rptZbvW4b0AAghAEAcEJmqiQyjkFMohgZnoFQlBoJGBJ6v48myDrAkCFhupYLLhZu0E7gsCQ6klN52XSWFpSo-iWDCjq8kBEKuK6b74V0X7GKUfTqDVzFRbB9AAEoXngazks1KX3hJCBVdCrLCl+u1+o005CoC0JmJ4gJwhoXokdNIa4o1cQoWhuSwESJJkpxYBrNQYAAO7Peh629ptyiVtoxbBR+1gFeov4BK5Zg-EF5iOgYd36dMj10IDr0LXAp5fT9-247ItnpGaqWpsol3slp2XbV4xY6PDLKkK0eicyBdS+joGORUq2NQKTRBvaq6ArSL5P2VTOF+IOnJaP02VPpolRTs0IGmOynwcl4rSApU-N1ULUv0AAwhQJ5S8D4lOYUXhuJYVQroBzomL+hE6OzEKwhy13GOja5yhFJusE9R6njxfGCcJ72kteX3WbxHD8UQQkia1lMbfbYMIu4NEaYbQKWMpz4aDUJick+LITsb26m5Hycx+nceWxI5KmaSqC2x1hTO2UIIaFRo5vsPGvgq+0nnSCSNVzyo71w94c46ZRDmXgllRzZFtW53eDd731M0d1bRlVo-x8j+x0kTYrleEFskkaRS+CyvwvNXGxr0KqBBGueUhErUE1BwLu6Ae5Z27A5amxQBzlH8DYKuvtCKCkCG4KocIfDeTqAMYOQZaoN3fkAkB8Zd4d1AQfcBR8cKIm9k6cUJQvR5kdCzY6A42RM2qFCD8sJISv2mObHE0gcaf1Ib-f+gDP5gIgRTKBstQYuDKMKT0XpKwVF8CyV0WhSDCjqFXN0OUgr8NIIIyYwiP7APJKQ9u1tpHUNBlyGEthKh+kXJ8KqroPzszdOKHQWlXxaQxvjSQAAvFqsi7wg1ztmXQlY2iaDMECAcE8EBcnaAkx0xQ2i5hcKiNERAD5wCePgrEFAqBxBljndKEJKgdGok6JGH4jrNDqN1Ec2U-F1D+CyPJEEmL3QMuGSpUSCg1FICCYwcJxQeAdEYX80zyhBU+Nlb0mTenrn6ZjUgptULoWGXbdKHhoQkU+LJQKgRKjkTaDo4eDoahLL6MYxuXFo6p1jlAfZfdlBvkHFCXoVdRz6BKB7G+KlxlaWKH4lkej1khwIcvHIq8zIWSsuY+AbVoFy1KK5fQQIaJaBBJCEFms+glTFLCU6XQzBPKIaI40nzqaESyrip0HkeTO0FIFaETDfhwnMDUWExjTE3CenSo0DKcKGDcCySEVEKzO2sJ472qNgSQ38Co-hErQYQk+PAqEzjkHNMQE+aEGDShPg5COT0GMtW5whHCPViCamwiNVtV85RPJ9BsIpAcIQQhAA */
+    /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAnlATgewFcA7CAOlT3QgEsioBiAURoBc8cACAGUokgG0ADAF1EKPLGotqeImJAAPRAFoAHAEYALKUEBWAGwAmVasPq9+waoA0ITIk2HBpXZtUB2V58273ATn1dAF8g2zQsXEIScl5aBmYpdm5eAXVRJBBkCSkZOQylBGVzPz9STXdzfXLAgz8AZlt7BDd3Und9d01BLrrLPUMQsIxsfGIyHDAqTFIABWG4+ghZMFJaADc8AGsVmBYZidgwFgAVMABbcJY4IXTxSWlZeQLlM31SOo+6rXdO9Sd9Gx2RB-VTOJygn4aQwA9R1QaZYaRMakCZTWbzOj0ACqyAg6CuHFoyAILBu8iy91yT0QoNIhk6gj87lU+i+3UawIC2nMjm6tVUdUE7nh4RGUXGkwg0zmWAWOLxBKJJP4aXJ2QeeVABV0pVclh1ql06lUJVcHIQZjMLhMdX8JsMdT8mhFiNG0VRUvRssxAGUwKgwABjFiEojEkMsdAAIzJGQpOUe+UQ9PULkE+lhnT86cF6nNHV0bWhfI+Gk09RdETdErRMswCz9AeDofDHEjMdVcfVVKTFv8pHMLPahjMbnT5tMhfUrKZmltWl0vkrYuRHulGIYjaDIaVEej-EMt0y3cTWuTqm0Jt0jsdQp+mk05r8ApcPgzbjnOt0qmXSPdkvXb1N39bcWxJNt9zqI94w1akLT8QxSENVwvgvB0WUBJp1C0Oo6UEMwdXw9xoR+X9qxRACvXrX0QObQgWFbdtYzuBNNUURBBWcTpiP8B8fFcFlzT+EoyhHR0HSdOpDGCUIESrcUKNrDd6C3ZtkAOI423OS4wGY49KVPdjmncXDGTnAJ1B1IxDHqISvlKFlp10B0nDtMiFLXKiFgAeWQMAiA4PBkA1WA9Jgnsz0KAxUzqAxPCcvxsIBITdG6AdPGczoDCcGShnk1dKLrHy-ICs5ZHQQM8A4Q4WGkOhQpENUDLY55LFabpbQ0bN-AdXQhOZbQARs689DnQxNHUdyCqUoD6AAQQgCAOAAM2oAMwpPFqVGNVQdGczQjGwwRLKZQwhMED42n0SwEOki7jGFWTRT-GtPSKzEEhDVb1sartmrg5R2inB1yyqfC3zOoEEHqUpoRHEo-G-Zleim-8ZuohgACVzjwNYwBWtbdN+ljYN7ZQjWcfCjHaa7wTMIToVKKSmRMjQARNPxUdewCMZU9A8Y2-7e3MXD6V8ep03BY68yhrQRzKKTp0EY6KnKXK5JXNG3uU7GasF1i4JFulPH8QUjCsaWUqcK7yjqcpn2vNwucUz1PriQLgtyWBsVxfF8fUsA1moMAAHcPZC-XSciopBz28oR06YwDCE8pnBZb8qnMH51ArJ7XQ8yi3bocOvfoXXNIDoPQ5L2QGugzaAc8XaHpsxKdRKa67I8Uh9ERj4JOnYxnc8ouoBrohvZ9fn8aCiPif0g2ycNXbLPcRkjV6Cbk9ljNCw6Y7DXpLpYWHwvWHd2fS4AYQoQ5x7rprF+jte98Ca6mSdEiGh362AXLUFTBOiSqfNEo8OBlSIBVKqNU6pQG9jfCQ+Myp4lQJHCKRk1BSR7jZaE+oTIjhllhDwbx8JaCqCYfCAp1bPXIiPc+xdvr43bCpAgUYzhSAJgGcBeAUFoMMs8Yo2gnDTjqB4WKZhCGIHwTocoE0Jo-AZI9PKmtuakDAYwiCUZ6AILvsg9AqD57hX4SoASpB6hlhHDZWEPgJzSTKNnbohoaaczzvlLW0wr6olgZwph0YWFsI4RovRBj65C2jqY8xq8WgIV6E+LQPcTSshZMrey1D87TU9J4yY3iNHMJ0Ugnh+i+FbUKLaHQXwvisnBh0LQT4qhtBMMRVkVQnA+C5mXOA1AABeRNQlPwwRZK6phpz1GMNCc00lUy9yZOYAiPhQYhFkkQHhcByTpOiBQKgcRH5Rwwdha240hT-ysPUSRCBRFTg8KdRmB1nSuJUS7Hm2y-r9IKLtEojgur7xspUhm6hWi8XNq4f57MQGu3oWPS+tcdnoOeKYN4tshRaGzIaPQKcnTvGBala82ELxgumGAiBUDqpHFgfAF5uznjZlKCc6SF5JIzP6vUNo04uhxVikYH89yXqPLURCnxmiYXGMKPFMoDs9CMgFGvfQE4sH+FSjU0GLIBjctoZRLJ+J3a5OjEKkpLw5xtACDMu2n9HRPnLArboiUfAIUsJNVVBcpi6oBthAwcdiJHyTjKqGGciz6hMFURKngubOrJn8NKo0PWJ0NN6poNk3jGn8D8ZWAJKn6EWUEIAA */
     createMachine(
         {
             predictableActionArguments: true,
@@ -100,26 +123,7 @@ export const playgroundMachine =
                 context: {} as PlaygroundContext,
                 events: {} as PlaygroundEvent,
             },
-            context: {
-                monaco: null,
-                inputEditor: null,
-                outputEditor: null,
-                options: defaultOptionValues,
-                previewOptions: defaultOptionValues,
-                optionsFormKey: 0,
-                templateContext: null,
-                activeInputTab: initialInputList[0].name,
-                activeInputIndex: 0,
-                inputList: initialInputList as any as FileTabData[], // TODO rm with ts 4.9 satisfies
-                selectedOpenApiFileName: initialInputList[0].name,
-                selectedTemplateName: initialInputList[1].name,
-                selectedPrettierConfig: initialInputList[2].name,
-                presetTemplates: {},
-                activeOutputTab: initialOuputTab,
-                activeOutputIndex: 0,
-                outputList: [{ name: initialOuputTab, content: "", index: 0 }],
-                fileForm: { name: "", content: "", index: -1 },
-            },
+            context: initialContext,
             initial: "loading",
             states: {
                 loading: {
@@ -178,9 +182,8 @@ export const playgroundMachine =
                                         "updateOutput",
                                     ],
                                 },
-                                // TODO
-                                // Save: { actions: "save" },
-                                // Share: { actions: ["save", "copyUrlToClipboard"] },
+                                Save: { actions: "updateUrl" },
+                                Reset: { actions: ["reset", "updateOutput"] },
                             },
                             invoke: {
                                 id: "getPresetTemplates",
@@ -260,6 +263,63 @@ export const playgroundMachine =
                     }
 
                     return { ...ctx, outputEditor: event.editor, monaco: event.monaco };
+                }),
+                updateUrl: (ctx) => {
+                    const activeDocumentIndex = ctx.inputList.findIndex(
+                        (file) => file.name === ctx.selectedOpenApiFileName
+                    );
+                    const activeTemplateIndex = ctx.inputList.findIndex(
+                        (file) => file.name === ctx.selectedTemplateName
+                    );
+                    const activePrettierConfigIndex = ctx.inputList.findIndex(
+                        (file) => file.name === ctx.selectedPrettierConfig
+                    );
+
+                    let hasUpdated = false;
+                    // !=0 means it's not the first tab (which doesn't need to update the url)
+                    if (ctx.activeInputIndex) {
+                        const activeIndex = match(ctx.activeInputIndex)
+                            .with(activeDocumentIndex, () => 0)
+                            .with(activeTemplateIndex, () => 1)
+                            .with(activePrettierConfigIndex, () => 2)
+                            .run();
+
+                        if (activeIndex) {
+                            updateUrlWithParam("activeInputIndex", activeIndex);
+                        } else {
+                            deletingParamInUrl("activeInputIndex");
+                        }
+                    } else {
+                        deletingParamInUrl("activeInputIndex");
+                    }
+
+                    // are tabs content different from the default ones?
+                    if (ctx.inputList[activeDocumentIndex].content !== initialInputList[0].content) {
+                        hasUpdated = true;
+                        updateUrlWithCompressedString("doc", ctx.inputList[activeDocumentIndex].content);
+                    }
+
+                    if (ctx.inputList[activeTemplateIndex].content !== initialInputList[1].content) {
+                        hasUpdated = true;
+                        updateUrlWithCompressedString("template", ctx.inputList[activeTemplateIndex].content);
+                    }
+
+                    if (ctx.inputList[activePrettierConfigIndex].content !== initialInputList[2].content) {
+                        hasUpdated = true;
+                        updateUrlWithCompressedString("prettier", ctx.inputList[activePrettierConfigIndex].content);
+                    }
+
+                    if (hasUpdated) {
+                        void navigator.clipboard.writeText(window.location.href).then(() => {
+                            toasts.info("Copied URL to clipboard");
+                        });
+                    } else {
+                        toasts.info("Nothing changed");
+                    }
+                },
+                reset: assign((ctx) => {
+                    resetUrl();
+                    return initialContext;
                 }),
                 updateInputEditorValue: (ctx) => {
                     if (!ctx.inputEditor) return;
@@ -413,9 +473,11 @@ export const playgroundMachine =
                         const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                         if (nextIndex === -1) return ctx.selectedOpenApiFileName;
 
-                        return isValidDocumentName(ctx.inputList[nextIndex].name)
-                            ? event.tab.name
-                            : ctx.inputList.find((tab) => isValidDocumentName(tab.name))?.name ?? "";
+                        if (!isValidDocumentName(ctx.inputList[nextIndex].name)) {
+                            return ctx.inputList.find((tab) => isValidDocumentName(tab.name))?.name ?? "";
+                        }
+
+                        return event.tab.name;
                     },
                 }),
                 updateSelectedTemplateName: assign({
@@ -430,9 +492,11 @@ export const playgroundMachine =
                         const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                         if (nextIndex === -1) return ctx.selectedTemplateName;
 
-                        return isValidTemplateName(ctx.inputList[nextIndex].name)
-                            ? event.tab.name
-                            : ctx.selectedTemplateName;
+                        if (!isValidTemplateName(ctx.inputList[nextIndex].name)) {
+                            return ctx.inputList.find((tab) => isValidTemplateName(tab.name))?.name ?? "";
+                        }
+
+                        return event.tab.name;
                     },
                 }),
                 updateSelectedPrettierConfig: assign({
@@ -447,9 +511,11 @@ export const playgroundMachine =
                         const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                         if (nextIndex === -1) return ctx.selectedPrettierConfig;
 
-                        return isValidPrettierConfig(ctx.inputList[nextIndex].name)
-                            ? event.tab.name
-                            : ctx.selectedPrettierConfig;
+                        if (!isValidPrettierConfig(ctx.inputList[nextIndex].name)) {
+                            return ctx.inputList.find((tab) => isValidPrettierConfig(tab.name))?.name ?? "";
+                        }
+
+                        return event.tab.name;
                     },
                 }),
                 updateSelectedDocOrTemplate: assign((ctx, event) => {
