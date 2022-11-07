@@ -298,19 +298,16 @@ export const playgroundMachine =
                     }
 
                     const hbs = getHandlebars();
-                    const templateString = match(ctx.selectedTemplateName)
-                        // TODO ?
-                        .with(initialInputList[1].preset, () => initialInputList[1].content)
-                        .otherwise(() => {
-                            return (
-                                ctx.presetTemplates[
-                                    presetTemplateList.find((preset) => preset.value === ctx.selectedTemplateName)
-                                        ?.template ?? ""
-                                ] ??
-                                ctx.inputList.find((tab) => tab.name === ctx.selectedTemplateName)?.content ??
+                    const templateTab = ctx.inputList.find((item) => item.name === ctx.selectedTemplateName);
+
+                    const templateString =
+                        ctx.presetTemplates[
+                            presetTemplateList.find((preset) => preset.value === ctx.selectedTemplateName)?.template ??
                                 ""
-                            );
-                        });
+                        ] ??
+                        templateTab?.content ??
+                        "";
+
                     if (!templateString) return ctx;
                     const template = hbs.compile(templateString);
                     const prettierConfig = safeJSONParse<PrettierOptions>(
