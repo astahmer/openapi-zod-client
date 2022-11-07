@@ -23,6 +23,7 @@ export interface Typegen0 {
         createNewFile: "Submit file modal";
         initFileForm: "Add file";
         removeFile: "Remove file";
+        reset: "Reset";
         resetPreviewOptions: "Reset preview options";
         resize: "Resize";
         selectInputTab: "Select input tab" | "Submit file modal";
@@ -35,6 +36,7 @@ export interface Typegen0 {
         updateOutput:
             | "Editor Loaded"
             | "Remove file"
+            | "Reset"
             | "Save options"
             | "Select input tab"
             | "Select preset template"
@@ -45,6 +47,7 @@ export interface Typegen0 {
         updateSelectedOpenApiFileName: "Remove file" | "Select input tab" | "Submit file modal";
         updateSelectedPrettierConfig: "Remove file" | "Select input tab" | "Submit file modal";
         updateSelectedTemplateName: "Remove file" | "Select input tab" | "Submit file modal";
+        updateUrl: "Save";
     };
     eventsCausingServices: {};
     eventsCausingGuards: {

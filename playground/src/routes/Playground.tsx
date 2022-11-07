@@ -11,6 +11,7 @@ import {
     DrawerHeader,
     DrawerOverlay,
     Flex,
+    Kbd,
     Menu,
     MenuButton,
     MenuItem,
@@ -43,14 +44,24 @@ import { presets } from "./presets";
 
 // TODO
 // template context explorer -> copy ctx as JSON to clipboard + open https://jsoncrack.com/editor
-// Save/share = generate link like ts playground
 // input = getZodSchema
-// localStorage persistence for input
 // TODO diff editor + collect warnings
 // display openapi-zod-client version
 // customizable prettier config + add prettierc.json in inputList ?
 // https://reactflow.dev/ + dependency graph
 // monaco settings (theme + inline diff or not / minimap / etc)
+
+// FileTabForm also using monaco
+// -> prettier schema for autocomplete on options
+//  https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-configure-json-defaults
+// -> openapi schema for yaml/json ?
+
+// when hovering on output, show source schema in input ?
+// https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-hover-provider-example
+// https://github.com/OAI/OpenAPI-Specification/blob/main/schemas/v3.0/schema.json
+// https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/prettierrc.json
+
+// TODO display input errors (yaml/json parsing)
 
 export const Playground = () => {
     const service = usePlaygroundContext();
@@ -116,7 +127,12 @@ export const Playground = () => {
                             path={activeInputTab}
                             value={inputList.at(activeInputIndex)?.content}
                             onChange={(content) => send({ type: "Update input", value: content ?? "" })}
-                            onMount={(editor) => send({ type: "Editor Loaded", editor, name: "input" })}
+                            onMount={(editor, monaco) => {
+                                send({ type: "Editor Loaded", editor, name: "input" });
+                                editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+                                    send({ type: "Save" });
+                                });
+                            }}
                             theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                         />
                     </Box>
@@ -245,6 +261,13 @@ const PlaygroundActions = () => {
                 Actions
             </MenuButton>
             <MenuList>
+                <MenuItem onClick={() => send({ type: "Save" })}>
+                    <span>Save</span>
+                    <Box ml="auto">
+                        <Kbd fontSize="xs">cmd</Kbd> + <Kbd fontSize="xs">s</Kbd>
+                    </Box>
+                </MenuItem>
+                <MenuItem onClick={() => send({ type: "Reset" })}>Reset</MenuItem>
                 <MenuItem onClick={() => send({ type: "Add file" })}>Add input file</MenuItem>
                 <Popover trigger="hover" placement="left" closeOnBlur={false}>
                     <PopoverTrigger>

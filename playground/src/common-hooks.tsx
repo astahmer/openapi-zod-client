@@ -3,6 +3,7 @@ import type { CommonHooks } from "rakkasjs";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { appTheme } from "./theme.cjs";
+import { ToastContainer } from "./toasts.js";
 
 const queryClient = new QueryClient();
 
@@ -12,6 +13,7 @@ const hooks: CommonHooks = {
             <SaasProvider theme={appTheme}>
                 <ModalsProvider>{app}</ModalsProvider>
             </SaasProvider>
+            <ToastContainer />
         </QueryClientProvider>
     ),
 };
