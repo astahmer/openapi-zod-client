@@ -140,7 +140,13 @@ export const playgroundMachine =
                     states: {
                         Playing: {
                             on: {
-                                "Update input": { actions: ["updateInput", "updateOutput"] },
+                                "Update input": [
+                                    {
+                                        actions: ["updateInput", "updateOutput", "updateSelectedDocOrTemplate"],
+                                        cond: "wasInputEmpty",
+                                    },
+                                    { actions: ["updateInput", "updateOutput"] },
+                                ],
                                 "Select input tab": [
                                     {
                                         actions: ["selectInputTab", "updateSelectedOpenApiFileName", "updateOutput"],
@@ -398,6 +404,11 @@ export const playgroundMachine =
                 }),
                 updateSelectedOpenApiFileName: assign({
                     selectedOpenApiFileName: (ctx, event) => {
+                        if (event.type === "Remove file") {
+                            const nextIndex = ctx.inputList.findIndex((tab) => isValidDocumentName(tab.name));
+                            return nextIndex === -1 ? ctx.selectedOpenApiFileName : ctx.inputList[nextIndex].name;
+                        }
+
                         if (!event.tab.content) return ctx.selectedOpenApiFileName;
 
                         const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
@@ -410,6 +421,11 @@ export const playgroundMachine =
                 }),
                 updateSelectedTemplateName: assign({
                     selectedTemplateName: (ctx, event) => {
+                        if (event.type === "Remove file") {
+                            const nextIndex = ctx.inputList.findIndex((tab) => isValidTemplateName(tab.name));
+                            return nextIndex === -1 ? ctx.selectedTemplateName : ctx.inputList[nextIndex].name;
+                        }
+
                         if (!event.tab.content) return ctx.selectedTemplateName;
 
                         const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
@@ -419,6 +435,15 @@ export const playgroundMachine =
                             ? event.tab.name
                             : ctx.selectedTemplateName;
                     },
+                }),
+                updateSelectedDocOrTemplate: assign((ctx, event) => {
+                    const tab = ctx.inputList[ctx.activeInputIndex];
+
+                    return {
+                        ...ctx,
+                        selectedOpenApiFileName: isValidDocumentName(tab.name) ? tab.name : ctx.selectedOpenApiFileName,
+                        selectedTemplateName: isValidTemplateName(tab.name) ? tab.name : ctx.selectedTemplateName,
+                    };
                 }),
                 selectOutputTab: assign({
                     activeOutputTab: (_ctx, event) => event.tab.name,
@@ -430,13 +455,13 @@ export const playgroundMachine =
                         const content = ctx.presetTemplates[event.template.template];
                         if (!content) return ctx.inputList;
 
-                        const currentTemplateIndex = ctx.inputList.findIndex(
-                            (tab) => tab.preset === ctx.selectedTemplateName
+                        const presetTemplateIndex = ctx.inputList.findIndex(
+                            (tab) => tab.preset && isValidTemplateName(tab.name)
                         );
-                        if (currentTemplateIndex === -1) return ctx.inputList;
+                        if (presetTemplateIndex === -1) return ctx.inputList;
 
-                        return updateAtIndex(ctx.inputList, currentTemplateIndex, {
-                            ...ctx.inputList[currentTemplateIndex],
+                        return updateAtIndex(ctx.inputList, presetTemplateIndex, {
+                            ...ctx.inputList[presetTemplateIndex],
                             content,
                             preset: event.template.value,
                         });
@@ -507,6 +532,9 @@ export const playgroundMachine =
 
                     const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                     return isValidTemplateName(ctx.inputList[nextIndex].name);
+                },
+                wasInputEmpty: (ctx, event) => {
+                    return Boolean(ctx.inputList[ctx.activeInputIndex].content.trim() === "" && event.value);
                 },
             },
         }
