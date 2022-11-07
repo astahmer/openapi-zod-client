@@ -43,6 +43,7 @@ type PlaygroundContext = {
 
     selectedOpenApiFileName: string;
     selectedTemplateName: string;
+    selectedPresetTemplate: string;
     selectedPrettierConfig: string;
 
     templateContext: TemplateContext | null;
@@ -56,7 +57,7 @@ type PlaygroundEvent =
     | { type: "Update input"; value: string }
     | { type: "Select input tab"; tab: FileTabData }
     | { type: "Select output tab"; tab: FileTabData }
-    | { type: "Select preset template"; template: PresetTemplate }
+    | { type: "Select preset template"; presetTemplate: PresetTemplate }
     | { type: "Open options" }
     | { type: "Close options" }
     | { type: "Open monaco settings" }
@@ -75,7 +76,7 @@ type PlaygroundEvent =
 
 const initialInputList = [
     { name: "api.doc.yaml", content: presets.defaultInput, index: 0, preset: "petstore.yaml" },
-    { name: "template.hbs", content: presets.defaultTemplate, index: 1, preset: presetTemplateList[0].value },
+    { name: "template.hbs", content: presets.defaultTemplate, index: 1, preset: presetTemplateList[0].preset },
     {
         name: ".prettierrc.json",
         content: JSON.stringify(presets.defaultPrettierConfig, null, 4),
@@ -104,6 +105,7 @@ const initialContext: PlaygroundContext = {
     inputList: initialInputList as any as FileTabData[], // TODO rm with ts 4.9 satisfies
     selectedOpenApiFileName: initialInputList[0].name,
     selectedTemplateName: initialInputList[1].name,
+    selectedPresetTemplate: initialInputList[1].preset,
     selectedPrettierConfig: initialInputList[2].name,
     presetTemplates: {},
     activeOutputTab: initialOuputTab,
@@ -362,7 +364,7 @@ export const playgroundMachine =
 
                     const templateString =
                         ctx.presetTemplates[
-                            presetTemplateList.find((preset) => preset.value === ctx.selectedTemplateName)?.template ??
+                            presetTemplateList.find((preset) => preset.preset === ctx.selectedTemplateName)?.template ??
                                 ""
                         ] ??
                         templateTab?.content ??
@@ -532,9 +534,9 @@ export const playgroundMachine =
                     activeOutputIndex: (ctx, event) => ctx.outputList.findIndex((tab) => tab.name === event.tab.name),
                 }),
                 selectPresetTemplate: assign({
-                    selectedTemplateName: (_ctx, event) => event.template.value,
+                    selectedPresetTemplate: (_ctx, event) => event.presetTemplate.preset,
                     inputList: (ctx, event) => {
-                        const content = ctx.presetTemplates[event.template.template];
+                        const content = ctx.presetTemplates[event.presetTemplate.template];
                         if (!content) return ctx.inputList;
 
                         const presetTemplateIndex = ctx.inputList.findIndex(
@@ -545,13 +547,13 @@ export const playgroundMachine =
                         return updateAtIndex(ctx.inputList, presetTemplateIndex, {
                             ...ctx.inputList[presetTemplateIndex],
                             content,
-                            preset: event.template.value,
+                            preset: event.presetTemplate.preset,
                         });
                     },
                     options: (ctx, event) => {
-                        if (!event.template.options) return ctx.options;
+                        if (!event.presetTemplate.options) return ctx.options;
 
-                        return { ...ctx.options, ...event.template.options };
+                        return { ...ctx.options, ...event.presetTemplate.options };
                     },
                 }),
                 initFileForm: assign({

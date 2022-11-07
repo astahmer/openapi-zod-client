@@ -243,9 +243,10 @@ const PlaygroundActions = () => {
     const service = usePlaygroundContext();
     const send = service.send;
 
+    const selectedPresetTemplate = useSelector(service, (state) => state.context.selectedPresetTemplate);
     const selectedTemplateName = useSelector(service, (state) => state.context.selectedTemplateName);
-    const selectedPresetTemplate = presetTemplateList.find((t) => t.value === selectedTemplateName)!;
-    const defaultValue = selectedPresetTemplate?.value ?? "";
+    const selectedPreset = presetTemplateList.find((t) => t.preset === selectedPresetTemplate)!;
+    const defaultValue = selectedPreset?.preset ?? "";
 
     return (
         <Menu>
@@ -282,17 +283,17 @@ const PlaygroundActions = () => {
                                 onChange={(value) =>
                                     send({
                                         type: "Select preset template",
-                                        template: presetTemplateList.find(
-                                            (preset) => preset.value === (value as string)
+                                        presetTemplate: presetTemplateList.find(
+                                            (preset) => preset.preset === (value as string)
                                         )!,
                                     })
                                 }
                             >
                                 {presetTemplateList.map((preset) => (
                                     <MenuItemOption
-                                        key={preset.value}
-                                        value={preset.value}
-                                        isDisabled={preset.value === defaultValue}
+                                        key={preset.preset}
+                                        value={preset.preset}
+                                        isDisabled={preset.preset === defaultValue}
                                     >
                                         {preset.name}
                                     </MenuItemOption>
