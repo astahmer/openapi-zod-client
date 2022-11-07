@@ -83,6 +83,7 @@ importers:
 
   playground:
     specifiers:
+      '@astahmer/eslint-config-ts': ^0.1.5
       '@chakra-ui/cli': ^2.1.8
       '@chakra-ui/react': ^2.3.6
       '@chakra-ui/styled-system': ^2.3.4
@@ -96,9 +97,13 @@ importers:
       '@types/lz-string': ^1.3.34
       '@types/react': ^18.0.18
       '@types/react-dom': ^18.0.6
+      '@typescript-eslint/eslint-plugin': ^5.40.1
+      '@typescript-eslint/parser': ^5.40.1
       '@unocss/preset-icons': ^0.46.3
       '@xstate/react': ^3.0.1
       '@zodios/core': ^10.3.1
+      eslint: ^8.26.0
+      eslint-formatter-pretty: ^4.1.0
       framer-motion: ^7.6.2
       lz-string: ^1.4.4
       monaco-editor: ^0.34.1
@@ -135,7 +140,6 @@ importers:
       monaco-editor: 0.34.1
       openapi-zod-client: link:../lib
       pastable: 2.0.13_react@18.2.0+xstate@4.34.0
-      prettier: 2.7.1
       rakkasjs: 0.6.4_ennvkk7rybblqiueb2nsfr7rky
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -144,13 +148,19 @@ importers:
       yaml: 2.1.3
       zod: 3.19.1
     devDependencies:
+      '@astahmer/eslint-config-ts': 0.1.5_5mwv7fvncepd6sa2722dnt6c7q
       '@chakra-ui/cli': 2.1.8_typescript@4.8.4
       '@chakra-ui/styled-system': 2.3.4
       '@iconify/json': 2.1.132
       '@types/lz-string': 1.3.34
       '@types/react': 18.0.24
       '@types/react-dom': 18.0.8
+      '@typescript-eslint/eslint-plugin': 5.42.0_6xw5wg2354iw4zujk2f3vyfrzu
+      '@typescript-eslint/parser': 5.42.0_wyqvi574yv7oiwfeinomdzmc3m
       '@unocss/preset-icons': 0.46.3
+      eslint: 8.26.0
+      eslint-formatter-pretty: 4.1.0
+      prettier: 2.7.1
       rollup: 3.2.5
       rollup-plugin-dts: 5.0.0_oa2candk7eitu7usnsurwiyuuu
       ts-toolbelt: 9.6.0
@@ -7507,6 +7517,7 @@ packages:
     resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
     engines: {node: '>=10.13.0'}
     hasBin: true
+    dev: true
 
   /prop-types/15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
