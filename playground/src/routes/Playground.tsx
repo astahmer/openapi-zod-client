@@ -34,6 +34,7 @@ import { Field, FormDialog, FormLayout, useFormContext } from "@saas-ui/react";
 import { useActor, useSelector } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
 import { PropsWithChildren } from "react";
+import { match } from "ts-pattern";
 import { defaultOptionValues, OptionsForm, OptionsFormValues } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
 import { presetTemplateList } from "./Playground.consts";
@@ -86,22 +87,18 @@ export const Playground = () => {
                                 }}
                             >
                                 {inputList.map((fileTab) => {
-                                    const isSelectedAsOpenApiDoc =
-                                        fileTab.name === state.context.selectedOpenApiFileName;
-                                    const isSelectedAsTemplate = fileTab.preset === state.context.selectedTemplateName;
-                                    const isSelectedAsInput =
-                                        isSelectedAsOpenApiDoc ||
-                                        isSelectedAsTemplate ||
-                                        fileTab.name === state.context.selectedTemplateName;
+                                    const indicator = match(fileTab.name)
+                                        .with(state.context.selectedOpenApiFileName, () => "[o]")
+                                        .with(state.context.selectedTemplateName, () => "[t]")
+                                        .with(state.context.selectedPrettierConfig, () => "[p]")
+                                        .otherwise(() => "");
 
                                     return (
                                         <FileTab
                                             key={fileTab.name}
                                             onClick={() => send({ type: "Select input tab", tab: fileTab })}
                                         >
-                                            {isSelectedAsInput ? (
-                                                <Box mr="1">{isSelectedAsOpenApiDoc ? "[o]" : "[t]"}</Box>
-                                            ) : null}
+                                            {indicator ? <Box mr="1">{indicator}</Box> : null}
                                             <Box>{fileTab.name}</Box>
                                             <FileTabActions fileTab={fileTab} />
                                         </FileTab>
@@ -257,7 +254,7 @@ const PlaygroundActions = () => {
                         <PopoverBody>
                             <MenuOptionGroup
                                 defaultValue={defaultValue}
-                                title="Template"
+                                title="Template presets"
                                 type="radio"
                                 onChange={(value) =>
                                     send({
@@ -283,7 +280,6 @@ const PlaygroundActions = () => {
                 </Popover>
                 <MenuItem>Use OpenAPI samples</MenuItem>
                 <MenuItem onClick={() => send({ type: "Open options" })}>Edit lib options</MenuItem>
-                <MenuItem onClick={() => send({ type: "Open prettier config" })}>Edit prettier config</MenuItem>
                 <MenuItem onClick={() => send({ type: "Open monaco settings" })}>Edit monaco settings</MenuItem>
                 <MenuItem as="a" href="https://apis.guru/" target="_blank" rel="external">
                     Browse APIs.guru
@@ -306,7 +302,7 @@ const FileTabForm = () => {
             title={state.matches("ready.Creating file tab") ? "Add input file" : "Edit input file"}
             defaultValues={formModalDefaultValues}
             mode="onSubmit"
-            isOpen={state.matches("ready.Creating file tab") || state.matches("ready.Editing file tab")}
+            isOpen={state.hasTag("file")}
             onClose={() => send({ type: "Close modal" })}
             onSubmit={(fileTab) => send({ type: "Submit file modal", tab: fileTab })}
             footer={<CreateFileFormFooter />}

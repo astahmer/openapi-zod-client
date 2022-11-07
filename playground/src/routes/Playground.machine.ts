@@ -41,6 +41,7 @@ type PlaygroundContext = {
 
     selectedOpenApiFileName: string;
     selectedTemplateName: string;
+    selectedPrettierConfig: string;
 
     templateContext: TemplateContext | null;
     presetTemplates: Record<string, string>;
@@ -56,7 +57,6 @@ type PlaygroundEvent =
     | { type: "Select preset template"; template: PresetTemplate }
     | { type: "Open options" }
     | { type: "Close options" }
-    | { type: "Open prettier config" }
     | { type: "Open monaco settings" }
     | { type: "Add file" }
     | { type: "Edit file"; tab: FileTabData }
@@ -66,7 +66,6 @@ type PlaygroundEvent =
     | { type: "Update preview options"; options: OptionsFormValues }
     | { type: "Reset preview options" }
     | { type: "Save options"; options: OptionsFormValues }
-    | { type: "Update prettier config"; options: PrettierOptions }
     | { type: "Update monaco settings" }
     | { type: "Submit file modal"; tab: FileTabData }
     | { type: "Close modal" }
@@ -85,9 +84,10 @@ const initialInputList = [
 const initialOuputTab = "api.client.ts";
 
 const isValidDocumentName = (name: string) =>
-    !name.startsWith(".prettier") && (name.endsWith(".yml") || name.endsWith(".yaml") || name.endsWith(".json"));
+    !isValidPrettierConfig(name) && (name.endsWith(".yml") || name.endsWith(".yaml") || name.endsWith(".json"));
 
 const isValidTemplateName = (name: string) => name.endsWith(".hbs");
+const isValidPrettierConfig = (name: string) => name.startsWith(".prettier") && name.endsWith(".json");
 
 export const playgroundMachine =
     /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAnlATgewFcA7CAOlT3QgEsioBiAURoBc8cACAGUokgG0ADAF1EKPLGotqeImJAAPRAFoAHAEYAbKQDsAJgAsmzQFYAnJoDMJweYA0ITIgNmDpA4L0bXqgzvM6lgC+QQ5oWLiEJOS8tAzMUuzcvALqokggyBJSMnIZSgjK6oKqZqRm6qomqt4Glv4GDk4IJnrqulV6gSVaqpp6IWEY2PjEZDhgVJikAArDcfQQsmCktABueADWK+EjUeOTENNzWHEI63gAxujSskLC9-JZkrd5oAWWtrpdJi46FZZLHpLJomoh1OoTCZSKodH0DCZPrD-ppBplhpExqQJlNZvM6PQAKrICA3MAcWjIAgsR4ZZ45WTyArqAyqUiCdR6aqCEFeYzAsEIdRA9rAvQcnn6CF+NG7THRHFHPGnAkAZTAqDAlxYFKIVJ1LHQACNaeIXrkmYh6to+hUEZYzDoWTVBWYLLodJpBGYanorP1ZRjRgrDsd8Qx1Zrtbr9RxDSa0k9sq9LQhPYJSF4LBDfiZ-FZXe6dJ7Of8kYJNKpAxFgwdcSdMAtI1qdYQWLH46bMsmLflwao9LooWYTF6vII-KDHIg3Wz9F1-izXMZgqF0TX9tjQ8rG2qNS2OMgJrAwAawABbcIsMBd+kpvsITSs9kGAyGTT+VTe36CzmuGFwsWbrqMWIGrkMG5YoqYYqgwADyyBgEQHB4MgrywLePaMg+RQeOyno6AipjqG6-y-lY7SCJ4Bi9CUCKOtWexQduDYLAhSGHhMLDSGAnCXLIABm1BQJh5rYe8KggWUtimC44p5pyPK-vUg6fE6lYgoIxYmIx8p1kqrEEuxyHnrI6D8RwJ7cXEGEiEmYlvIokmwqQ-SVn4rQ+rCPq-lUZRZqolh+FoE48rptZbvW4b0AAghAEAcEJmqiQyjkFMohgZnoFQlBoJGBJ6v48myDrAkCFhupYLLhZu0E7gsCQ6klN52XSWFpSo-iWDCjq8kBEKuK6b74V0X7GKUfTqDVzFRbB9AAEoXngazks1KX3hJCBVdCrLCl+u1+o005CoC0JmJ4gJwhoXokdNIa4o1cQoWhuSwESJJkpxYBrNQYAAO7Peh629ptyiVtoxbBR+1gFeov4BK5Zg-EF5iOgYd36dMj10IDr0LXAp5fT9-247ItnpGaqWpsol3slp2XbV4xY6PDLKkK0eicyBdS+joGORUq2NQKTRBvaq6ArSL5P2VTOF+IOnJaP02VPpolRTs0IGmOynwcl4rSApU-N1ULUv0AAwhQJ5S8D4lOYUXhuJYVQroBzomL+hE6OzEKwhy13GOja5yhFJusE9R6njxfGCcJ72kteX3WbxHD8UQQkia1lMbfbYMIu4NEaYbQKWMpz4aDUJick+LITsb26m5Hycx+nceWxI5KmaSqC2x1hTO2UIIaFRo5vsPGvgq+0nnSCSNVzyo71w94c46ZRDmXgllRzZFtW53eDd731M0d1bRlVo-x8j+x0kTYrleEFskkaRS+CyvwvNXGxr0KqBBGueUhErUE1BwLu6Ae5Z27A5amxQBzlH8DYKuvtCKCkCG4KocIfDeTqAMYOQZaoN3fkAkB8Zd4d1AQfcBR8cKIm9k6cUJQvR5kdCzY6A42RM2qFCD8sJISv2mObHE0gcaf1Ib-f+gDP5gIgRTKBstQYuDKMKT0XpKwVF8CyV0WhSDCjqFXN0OUgr8NIIIyYwiP7APJKQ9u1tpHUNBlyGEthKh+kXJ8KqroPzszdOKHQWlXxaQxvjSQAAvFqsi7wg1ztmXQlY2iaDMECAcE8EBcnaAkx0xQ2i5hcKiNERAD5wCePgrEFAqBxBljndKEJKgdGok6JGH4jrNDqN1Ec2U-F1D+CyPJEEmL3QMuGSpUSCg1FICCYwcJxQeAdEYX80zyhBU+Nlb0mTenrn6ZjUgptULoWGXbdKHhoQkU+LJQKgRKjkTaDo4eDoahLL6MYxuXFo6p1jlAfZfdlBvkHFCXoVdRz6BKB7G+KlxlaWKH4lkej1khwIcvHIq8zIWSsuY+AbVoFy1KK5fQQIaJaBBJCEFms+glTFLCU6XQzBPKIaI40nzqaESyrip0HkeTO0FIFaETDfhwnMDUWExjTE3CenSo0DKcKGDcCySEVEKzO2sJ472qNgSQ38Co-hErQYQk+PAqEzjkHNMQE+aEGDShPg5COT0GMtW5whHCPViCamwiNVtV85RPJ9BsIpAcIQQhAA */
@@ -112,7 +112,8 @@ export const playgroundMachine =
                 activeInputIndex: 0,
                 inputList: initialInputList as any as FileTabData[], // TODO rm with ts 4.9 satisfies
                 selectedOpenApiFileName: initialInputList[0].name,
-                selectedTemplateName: initialInputList[1].preset,
+                selectedTemplateName: initialInputList[1].name,
+                selectedPrettierConfig: initialInputList[2].name,
                 presetTemplates: {},
                 activeOutputTab: initialOuputTab,
                 activeOutputIndex: 0,
@@ -156,12 +157,15 @@ export const playgroundMachine =
                                         actions: ["selectInputTab", "updateSelectedTemplateName", "updateOutput"],
                                         cond: "isNextTabAnotherTemplate",
                                     },
+                                    {
+                                        actions: ["selectInputTab", "updateSelectedPrettierConfig", "updateOutput"],
+                                        cond: "isNextTabAnotherPrettierConfig",
+                                    },
                                     { actions: ["selectInputTab"] },
                                 ],
                                 "Select output tab": { actions: "selectOutputTab" },
                                 "Select preset template": { actions: ["selectPresetTemplate", "updateOutput"] },
                                 "Open options": { target: "Editing options" },
-                                "Open prettier config": { target: "Editing prettier config" },
                                 "Open monaco settings": { target: "Editing monaco settings" },
                                 "Add file": { target: "Creating file tab", actions: "initFileForm" },
                                 "Edit file": { target: "Editing file tab", actions: "assignFileToForm" },
@@ -170,6 +174,7 @@ export const playgroundMachine =
                                         "removeFile",
                                         "updateSelectedOpenApiFileName",
                                         "updateSelectedTemplateName",
+                                        "updateSelectedPrettierConfig",
                                         "updateOutput",
                                     ],
                                 },
@@ -197,16 +202,10 @@ export const playgroundMachine =
                                 "Close options": { target: "Playing" },
                             },
                         },
-                        "Editing prettier config": {
-                            on: {
-                                "Update prettier config": { actions: ["updatePrettierConfig", "updateOutput"] },
-                                "Close modal": { target: "Playing" },
-                            },
-                        },
                         "Editing monaco settings": {
                             on: {
                                 // TODO
-                                // "Update prettier config": { actions: "updatePrettierConfig" },
+                                // "Update monaco settings": { actions: "updateMonacoSettings" },
                                 "Close modal": { target: "Playing" },
                             },
                         },
@@ -221,6 +220,7 @@ export const playgroundMachine =
                                         "updateInputEditorValue",
                                         "updateSelectedOpenApiFileName",
                                         "updateSelectedTemplateName",
+                                        "updateSelectedPrettierConfig",
                                         "updateOutput",
                                     ],
                                 },
@@ -238,6 +238,7 @@ export const playgroundMachine =
                                         "updateInputEditorValue",
                                         "updateSelectedOpenApiFileName",
                                         "updateSelectedTemplateName",
+                                        "updateSelectedPrettierConfig",
                                         "updateOutput",
                                     ],
                                 },
@@ -298,6 +299,7 @@ export const playgroundMachine =
 
                     const hbs = getHandlebars();
                     const templateString = match(ctx.selectedTemplateName)
+                        // TODO ?
                         .with(initialInputList[1].preset, () => initialInputList[1].content)
                         .otherwise(() => {
                             return (
@@ -311,12 +313,12 @@ export const playgroundMachine =
                         });
                     if (!templateString) return ctx;
                     const template = hbs.compile(templateString);
+                    const prettierConfig = safeJSONParse<PrettierOptions>(
+                        ctx.inputList.find((tab) => tab.name === ctx.selectedPrettierConfig)?.content ?? "{}"
+                    );
 
                     // adapted from lib/src/generateZodClientFromOpenAPI.ts:60-120
                     if (options.groupStrategy.includes("file")) {
-                        // TODO
-                        const prettierConfig = presets.defaultPrettierConfig;
-
                         const outputByGroupName: Record<string, string> = {};
 
                         const groupNames = Object.fromEntries(
@@ -386,7 +388,7 @@ export const playgroundMachine =
                     }
 
                     const output = template({ ...templateContext, options });
-                    const prettyOutput = maybePretty(output, presets.defaultPrettierConfig);
+                    const prettyOutput = maybePretty(output, prettierConfig);
 
                     if (ctx.outputEditor) {
                         ctx.outputEditor.setValue(prettyOutput);
@@ -434,6 +436,23 @@ export const playgroundMachine =
                         return isValidTemplateName(ctx.inputList[nextIndex].name)
                             ? event.tab.name
                             : ctx.selectedTemplateName;
+                    },
+                }),
+                updateSelectedPrettierConfig: assign({
+                    selectedPrettierConfig: (ctx, event) => {
+                        if (event.type === "Remove file") {
+                            const nextIndex = ctx.inputList.findIndex((tab) => isValidPrettierConfig(tab.name));
+                            return nextIndex === -1 ? ctx.selectedPrettierConfig : ctx.inputList[nextIndex].name;
+                        }
+
+                        if (!event.tab.content) return ctx.selectedPrettierConfig;
+
+                        const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
+                        if (nextIndex === -1) return ctx.selectedPrettierConfig;
+
+                        return isValidPrettierConfig(ctx.inputList[nextIndex].name)
+                            ? event.tab.name
+                            : ctx.selectedPrettierConfig;
                     },
                 }),
                 updateSelectedDocOrTemplate: assign((ctx, event) => {
@@ -502,9 +521,6 @@ export const playgroundMachine =
                     options: (_ctx, event) => event.options,
                     previewOptions: (_ctx, event) => event.options,
                 }),
-                updatePrettierConfig: assign({
-                    options: (ctx, event) => ({ ...ctx.options, prettier: event.options }),
-                }),
                 updateEditingFile: assign({
                     inputList: (ctx, event) => updateAtIndex(ctx.inputList, ctx.fileForm.index, event.tab),
                 }),
@@ -532,6 +548,12 @@ export const playgroundMachine =
 
                     const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
                     return isValidTemplateName(ctx.inputList[nextIndex].name);
+                },
+                isNextTabAnotherPrettierConfig: (ctx, event) => {
+                    if (event.tab.name === ctx.selectedPrettierConfig) return false;
+
+                    const nextIndex = ctx.inputList.findIndex((tab) => tab.name === event.tab.name);
+                    return isValidPrettierConfig(ctx.inputList[nextIndex].name);
                 },
                 wasInputEmpty: (ctx, event) => {
                     return Boolean(ctx.inputList[ctx.activeInputIndex].content.trim() === "" && event.value);
