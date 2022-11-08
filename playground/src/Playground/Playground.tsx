@@ -61,8 +61,6 @@ import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from 
 // https://github.com/OAI/OpenAPI-Specification/blob/main/schemas/v3.0/schema.json
 // https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/prettierrc.json
 
-// TODO display input errors (yaml/json parsing)
-
 export const Playground = () => {
     const service = usePlaygroundContext();
     const [state, send] = useActor(service);
