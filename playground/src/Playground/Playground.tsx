@@ -49,7 +49,6 @@ import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from 
 // template context explorer -> copy ctx as JSON to clipboard + open https://jsoncrack.com/editor
 // input = getZodSchema
 // TODO diff editor + collect warnings
-// display openapi-zod-client version
 // https://reactflow.dev/ + dependency graph
 // monaco settings (theme + inline diff or not / minimap / etc)
 
@@ -175,7 +174,7 @@ export const Playground = () => {
                             theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                             beforeMount={(monaco) => {
                                 const declarations: Array<{ name: string; code: string }> = import.meta.compileTime(
-                                    "../../get-ts-declarations.ts"
+                                    "../macros/get-ts-declarations.ts"
                                 );
 
                                 declarations.forEach(({ name, code }) => {
