@@ -4,6 +4,7 @@ import compileTime from "vite-plugin-compile-time";
 import UnoCSS from "unocss/vite";
 import presetIcons from "@unocss/preset-icons";
 
+// TODO pwa ?
 export default defineConfig((_env) => ({
     plugins: [
         UnoCSS({

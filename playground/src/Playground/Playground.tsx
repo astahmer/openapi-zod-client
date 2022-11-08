@@ -14,9 +14,10 @@ import {
     Kbd,
     Menu,
     MenuButton,
+    MenuDivider,
+    MenuGroup,
     MenuItem,
     MenuItemOption,
-    MenuGroup,
     MenuList,
     MenuOptionGroup,
     ModalFooter,
@@ -26,12 +27,11 @@ import {
     PopoverTrigger,
     Tab,
     TabList,
+    TabProps,
     Tabs,
     useClipboard,
     useColorMode,
     useModalContext,
-    MenuDivider,
-    TabProps,
 } from "@chakra-ui/react";
 import Editor, { EditorProps } from "@monaco-editor/react";
 import { BaseField, Field, FieldProps, FormDialog, FormLayout, useFormContext, useWatch } from "@saas-ui/react";
@@ -40,26 +40,19 @@ import type { TemplateContextOptions } from "openapi-zod-client";
 import { match } from "ts-pattern";
 import { defaultOptionValues, OptionsForm, OptionsFormValues } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
+import type { GetLanguageSchemasData } from "../macros/get-language-schemas";
+import { isValidDocumentName, isValidPrettierConfig, isValidTemplateName } from "./Playground.asserts";
 import { presetTemplateList } from "./Playground.consts";
 import { FileTabData, usePlaygroundContext } from "./Playground.machine";
 import { presets } from "./presets";
-import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from "./Playground.asserts";
 
 // TODO
 // template context explorer -> copy ctx as JSON to clipboard + open https://jsoncrack.com/editor
-// input = getZodSchema
 // TODO diff editor + collect warnings
 // https://reactflow.dev/ + dependency graph
-// monaco settings (theme + inline diff or not / minimap / etc)
-
-// -> prettier schema for autocomplete on options
-//  https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-configure-json-defaults
-// -> openapi schema for yaml/json ?
 
 // when hovering on output, show source schema in input ?
 // https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-hover-provider-example
-// https://github.com/OAI/OpenAPI-Specification/blob/main/schemas/v3.0/schema.json
-// https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/prettierrc.json
 
 export const Playground = () => {
     const service = usePlaygroundContext();
@@ -133,6 +126,24 @@ export const Playground = () => {
                                 });
                             }}
                             theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
+                            beforeMount={(monaco) => {
+                                const schemas: GetLanguageSchemasData = import.meta.compileTime(
+                                    "../macros/get-language-schemas.ts"
+                                );
+
+                                const prettierUri = new monaco.Uri().with({ path: inputList[2].name });
+
+                                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                                    validate: true,
+                                    schemas: [
+                                        {
+                                            uri: schemas.prettier.id,
+                                            fileMatch: [prettierUri.toString()],
+                                            schema: schemas.prettier,
+                                        },
+                                    ],
+                                });
+                            }}
                         />
                     </Box>
                     <Box h="100%" flexGrow={1} flexShrink={0} minW={0}>
@@ -302,7 +313,7 @@ const SelectPresetTemplateMenu = () => {
     return (
         <Popover trigger="hover" placement="left" closeOnBlur={false}>
             <PopoverTrigger>
-                <MenuItem>Select handlebars template</MenuItem>
+                <MenuItem>Select template preset</MenuItem>
             </PopoverTrigger>
             <PopoverContent>
                 <PopoverBody>
@@ -482,6 +493,7 @@ const FieldEditor = ({ name, language, ...props }: FieldProps & Pick<EditorProps
     return (
         <BaseField name={name} {...props}>
             <Editor
+                defaultValue={form.getValues(name)}
                 onChange={(content) => form.setValue(name, content)}
                 onMount={() => form.register(name)}
                 theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
