@@ -315,7 +315,8 @@ const PlaygroundActions = (props: ButtonProps) => {
                         </PopoverBody>
                     </PopoverContent>
                 </Popover>
-                <MenuItem>Use OpenAPI samples</MenuItem>
+                {/* TODO */}
+                {/* <MenuItem>Use OpenAPI samples</MenuItem> */}
                 <MenuItem onClick={() => send({ type: "Open options" })}>Edit lib options</MenuItem>
                 <MenuItem onClick={() => send({ type: "Open monaco settings" })}>Edit monaco settings</MenuItem>
                 <MenuItem as="a" href="https://apis.guru/" target="_blank" rel="external">
