@@ -292,28 +292,36 @@ export const playgroundMachine =
                         deletingParamInUrl("activeInputIndex");
                     }
 
-                    // are tabs content different from the default ones?
-                    if (ctx.inputList[activeDocumentIndex].content !== initialInputList[0].content) {
-                        hasUpdated = true;
-                        updateUrlWithCompressedString("doc", ctx.inputList[activeDocumentIndex].content);
-                    }
+                    try {
+                        // are tabs content different from the default ones?
+                        if (ctx.inputList[activeDocumentIndex].content !== initialInputList[0].content) {
+                            hasUpdated = true;
+                            updateUrlWithCompressedString("doc", ctx.inputList[activeDocumentIndex].content);
+                        }
 
-                    if (ctx.inputList[activeTemplateIndex].content !== initialInputList[1].content) {
-                        hasUpdated = true;
-                        updateUrlWithCompressedString("template", ctx.inputList[activeTemplateIndex].content);
-                    }
+                        if (ctx.inputList[activeTemplateIndex].content !== initialInputList[1].content) {
+                            hasUpdated = true;
+                            updateUrlWithCompressedString("template", ctx.inputList[activeTemplateIndex].content);
+                        }
 
-                    if (ctx.inputList[activePrettierConfigIndex].content !== initialInputList[2].content) {
-                        hasUpdated = true;
-                        updateUrlWithCompressedString("prettier", ctx.inputList[activePrettierConfigIndex].content);
-                    }
+                        if (ctx.inputList[activePrettierConfigIndex].content !== initialInputList[2].content) {
+                            hasUpdated = true;
+                            updateUrlWithCompressedString("prettier", ctx.inputList[activePrettierConfigIndex].content);
+                        }
 
-                    if (hasUpdated) {
-                        void navigator.clipboard.writeText(window.location.href).then(() => {
-                            toasts.info("Copied URL to clipboard");
-                        });
-                    } else {
-                        toasts.info("Nothing changed");
+                        if (hasUpdated) {
+                            void navigator.clipboard.writeText(window.location.href).then(() => {
+                                toasts.info("Copied URL to clipboard");
+                            });
+                        } else {
+                            toasts.info("Nothing changed");
+                        }
+                    } catch (error: unknown) {
+                        if (error instanceof Error) {
+                            toasts.error(error.message);
+                        } else {
+                            toasts.error("Unknown error");
+                        }
                     }
                 },
                 reset: assign((_ctx) => {

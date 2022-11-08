@@ -13,7 +13,16 @@ export function updateUrlWithCompressedString(name: string, value: string) {
     if (value.length === 0) {
         updateUrlWithParam(name, "");
     } else {
-        updateUrlWithParam(name, compressToEncodedURIComponent(value));
+        const compressed = compressToEncodedURIComponent(value);
+        const url = new URL(window.location.href);
+        url.searchParams.set(name, compressed);
+
+        // completely arbitrary limit of characters, but it appears to not work anymore around that
+        if (url.toString().length >= 14_500) {
+            throw new Error("The compressed string is too large to be stored in the URL.");
+        } else {
+            updateUrlWithParam(name, compressed);
+        }
     }
 }
 
