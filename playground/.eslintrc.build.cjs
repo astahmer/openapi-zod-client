@@ -19,7 +19,7 @@ module.exports = defineConfig({
     },
     overrides: [
         {
-            files: ["src/toasts.ts", "src/routes/Playground.machine.ts"],
+            files: ["src/toasts.ts", "src/Playground/Playground.machine.ts"],
             rules: {
                 "import/no-unused-modules": 0,
             },
