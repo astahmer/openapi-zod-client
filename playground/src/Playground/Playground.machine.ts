@@ -106,6 +106,14 @@ const initialContext: PlaygroundContext = {
     fileForm: { name: "", content: "", index: -1 },
 };
 
+const safeYAMLParse = (value: string): string | null => {
+    try {
+        return parse(value);
+    } catch {
+        return null;
+    }
+};
+
 export const playgroundMachine =
     /** @xstate-layout N4IgpgJg5mDOIC5QAcA2BDAnlATgewFcA7CAOlT3QgEsioBiAURoBc8cACAGUokgG0ADAF1EKPLGotqeImJAAPRAFoAHAEYALKUEBWAGwAmVasPq9+waoA0ITIk2HBpXZtUB2V58273ATn1dAF8g2zQsXEIScl5aBmYpdm5eAXVRJBBkCSkZOQylBGVzPz9STXdzfXLAgz8AZlt7BDd3Und9d01BLrrLPUMQsIxsfGIyHDAqTFIABWG4+ghZMFJaADc8AGsVmBYZidgwFgAVMABbcJY4IXTxSWlZeQLlM31SOo+6rXdO9Sd9Gx2RB-VTOJygn4aQwA9R1QaZYaRMakCZTWbzOj0ACqyAg6CuHFoyAILBu8iy91yT0QoNIhk6gj87lU+i+3UawIC2nMjm6tVUdUE7nh4RGUXGkwg0zmWAWOLxBKJJP4aXJ2QeeVABV0pVclh1ql06lUJVcHIQZjMLhMdX8JsMdT8mhFiNG0VRUvRssxAGUwKgwABjFiEojEkMsdAAIzJGQpOUe+UQ9PULkE+lhnT86cF6nNHV0bWhfI+Gk09RdETdErRMswCz9AeDofDHEjMdVcfVVKTFv8pHMLPahjMbnT5tMhfUrKZmltWl0vkrYuRHulGIYjaDIaVEej-EMt0y3cTWuTqm0Jt0jsdQp+mk05r8ApcPgzbjnOt0qmXSPdkvXb1N39bcWxJNt9zqI94w1akLT8QxSENVwvgvB0WUBJp1C0Oo6UEMwdXw9xoR+X9qxRACvXrX0QObQgWFbdtYzuBNNUURBBWcTpiP8B8fFcFlzT+EoyhHR0HSdOpDGCUIESrcUKNrDd6C3ZtkAOI423OS4wGY49KVPdjmncXDGTnAJ1B1IxDHqISvlKFlp10B0nDtMiFLXKiFgAeWQMAiA4PBkA1WA9Jgnsz0KAxUzqAxPCcvxsIBITdG6AdPGczoDCcGShnk1dKLrHy-ICs5ZHQQM8A4Q4WGkOhQpENUDLY55LFabpbQ0bN-AdXQhOZbQARs689DnQxNHUdyCqUoD6AAQQgCAOAAM2oAMwpPFqVGNVQdGczQjGwwRLKZQwhMED42n0SwEOki7jGFWTRT-GtPSKzEEhDVb1sartmrg5R2inB1yyqfC3zOoEEHqUpoRHEo-G-Zleim-8ZuohgACVzjwNYwBWtbdN+ljYN7ZQjWcfCjHaa7wTMIToVKKSmRMjQARNPxUdewCMZU9A8Y2-7e3MXD6V8ep03BY68yhrQRzKKTp0EY6KnKXK5JXNG3uU7GasF1i4JFulPH8QUjCsaWUqcK7yjqcpn2vNwucUz1PriQLgtyWBsVxfF8fUsA1moMAAHcPZC-XSciopBz28oR06YwDCE8pnBZb8qnMH51ArJ7XQ8yi3bocOvfoXXNIDoPQ5L2QGugzaAc8XaHpsxKdRKa67I8Uh9ERj4JOnYxnc8ouoBrohvZ9fn8aCiPif0g2ycNXbLPcRkjV6Cbk9ljNCw6Y7DXpLpYWHwvWHd2fS4AYQoQ5x7rprF+jte98Ca6mSdEiGh362AXLUFTBOiSqfNEo8OBlSIBVKqNU6pQG9jfCQ+Myp4lQJHCKRk1BSR7jZaE+oTIjhllhDwbx8JaCqCYfCAp1bPXIiPc+xdvr43bCpAgUYzhSAJgGcBeAUFoMMs8Yo2gnDTjqB4WKZhCGIHwTocoE0Jo-AZI9PKmtuakDAYwiCUZ6AILvsg9AqD57hX4SoASpB6hlhHDZWEPgJzSTKNnbohoaaczzvlLW0wr6olgZwph0YWFsI4RovRBj65C2jqY8xq8WgIV6E+LQPcTSshZMrey1D87TU9J4yY3iNHMJ0Ugnh+i+FbUKLaHQXwvisnBh0LQT4qhtBMMRVkVQnA+C5mXOA1AABeRNQlPwwRZK6phpz1GMNCc00lUy9yZOYAiPhQYhFkkQHhcByTpOiBQKgcRH5Rwwdha240hT-ysPUSRCBRFTg8KdRmB1nSuJUS7Hm2y-r9IKLtEojgur7xspUhm6hWi8XNq4f57MQGu3oWPS+tcdnoOeKYN4tshRaGzIaPQKcnTvGBala82ELxgumGAiBUDqpHFgfAF5uznjZlKCc6SF5JIzP6vUNo04uhxVikYH89yXqPLURCnxmiYXGMKPFMoDs9CMgFGvfQE4sH+FSjU0GLIBjctoZRLJ+J3a5OjEKkpLw5xtACDMu2n9HRPnLArboiUfAIUsJNVVBcpi6oBthAwcdiJHyTjKqGGciz6hMFURKngubOrJn8NKo0PWJ0NN6poNk3jGn8D8ZWAJKn6EWUEIAA */
     createMachine(
@@ -349,8 +357,11 @@ export const playgroundMachine =
                         return ctx;
                     }
 
-                    const openApiDoc = input.startsWith("{") ? safeJSONParse(input) : parse(input);
-                    if (!openApiDoc) return ctx;
+                    const openApiDoc = input.startsWith("{") ? safeJSONParse(input) : safeYAMLParse(input);
+                    if (!openApiDoc) {
+                        toasts.error("Invalid OpenAPI document");
+                        return ctx;
+                    }
 
                     const options = ctx.options;
                     const templateContext = getZodClientTemplateContext(openApiDoc, options);
