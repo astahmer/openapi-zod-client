@@ -3,6 +3,8 @@ import { Head, Layout, Link, StyledLink } from "rakkasjs";
 
 import "./layout.css";
 
+const version: string = import.meta.compileTime("../macros/get-package-version.ts");
+
 const MainLayout: Layout = ({ children }) => {
     return (
         <>
@@ -27,7 +29,7 @@ const MainLayout: Layout = ({ children }) => {
                         rel="external"
                         target="_blank"
                     >
-                        openapi-zod-client
+                        openapi-zod-client v{version}
                     </Code>
                 </Box>
                 <Stack direction="row">
