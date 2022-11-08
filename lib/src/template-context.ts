@@ -49,7 +49,7 @@ export const getZodClientTemplateContext = (
     };
 
     for (const name in result.zodSchemaByName) {
-        data.schemas[name] = wrapWithLazyIfNeeded(name);
+        data.schemas[normalizeString(name)] = wrapWithLazyIfNeeded(name);
     }
 
     for (const ref in depsGraphs.deepDependencyGraph) {
