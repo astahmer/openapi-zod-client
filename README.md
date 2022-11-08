@@ -263,7 +263,6 @@ export const api = new Zodios(endpoints);
 
 # TODO
 
--   handle default values (output `z.default(xxx)`)
 -   handle OA `prefixItems` -> output `z.tuple`
 -   rm unused (=never referenced) variables from output
 
