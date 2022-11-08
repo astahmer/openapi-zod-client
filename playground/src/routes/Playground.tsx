@@ -30,8 +30,8 @@ import {
     useColorMode,
     useModalContext,
 } from "@chakra-ui/react";
-import Editor from "@monaco-editor/react";
-import { Field, FormDialog, FormLayout, useFormContext } from "@saas-ui/react";
+import Editor, { EditorProps } from "@monaco-editor/react";
+import { BaseField, Field, FieldProps, FormDialog, FormLayout, useFormContext, useWatch } from "@saas-ui/react";
 import { useActor, useSelector } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
 import { PropsWithChildren } from "react";
@@ -41,6 +41,7 @@ import { SplitPane } from "../components/SplitPane/SplitPane";
 import { presetTemplateList } from "./Playground.consts";
 import { FileTabData, usePlaygroundContext } from "./Playground.machine";
 import { presets } from "./presets";
+import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from "./Playground.asserts";
 
 // TODO
 // template context explorer -> copy ctx as JSON to clipboard + open https://jsoncrack.com/editor
@@ -330,9 +331,7 @@ const PlaygroundActions = (props: ButtonProps) => {
 const FileTabForm = () => {
     const service = usePlaygroundContext();
     const [state, send] = useActor(service);
-
     const formModalDefaultValues = state.context.fileForm;
-    const inputList = state.context.inputList;
 
     return (
         <FormDialog
@@ -346,27 +345,89 @@ const FileTabForm = () => {
             footer={<CreateFileFormFooter />}
         >
             <FormLayout>
-                <Field
-                    name="name"
-                    label="File name*"
-                    type="text"
-                    help="The extension will be used to determine if it's an OpenAPI document `{.yaml,.yml,.json}`, an handlebars template `.hbs` or a prettier config `.prettierrc.json`"
-                    rules={{
-                        required: "File name is required",
-                        validate: {
-                            unique: (value: string) =>
-                                inputList.some(
-                                    (file) => file.name === value && formModalDefaultValues.index !== file.index
-                                )
-                                    ? "File name should be unique"
-                                    : true,
-                        },
-                    }}
-                    autoFocus
-                />
-                <Field name="content" type="textarea" label="Content" rows={14} />
+                <FileFormFileName />
+                <FileFormFieldEditor />
             </FormLayout>
         </FormDialog>
+    );
+};
+
+const defaultFileNameHelper =
+    "The extension will be used to determine if it's an OpenAPI document `{.yaml,.yml,.json}`, an handlebars template `.hbs` or a prettier config `.prettierrc.json`";
+const getFileNameInferredRole = (fileName: string) => {
+    return match(fileName)
+        .when(
+            () => isValidPrettierConfig(fileName),
+            () => "prettier" as const
+        )
+        .when(
+            () => isValidTemplateName(fileName),
+            () => "template" as const
+        )
+        .when(
+            () => isValidDocumentName(fileName),
+            () => "openapi document" as const
+        )
+        .otherwise(() => "unknown" as const);
+};
+
+const FileFormFileName = () => {
+    const service = usePlaygroundContext();
+    const [state] = useActor(service);
+
+    const formModalDefaultValues = state.context.fileForm;
+    const inputList = state.context.inputList;
+
+    const form = useFormContext();
+    const fileName = useWatch({ name: "name", control: form.control });
+
+    const language = getFileNameExtension(fileName);
+    const inferredRole = getFileNameInferredRole(fileName);
+
+    return (
+        <Field
+            name="name"
+            label="File name*"
+            type="text"
+            help={language ? `Inferred as ${inferredRole}` : defaultFileNameHelper}
+            rules={{
+                required: "File name is required",
+                validate: {
+                    unique: (value: string) =>
+                        inputList.some((file) => file.name === value && formModalDefaultValues.index !== file.index)
+                            ? "File name should be unique"
+                            : true,
+                },
+            }}
+            autoFocus
+        />
+    );
+};
+
+const getFileNameExtension = (fileName: string) => (fileName.includes(".") ? fileName.split(".").pop() : "");
+const FileFormFieldEditor = () => {
+    const form = useFormContext();
+
+    const fileName = useWatch({ name: "name", control: form.control });
+    const language = getFileNameExtension(fileName);
+
+    return <FieldEditor name="content" label="Content" language={language} />;
+};
+
+const FieldEditor = ({ name, language, ...props }: FieldProps & Pick<EditorProps, "language">) => {
+    const form = useFormContext();
+    const { colorMode } = useColorMode();
+
+    return (
+        <BaseField name={name} {...props}>
+            <Editor
+                onChange={(content) => form.setValue(name, content)}
+                onMount={() => form.register(name)}
+                theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
+                height="300px"
+                language={language}
+            />
+        </BaseField>
     );
 };
 

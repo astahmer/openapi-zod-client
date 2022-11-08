@@ -15,6 +15,7 @@ import { defaultOptionValues } from "../components/OptionsForm";
 import type { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
 import { toasts } from "../toasts";
 import { deletingParamInUrl, resetUrl, updateUrlWithCompressedString, updateUrlWithParam } from "../url-saver";
+import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from "./Playground.asserts";
 import type { PresetTemplate } from "./Playground.consts";
 import { presetTemplateList } from "./Playground.consts";
 import { presets } from "./presets";
@@ -82,12 +83,6 @@ const initialInputList = [
     },
 ] as const; // TODO as FileTabData[] with ts 4.9 satisfies
 const initialOuputTab = "api.client.ts";
-
-const isValidDocumentName = (name: string) =>
-    !isValidPrettierConfig(name) && (name.endsWith(".yml") || name.endsWith(".yaml") || name.endsWith(".json"));
-
-const isValidTemplateName = (name: string) => name.endsWith(".hbs");
-const isValidPrettierConfig = (name: string) => name.startsWith(".prettier") && name.endsWith(".json");
 
 const initialContext: PlaygroundContext = {
     monaco: null,
