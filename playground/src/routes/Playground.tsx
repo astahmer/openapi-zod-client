@@ -81,7 +81,7 @@ export const Playground = () => {
         <Flex h="100%" pos="relative">
             <Box display="flex" boxSize="100%">
                 <SplitPane defaultSize="50%" onResize={(ctx) => send({ type: "Resize", context: ctx })}>
-                    <Box h="100%" flexGrow={1}>
+                    <Box h="100%" flexGrow={1} flexShrink={0}>
                         <Tabs variant="line" size="sm" index={activeInputIndex}>
                             <TabList
                                 minH="42px"
@@ -136,9 +136,23 @@ export const Playground = () => {
                             theme={colorMode === "dark" ? "vs-dark" : "vs-light"}
                         />
                     </Box>
-                    <Box h="100%" flexGrow={1}>
-                        <Tabs variant="line" size="sm" index={state.context.activeOutputIndex}>
-                            <TabList pb="2" h="42px">
+                    <Box h="100%" flexGrow={1} flexShrink={0} minW={0}>
+                        <Tabs
+                            variant="line"
+                            size="sm"
+                            index={state.context.activeOutputIndex}
+                            display="flex"
+                            alignItems="center"
+                        >
+                            <TabList
+                                minH="42px"
+                                className="scrollbar"
+                                overflowX="scroll"
+                                overflowY="hidden"
+                                scrollSnapType="x"
+                                scrollSnapAlign="start"
+                                flexGrow={1}
+                            >
                                 {outputList.map((file) => (
                                     <FileTab
                                         key={file.name}
@@ -147,8 +161,10 @@ export const Playground = () => {
                                         {file.name}
                                     </FileTab>
                                 ))}
-                                <PlaygroundActions />
                             </TabList>
+                            <Box ml="auto">
+                                <PlaygroundActions flexShrink={0} ml="2" mb="2" mr="4" />
+                            </Box>
                         </Tabs>
                         <Editor
                             path={activeOutputTab}
@@ -239,12 +255,11 @@ const FileTabActions = ({ fileTab }: { fileTab: FileTabData }) => {
     );
 };
 
-const PlaygroundActions = () => {
+const PlaygroundActions = (props: ButtonProps) => {
     const service = usePlaygroundContext();
     const send = service.send;
 
     const selectedPresetTemplate = useSelector(service, (state) => state.context.selectedPresetTemplate);
-    const selectedTemplateName = useSelector(service, (state) => state.context.selectedTemplateName);
     const selectedPreset = presetTemplateList.find((t) => t.preset === selectedPresetTemplate)!;
     const defaultValue = selectedPreset?.preset ?? "";
 
@@ -252,9 +267,7 @@ const PlaygroundActions = () => {
         <Menu>
             <MenuButton
                 as={Button}
-                flexShrink={0}
-                ml="auto"
-                mr="4"
+                {...props}
                 size="sm"
                 variant="outline"
                 rightIcon={<Box className="i-mdi-chevron-down" boxSize="1.25em" />}
