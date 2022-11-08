@@ -16,6 +16,7 @@ import {
     MenuButton,
     MenuItem,
     MenuItemOption,
+    MenuGroup,
     MenuList,
     MenuOptionGroup,
     ModalFooter,
@@ -29,12 +30,13 @@ import {
     useClipboard,
     useColorMode,
     useModalContext,
+    MenuDivider,
+    TabProps,
 } from "@chakra-ui/react";
 import Editor, { EditorProps } from "@monaco-editor/react";
 import { BaseField, Field, FieldProps, FormDialog, FormLayout, useFormContext, useWatch } from "@saas-ui/react";
 import { useActor, useSelector } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
-import { PropsWithChildren } from "react";
 import { match } from "ts-pattern";
 import { defaultOptionValues, OptionsForm, OptionsFormValues } from "../components/OptionsForm";
 import { SplitPane } from "../components/SplitPane/SplitPane";
@@ -48,11 +50,9 @@ import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from 
 // input = getZodSchema
 // TODO diff editor + collect warnings
 // display openapi-zod-client version
-// customizable prettier config + add prettierc.json in inputList ?
 // https://reactflow.dev/ + dependency graph
 // monaco settings (theme + inline diff or not / minimap / etc)
 
-// FileTabForm also using monaco
 // -> prettier schema for autocomplete on options
 //  https://microsoft.github.io/monaco-editor/playground.html#extending-language-services-configure-json-defaults
 // -> openapi schema for yaml/json ?
@@ -109,6 +109,7 @@ export const Playground = () => {
                                         <FileTab
                                             key={fileTab.name}
                                             onClick={() => send({ type: "Select input tab", tab: fileTab })}
+                                            data-tab-name={fileTab.name}
                                         >
                                             {indicator ? <Box mr="1">{indicator}</Box> : null}
                                             <Box>{fileTab.name}</Box>
@@ -154,12 +155,13 @@ export const Playground = () => {
                                 scrollSnapAlign="start"
                                 flexGrow={1}
                             >
-                                {outputList.map((file) => (
+                                {outputList.map((fileTab) => (
                                     <FileTab
-                                        key={file.name}
-                                        onClick={() => send({ type: "Select output tab", tab: file })}
+                                        key={fileTab.name}
+                                        onClick={() => send({ type: "Select output tab", tab: fileTab })}
+                                        data-tab-name={fileTab.name}
                                     >
-                                        {file.name}
+                                        {fileTab.name}
                                     </FileTab>
                                 ))}
                             </TabList>
@@ -193,20 +195,18 @@ export const Playground = () => {
     );
 };
 
-const FileTab = ({ children, onClick }: PropsWithChildren<{ onClick: () => void }>) => {
+const FileTab = (props: TabProps) => {
     return (
         <Tab
             display="flex"
             alignItems="center"
-            onClick={onClick}
             borderWidth="1px"
             borderColor="bgHover"
             backgroundColor="bg"
             _selected={{ bg: "bgHover", fontWeight: "bold" }}
             data-group
-        >
-            {children}
-        </Tab>
+            {...props}
+        />
     );
 };
 
@@ -260,10 +260,6 @@ const PlaygroundActions = (props: ButtonProps) => {
     const service = usePlaygroundContext();
     const send = service.send;
 
-    const selectedPresetTemplate = useSelector(service, (state) => state.context.selectedPresetTemplate);
-    const selectedPreset = presetTemplateList.find((t) => t.preset === selectedPresetTemplate)!;
-    const defaultValue = selectedPreset?.preset ?? "";
-
     return (
         <Menu>
             <MenuButton
@@ -284,38 +280,8 @@ const PlaygroundActions = (props: ButtonProps) => {
                 </MenuItem>
                 <MenuItem onClick={() => send({ type: "Reset" })}>Reset</MenuItem>
                 <MenuItem onClick={() => send({ type: "Add file" })}>Add input file</MenuItem>
-                <Popover trigger="hover" placement="left" closeOnBlur={false}>
-                    <PopoverTrigger>
-                        <MenuItem>Select handlebars template</MenuItem>
-                    </PopoverTrigger>
-                    <PopoverContent>
-                        <PopoverBody>
-                            <MenuOptionGroup
-                                defaultValue={defaultValue}
-                                title="Template presets"
-                                type="radio"
-                                onChange={(value) =>
-                                    send({
-                                        type: "Select preset template",
-                                        presetTemplate: presetTemplateList.find(
-                                            (preset) => preset.preset === (value as string)
-                                        )!,
-                                    })
-                                }
-                            >
-                                {presetTemplateList.map((preset) => (
-                                    <MenuItemOption
-                                        key={preset.preset}
-                                        value={preset.preset}
-                                        isDisabled={preset.preset === defaultValue}
-                                    >
-                                        {preset.name}
-                                    </MenuItemOption>
-                                ))}
-                            </MenuOptionGroup>
-                        </PopoverBody>
-                    </PopoverContent>
-                </Popover>
+                <GoToFileMenu />
+                <SelectPresetTemplateMenu />
                 {/* TODO */}
                 {/* <MenuItem>Use OpenAPI samples</MenuItem> */}
                 <MenuItem onClick={() => send({ type: "Open options" })}>Edit lib options</MenuItem>
@@ -325,6 +291,104 @@ const PlaygroundActions = (props: ButtonProps) => {
                 </MenuItem>
             </MenuList>
         </Menu>
+    );
+};
+
+const SelectPresetTemplateMenu = () => {
+    const service = usePlaygroundContext();
+    const send = service.send;
+
+    const selectedPresetTemplate = useSelector(service, (state) => state.context.selectedPresetTemplate);
+    const selectedPreset = presetTemplateList.find((t) => t.preset === selectedPresetTemplate)!;
+    const defaultValue = selectedPreset?.preset ?? "";
+
+    return (
+        <Popover trigger="hover" placement="left" closeOnBlur={false}>
+            <PopoverTrigger>
+                <MenuItem>Select handlebars template</MenuItem>
+            </PopoverTrigger>
+            <PopoverContent>
+                <PopoverBody>
+                    <MenuOptionGroup
+                        defaultValue={defaultValue}
+                        title="Template presets"
+                        type="radio"
+                        onChange={(value) =>
+                            send({
+                                type: "Select preset template",
+                                presetTemplate: presetTemplateList.find(
+                                    (preset) => preset.preset === (value as string)
+                                )!,
+                            })
+                        }
+                    >
+                        {presetTemplateList.map((preset) => (
+                            <MenuItemOption
+                                key={preset.preset}
+                                value={preset.preset}
+                                isDisabled={preset.preset === defaultValue}
+                                _hover={{ bg: "bgHover" }}
+                            >
+                                {preset.name}
+                            </MenuItemOption>
+                        ))}
+                    </MenuOptionGroup>
+                </PopoverBody>
+            </PopoverContent>
+        </Popover>
+    );
+};
+
+const GoToFileMenu = () => {
+    const service = usePlaygroundContext();
+    const [state, send] = useActor(service);
+
+    const inputList = state.context.inputList;
+    const outputList = state.context.outputList;
+
+    return (
+        <Popover trigger="hover" placement="left" closeOnBlur={false}>
+            <PopoverTrigger>
+                <MenuItem>Go to file</MenuItem>
+            </PopoverTrigger>
+            <PopoverContent>
+                <PopoverBody>
+                    <MenuGroup title="Input">
+                        <Box display="flex" flexDirection="column" maxHeight="300px" overflow="auto">
+                            {inputList.map((fileTab) => (
+                                <MenuItem
+                                    key={fileTab.name}
+                                    onClick={() => {
+                                        send({ type: "Select input tab", tab: fileTab });
+                                        document.querySelector(`[data-tab-name="${fileTab.name}"]`)?.scrollIntoView();
+                                    }}
+                                    _hover={{ bg: "bgHover" }}
+                                >
+                                    {fileTab.name}
+                                </MenuItem>
+                            ))}
+                        </Box>
+                    </MenuGroup>
+                    <MenuDivider />
+                    <MenuGroup title="Output">
+                        <Box display="flex" flexDirection="column" maxHeight="300px" overflow="auto">
+                            {outputList.map((fileTab) => (
+                                <MenuItem
+                                    key={fileTab.name}
+                                    onClick={() => {
+                                        send({ type: "Select output tab", tab: fileTab });
+                                        document.querySelector(`[data-tab-name="${fileTab.name}"]`)?.scrollIntoView();
+                                    }}
+                                    _hover={{ bg: "bgHover" }}
+                                >
+                                    {fileTab.name}
+                                </MenuItem>
+                            ))}
+                        </Box>
+                    </MenuGroup>
+                </PopoverBody>
+            </PopoverContent>
+        </Popover>
     );
 };
 
