@@ -14,7 +14,7 @@ export const presetTemplateList = [
         name: "Schemas only",
         preset: "schemas-only",
         template: "template-schemas-only",
-        options: { shouldExportAllSchemas: true },
+        options: { groupStrategy: "none", shouldExportAllSchemas: true },
     },
     {
         name: "Grouped by tag (split files)",
