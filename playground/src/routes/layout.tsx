@@ -1,4 +1,4 @@
-import { Box, Button, Code, IconButton, Stack, useColorMode, useColorModeValue } from "@chakra-ui/react";
+import { Box, Code, IconButton, Stack, useColorMode } from "@chakra-ui/react";
 import { Head, Layout, Link, StyledLink } from "rakkasjs";
 
 import "./layout.css";
