@@ -1,15 +1,14 @@
 import { useInterpret } from "@xstate/react";
-import { usePageContext } from "rakkasjs";
 import { Playground } from "./Playground";
 import { FileTabData, playgroundMachine, PlaygroundMachineProvider } from "./Playground.machine";
 import { getDecompressedStringFromUrl } from "../url-saver";
 
 export const PlaygroundWithMachine = () => {
-    const pageContext = usePageContext();
+    const url = new URL(window.location.href);
 
-    const hasDoc = pageContext.url.searchParams.has("doc");
-    const hasTemplate = pageContext.url.searchParams.has("template");
-    const hasPrettier = pageContext.url.searchParams.has("prettier");
+    const hasDoc = url.searchParams.has("doc");
+    const hasTemplate = url.searchParams.has("template");
+    const hasPrettier = url.searchParams.has("prettier");
 
     let initialInputList: undefined | FileTabData[];
     const initialCtx = playgroundMachine.context;
@@ -42,7 +41,7 @@ export const PlaygroundWithMachine = () => {
         ];
     }
 
-    const activeInputIndex = pageContext.url.searchParams.get("activeInputIndex");
+    const activeInputIndex = url.searchParams.get("activeInputIndex");
 
     const service = useInterpret(
         initialInputList

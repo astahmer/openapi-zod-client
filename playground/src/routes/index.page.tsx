@@ -1,8 +1,5 @@
-import { Page } from "rakkasjs";
 import { PlaygroundWithMachine } from "../Playground/PlaygroundWithMachine";
 
-const HomePage: Page = function HomePage() {
+export function HomePage() {
     return <PlaygroundWithMachine />;
-};
-
-export default HomePage;
+}

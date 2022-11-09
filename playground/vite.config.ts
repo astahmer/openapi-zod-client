@@ -1,9 +1,9 @@
 import { defineConfig, UserConfig } from "vite";
-import rakkas from "rakkasjs/vite-plugin";
 import compileTime from "vite-plugin-compile-time";
 import UnoCSS from "unocss/vite";
 import presetIcons from "@unocss/preset-icons";
 import { visualizer } from "rollup-plugin-visualizer";
+import react from "@vitejs/plugin-react";
 
 // TODO pwa ?
 export default defineConfig((env) => {
@@ -12,14 +12,7 @@ export default defineConfig((env) => {
             UnoCSS({
                 presets: [presetIcons({})],
             }),
-            rakkas({
-                react: {
-                    jsxImportSource: "/src/emotion",
-                    babel: {
-                        plugins: ["@emotion/babel-plugin"],
-                    },
-                },
-            }),
+            react(),
             compileTime(),
         ],
         optimizeDeps: {
@@ -29,11 +22,6 @@ export default defineConfig((env) => {
                     // https://github.com/vitejs/vite/discussions/5912#discussioncomment-3895047
                 },
             },
-        },
-        ssr: {
-            external: ["handlebars", "tanu", "whence"],
-            // This is required to fix ESM/CJS incompatibilities
-            noExternal: ["@emotion/styled"],
         },
         resolve: {
             alias: {
