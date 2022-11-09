@@ -22,7 +22,14 @@ export default defineConfig((_env) => ({
     ],
     define: {
         "process.env.TEST": true,
-        global: {}, // for handlebars
+    },
+    optimizeDeps: {
+        esbuildOptions: {
+            define: {
+                global: "globalThis", // for handlebars
+                // https://github.com/vitejs/vite/discussions/5912#discussioncomment-3895047
+            },
+        },
     },
     ssr: {
         external: ["handlebars", "tanu", "whence"],
