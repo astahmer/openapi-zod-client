@@ -284,9 +284,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         }
     }
 
-    // TODO options to suppress warnings
-    if (!process.env["TEST"]) {
-        // TODO return
+    if (options?.willSuppressWarnings !== true) {
         if (ignoredFallbackResponse.length > 0) {
             console.warn(
                 `The following endpoints have no status code other than \`default\` and were ignored as the OpenAPI spec recommends. However they could be added by setting \`defaultStatusBehavior\` to \`auto-correct\`: ${ignoredGenericError.join(
@@ -295,7 +293,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             );
         }
 
-        // TODO return
         if (ignoredGenericError.length > 0) {
             console.warn(
                 `The following endpoints could have had a generic error response added by setting \`defaultStatusBehavior\` to \`auto-correct\` ${ignoredGenericError.join(
@@ -314,6 +311,10 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         ...(ctx as Required<ConversionTypeContext>),
         ...graphs,
         endpoints,
+        issues: {
+            ignoredFallbackResponse,
+            ignoredGenericError,
+        },
     };
 };
 
