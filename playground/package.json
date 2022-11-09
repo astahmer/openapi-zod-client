@@ -3,15 +3,14 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "dev": "rakkas",
-        "build": "rakkas build",
-        "preview": "rakkas preview",
-        "start": "node dist/server",
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.cjs './src/**/*.ts' --cache --format=pretty",
         "lint:fix": "eslint -c .eslintrc.build.cjs './src/**/*.ts' --cache --format=pretty --fix",
         "theme": "chakra-cli tokens ./src/theme.cts",
-        "viz": "VIZ=true rakkas build"
+        "viz": "VIZ=true vite build"
     },
     "devDependencies": {
         "@astahmer/eslint-config-ts": "^0.1.5",
@@ -25,6 +24,7 @@
         "@typescript-eslint/eslint-plugin": "^5.40.1",
         "@typescript-eslint/parser": "^5.40.1",
         "@unocss/preset-icons": "^0.46.3",
+        "@vitejs/plugin-react": "^2.2.0",
         "eslint": "^8.26.0",
         "eslint-formatter-pretty": "^4.1.0",
         "prettier": "^2.7.1",
@@ -46,6 +46,7 @@
         "@monaco-editor/react": "^4.4.6",
         "@saas-ui/react": "^1.6.1",
         "@tanstack/react-query": "^4.14.1",
+        "@tanstack/react-router": "0.0.1-beta.2",
         "@xstate/react": "^3.0.1",
         "@zodios/core": "^10.3.1",
         "framer-motion": "^7.6.2",
@@ -53,7 +54,6 @@
         "monaco-editor": "^0.34.1",
         "openapi-zod-client": "workspace:^1.0.0",
         "pastable": "^2.0.13",
-        "rakkasjs": "0.6.4",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "ts-pattern": "^4.0.5",

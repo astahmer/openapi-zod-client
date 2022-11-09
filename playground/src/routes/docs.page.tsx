@@ -1,12 +1,12 @@
 import { Box } from "@chakra-ui/react";
-import { StyledLink } from "rakkasjs";
 import { FC } from "react";
 
 const DocsPage: FC = () => (
     <main>
         TODO sorry, in the meantime there is
         <Box
-            as={StyledLink}
+            // as={StyledLink}
+            as="a"
             href="https://paka.dev/npm/openapi-zod-client"
             rel="external"
             target="_blank"

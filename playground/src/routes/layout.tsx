@@ -1,15 +1,13 @@
 import { Box, Code, IconButton, Stack, useColorMode } from "@chakra-ui/react";
-import { Head, Layout, Link, StyledLink } from "rakkasjs";
+import { PropsWithChildren } from "react";
 
 import "./layout.css";
 
 const version: string = import.meta.compileTime("../macros/get-package-version.ts");
 
-const MainLayout: Layout = ({ children }) => {
+export const MainLayout = ({ children }: PropsWithChildren) => {
     return (
         <>
-            <Head title="playground - openapi-zod-client" />
-
             <Box
                 as="header"
                 display="flex"
@@ -24,7 +22,8 @@ const MainLayout: Layout = ({ children }) => {
                     <Code
                         variant="solid"
                         fontSize="2xl"
-                        as={Link}
+                        // as={Link}
+                        as="a"
                         href="https://github.com/astahmer/openapi-zod-client/"
                         rel="external"
                         target="_blank"
@@ -34,29 +33,32 @@ const MainLayout: Layout = ({ children }) => {
                 </Box>
                 <Stack direction="row">
                     <Box
-                        as={StyledLink}
+                        // as={StyledLink}
+                        as="a"
                         href="/"
                         px="2"
                         py="1"
                         borderRadius="md"
                         _hover={{ backgroundColor: "bg-darker" }}
-                        activeClass="activeLink"
+                        // activeClass="activeLink"
                     >
                         Playground
                     </Box>
                     <Box
-                        as={StyledLink}
+                        // as={StyledLink}
+                        as="a"
                         href="/docs"
                         px="2"
                         py="1"
                         borderRadius="md"
                         _hover={{ backgroundColor: "bg-darker" }}
-                        activeClass="activeLink"
+                        // activeClass="activeLink"
                     >
                         Documentation
                     </Box>
                     <Box
-                        as={StyledLink}
+                        // as={StyledLink}
+                        as="a"
                         href="https://github.com/astahmer/openapi-zod-client/"
                         rel="external"
                         target="_blank"
@@ -68,7 +70,8 @@ const MainLayout: Layout = ({ children }) => {
                         <Box className="i-mdi-github" boxSize="1.5em" />
                     </Box>
                     <Box
-                        as={StyledLink}
+                        // as={StyledLink}
+                        as="a"
                         href="https://www.zodios.org/"
                         rel="external"
                         target="_blank"
@@ -92,8 +95,6 @@ const MainLayout: Layout = ({ children }) => {
         </>
     );
 };
-
-export default MainLayout;
 
 const ColorModeSwitchIconButton = () => {
     const { colorMode, toggleColorMode } = useColorMode();
