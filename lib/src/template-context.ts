@@ -311,4 +311,5 @@ export type TemplateContextOptions = {
      * @default "spec-compliant"
      */
     defaultStatusBehavior?: "spec-compliant" | "auto-correct";
+    willSuppressWarnings?: boolean;
 };
