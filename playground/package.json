@@ -10,7 +10,8 @@
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.cjs './src/**/*.ts' --cache --format=pretty",
         "lint:fix": "eslint -c .eslintrc.build.cjs './src/**/*.ts' --cache --format=pretty --fix",
-        "theme": "chakra-cli tokens ./src/theme.cts"
+        "theme": "chakra-cli tokens ./src/theme.cts",
+        "viz": "VIZ=true rakkas build"
     },
     "devDependencies": {
         "@astahmer/eslint-config-ts": "^0.1.5",
@@ -29,6 +30,7 @@
         "prettier": "^2.7.1",
         "rollup": "^3.2.5",
         "rollup-plugin-dts": "^5.0.0",
+        "rollup-plugin-visualizer": "^5.8.3",
         "ts-toolbelt": "^9.6.0",
         "type-fest": "^2.19.0",
         "typescript": "^4.8.2",
