@@ -22,9 +22,6 @@ export default defineConfig((env) => {
             }),
             compileTime(),
         ],
-        define: {
-            "process.env.TEST": true,
-        },
         optimizeDeps: {
             esbuildOptions: {
                 define: {
@@ -40,10 +37,17 @@ export default defineConfig((env) => {
         },
         resolve: {
             alias: {
+                "pastable/server": "pastable",
                 // "openapi-zod-client": path.resolve(__dirname, "../lib"),
             },
         },
     };
+
+    if (env.command === "build" && env.ssrBuild) {
+        if (Array.isArray(config.ssr!.noExternal)) {
+            config.ssr!.noExternal.push("@saas-ui/react", "@chakra-ui/react", "@chakra-ui/styled-system");
+        }
+    }
 
     if (process.env.VIZ && env.command === "build" && !env.ssrBuild) {
         config.plugins!.push(visualizer({ open: true }) as any);
