@@ -293,7 +293,6 @@ const PlaygroundActions = (props: ButtonProps) => {
                 {/* TODO */}
                 {/* <MenuItem>Use OpenAPI samples</MenuItem> */}
                 <MenuItem onClick={() => send({ type: "Open options" })}>Edit lib options</MenuItem>
-                <MenuItem onClick={() => send({ type: "Open monaco settings" })}>Edit monaco settings</MenuItem>
                 <MenuItem as="a" href="https://apis.guru/" target="_blank" rel="external">
                     Browse APIs.guru
                 </MenuItem>
