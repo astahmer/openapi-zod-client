@@ -24,6 +24,10 @@ test("ref-in-another-file", async () => {
               },
           ],
           "getSchemaByRef": [Function],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
           "refsDependencyGraph": {},
           "schemaByName": {},
           "zodSchemaByName": {},

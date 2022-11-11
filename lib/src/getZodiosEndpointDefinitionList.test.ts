@@ -123,6 +123,10 @@ test("getZodiosEndpointDefinitionList /store/order", () => {
               },
           ],
           "getSchemaByRef": [Function],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
           "refsDependencyGraph": {},
           "schemaByName": {},
           "zodSchemaByName": {
@@ -263,6 +267,10 @@ test("getZodiosEndpointDefinitionList /pet", () => {
               },
           ],
           "getSchemaByRef": [Function],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -450,6 +458,10 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
               },
           ],
           "getSchemaByRef": [Function],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
           "refsDependencyGraph": {
               "#/components/schemas/Pet": Set {
                   "#/components/schemas/Category",
@@ -930,6 +942,16 @@ test("petstore.yaml", async () => {
               },
           ],
           "getSchemaByRef": [Function],
+          "issues": {
+              "ignoredFallbackResponse": [
+                  "createUsersWithListInput",
+              ],
+              "ignoredGenericError": [
+                  "createUser",
+                  "logoutUser",
+                  "updateUser",
+              ],
+          },
           "refsDependencyGraph": {
               "#/components/schemas/Customer": Set {
                   "#/components/schemas/Address",

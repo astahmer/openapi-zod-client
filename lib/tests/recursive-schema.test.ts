@@ -193,36 +193,40 @@ describe("recursive-schema", () => {
         `);
 
         expect(getZodiosEndpointDefinitionList(makeOpenApiDoc(schemas2, ResponseSchema))).toMatchInlineSnapshot(`
-              {
-                  "deepDependencyGraph": {
-                      "#/components/schemas/ObjectWithRecursiveArray": Set {
-                          "#/components/schemas/ObjectWithRecursiveArray",
-                      },
+          {
+              "deepDependencyGraph": {
+                  "#/components/schemas/ObjectWithRecursiveArray": Set {
+                      "#/components/schemas/ObjectWithRecursiveArray",
                   },
-                  "endpoints": [
-                      {
-                          "alias": "getExample",
-                          "description": undefined,
-                          "errors": [],
-                          "method": "get",
-                          "parameters": [],
-                          "path": "/example",
-                          "requestFormat": "json",
-                          "response": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
-                      },
-                  ],
-                  "getSchemaByRef": [Function],
-                  "refsDependencyGraph": {
-                      "#/components/schemas/ObjectWithRecursiveArray": Set {
-                          "#/components/schemas/ObjectWithRecursiveArray",
-                      },
+              },
+              "endpoints": [
+                  {
+                      "alias": "getExample",
+                      "description": undefined,
+                      "errors": [],
+                      "method": "get",
+                      "parameters": [],
+                      "path": "/example",
+                      "requestFormat": "json",
+                      "response": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
                   },
-                  "schemaByName": {},
-                  "zodSchemaByName": {
-                      "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
+              ],
+              "getSchemaByRef": [Function],
+              "issues": {
+                  "ignoredFallbackResponse": [],
+                  "ignoredGenericError": [],
+              },
+              "refsDependencyGraph": {
+                  "#/components/schemas/ObjectWithRecursiveArray": Set {
+                      "#/components/schemas/ObjectWithRecursiveArray",
                   },
-              }
-            `);
+              },
+              "schemaByName": {},
+              "zodSchemaByName": {
+                  "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
+              },
+          }
+        `);
     });
 
     test("direct recursive", () => {
@@ -331,6 +335,10 @@ describe("recursive-schema", () => {
                   },
               ],
               "getSchemaByRef": [Function],
+              "issues": {
+                  "ignoredFallbackResponse": [],
+                  "ignoredGenericError": [],
+              },
               "refsDependencyGraph": {
                   "#/components/schemas/Friend": Set {
                       "#/components/schemas/UserWithFriends",

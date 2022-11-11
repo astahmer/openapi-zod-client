@@ -60,6 +60,10 @@ test("autofix-unusual-ref-format", () => {
               },
           ],
           "getSchemaByRef": [Function],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
           "refsDependencyGraph": {},
           "schemaByName": {},
           "zodSchemaByName": {
