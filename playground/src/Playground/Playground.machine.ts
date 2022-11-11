@@ -359,12 +359,22 @@ export const playgroundMachine =
 
                     const openApiDoc = input.startsWith("{") ? safeJSONParse(input) : safeYAMLParse(input);
                     if (!openApiDoc) {
-                        toasts.error("Invalid OpenAPI document");
+                        toasts.error("Error while parsing OpenAPI document");
                         return ctx;
                     }
 
                     const options = ctx.options;
-                    const templateContext = getZodClientTemplateContext(openApiDoc, options);
+                    let templateContext: ReturnType<typeof getZodClientTemplateContext>;
+                    try {
+                        templateContext = getZodClientTemplateContext(openApiDoc, options);
+                    } catch (error: unknown) {
+                        toasts.error("Something unexpected happened, check the console for more details", {
+                            duration: 3000,
+                        });
+                        console.error(error);
+                        return ctx;
+                    }
+
                     // logs the template context to the browser console so users can explore it
                     if (typeof window !== "undefined") {
                         console.log({ templateContext, options, openApiDoc });
