@@ -14,7 +14,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - lib/lib/**
+      - lib/**
       - lib/pnpm-lock.yaml
       - lib/package.json
       - lib/tsconfig.json
