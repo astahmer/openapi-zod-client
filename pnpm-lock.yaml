@@ -4,9 +4,11 @@ importers:
 
   .:
     specifiers:
+      '@preconstruct/cli': ^2.2.1
       tsx: ^3.11.0
       typescript: ^4.8.3
     devDependencies:
+      '@preconstruct/cli': 2.2.2
       tsx: 3.11.0
       typescript: 4.8.4
 

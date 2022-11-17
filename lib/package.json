@@ -15,6 +15,7 @@
         "dev": "preconstruct watch",
         "build": "preconstruct build",
         "test": "vitest",
+        "postinstall": "preconstruct dev",
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
         "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix"
