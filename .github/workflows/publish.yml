@@ -26,10 +26,8 @@ jobs:
           cache: "pnpm"
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        working-directory: ./lib
       - name: Build
         run: pnpm build
-        working-directory: ./lib
       - name: Test
         run: pnpm test
         working-directory: ./lib

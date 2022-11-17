@@ -2,7 +2,6 @@
 
 [![Screenshot 2022-11-12 at 18 52 25](https://user-images.githubusercontent.com/47224540/201487856-ffc4c862-6f31-4de1-8ef1-3981fabf3416.png)](https://openapi-zod-client.vercel.app/)
 
-
 Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client with zod validation_) from a (json/yaml) [OpenAPI spec](https://github.com/OAI/OpenAPI-Specification) **(or just use the generated schemas/endpoints/etc !)**
 
 -   can be used programmatically _(do w/e you want with the computed schemas/endpoints)_
@@ -39,7 +38,7 @@ https://paka.dev/npm/openapi-zod-client
 ## CLI
 
 ```sh
-openapi-zod-client/1.0.0
+openapi-zod-client/1.2.2
 
 Usage:
   $ openapi-zod-client <input>
