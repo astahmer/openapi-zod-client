@@ -1,6 +1,6 @@
 {
     "name": "openapi-zod-client",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "repository": {
         "type": "git",
         "url": "https://github.com/astahmer/openapi-zod-client.git"
@@ -14,7 +14,6 @@
     "scripts": {
         "dev": "preconstruct watch",
         "build": "preconstruct build",
-        "postinstall": "preconstruct dev",
         "test": "vitest",
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
@@ -68,7 +67,8 @@
         "bin.js",
         "src",
         "dist",
-        "cli"
+        "cli",
+        "../README.md"
     ],
     "keywords": [
         "openapi",
