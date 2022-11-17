@@ -1,6 +1,6 @@
 {
     "name": "openapi-zod-client",
-    "version": "1.1.8",
+    "version": "1.1.9",
     "repository": {
         "type": "git",
         "url": "https://github.com/astahmer/openapi-zod-client.git"
@@ -12,10 +12,7 @@
         "openapi-zod-client": "./bin.js"
     },
     "scripts": {
-        "dev": "preconstruct watch",
-        "build": "preconstruct build",
         "test": "vitest",
-        "postinstall": "preconstruct dev",
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
         "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix"
@@ -23,7 +20,6 @@
     "license": "ISC",
     "dependencies": {
         "@apidevtools/swagger-parser": "^10.1.0",
-        "@babel/core": "^7.19.6",
         "@liuli-util/fs-extra": "^0.1.0",
         "@zodios/core": "^10.3.1",
         "axios": "^0.27.2",
@@ -40,9 +36,6 @@
     },
     "devDependencies": {
         "@astahmer/eslint-config-ts": "^0.1.5",
-        "@babel/preset-env": "^7.19.4",
-        "@babel/preset-typescript": "^7.18.6",
-        "@preconstruct/cli": "^2.2.1",
         "@types/degit": "^2.8.3",
         "@types/fs-extra": "^9.0.13",
         "@types/js-yaml": "^4.0.5",
