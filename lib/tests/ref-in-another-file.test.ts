@@ -23,12 +23,16 @@ test("ref-in-another-file", async () => {
                   "response": "z.object({ name: z.string(), completed: z.boolean() })",
               },
           ],
-          "getSchemaByRef": [Function],
           "issues": {
               "ignoredFallbackResponse": [],
               "ignoredGenericError": [],
           },
           "refsDependencyGraph": {},
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
           "schemaByName": {},
           "zodSchemaByName": {},
       }

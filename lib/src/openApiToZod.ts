@@ -5,7 +5,7 @@ import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
 import { CodeMeta } from "./CodeMeta";
 import { isReferenceObject } from "./isReferenceObject";
 import type { TemplateContext } from "./template-context";
-import { getRefName, isPrimitiveType, normalizeString } from "./utils";
+import { isPrimitiveType, wrapWithQuotesIfNeeded } from "./utils";
 
 type ConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -30,21 +30,23 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         referencedBy: [...code.meta.referencedBy],
     };
 
-    const refsPath = code.meta.referencedBy.slice(0, -1).map((prev) => getRefName(prev.ref!));
+    const refsPath = code.meta.referencedBy
+        .slice(0, -1)
+        .map((prev) => (ctx ? ctx.resolver.resolveRef(prev.ref!).normalized : prev.ref!));
 
     if (isReferenceObject(schema)) {
         if (!ctx) throw new Error("Context is required");
 
-        const refName = getRefName(schema.$ref);
+        const schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
 
         // circular(=recursive) reference
-        if (refsPath.length > 1 && refsPath.includes(refName)) {
+        if (refsPath.length > 1 && refsPath.includes(schemaName)) {
             return code.assign(ctx.zodSchemaByName[code.ref!]!);
         }
 
         let result = ctx.zodSchemaByName[schema.$ref];
         if (!result) {
-            const actualSchema = ctx.getSchemaByRef(schema.$ref);
+            const actualSchema = ctx.resolver.getSchemaByRef(schema.$ref);
             if (!actualSchema) {
                 throw new Error(`Schema ${schema.$ref} not found`);
             }
@@ -52,11 +54,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             result = getZodSchema({ schema: actualSchema, ctx, meta, options }).toString();
         }
 
-        if (ctx.zodSchemaByName[refName]) {
+        if (ctx.zodSchemaByName[schemaName]) {
             return code;
         }
 
-        ctx.zodSchemaByName[refName] = result;
+        ctx.zodSchemaByName[schemaName] = result;
 
         return code;
     }
@@ -168,7 +170,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
             properties =
                 "{ " +
-                propsMap.map(([prop, propSchema]) => `${normalizeString(prop!)}: ${propSchema}`).join(", ") +
+                propsMap.map(([prop, propSchema]) => `${wrapWithQuotesIfNeeded(prop!)}: ${propSchema}`).join(", ") +
                 " }";
         }
 

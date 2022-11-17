@@ -1489,14 +1489,6 @@ test("with optional, partial, all required objects", async () => {
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
       const DeeplyNested = z.array(VeryDeeplyNested);
-      const Nested2: z.ZodType<Nested2> = z.lazy(() =>
-        z.object({
-          nested_prop: z.boolean().optional(),
-          deeplyNested: DeeplyNested.optional(),
-          circularToRoot: Root2.optional(),
-          requiredProp: z.string(),
-        })
-      );
       const PartialObject = z
         .object({ something: z.string(), another: z.number() })
         .partial();
@@ -1507,6 +1499,14 @@ test("with optional, partial, all required objects", async () => {
           nested: Nested2,
           partial: PartialObject.optional(),
           optionalProp: z.string().optional(),
+        })
+      );
+      const Nested2: z.ZodType<Nested2> = z.lazy(() =>
+        z.object({
+          nested_prop: z.boolean().optional(),
+          deeplyNested: DeeplyNested.optional(),
+          circularToRoot: Root2.optional(),
+          requiredProp: z.string(),
         })
       );
 

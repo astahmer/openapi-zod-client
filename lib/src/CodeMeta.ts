@@ -1,11 +1,11 @@
 import type { ReferenceObject, SchemaObject } from "openapi3-ts";
 
 import { isReferenceObject } from "./isReferenceObject";
+import type { DocumentResolver } from "./makeSchemaResolver";
 import { getSchemaComplexity } from "./schema-complexity";
-import { getRefName } from "./utils";
 
 export type ConversionTypeContext = {
-    getSchemaByRef: ($ref: string) => SchemaObject;
+    resolver: DocumentResolver;
     zodSchemaByName: Record<string, string>;
     schemaByName: Record<string, string>;
 };
@@ -49,7 +49,7 @@ export class CodeMeta {
     get codeString(): string {
         if (this.code) return this.code;
 
-        return getRefName(this.ref!);
+        return this.ctx ? this.ctx.resolver.resolveRef(this.ref!).normalized : this.ref!;
     }
 
     get complexity(): number {

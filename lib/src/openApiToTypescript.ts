@@ -3,7 +3,8 @@ import { t, ts } from "tanu";
 import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
 import { isReferenceObject } from "./isReferenceObject";
-import { getRefName, normalizeString } from "./utils";
+import type { DocumentResolver } from "./makeSchemaResolver";
+import { wrapWithQuotesIfNeeded } from "./utils";
 
 type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -13,7 +14,7 @@ type TsConversionArgs = {
 
 export type TsConversionContext = {
     nodeByRef: Record<string, ts.Node>;
-    getSchemaByRef: (ref: string) => SchemaObject | ReferenceObject;
+    resolver: DocumentResolver;
     rootRef?: string;
     visitedsRefs?: Record<string, boolean>;
 };
@@ -39,16 +40,16 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     let canBeWrapped = !isInline;
     const getTs = (): ts.Node | TypeDefinitionObject | string => {
         if (isReferenceObject(schema)) {
-            if (!ctx?.visitedsRefs) throw new Error("Context is required for OpenAPI $ref");
+            if (!ctx?.visitedsRefs || !ctx?.resolver) throw new Error("Context is required for OpenAPI $ref");
 
             let result = ctx.nodeByRef[schema.$ref];
-            const refName = getRefName(schema.$ref);
+            const schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
             if (ctx.visitedsRefs[schema.$ref]) {
-                return refName;
+                return schemaName;
             }
 
             if (!result) {
-                const actualSchema = ctx.getSchemaByRef(schema.$ref);
+                const actualSchema = ctx.resolver.getSchemaByRef(schema.$ref);
                 if (!actualSchema) {
                     throw new Error(`Schema ${schema.$ref} not found`);
                 }
@@ -57,7 +58,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
             }
 
-            return refName;
+            return schemaName;
         }
 
         if (schema.oneOf) {
@@ -169,8 +170,8 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                         propType = t.reference(propType);
                     }
 
-                    const isRequired = isPartial ? true : schema.required?.includes(prop);
-                    return [normalizeString(prop), isRequired ? propType : t.optional(propType)];
+                    const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
+                    return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? propType : t.optional(propType)];
                 })
             );
 

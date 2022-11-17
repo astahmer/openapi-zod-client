@@ -1,8 +1,7 @@
 import type { SchemaObject } from "openapi3-ts";
 import { capitalize, kebabToCamel } from "pastable/server";
 
-export const getRefName = (ref: string) => normalizeString(ref.split("/").at(-1)!);
-export const getRefFromName = (name: string) => `#/components/schemas/${name}`;
+export const asComponentSchema = (name: string) => `#/components/schemas/${name}`;
 
 export function normalizeString(text: string) {
     const prefixed = prefixStringStartingWithNumberIfNeeded(text);
@@ -11,9 +10,17 @@ export function normalizeString(text: string) {
         .trim() // Remove whitespace from both sides of a string (optional)
         .replace(/\s+/g, "_") // Replace spaces with _
         .replace(/-+/g, "_") // Replace - with _
-        .replace(/[^\w\-]+/g, "") // Remove all non-word chars
+        .replace(/[^\w\-]+/g, "_") // Remove all non-word chars
         .replace(/--+/g, "-"); // Replace multiple - with single -
 }
+
+export const wrapWithQuotesIfNeeded = (str: string) => {
+    if (str.match(/^\w+$/)) {
+        return str;
+    }
+
+    return `"${str}"`;
+};
 
 const prefixStringStartingWithNumberIfNeeded = (str: string) => {
     const firstAsNumber = Number(str[0]);

@@ -4,12 +4,13 @@ import { get } from "pastable/server";
 import { expect, test } from "vitest";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { topologicalSort } from "./topologicalSort";
+import { asComponentSchema } from "./utils";
 
 test("petstore.yaml", async () => {
     const openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
     const getSchemaByRef = (ref: string) => get(openApiDoc, ref.replace("#/", "").replaceAll("/", ".")) as SchemaObject;
     const { refsDependencyGraph: result, deepDependencyGraph } = getOpenApiDependencyGraph(
-        Object.keys(openApiDoc.components?.schemas || {}).map((name) => `#/components/schemas/${name}`),
+        Object.keys(openApiDoc.components?.schemas || {}).map((name) => asComponentSchema(name)),
         getSchemaByRef
     );
     expect(result).toMatchInlineSnapshot(`

@@ -3,6 +3,8 @@ import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypesc
 import type { SchemaObject, SchemasObject } from "openapi3-ts";
 import { ts } from "tanu";
 import { describe, expect, test } from "vitest";
+import { makeSchemaResolver } from "./makeSchemaResolver";
+import { asComponentSchema } from "./utils";
 
 const makeSchema = (schema: SchemaObject) => schema;
 const getSchemaAsTsString = (schema: SchemaObject, meta?: { name: string }) =>
@@ -297,8 +299,9 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         expect(printTs(getTypescriptFromOpenApi({ schema: schemas["Root"]!, meta: { name: "Root" }, ctx }) as ts.Node))
             .toMatchInlineSnapshot(`
               "export type Root = Partial<{
@@ -339,8 +342,9 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         expect(
             printTs(getTypescriptFromOpenApi({ schema: schemas["Root2"]!, meta: { name: "Root2" }, ctx }) as ts.Node)
         ).toMatchInlineSnapshot(`
@@ -375,8 +379,9 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
 
         expect(
             printTs(
@@ -420,8 +425,9 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         const result = getTypescriptFromOpenApi({
             schema: schemas["Root4"]!,
             meta: { name: "Root4", $ref: "#/components/schemas/Root4" },
@@ -468,8 +474,9 @@ describe("getSchemaAsTsString with context", () => {
         const ctx: TsConversionContext = {
             nodeByRef: {},
             visitedsRefs: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!]!,
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         const result = getTypescriptFromOpenApi({
             schema: schemas["Root"]!,
             meta: { name: "Root", $ref: "#/components/schemas/Root" },

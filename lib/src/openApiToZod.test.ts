@@ -2,6 +2,8 @@ import type { SchemaObject } from "openapi3-ts";
 import { expect, test } from "vitest";
 import { getZodSchema } from "./openApiToZod";
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
+import { makeSchemaResolver } from "./makeSchemaResolver";
+import { asComponentSchema } from "./utils";
 
 const makeSchema = (schema: SchemaObject) => schema;
 const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData | undefined) =>
@@ -117,7 +119,11 @@ test("getSchemaWithChainableAsZodString", () => {
 });
 
 test("CodeMeta with ref", () => {
-    const ctx: ConversionTypeContext = { getSchemaByRef: () => null as any, zodSchemaByName: {}, schemaByName: {} };
+    const ctx: ConversionTypeContext = {
+        resolver: makeSchemaResolver({ components: { schemas: {} } } as any),
+        zodSchemaByName: {},
+        schemaByName: {},
+    };
 
     expect(() =>
         getZodSchema({
@@ -152,10 +158,11 @@ test("CodeMeta with missing ref", () => {
         },
     } as Record<string, SchemaObject>;
     const ctx: ConversionTypeContext = {
-        getSchemaByRef: (ref) => schemas[ref]!,
+        resolver: makeSchemaResolver({ components: { schemas } } as any),
         zodSchemaByName: {},
         schemaByName: {},
     };
+    Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
 
     const code = getZodSchema({
         schema: makeSchema({
@@ -163,7 +170,7 @@ test("CodeMeta with missing ref", () => {
             properties: {
                 str: { type: "string" },
                 reference: {
-                    $ref: "Example",
+                    $ref: "#/components/schemas/Example",
                 },
                 inline: {
                     type: "object",
@@ -190,23 +197,27 @@ test("CodeMeta with missing ref", () => {
 test("CodeMeta with nested refs", () => {
     const schemas = {
         Basic: { type: "object", properties: { prop: { type: "string" }, second: { type: "number" } } },
-        WithNested: { type: "object", properties: { nested: { type: "string" }, nestedRef: { $ref: "DeepNested" } } },
+        WithNested: {
+            type: "object",
+            properties: { nested: { type: "string" }, nestedRef: { $ref: "#/components/schemas/DeepNested" } },
+        },
         ObjectWithArrayOfRef: {
             type: "object",
             properties: {
                 exampleProp: { type: "string" },
                 another: { type: "number" },
-                link: { type: "array", items: { $ref: "WithNested" } },
-                someReference: { $ref: "Basic" },
+                link: { type: "array", items: { $ref: "#/components/schemas/WithNested" } },
+                someReference: { $ref: "#/components/schemas/Basic" },
             },
         },
         DeepNested: { type: "object", properties: { deep: { type: "boolean" } } },
     } as Record<string, SchemaObject>;
     const ctx: ConversionTypeContext = {
-        getSchemaByRef: (ref) => schemas[ref]!,
+        resolver: makeSchemaResolver({ components: { schemas } } as any),
         zodSchemaByName: {},
         schemaByName: {},
     };
+    Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
 
     const code = getZodSchema({
         schema: makeSchema({
@@ -214,7 +225,7 @@ test("CodeMeta with nested refs", () => {
             properties: {
                 str: { type: "string" },
                 reference: {
-                    $ref: "ObjectWithArrayOfRef",
+                    $ref: "#/components/schemas/ObjectWithArrayOfRef",
                 },
                 inline: {
                     type: "object",
@@ -222,9 +233,9 @@ test("CodeMeta with nested refs", () => {
                         nested_prop: { type: "boolean" },
                     },
                 },
-                another: { $ref: "WithNested" },
-                basic: { $ref: "Basic" },
-                differentPropSameRef: { $ref: "Basic" },
+                another: { $ref: "#components/schemas/WithNested" },
+                basic: { $ref: "#/components/schemas/Basic" },
+                differentPropSameRef: { $ref: "#/components/schemas/Basic" },
             },
         }),
         ctx,
@@ -244,7 +255,11 @@ test("CodeMeta with nested refs", () => {
     `);
     expect(ctx).toMatchInlineSnapshot(`
       {
-          "getSchemaByRef": [Function],
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
           "schemaByName": {},
           "zodSchemaByName": {
               "Basic": "z.object({ prop: z.string(), second: z.number() }).partial()",

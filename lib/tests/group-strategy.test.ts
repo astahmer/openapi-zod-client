@@ -1007,16 +1007,6 @@ test("group-strategy with complex schemas + split files", async () => {
         store_list: Array<Store>;
       }>;
 
-      const Country: z.ZodType<Country> = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            name: z.string(),
-            code: z.string(),
-            store_list: z.array(Store),
-          })
-          .partial()
-      );
       const Store: z.ZodType<Store> = z.lazy(() =>
         z
           .object({
@@ -1025,6 +1015,16 @@ test("group-strategy with complex schemas + split files", async () => {
             address: z.string(),
             country: Country,
             owner: User,
+          })
+          .partial()
+      );
+      const Country: z.ZodType<Country> = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            name: z.string(),
+            code: z.string(),
+            store_list: z.array(Store),
           })
           .partial()
       );

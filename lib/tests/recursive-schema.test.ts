@@ -1,4 +1,4 @@
-import { SchemaObject, SchemasObject } from "openapi3-ts";
+import type { SchemaObject, SchemasObject } from "openapi3-ts";
 import { describe, expect, test } from "vitest";
 import {
     getOpenApiDependencyGraph,
@@ -9,6 +9,8 @@ import {
 import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
 import { topologicalSort } from "../src/topologicalSort";
 import type { ConversionTypeContext } from "../src/CodeMeta";
+import { makeSchemaResolver } from "../src/makeSchemaResolver";
+import { asComponentSchema } from "../src/utils";
 
 // TODO recursive inline response/param ?
 
@@ -65,14 +67,19 @@ describe("recursive-schema", () => {
         const ctx: ConversionTypeContext = {
             zodSchemaByName: {},
             schemaByName: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         expect(getZodSchema({ schema: schemas.Root, ctx })).toMatchInlineSnapshot(
             '"z.object({ recursive: User, basic: z.number() }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "getSchemaByRef": [Function],
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
+              },
               "schemaByName": {},
               "zodSchemaByName": {
                   "Middle": "z.object({ user: User }).partial()",
@@ -83,8 +90,8 @@ describe("recursive-schema", () => {
 
         const openApiDoc = makeOpenApiDoc(schemas, schemas.Root);
         const depsGraph = getOpenApiDependencyGraph(
-            Object.keys(ctx.zodSchemaByName).map((name) => `#/components/schemas/${name}`),
-            ctx.getSchemaByRef
+            Object.keys(ctx.zodSchemaByName).map((name) => asComponentSchema(name)),
+            ctx.resolver.getSchemaByRef
         );
         expect(depsGraph).toMatchInlineSnapshot(`
           {
@@ -177,14 +184,19 @@ describe("recursive-schema", () => {
         const ctx: ConversionTypeContext = {
             zodSchemaByName: {},
             schemaByName: {},
-            getSchemaByRef: (ref) => schemas2[ref.split("/").at(-1)!],
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         expect(getZodSchema({ schema: ResponseSchema, ctx })).toMatchInlineSnapshot(
             '"z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "getSchemaByRef": [Function],
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
+              },
               "schemaByName": {},
               "zodSchemaByName": {
                   "ObjectWithRecursiveArray": "z.object({ isInsideObjectWithRecursiveArray: z.boolean(), array: z.array(ObjectWithRecursiveArray) }).partial()",
@@ -211,7 +223,6 @@ describe("recursive-schema", () => {
                       "response": "z.object({ recursiveRef: ObjectWithRecursiveArray, basic: z.number() }).partial()",
                   },
               ],
-              "getSchemaByRef": [Function],
               "issues": {
                   "ignoredFallbackResponse": [],
                   "ignoredGenericError": [],
@@ -220,6 +231,11 @@ describe("recursive-schema", () => {
                   "#/components/schemas/ObjectWithRecursiveArray": Set {
                       "#/components/schemas/ObjectWithRecursiveArray",
                   },
+              },
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
               },
               "schemaByName": {},
               "zodSchemaByName": {
@@ -233,14 +249,19 @@ describe("recursive-schema", () => {
         const ctx: ConversionTypeContext = {
             zodSchemaByName: {},
             schemaByName: {},
-            getSchemaByRef: (ref) => UserSchema,
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         expect(getZodSchema({ schema: UserSchema, ctx })).toMatchInlineSnapshot(
             '"z.object({ name: z.string(), parent: User }).partial()"'
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "getSchemaByRef": [Function],
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
+              },
               "schemaByName": {},
               "zodSchemaByName": {
                   "User": "z.object({ name: z.string(), parent: User }).partial()",
@@ -267,14 +288,15 @@ describe("recursive-schema", () => {
             circle: { type: "array", items: { $ref: "#/components/schemas/Friend" } },
         },
     } as SchemaObject;
-    const schemas = { UserWithFriends, Friend };
+    const schemas = { User: UserSchema, UserWithFriends, Friend, ResponseSchema, ObjectWithRecursiveArray };
 
     test("multiple recursive in one root schema", async () => {
         const ctx: ConversionTypeContext = {
             zodSchemaByName: {},
             schemaByName: {},
-            getSchemaByRef: (ref: string) => schemas[ref.replace("#/components/schemas/", "")],
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
         expect(
             getZodSchema({
                 schema: {
@@ -291,7 +313,11 @@ describe("recursive-schema", () => {
         ).toMatchInlineSnapshot('"z.object({ recursiveUser: UserWithFriends, basic: z.number() }).partial()"');
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "getSchemaByRef": [Function],
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
+              },
               "schemaByName": {},
               "zodSchemaByName": {
                   "Friend": "z.object({ nickname: z.string(), user: UserWithFriends, circle: z.array(Friend) }).partial()",
@@ -317,6 +343,15 @@ describe("recursive-schema", () => {
                       "#/components/schemas/UserWithFriends",
                       "#/components/schemas/Friend",
                   },
+                  "#/components/schemas/ObjectWithRecursiveArray": Set {
+                      "#/components/schemas/ObjectWithRecursiveArray",
+                  },
+                  "#/components/schemas/ResponseSchema": Set {
+                      "#/components/schemas/ObjectWithRecursiveArray",
+                  },
+                  "#/components/schemas/User": Set {
+                      "#/components/schemas/User",
+                  },
                   "#/components/schemas/UserWithFriends": Set {
                       "#/components/schemas/UserWithFriends",
                       "#/components/schemas/Friend",
@@ -334,7 +369,6 @@ describe("recursive-schema", () => {
                       "response": "z.object({ someUser: UserWithFriends, someProp: z.boolean() }).partial()",
                   },
               ],
-              "getSchemaByRef": [Function],
               "issues": {
                   "ignoredFallbackResponse": [],
                   "ignoredGenericError": [],
@@ -344,10 +378,24 @@ describe("recursive-schema", () => {
                       "#/components/schemas/UserWithFriends",
                       "#/components/schemas/Friend",
                   },
+                  "#/components/schemas/ObjectWithRecursiveArray": Set {
+                      "#/components/schemas/ObjectWithRecursiveArray",
+                  },
+                  "#/components/schemas/ResponseSchema": Set {
+                      "#/components/schemas/ObjectWithRecursiveArray",
+                  },
+                  "#/components/schemas/User": Set {
+                      "#/components/schemas/User",
+                  },
                   "#/components/schemas/UserWithFriends": Set {
                       "#/components/schemas/UserWithFriends",
                       "#/components/schemas/Friend",
                   },
+              },
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
               },
               "schemaByName": {},
               "zodSchemaByName": {
@@ -391,6 +439,14 @@ describe("recursive-schema", () => {
               user: UserWithFriends;
               circle: Array<Friend>;
           }>;",
+                  "ObjectWithRecursiveArray": "type ObjectWithRecursiveArray = Partial<{
+              isInsideObjectWithRecursiveArray: boolean;
+              array: Array<ObjectWithRecursiveArray>;
+          }>;",
+                  "User": "type User = Partial<{
+              name: string;
+              parent: User;
+          }>;",
                   "UserWithFriends": "type UserWithFriends = Partial<{
               name: string;
               parent: UserWithFriends;
@@ -406,6 +462,10 @@ describe("recursive-schema", () => {
           "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
+          type User = Partial<{
+            name: string;
+            parent: User;
+          }>;
           type UserWithFriends = Partial<{
             name: string;
             parent: UserWithFriends;
@@ -416,6 +476,10 @@ describe("recursive-schema", () => {
             nickname: string;
             user: UserWithFriends;
             circle: Array<Friend>;
+          }>;
+          type ObjectWithRecursiveArray = Partial<{
+            isInsideObjectWithRecursiveArray: boolean;
+            array: Array<ObjectWithRecursiveArray>;
           }>;
 
           const Friend: z.ZodType<Friend> = z.lazy(() =>
@@ -492,8 +556,9 @@ describe("recursive-schema", () => {
         const ctx: ConversionTypeContext = {
             zodSchemaByName: {},
             schemaByName: {},
-            getSchemaByRef: (ref) => schemas[ref.split("/").at(-1)!],
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
         };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
 
         const RootSchema = {
             type: "object",
@@ -507,7 +572,11 @@ describe("recursive-schema", () => {
         );
         expect(ctx).toMatchInlineSnapshot(`
           {
-              "getSchemaByRef": [Function],
+              "resolver": {
+                  "getSchemaByRef": [Function],
+                  "resolveRef": [Function],
+                  "resolveSchemaName": [Function],
+              },
               "schemaByName": {},
               "zodSchemaByName": {
                   "Author": "z.object({ name: z.string(), mail: z.string(), settings: Settings }).partial()",

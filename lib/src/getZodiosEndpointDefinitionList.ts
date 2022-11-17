@@ -8,31 +8,27 @@ import type {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { get } from "pastable/server";
 import { match } from "ts-pattern";
 import { sync } from "whence";
 
 import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { isReferenceObject } from "./isReferenceObject";
+import { makeSchemaResolver } from "./makeSchemaResolver";
 import { getZodChain, getZodSchema } from "./openApiToZod";
 import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";
-import { getRefFromName, normalizeString, pathToVariableName } from "./utils";
+import { asComponentSchema, normalizeString, pathToVariableName } from "./utils";
 
 const voidSchema = "z.void()";
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
-    const getSchemaByRef: ConversionTypeContext["getSchemaByRef"] = (ref: string) => {
-        const correctRef = ref[1] === "/" ? ref : "#/" + ref;
-        const split = correctRef.split("/");
-        const path = split.slice(1, split.length - 1).join("/")!;
-        const map = get(doc, path.replace("#/", "").replace("#", "").replaceAll("/", ".")) ?? ({} as any);
-        const name = split[split.length - 1]!;
-
-        return map[name] as SchemaObject;
-    };
+    const resolver = makeSchemaResolver(doc);
+    const graphs = getOpenApiDependencyGraph(
+        Object.keys(doc.components?.schemas ?? {}).map((name) => asComponentSchema(name)),
+        resolver.getSchemaByRef
+    );
 
     const endpoints = [];
 
@@ -60,7 +56,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 : options.isMediaTypeAllowed;
     }
 
-    const ctx: ConversionTypeContext = { getSchemaByRef, zodSchemaByName: {}, schemaByName: {} };
+    const ctx: ConversionTypeContext = { resolver, zodSchemaByName: {}, schemaByName: {} };
     const complexityThreshold = options?.complexityThreshold ?? 4;
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
@@ -101,7 +97,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
         // result is a reference to another schema
         if (input.ref && ctx.zodSchemaByName[result]) {
-            const complexity = getSchemaComplexity({ current: 0, schema: getSchemaByRef(input.ref) });
+            const complexity = getSchemaComplexity({ current: 0, schema: ctx.resolver.getSchemaByRef(input.ref) });
 
             // ref result is simple enough that it doesn't need to be assigned to a variable
             if (complexity < complexityThreshold) {
@@ -185,7 +181,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             }
 
             for (const param of parameters) {
-                const paramItem = (isReferenceObject(param) ? getSchemaByRef(param.$ref) : param) as ParameterObject;
+                const paramItem = (
+                    isReferenceObject(param) ? ctx.resolver.getSchemaByRef(param.$ref) : param
+                ) as ParameterObject;
                 if (allowedPathInValues.includes(paramItem.in)) {
                     const paramSchema = (isReferenceObject(param) ? param.$ref : param.schema) as SchemaObject;
                     const paramCode = getZodSchema({
@@ -308,11 +306,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             );
         }
     }
-
-    const graphs = getOpenApiDependencyGraph(
-        Object.keys(doc.components?.schemas ?? {}).map((name) => getRefFromName(name)),
-        ctx.getSchemaByRef
-    );
 
     return {
         ...(ctx as Required<ConversionTypeContext>),

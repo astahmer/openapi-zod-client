@@ -59,12 +59,16 @@ test("autofix-unusual-ref-format", () => {
                   "response": "z.string()",
               },
           ],
-          "getSchemaByRef": [Function],
           "issues": {
               "ignoredFallbackResponse": [],
               "ignoredGenericError": [],
           },
           "refsDependencyGraph": {},
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
           "schemaByName": {},
           "zodSchemaByName": {
               "Basic": "z.string()",

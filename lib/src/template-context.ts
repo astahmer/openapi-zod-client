@@ -10,7 +10,7 @@ import type { TsConversionContext } from "./openApiToTypescript";
 import { getTypescriptFromOpenApi } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
 import { topologicalSort } from "./topologicalSort";
-import { getRefFromName, getRefName, normalizeString } from "./utils";
+import { asComponentSchema, normalizeString } from "./utils";
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -26,8 +26,8 @@ export const getZodClientTemplateContext = (
 
     const docSchemas = openApiDoc.components?.schemas ?? {};
     const depsGraphs = getOpenApiDependencyGraph(
-        Object.keys(docSchemas).map((name) => getRefFromName(name)),
-        result.getSchemaByRef
+        Object.keys(docSchemas).map((name) => asComponentSchema(name)),
+        result.resolver.getSchemaByRef
     );
 
     if (options?.shouldExportAllSchemas) {
@@ -38,11 +38,11 @@ export const getZodClientTemplateContext = (
         });
     }
 
-    const wrapWithLazyIfNeeded = (name: string) => {
-        const [code, ref] = [result.zodSchemaByName[name]!, getRefFromName(name)];
+    const wrapWithLazyIfNeeded = (schemaName: string) => {
+        const [code, ref] = [result.zodSchemaByName[schemaName]!, result.resolver.resolveSchemaName(schemaName)?.ref];
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         if (isCircular) {
-            data.circularTypeByName[name] = true;
+            data.circularTypeByName[schemaName] = true;
         }
 
         return isCircular ? `z.lazy(() => ${code})` : code;
@@ -54,34 +54,37 @@ export const getZodClientTemplateContext = (
 
     for (const ref in depsGraphs.deepDependencyGraph) {
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
-        const ctx: TsConversionContext = { nodeByRef: {}, getSchemaByRef: result.getSchemaByRef, visitedsRefs: {} };
+        const ctx: TsConversionContext = { nodeByRef: {}, resolver: result.resolver, visitedsRefs: {} };
 
-        const refName = isCircular ? getRefName(ref) : undefined;
-        if (isCircular && refName && !data.types[refName]) {
+        const schemaName = isCircular ? result.resolver.resolveRef(ref).normalized : undefined;
+        if (isCircular && schemaName && !data.types[schemaName]) {
             const node = getTypescriptFromOpenApi({
-                schema: result.getSchemaByRef(ref),
+                schema: result.resolver.getSchemaByRef(ref),
                 ctx,
-                meta: { name: refName },
+                meta: { name: schemaName },
             }) as ts.Node;
-            data.types[refName] = printTs(node).replace("export ", "");
+            data.types[schemaName] = printTs(node).replace("export ", "");
 
             for (const depRef of depsGraphs.deepDependencyGraph[ref] ?? []) {
-                const depRefName = getRefName(depRef);
+                const depSchemaName = result.resolver.resolveRef(depRef).normalized;
                 const isDepCircular = depsGraphs.deepDependencyGraph[depRef]?.has(depRef);
 
-                if (!isDepCircular && !data.types[depRefName]) {
+                if (!isDepCircular && !data.types[depSchemaName]) {
                     const node = getTypescriptFromOpenApi({
-                        schema: result.getSchemaByRef(depRef),
+                        schema: result.resolver.getSchemaByRef(depRef),
                         ctx,
-                        meta: { name: depRefName },
+                        meta: { name: depSchemaName },
                     }) as ts.Node;
-                    data.types[depRefName] = printTs(node).replace("export ", "");
+                    data.types[depSchemaName] = printTs(node).replace("export ", "");
                 }
             }
         }
     }
 
-    const schemaOrderedByDependencies = topologicalSort(depsGraphs.refsDependencyGraph).map((ref) => getRefName(ref));
+    // TODO
+    const schemaOrderedByDependencies = topologicalSort(depsGraphs.deepDependencyGraph).map(
+        (ref) => result.resolver.resolveRef(ref).ref
+    );
     data.schemas = sortObjKeysFromArray(data.schemas, schemaOrderedByDependencies);
 
     const groupStrategy = options?.groupStrategy ?? "none";
@@ -128,23 +131,25 @@ export const getZodClientTemplateContext = (
             addDependencyIfNeeded(endpoint.response);
             endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
             endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
-            dependencies.forEach((ref) => (group.schemas[getRefName(ref)] = data.schemas[getRefName(ref)]!));
+            dependencies.forEach((schemaName) => (group.schemas[schemaName] = data.schemas[schemaName]!));
 
             // reduce types/schemas for each group using prev computed deep dependencies
             if (groupStrategy.includes("file")) {
-                [...dependencies].forEach((refName) => {
-                    if (data.types[refName]) {
-                        group.types[refName] = data.types[refName]!;
+                [...dependencies].forEach((schemaName) => {
+                    if (data.types[schemaName]) {
+                        group.types[schemaName] = data.types[schemaName]!;
                     }
 
-                    group.schemas[refName] = data.schemas[refName]!;
+                    group.schemas[schemaName] = data.schemas[schemaName]!;
 
-                    depsGraphs.deepDependencyGraph[getRefFromName(refName)]?.forEach((transitiveRef) => {
-                        const transitiveRefName = getRefName(transitiveRef);
-                        addDependencyIfNeeded(transitiveRefName);
-                        group.types[transitiveRefName] = data.types[transitiveRefName]!;
-                        group.schemas[transitiveRefName] = data.schemas[transitiveRefName]!;
-                    });
+                    depsGraphs.deepDependencyGraph[result.resolver.resolveSchemaName(schemaName).ref]?.forEach(
+                        (transitiveRef) => {
+                            const transitiveSchemaName = result.resolver.resolveRef(transitiveRef).normalized;
+                            addDependencyIfNeeded(transitiveSchemaName);
+                            group.types[transitiveSchemaName] = data.types[transitiveSchemaName]!;
+                            group.schemas[transitiveSchemaName] = data.schemas[transitiveSchemaName]!;
+                        }
+                    );
                 });
             }
         }

@@ -122,12 +122,16 @@ test("getZodiosEndpointDefinitionList /store/order", () => {
                   "response": "Order",
               },
           ],
-          "getSchemaByRef": [Function],
           "issues": {
               "ignoredFallbackResponse": [],
               "ignoredGenericError": [],
           },
           "refsDependencyGraph": {},
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
           "schemaByName": {},
           "zodSchemaByName": {
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
@@ -266,7 +270,6 @@ test("getZodiosEndpointDefinitionList /pet", () => {
                   "response": "Pet",
               },
           ],
-          "getSchemaByRef": [Function],
           "issues": {
               "ignoredFallbackResponse": [],
               "ignoredGenericError": [],
@@ -276,6 +279,11 @@ test("getZodiosEndpointDefinitionList /pet", () => {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
               },
+          },
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
           },
           "schemaByName": {},
           "zodSchemaByName": {
@@ -457,7 +465,6 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
                   "response": "z.array(Pet)",
               },
           ],
-          "getSchemaByRef": [Function],
           "issues": {
               "ignoredFallbackResponse": [],
               "ignoredGenericError": [],
@@ -467,6 +474,11 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
               },
+          },
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
           },
           "schemaByName": {},
           "zodSchemaByName": {
@@ -941,7 +953,6 @@ test("petstore.yaml", async () => {
                   "response": "",
               },
           ],
-          "getSchemaByRef": [Function],
           "issues": {
               "ignoredFallbackResponse": [
                   "createUsersWithListInput",
@@ -960,6 +971,11 @@ test("petstore.yaml", async () => {
                   "#/components/schemas/Category",
                   "#/components/schemas/Tag",
               },
+          },
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
           },
           "schemaByName": {},
           "zodSchemaByName": {
