@@ -50,7 +50,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
             .exhaustive();
     }
 
-    const fs = await import("fs-extra");
+    const fs = await import("@liuli-util/fs-extra");
     const source = await fs.readFile(templatePath, "utf8");
     const hbs = getHandlebars();
     const template = hbs.compile(source);

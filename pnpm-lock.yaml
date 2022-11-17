@@ -51,6 +51,7 @@ importers:
       '@babel/core': ^7.19.6
       '@babel/preset-env': ^7.19.4
       '@babel/preset-typescript': ^7.18.6
+      '@liuli-util/fs-extra': ^0.1.0
       '@preconstruct/cli': ^2.2.1
       '@types/degit': ^2.8.3
       '@types/fs-extra': ^9.0.13
@@ -66,7 +67,6 @@ importers:
       eslint: ^8.26.0
       eslint-formatter-pretty: ^4.1.0
       fast-glob: ^3.2.12
-      fs-extra: ^10.1.0
       handlebars: ^4.7.7
       openapi-types: ^12.0.2
       openapi3-ts: 3.0.2
@@ -82,10 +82,10 @@ importers:
     dependencies:
       '@apidevtools/swagger-parser': 10.1.0_openapi-types@12.0.2
       '@babel/core': 7.19.6
+      '@liuli-util/fs-extra': 0.1.0
       '@zodios/core': 10.5.2_axios@0.27.2+zod@3.19.1
       axios: 0.27.2
       cac: 6.7.14
-      fs-extra: 10.1.0
       handlebars: 4.7.7
       openapi-types: 12.0.2
       openapi3-ts: 3.0.2
@@ -2997,6 +2997,13 @@ packages:
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
     dev: false
 
+  /@liuli-util/fs-extra/0.1.0:
+    resolution: {integrity: sha512-eaAyDyMGT23QuRGbITVY3SOJff3G9ekAAyGqB9joAnTBmqvFN+9a1FazOdO70G6IUqgpKV451eBHYSRcOJ/FNQ==}
+    dependencies:
+      '@types/fs-extra': 9.0.13
+      fs-extra: 10.1.0
+    dev: false
+
   /@monaco-editor/loader/1.3.2_monaco-editor@0.34.1:
     resolution: {integrity: sha512-BTDbpHl3e47r3AAtpfVFTlAi7WXv4UQ/xZmz8atKl4q7epQV5e7+JbigFDViWF71VBi4IIBdcWP57Hj+OWuc9g==}
     peerDependencies:
@@ -3946,7 +3953,6 @@ packages:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
     dependencies:
       '@types/node': 18.11.9
-    dev: true
 
   /@types/js-yaml/4.0.5:
     resolution: {integrity: sha512-FhpRzf927MNQdRZP0J5DLIdTXhjLYzeUTmLAu69mnVksLH9CJY3IuSeEgbKUki7GQZm0WqDkGzyxju2EZGD2wA==}
@@ -3984,7 +3990,6 @@ packages:
 
   /@types/node/18.11.9:
     resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
-    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}

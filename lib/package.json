@@ -24,10 +24,10 @@
     "dependencies": {
         "@apidevtools/swagger-parser": "^10.1.0",
         "@babel/core": "^7.19.6",
+        "@liuli-util/fs-extra": "^0.1.0",
         "@zodios/core": "^10.3.1",
         "axios": "^0.27.2",
         "cac": "^6.7.14",
-        "fs-extra": "^10.1.0",
         "handlebars": "^4.7.7",
         "openapi-types": "^12.0.2",
         "openapi3-ts": "3.0.2",
