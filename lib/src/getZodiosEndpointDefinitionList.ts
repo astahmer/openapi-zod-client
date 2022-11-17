@@ -24,8 +24,15 @@ const voidSchema = "z.void()";
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
 export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: TemplateContext["options"]) => {
-    const getSchemaByRef: ConversionTypeContext["getSchemaByRef"] = (ref: string) =>
-        get(doc, ref.replace("#/", "").replace("#", "").replaceAll("/", "."));
+    const getSchemaByRef: ConversionTypeContext["getSchemaByRef"] = (ref: string) => {
+        const correctRef = ref[1] === "/" ? ref : "#/" + ref;
+        const split = correctRef.split("/");
+        const path = split.slice(1, split.length - 1).join("/")!;
+        const map = get(doc, path.replace("#/", "").replace("#", "").replaceAll("/", ".")) ?? ({} as any);
+        const name = split[split.length - 1]!;
+
+        return map[name] as SchemaObject;
+    };
 
     const endpoints = [];
 
