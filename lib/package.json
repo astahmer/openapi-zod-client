@@ -1,6 +1,6 @@
 {
     "name": "openapi-zod-client",
-    "version": "1.1.5",
+    "version": "1.1.6",
     "repository": {
         "type": "git",
         "url": "https://github.com/astahmer/openapi-zod-client.git"
@@ -66,9 +66,10 @@
     },
     "files": [
         "bin.js",
+        "src",
         "dist",
         "cli",
-        "../README.md"
+        "README.md"
     ],
     "keywords": [
         "openapi",
