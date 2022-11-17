@@ -143,7 +143,7 @@ importers:
       framer-motion: ^7.6.2
       lz-string: ^1.4.4
       monaco-editor: ^0.34.1
-      openapi-zod-client: workspace:^1.0.0
+      openapi-zod-client: workspace:^1.4.0
       pastable: ^2.0.13
       prettier: ^2.7.1
       react: ^18.2.0
