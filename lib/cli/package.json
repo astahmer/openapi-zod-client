@@ -1,4 +1,11 @@
 {
     "main": "dist/openapi-zod-client-cli.cjs.js",
-    "module": "dist/openapi-zod-client-cli.esm.js"
+    "module": "dist/openapi-zod-client-cli.esm.js",
+    "exports": {
+        ".": {
+            "require": "./dist/openapi-zod-client.cjs.js",
+            "import": "./dist/openapi-zod-client.esm.js",
+            "types": "./dist/openapi-zod-client.cjs.d.ts"
+        }
+    }
 }
