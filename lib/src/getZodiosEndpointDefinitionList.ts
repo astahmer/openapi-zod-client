@@ -96,7 +96,13 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         }
 
         // result is a reference to another schema
-        if (input.ref && ctx.zodSchemaByName[result]) {
+        let schema = ctx.zodSchemaByName[result];
+        if (!schema && input.ref) {
+            const refInfo = ctx.resolver.resolveRef(input.ref);
+            schema = ctx.zodSchemaByName[refInfo.name];
+        }
+
+        if (input.ref && schema) {
             const complexity = getSchemaComplexity({ current: 0, schema: ctx.resolver.getSchemaByRef(input.ref) });
 
             // ref result is simple enough that it doesn't need to be assigned to a variable
