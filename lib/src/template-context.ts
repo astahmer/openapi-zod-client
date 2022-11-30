@@ -124,6 +124,7 @@ export const getZodClientTemplateContext = (
             const dependencies = dependenciesByGroupName.get(groupName)!;
 
             const addDependencyIfNeeded = (schemaName: string) => {
+                if (!schemaName) return;
                 if (schemaName.startsWith("z.")) return;
                 dependencies.add(schemaName);
             };
