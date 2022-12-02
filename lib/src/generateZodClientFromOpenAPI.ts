@@ -15,6 +15,7 @@ type GenerateZodClientFromOpenApiArgs<TOptions extends TemplateContext["options"
     templatePath?: string;
     prettierConfig?: Options | null;
     options?: TOptions;
+    handlebars?: ReturnType<typeof getHandlebars>;
 } & (
     | {
           distPath?: never;
@@ -31,6 +32,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     prettierConfig,
     options,
     disableWriteToFile,
+    handlebars,
 }: GenerateZodClientFromOpenApiArgs<TOptions>): Promise<
     TOptions extends NonNullable<TemplateContext["options"]>
         ? undefined extends TOptions["groupStrategy"]
@@ -52,7 +54,7 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
 
     const fs = await import("@liuli-util/fs-extra");
     const source = await fs.readFile(templatePath, "utf8");
-    const hbs = getHandlebars();
+    const hbs = handlebars ?? getHandlebars();
     const template = hbs.compile(source);
     const willWriteToFile = !disableWriteToFile && distPath;
     // TODO parallel writes ? does it really matter here ?
