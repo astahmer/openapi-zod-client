@@ -226,6 +226,14 @@ const getZodChainableDefault = (schema: SchemaObject) => {
     return "";
 };
 
+const wrapPatternIfNeeded = (pattern: string) => {
+    if (pattern.startsWith("/") && pattern.endsWith("/")) {
+        return pattern;
+    }
+
+    return `/${pattern}/`;
+};
+
 const getZodChainableStringValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
@@ -238,7 +246,7 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
     }
 
     if (schema.pattern) {
-        validations.push(`regex(${schema.pattern})`);
+        validations.push(`regex(${wrapPatternIfNeeded(schema.pattern)})`);
     }
 
     if (schema.format) {

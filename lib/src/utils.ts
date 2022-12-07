@@ -15,7 +15,7 @@ export function normalizeString(text: string) {
 }
 
 export const wrapWithQuotesIfNeeded = (str: string) => {
-    if (str.match(/^\w+$/)) {
+    if (/^\w+$/.test(str)) {
         return str;
     }
 
