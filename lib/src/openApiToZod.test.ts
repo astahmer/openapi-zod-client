@@ -102,7 +102,7 @@ test("getSchemaAsZodString", () => {
         '"z.enum(["aaa", "bbb", "ccc"])"'
     );
     expect(getSchemaAsZodString({ type: "number", enum: [1, 2, 3, null] })).toMatchInlineSnapshot(
-        '"z.union([z.literal("1"), z.literal("2"), z.literal("3"), z.literal(null)])"'
+        '"z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(null)])"'
     );
 });
 
