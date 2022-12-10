@@ -109,7 +109,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code.assign(
                 `z.union([${schema.enum
                     // eslint-disable-next-line sonarjs/no-nested-template-literals
-                    .map((value) => `z.literal(${value === null ? "null" : `"${value}"`})`)
+                    .map((value) => `z.literal(${value === null ? "null" : value})`)
                     .join(", ")}])`
             );
         }
@@ -268,7 +268,7 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
 const getZodChainableNumberValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
-    if (schema.type === "integer") {
+    if (schema.type === "integer" && !schema.enum) {
         validations.push("int()");
     }
 
