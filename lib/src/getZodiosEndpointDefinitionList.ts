@@ -169,19 +169,24 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                             endpointDefinition.requestFormat = "text";
                         });
 
+                    const bodyCode = getZodSchema({
+                        schema: bodySchema,
+                        ctx,
+                        meta: { isRequired: requestBody.required ?? true },
+                        options,
+                    });
                     endpointDefinition.parameters.push({
                         name: "body",
                         type: "Body",
                         description: requestBody.description!,
-                        schema: getZodVarName(
-                            getZodSchema({
-                                schema: bodySchema,
-                                ctx,
-                                meta: { isRequired: requestBody.required ?? true },
-                                options,
-                            }),
-                            operationName + "_Body"
-                        ),
+                        schema:
+                            getZodVarName(bodyCode, operationName + "_Body") +
+                            getZodChain(
+                                isReferenceObject(bodySchema)
+                                    ? ctx.resolver.getSchemaByRef(bodySchema.$ref)
+                                    : bodySchema,
+                                bodyCode.meta
+                            ),
                     });
                 }
             }
@@ -191,7 +196,11 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                     isReferenceObject(param) ? ctx.resolver.getSchemaByRef(param.$ref) : param
                 ) as ParameterObject;
                 if (allowedPathInValues.includes(paramItem.in)) {
-                    const paramSchema = (isReferenceObject(param) ? param.$ref : param.schema) as SchemaObject;
+                    const paramSchema = (
+                        isReferenceObject(paramItem.schema)
+                            ? ctx.resolver.getSchemaByRef(paramItem.schema.$ref)
+                            : paramItem.schema
+                    )!;
                     const paramCode = getZodSchema({
                         schema: paramSchema,
                         ctx,
@@ -226,7 +235,14 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                 if (maybeSchema) {
                     schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
-                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
+                    schemaString =
+                        (schema.ref ? getZodVarName(schema) : schema.toString()) +
+                        getZodChain(
+                            isReferenceObject(maybeSchema)
+                                ? ctx.resolver.getSchemaByRef(maybeSchema.$ref)
+                                : maybeSchema,
+                            schema.meta
+                        );
                 }
 
                 if (schemaString) {
@@ -267,7 +283,14 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                 if (maybeSchema) {
                     schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
-                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
+                    schemaString =
+                        (schema.ref ? getZodVarName(schema) : schema.toString()) +
+                        getZodChain(
+                            isReferenceObject(maybeSchema)
+                                ? ctx.resolver.getSchemaByRef(maybeSchema.$ref)
+                                : maybeSchema,
+                            schema.meta
+                        );
                 }
 
                 if (schemaString) {
