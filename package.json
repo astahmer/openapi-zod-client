@@ -1,37 +1,35 @@
 {
-  "name": "openapi-zod-client-monorepo",
-  "private": true,
-  "version": "1.4.7",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/astahmer/openapi-zod-client.git"
-  },
-  "preconstruct": {
-    "packages": [
-      "lib"
-    ]
-  },
-  "author": "Alexandre Stahmer <alexandre.stahmer@gmail.com>",
-  "scripts": {
-    "dev": "preconstruct watch",
-    "build": "preconstruct build",
-    "test": "pnpm --filter=openapi-zod-client test:ci",
-    "release": "pnpm build && pnpm test && sheep release -b main && prettier ./package.json -c .prettierrc.json -w",
-    "postinstall": "preconstruct dev",
-    "gen:samples": "rm -rf ./samples && tsx ./lib/samples-generator.ts"
-  },
-  "license": "ISC",
-  "dependencies": {
-    "@babel/core": "^7.19.6",
-    "@babel/preset-env": "^7.19.4",
-    "@babel/preset-typescript": "^7.18.6"
-  },
-  "devDependencies": {
-    "@akryum/sheep": "^0.4.3",
-    "@preconstruct/cli": "^2.2.1",
-    "conventional-changelog-cli": "^2.2.2",
-    "prettier": "^2.7.1",
-    "tsx": "^3.11.0",
-    "typescript": "^4.8.3"
-  }
+    "name": "openapi-zod-client-monorepo",
+    "private": true,
+    "version": "1.4.7",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/astahmer/openapi-zod-client.git"
+    },
+    "preconstruct": {
+        "packages": [
+            "lib"
+        ]
+    },
+    "author": "Alexandre Stahmer <alexandre.stahmer@gmail.com>",
+    "scripts": {
+        "dev": "preconstruct watch",
+        "build": "preconstruct build",
+        "test": "pnpm --filter=openapi-zod-client test:ci",
+        "postinstall": "preconstruct dev",
+        "gen:samples": "rm -rf ./samples && tsx ./lib/samples-generator.ts"
+    },
+    "license": "ISC",
+    "dependencies": {
+        "@babel/core": "^7.19.6",
+        "@babel/preset-env": "^7.19.4",
+        "@babel/preset-typescript": "^7.18.6"
+    },
+    "devDependencies": {
+        "@preconstruct/cli": "^2.2.1",
+        "conventional-changelog-cli": "^2.2.2",
+        "prettier": "^2.7.1",
+        "tsx": "^3.11.0",
+        "typescript": "^4.8.3"
+    }
 }
