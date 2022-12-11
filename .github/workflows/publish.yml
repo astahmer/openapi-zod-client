@@ -36,30 +36,16 @@ jobs:
         working-directory: ./lib
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: generate changelog
-        uses: orhun/git-cliff-action@v1
-        id: cliff
+      - name: Checkout code
+        uses: actions/checkout@master
         with:
-          args: --latest --strip footer
-        env:
-          OUTPUT: CHANGES.md
-      - name: save changelog
-        id: changelog
-        shell: bash
-        run: |
-          changelog=$(cat ${{ steps.cliff.outputs.changelog }})
-          changelog="${changelog//'%'/'%25'}"
-          changelog="${changelog//$'\n'/'%0A'}"
-          changelog="${changelog//$'\r'/'%0D'}"
-          echo "::set-output name=changelog::$changelog"
-      - name: create release
-        id: release
-        uses: actions/create-release@v1
+          fetch-depth: 0 # Fetch all tags
+
+      - name: Create Release for Tag
+        id: release_tag
+        uses: Akryum/release-tag@conventional
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: ${{ steps.changelog.outputs.changelog }}
-          draft: false
-          prerelease: false
+          preset: angular # Use conventional-changelog preset

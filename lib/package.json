@@ -1,6 +1,6 @@
 {
     "name": "openapi-zod-client",
-    "version": "1.4.6",
+    "version": "1.4.7",
     "repository": {
         "type": "git",
         "url": "https://github.com/astahmer/openapi-zod-client.git"
@@ -14,6 +14,7 @@
     },
     "scripts": {
         "test": "vitest",
+        "test:ci": "vitest run",
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
         "lint:fix": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty --fix"

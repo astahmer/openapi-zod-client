@@ -38,7 +38,7 @@ https://paka.dev/npm/openapi-zod-client
 ## CLI
 
 ```sh
-openapi-zod-client/1.4.0
+openapi-zod-client/1.4.7
 
 Usage:
   $ openapi-zod-client <input>
