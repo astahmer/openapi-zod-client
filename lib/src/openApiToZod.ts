@@ -94,7 +94,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         const rest = types
             .slice(1)
             .map((type) => `and(${type.toString()})`)
-            .join("");
+            .join(".");
 
         return code.assign(`${first.toString()}.${rest}`);
     }
