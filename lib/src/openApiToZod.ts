@@ -237,11 +237,11 @@ const wrapPatternIfNeeded = (pattern: string) => {
 const getZodChainableStringValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
-    if (schema.minLength && schema.maxLength) {
-        validations.push(`length(${schema.minLength})`);
-    } else if (schema.minLength) {
+    if (schema.minLength) {
         validations.push(`min(${schema.minLength})`);
-    } else if (schema.maxLength) {
+    }
+
+    if (schema.maxLength) {
         validations.push(`max(${schema.maxLength})`);
     }
 
@@ -302,11 +302,11 @@ const getZodChainableNumberValidations = (schema: SchemaObject) => {
 const getZodChainableArrayValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
-    if (schema.minItems && schema.maxItems) {
-        validations.push(`length(${schema.minItems})`);
-    } else if (schema.minItems) {
+    if (schema.minItems) {
         validations.push(`min(${schema.minItems})`);
-    } else if (schema.maxItems) {
+    }
+
+    if (schema.maxItems) {
         validations.push(`max(${schema.maxItems})`);
     }
 
