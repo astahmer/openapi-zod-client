@@ -1,3 +1,13 @@
+## [1.4.7](https://github.com/astahmer/openapi-zod-client/compare/v1.4.6...v1.4.7) (2022-12-11)
+
+
+### Bug Fixes
+
+* **#49:** min+max shouldnt mean EXACT but between ([d394d86](https://github.com/astahmer/openapi-zod-client/commit/d394d86059484b32c39bd91aa1897d2373c3d373)), closes [#49](https://github.com/astahmer/openapi-zod-client/issues/49)
+* **#49:** missing .and for allOf ([fb2fc0c](https://github.com/astahmer/openapi-zod-client/commit/fb2fc0ce838414d652db4c7fc3e812339dd3a685)), closes [#49](https://github.com/astahmer/openapi-zod-client/issues/49)
+
+
+
 ## [1.4.6](https://github.com/astahmer/openapi-zod-client/compare/v1.4.5...v1.4.6) (2022-12-10)
 
 
