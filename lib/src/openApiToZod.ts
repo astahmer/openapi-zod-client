@@ -99,9 +99,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(`${first.toString()}.${rest}`);
     }
 
-    if (schema.type && isPrimitiveType(schema.type)) {
+    const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
+    if (schemaType && isPrimitiveType(schemaType)) {
         if (schema.enum) {
-            if (schema.type === "string") {
+            if (schemaType === "string") {
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
             }
@@ -115,7 +116,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         }
 
         return code.assign(
-            match(schema.type)
+            match(schemaType)
                 .with("integer", () => "z.number()")
                 .with("string", () =>
                     match(schema.format)
@@ -126,7 +127,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         );
     }
 
-    if (schema.type === "array") {
+    if (schemaType === "array") {
         if (schema.items) {
             return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})`);
         }
@@ -134,7 +135,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign("z.array(z.any())");
     }
 
-    if (schema.type === "object" || schema.properties || schema.additionalProperties) {
+    if (schemaType === "object" || schema.properties || schema.additionalProperties) {
         let additionalProps = "";
         if (
             (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
@@ -177,10 +178,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
 
-    if (!schema.type) return code.assign("z.unknown()");
+    if (!schemaType) return code.assign("z.unknown()");
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-    throw new Error(`Unsupported schema type: ${schema.type}`);
+    throw new Error(`Unsupported schema type: ${schemaType}`);
 }
 
 export const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {

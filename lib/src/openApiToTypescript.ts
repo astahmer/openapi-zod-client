@@ -94,18 +94,19 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             return t.intersection(types);
         }
 
-        if (schema.type && isPrimitiveType(schema.type)) {
+        const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
+        if (schemaType && isPrimitiveType(schemaType)) {
             if (schema.enum) {
                 return t.union(schema.enum);
             }
 
-            if (schema.type === "string") return t.string();
-            if (schema.type === "boolean") return t.boolean();
-            if (schema.type === "number" || schema.type === "integer") return t.number();
-            if (schema.type === "null") return t.reference("null");
+            if (schemaType === "string") return t.string();
+            if (schemaType === "boolean") return t.boolean();
+            if (schemaType === "number" || schemaType === "integer") return t.number();
+            if (schemaType === "null") return t.reference("null");
         }
 
-        if (schema.type === "array") {
+        if (schemaType === "array") {
             if (schema.items) {
                 let arrayOfType = getTypescriptFromOpenApi({ schema: schema.items, ctx, meta }) as TypeDefinition;
                 if (typeof arrayOfType === "string") {
@@ -119,7 +120,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             return t.array(t.any());
         }
 
-        if (schema.type === "object" || schema.properties || schema.additionalProperties) {
+        if (schemaType === "object" || schema.properties || schema.additionalProperties) {
             if (!schema.properties) {
                 return {};
             }
@@ -191,10 +192,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             return t.type(inheritedMeta.name, t.reference("Partial", [objectType]));
         }
 
-        if (!schema.type) return t.unknown();
+        if (!schemaType) return t.unknown();
 
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw new Error(`Unsupported schema type: ${schema.type}`);
+        throw new Error(`Unsupported schema type: ${schemaType}`);
     };
 
     const tsResult = getTs();
