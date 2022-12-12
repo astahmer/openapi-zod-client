@@ -162,9 +162,19 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                         : options?.withImplicitRequiredProps,
                     name: prop,
                 } as CodeMetaData;
+
+                let propActualSchema = propSchema;
+
+                if (isReferenceObject(propSchema) && ctx?.resolver) {
+                    propActualSchema = ctx.resolver.getSchemaByRef(propSchema.$ref);
+                    if (!propActualSchema) {
+                        throw new Error(`Schema ${propSchema.$ref} not found`);
+                    }
+                }
+
                 const propCode =
                     getZodSchema({ schema: propSchema, ctx, meta: propMetadata, options }) +
-                    getZodChain(propSchema as SchemaObject, propMetadata);
+                    getZodChain(propActualSchema as SchemaObject, propMetadata);
 
                 return [prop, propCode.toString()];
             });
