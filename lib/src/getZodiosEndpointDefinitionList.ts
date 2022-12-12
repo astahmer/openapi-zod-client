@@ -193,11 +193,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 ) as ParameterObject;
                 if (allowedPathInValues.includes(paramItem.in)) {
                     let paramSchema: SchemaObject | ReferenceObject | undefined;
-                    console.log({ param, paramItem });
                     if (paramItem.content) {
                         const mediaTypes = Object.keys(paramItem.content ?? {});
                         const matchingMediaType = mediaTypes.find(isAllowedParamMediaTypes);
-                        console.log({ mediaTypes, matchingMediaType });
 
                         if (!matchingMediaType) {
                             throw new Error(
@@ -225,7 +223,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         paramSchema = paramItem.schema;
                     }
 
-                    console.log({ paramSchema });
                     // resolve ref if needed
                     paramSchema = (
                         isReferenceObject(paramSchema) ? ctx.resolver.getSchemaByRef(paramSchema.$ref) : paramSchema
