@@ -1,3 +1,12 @@
+## [1.4.12](https://github.com/astahmer/openapi-zod-client/compare/v1.4.11...v1.4.12) (2022-12-12)
+
+
+### Bug Fixes
+
+* **#49:** escape control characters ([5b061cf](https://github.com/astahmer/openapi-zod-client/commit/5b061cfe16c2446bd7bade5cf8356cf6acdd2985)), closes [#49](https://github.com/astahmer/openapi-zod-client/issues/49)
+
+
+
 ## [1.4.11](https://github.com/astahmer/openapi-zod-client/compare/v1.4.10...v1.4.11) (2022-12-12)
 
 
