@@ -5,7 +5,7 @@ import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
 import { CodeMeta } from "./CodeMeta";
 import { isReferenceObject } from "./isReferenceObject";
 import type { TemplateContext } from "./template-context";
-import { isPrimitiveType, wrapWithQuotesIfNeeded } from "./utils";
+import { escapeControlCharacters, isPrimitiveType, wrapWithQuotesIfNeeded } from "./utils";
 
 type ConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -226,7 +226,9 @@ const getZodChainableDefault = (schema: SchemaObject) => {
     return "";
 };
 
-const wrapPatternIfNeeded = (pattern: string) => {
+const formatPatternIfNeeded = (pattern: string) => {
+    pattern = escapeControlCharacters(pattern);
+
     if (pattern.startsWith("/") && pattern.endsWith("/")) {
         return pattern;
     }
@@ -246,7 +248,7 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
     }
 
     if (schema.pattern) {
-        validations.push(`regex(${wrapPatternIfNeeded(schema.pattern)})`);
+        validations.push(`regex(${formatPatternIfNeeded(schema.pattern)})`);
     }
 
     if (schema.format) {
