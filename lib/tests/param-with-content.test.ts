@@ -35,6 +35,11 @@ test("param-with-content", async () => {
                             description: "Accept language (fr-CA)",
                             content: { "*/*": { schema: { type: "string", default: "EN" } } },
                         },
+                        {
+                            name: "missing",
+                            description: "missing both schema AND content, should default to unknown",
+                            in: "query",
+                        },
                     ],
                     responses: {
                         "200": {
@@ -86,6 +91,11 @@ test("param-with-content", async () => {
               name: "Accept-Language",
               type: "Header",
               schema: z.string().optional().default("EN"),
+            },
+            {
+              name: "missing",
+              type: "Query",
+              schema: z.unknown().optional(),
             },
           ],
           response: z.object({ text3: z.boolean() }).partial(),

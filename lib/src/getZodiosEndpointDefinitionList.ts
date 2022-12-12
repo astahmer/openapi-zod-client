@@ -223,13 +223,15 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         paramSchema = paramItem.schema;
                     }
 
-                    // resolve ref if needed
-                    paramSchema = (
-                        isReferenceObject(paramSchema) ? ctx.resolver.getSchemaByRef(paramSchema.$ref) : paramSchema
-                    )!;
+                    // resolve ref if needed, and fallback to default (unknown) value if needed
+                    paramSchema = paramSchema
+                        ? (isReferenceObject(paramSchema)
+                              ? ctx.resolver.getSchemaByRef(paramSchema.$ref)
+                              : paramSchema)!
+                        : {};
 
                     const paramCode = getZodSchema({
-                        schema: paramSchema,
+                        schema: paramSchema ?? {},
                         ctx,
                         meta: { isRequired: paramItem.in === "path" ? true : paramItem.required ?? false },
                     });
