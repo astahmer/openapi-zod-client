@@ -1,3 +1,12 @@
+## [1.4.13](https://github.com/astahmer/openapi-zod-client/compare/v1.4.12...v1.4.13) (2022-12-12)
+
+
+### Bug Fixes
+
+* autofix wrong schema.type case as QoL improvement ([e589663](https://github.com/astahmer/openapi-zod-client/commit/e5896630a9480ad5031d2bd2e451ad4850e9e682))
+
+
+
 ## [1.4.12](https://github.com/astahmer/openapi-zod-client/compare/v1.4.11...v1.4.12) (2022-12-12)
 
 
