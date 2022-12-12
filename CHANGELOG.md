@@ -1,3 +1,21 @@
+## [1.4.9](https://github.com/astahmer/openapi-zod-client/compare/v1.4.8...v1.4.9) (2022-12-12)
+
+
+### Bug Fixes
+
+* ParameterObject with content (and no schema) ([c9c8647](https://github.com/astahmer/openapi-zod-client/commit/c9c86478d63d131cbe2dd37d150a27b6f4cc5199))
+
+
+
+## [1.4.8](https://github.com/astahmer/openapi-zod-client/compare/v1.4.7...v1.4.8) (2022-12-11)
+
+
+### Bug Fixes
+
+* rm sheep & re-publish since it broke the package.. ([794721a](https://github.com/astahmer/openapi-zod-client/commit/794721aa3a92af695aea4964e5ecbb883ddb9140))
+
+
+
 ## [1.4.7](https://github.com/astahmer/openapi-zod-client/compare/v1.4.6...v1.4.7) (2022-12-11)
 
 
