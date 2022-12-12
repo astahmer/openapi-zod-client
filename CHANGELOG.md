@@ -1,9 +1,18 @@
-## [1.4.9](https://github.com/astahmer/openapi-zod-client/compare/v1.4.8...v1.4.9) (2022-12-12)
+## [1.4.11](https://github.com/astahmer/openapi-zod-client/compare/v1.4.10...v1.4.11) (2022-12-12)
 
 
 ### Bug Fixes
 
-* ParameterObject with content (and no schema) ([c9c8647](https://github.com/astahmer/openapi-zod-client/commit/c9c86478d63d131cbe2dd37d150a27b6f4cc5199))
+* ParameterObject with missing schema AND content ([20e075c](https://github.com/astahmer/openapi-zod-client/commit/20e075cecf8b10fbab096165de177151b17364bd))
+
+
+
+## [1.4.10](https://github.com/astahmer/openapi-zod-client/compare/v1.4.8...v1.4.10) (2022-12-12)
+
+
+### Bug Fixes
+
+* ParameterObject with content (and no schema) ([a7533a5](https://github.com/astahmer/openapi-zod-client/commit/a7533a51949c4ddb20b7d297583801ade743b58a))
 
 
 
