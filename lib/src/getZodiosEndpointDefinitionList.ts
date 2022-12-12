@@ -4,6 +4,7 @@ import type {
     OperationObject,
     ParameterObject,
     PathItemObject,
+    ReferenceObject,
     RequestBodyObject,
     ResponseObject,
     SchemaObject,
@@ -146,7 +147,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             if (operation.requestBody) {
                 const requestBody = operation.requestBody as RequestBodyObject;
                 const mediaTypes = Object.keys(requestBody.content ?? {});
-                const matchingMediaType = mediaTypes.find(isAllowedBodyMediaTypes);
+                const matchingMediaType = mediaTypes.find(isAllowedParamMediaTypes);
 
                 const bodySchema = matchingMediaType && requestBody.content?.[matchingMediaType]?.schema;
                 if (bodySchema) {
@@ -191,7 +192,45 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                     isReferenceObject(param) ? ctx.resolver.getSchemaByRef(param.$ref) : param
                 ) as ParameterObject;
                 if (allowedPathInValues.includes(paramItem.in)) {
-                    const paramSchema = (isReferenceObject(param) ? param.$ref : param.schema) as SchemaObject;
+                    let paramSchema: SchemaObject | ReferenceObject | undefined;
+                    console.log({ param, paramItem });
+                    if (paramItem.content) {
+                        const mediaTypes = Object.keys(paramItem.content ?? {});
+                        const matchingMediaType = mediaTypes.find(isAllowedParamMediaTypes);
+                        console.log({ mediaTypes, matchingMediaType });
+
+                        if (!matchingMediaType) {
+                            throw new Error(
+                                `Unsupported media type for param ${paramItem.name}: ` + mediaTypes.join(", ")
+                            );
+                        }
+
+                        const mediaTypeObject = paramItem.content[matchingMediaType];
+                        if (!mediaTypeObject) {
+                            throw new Error(
+                                `No content with media type for param ${paramItem.name}: ` + matchingMediaType
+                            );
+                        }
+
+                        paramSchema = mediaTypeObject?.schema;
+
+                        // this fallback is needed to autofix openapi docs that put the $ref in the wrong place
+                        // (it should be in the mediaTypeObject.schema, not in the mediaTypeObject itself)
+                        // https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#style-values (just above this anchor)
+                        if (!paramSchema) {
+                            // @ts-expect-error
+                            paramSchema = mediaTypeObject;
+                        }
+                    } else {
+                        paramSchema = paramItem.schema;
+                    }
+
+                    console.log({ paramSchema });
+                    // resolve ref if needed
+                    paramSchema = (
+                        isReferenceObject(paramSchema) ? ctx.resolver.getSchemaByRef(paramSchema.$ref) : paramSchema
+                    )!;
+
                     const paramCode = getZodSchema({
                         schema: paramSchema,
                         ctx,
@@ -340,14 +379,15 @@ export type EndpointDefinitionWithRefs = Omit<
 
 const pathParamRegex = /{(\w+)}/g;
 
-const allowedBodyMediaTypes = [
+const allowedParamMediaTypes = [
     "application/octet-stream",
     "multipart/form-data",
     "application/x-www-form-urlencoded",
+    "*/*",
 ] as const;
-const isAllowedBodyMediaTypes = (
+const isAllowedParamMediaTypes = (
     mediaType: string
-): mediaType is typeof allowedBodyMediaTypes[number] | `application/${string}json${string}` | `text/${string}` =>
+): mediaType is typeof allowedParamMediaTypes[number] | `application/${string}json${string}` | `text/${string}` =>
     (mediaType.includes("application/") && mediaType.includes("json")) ||
-    allowedBodyMediaTypes.includes(mediaType as any) ||
+    allowedParamMediaTypes.includes(mediaType as any) ||
     mediaType.includes("text/");
