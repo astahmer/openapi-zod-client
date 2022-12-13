@@ -1,3 +1,12 @@
+## [1.4.15](https://github.com/astahmer/openapi-zod-client/compare/v1.4.14...v1.4.15) (2022-12-13)
+
+
+### Bug Fixes
+
+* missing zod chains on z.object(..) refs props ([9b5c2cb](https://github.com/astahmer/openapi-zod-client/commit/9b5c2cb1a5ac276538c003a34174a0a5b3618c58))
+
+
+
 ## [1.4.14](https://github.com/astahmer/openapi-zod-client/compare/v1.4.13...v1.4.14) (2022-12-13)
 
 
