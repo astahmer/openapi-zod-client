@@ -217,10 +217,19 @@ const getZodChainablePresence = (schema: SchemaObject, meta?: CodeMetaData) => {
 };
 
 // TODO OA prefixItems -> z.tuple
+const unwrapQuotesIfNeeded = (value: string | number) => {
+    if (typeof value === "string" && value.startsWith('"') && value.endsWith('"')) {
+        return value.slice(1, -1);
+    }
+
+    return value;
+};
 
 const getZodChainableDefault = (schema: SchemaObject) => {
     if (schema.default) {
-        const value = typeof schema.default === "string" ? `"${schema.default}"` : schema.default;
+        const value = match(schema.type)
+            .with("number", "integer", () => unwrapQuotesIfNeeded(schema.default))
+            .otherwise(() => (typeof schema.default === "string" ? `"${schema.default}"` : schema.default));
         return `default(${value})`;
     }
 
