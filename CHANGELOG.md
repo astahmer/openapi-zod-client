@@ -1,3 +1,12 @@
+## [1.4.14](https://github.com/astahmer/openapi-zod-client/compare/v1.4.13...v1.4.14) (2022-12-13)
+
+
+### Bug Fixes
+
+* schema.type = number with string default should be inlined as number ([b2786b9](https://github.com/astahmer/openapi-zod-client/commit/b2786b9a2a20137e7699822281fddffc01bb2772))
+
+
+
 ## [1.4.13](https://github.com/astahmer/openapi-zod-client/compare/v1.4.12...v1.4.13) (2022-12-12)
 
 
