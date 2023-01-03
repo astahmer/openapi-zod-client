@@ -72,7 +72,7 @@ Options:
 
 You can pass a custom [handlebars](https://handlebarsjs.com/) template and/or a [custom prettier config](https://prettier.io/docs/en/configuration.html) with something like:
 
-`pnpm openapi-zod-client ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json --export-schemas`, there is an example of the output [here](./example/petstore-schemas.ts)
+`pnpm openapi-zod-client ./example/petstore.yaml -o ./example/petstore-schemas.ts -t ./example/schemas-only.hbs -p ./example/prettier-custom.json --export-schemas`, there is an example of the output [here](./examples/schemas-only/petstore-schemas.ts)
 
 ## When using the CLI
 
@@ -93,8 +93,8 @@ Exemple: `--success-expr "status >= 200 && status < 300"`
 
 ## Example
 
--   You can check an example [input](./example/petstore.yaml) (the petstore example when you open/reset [editor.swagger.io](https://editor.swagger.io/)) and [output](./example/petstore-client.ts)
--   there's also [an example of a programmatic usage](./example/petstore-generator.ts)
+-   You can check an example [input](./examples/petstore.yaml) (the petstore example when you open/reset [editor.swagger.io](https://editor.swagger.io/)) and [output](./examples/basic/petstore-client.ts)
+-   there's also [an example of a programmatic usage](./examples/basic/petstore-generator.ts)
 -   or you can check the tests in the `src` folder which are mostly just inline snapshots of the outputs
 
 # tl;dr
