@@ -259,12 +259,14 @@ const formatPatternIfNeeded = (pattern: string) => {
 const getZodChainableStringValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
-    if (schema.minLength) {
-        validations.push(`min(${schema.minLength})`);
-    }
+    if (!schema.enum) {
+        if (schema.minLength) {
+            validations.push(`min(${schema.minLength})`);
+        }
 
-    if (schema.maxLength) {
-        validations.push(`max(${schema.maxLength})`);
+        if (schema.maxLength) {
+            validations.push(`max(${schema.maxLength})`);
+        }
     }
 
     if (schema.pattern) {
