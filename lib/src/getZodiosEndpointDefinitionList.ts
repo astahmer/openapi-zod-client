@@ -82,12 +82,18 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             // result is complex and would benefit from being re-used
             let formatedName = safeName;
-            const isVarNameAlreadyUsed = Boolean(ctx.zodSchemaByName[formatedName]);
-            if (isVarNameAlreadyUsed) {
-                if (ctx.zodSchemaByName[formatedName] === safeName) {
-                    return formatedName;
-                } else {
-                    formatedName += "__2";
+            
+            // iteratively add suffix number to prevent overwriting
+            let reuseCount = 1;
+            let isVarNameAlreadyUsed = false;
+            while ((isVarNameAlreadyUsed = Boolean(ctx.zodSchemaByName[formatedName]))) {
+                if (isVarNameAlreadyUsed) {
+                    if (ctx.zodSchemaByName[formatedName] === safeName) {
+                        return formatedName;
+                    } else {
+                        reuseCount += 1;
+                        formatedName = `${safeName}__${reuseCount}`;
+                    }
                 }
             }
 

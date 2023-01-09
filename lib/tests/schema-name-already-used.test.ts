@@ -46,6 +46,44 @@ test("schema-name-already-used", async () => {
                         },
                     ],
                 },
+                delete: {
+                    operationId: "deleteSchemaNameAlreadyUsed",
+                    responses: {
+                        "200": {
+                            content: {
+                                "application/json": {
+                                    schema: { type: "string" },
+                                },
+                            },
+                        },
+                    },
+                    parameters: [
+                        {
+                            name: "schemaNameAlreadyUsed",
+                            in: "query",
+                            schema: { type: "string", enum: ["ddd", "eee", "fff"] },
+                        },
+                    ],
+                },
+                post: {
+                    operationId: "postSchemaNameAlreadyUsed",
+                    responses: {
+                        "200": {
+                            content: {
+                                "application/json": {
+                                    schema: { type: "string" },
+                                },
+                            },
+                        },
+                    },
+                    parameters: [
+                        {
+                            name: "schemaNameAlreadyUsed",
+                            in: "query",
+                            schema: { type: "string", enum: ["ggg", "hhh", "iii"] },
+                        },
+                    ],
+                },
             },
         },
     };
@@ -86,6 +124,38 @@ test("schema-name-already-used", async () => {
                   "requestFormat": "json",
                   "response": "z.string()",
               },
+              {
+                  "alias": "deleteSchemaNameAlreadyUsed",
+                  "description": undefined,
+                  "errors": [],
+                  "method": "delete",
+                  "parameters": [
+                      {
+                          "name": "schemaNameAlreadyUsed",
+                          "schema": "schemaNameAlreadyUsed__3",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/schema-name-already-used",
+                  "requestFormat": "json",
+                  "response": "z.string()",
+              },
+              {
+                  "alias": "postSchemaNameAlreadyUsed",
+                  "description": undefined,
+                  "errors": [],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "name": "schemaNameAlreadyUsed",
+                          "schema": "schemaNameAlreadyUsed__4",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/schema-name-already-used",
+                  "requestFormat": "json",
+                  "response": "z.string()",
+              },
           ],
           "endpointsGroups": {},
           "options": {
@@ -95,6 +165,8 @@ test("schema-name-already-used", async () => {
           "schemas": {
               "schemaNameAlreadyUsed": "z.enum(["xxx", "yyy", "zzz"]).optional()",
               "schemaNameAlreadyUsed__2": "z.enum(["aaa", "bbb", "ccc"]).optional()",
+              "schemaNameAlreadyUsed__3": "z.enum(["ddd", "eee", "fff"]).optional()",
+              "schemaNameAlreadyUsed__4": "z.enum(["ggg", "hhh", "iii"]).optional()",
           },
           "types": {},
       }
@@ -105,12 +177,15 @@ test("schema-name-already-used", async () => {
         openApiDoc,
         options: { complexityThreshold: 2 },
     });
+
     expect(result).toMatchInlineSnapshot(`
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
       const schemaNameAlreadyUsed = z.enum(["xxx", "yyy", "zzz"]).optional();
       const schemaNameAlreadyUsed__2 = z.enum(["aaa", "bbb", "ccc"]).optional();
+      const schemaNameAlreadyUsed__3 = z.enum(["ddd", "eee", "fff"]).optional();
+      const schemaNameAlreadyUsed__4 = z.enum(["ggg", "hhh", "iii"]).optional();
 
       const endpoints = makeApi([
         {
@@ -135,6 +210,32 @@ test("schema-name-already-used", async () => {
               name: "schemaNameAlreadyUsed",
               type: "Query",
               schema: schemaNameAlreadyUsed__2,
+            },
+          ],
+          response: z.string(),
+        },
+        {
+          method: "delete",
+          path: "/schema-name-already-used",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "schemaNameAlreadyUsed",
+              type: "Query",
+              schema: schemaNameAlreadyUsed__3,
+            },
+          ],
+          response: z.string(),
+        },
+        {
+          method: "post",
+          path: "/schema-name-already-used",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "schemaNameAlreadyUsed",
+              type: "Query",
+              schema: schemaNameAlreadyUsed__4,
             },
           ],
           response: z.string(),
