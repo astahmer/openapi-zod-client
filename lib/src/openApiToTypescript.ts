@@ -61,6 +61,19 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             return schemaName;
         }
 
+        if (Array.isArray(schema.type)) {
+            if (schema.type.length === 1) {
+                return getTypescriptFromOpenApi({ schema: { ...schema, type: schema.type[0]! }, ctx, meta });
+            }
+
+            return t.union(
+                schema.type.map(
+                    (prop) =>
+                        getTypescriptFromOpenApi({ schema: { ...schema, type: prop }, ctx, meta }) as TypeDefinition
+                )
+            );
+        }
+
         if (schema.oneOf) {
             if (schema.oneOf.length === 1) {
                 return getTypescriptFromOpenApi({ schema: schema.oneOf[0]!, ctx, meta });

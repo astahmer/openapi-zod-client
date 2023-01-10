@@ -63,6 +63,18 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code;
     }
 
+    if (Array.isArray(schema.type)) {
+        if (schema.type.length === 1) {
+            return getZodSchema({ schema: { ...schema, type: schema.type[0]! }, ctx, meta, options });
+        }
+
+        return code.assign(
+            `z.union([${schema.type
+                .map((prop) => getZodSchema({ schema: { ...schema, type: prop }, ctx, meta, options }))
+                .join(", ")}])`
+        );
+    }
+
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
             return getZodSchema({ schema: schema.oneOf[0]!, ctx, meta, options });
@@ -108,10 +120,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             }
 
             return code.assign(
-                `z.union([${schema.enum
-                    // eslint-disable-next-line sonarjs/no-nested-template-literals
-                    .map((value) => `z.literal(${value === null ? "null" : value})`)
-                    .join(", ")}])`
+                // eslint-disable-next-line sonarjs/no-nested-template-literals
+                `z.union([${schema.enum.map((value) => `z.literal(${value === null ? "null" : value})`).join(", ")}])`
             );
         }
 

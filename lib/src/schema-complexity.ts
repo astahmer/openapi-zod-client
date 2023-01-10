@@ -45,6 +45,21 @@ export function getSchemaComplexity({
     if (!schema) return current;
     if (isReferenceObject(schema)) return current + 2;
 
+    if (Array.isArray(schema.type)) {
+        if (schema.type.length === 1) {
+            return (
+                complexityByComposite("oneOf") +
+                getSchemaComplexity({ current, schema: { ...schema, type: schema.type[0]! } })
+            );
+        }
+
+        return (
+            current +
+            complexityByComposite("oneOf") +
+            getSum(schema.type.map((prop) => getSchemaComplexity({ current: 0, schema: { ...schema, type: prop } })))
+        );
+    }
+
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
             return complexityByComposite("oneOf") + getSchemaComplexity({ current, schema: schema.oneOf[0] });
