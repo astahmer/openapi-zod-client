@@ -75,6 +75,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         );
     }
 
+    if (schema.type === "null") {
+        return code.assign("z.null()");
+    }
+
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
             return getZodSchema({ schema: schema.oneOf[0]!, ctx, meta, options });
