@@ -21,7 +21,13 @@ test("schema-type-list-3.1", async () => {
         },
         components: {
             schemas: {
-                test1: { type: ["object", "null"], properties: { text1: { type: "string" } } },
+                test1: {
+                    type: ["object", "null"],
+                    properties: {
+                        text1: { type: "string" },
+                        name: { type: ["string", "null"], enum: ["Dogs", "Cats", "Mice"] },
+                    },
+                },
                 test2: { type: ["object", "boolean"], properties: { text2: { type: "number" } } },
                 test3: { type: ["number", "object"], properties: { text3: { type: "boolean" } } },
                 test4: {
@@ -40,7 +46,15 @@ test("schema-type-list-3.1", async () => {
       "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
 
-      const test1 = z.union([z.object({ text1: z.string() }).partial(), z.null()]);
+      const test1 = z.union([
+        z
+          .object({
+            text1: z.string(),
+            name: z.union([z.enum(["Dogs", "Cats", "Mice"]), z.null()]),
+          })
+          .partial(),
+        z.null(),
+      ]);
       const test2 = z.union([z.object({ text2: z.number() }).partial(), z.boolean()]);
       const test3 = z.union([z.number(), z.object({ text3: z.boolean() }).partial()]);
       const test4 = test1.and(test2).and(test3);

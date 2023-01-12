@@ -74,6 +74,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             );
         }
 
+        if (schema.type === "null") {
+            return t.reference("null");
+        }
+
         if (schema.oneOf) {
             if (schema.oneOf.length === 1) {
                 return getTypescriptFromOpenApi({ schema: schema.oneOf[0]!, ctx, meta });

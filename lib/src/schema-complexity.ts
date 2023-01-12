@@ -60,6 +60,10 @@ export function getSchemaComplexity({
         );
     }
 
+    if (schema.type === "null") {
+        return current + complexityByType({ ...schema, type: "null" });
+    }
+
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
             return complexityByComposite("oneOf") + getSchemaComplexity({ current, schema: schema.oneOf[0] });

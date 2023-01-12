@@ -11,6 +11,7 @@ const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData | undefi
 
 test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "null" })).toMatchInlineSnapshot('"z.null()"');
+    expect(getSchemaAsZodString({ type: "null", enum: ["Dogs", "Cats", "Mice"] })).toMatchInlineSnapshot('"z.null()"');
     expect(getSchemaAsZodString({ type: "boolean" })).toMatchInlineSnapshot('"z.boolean()"');
     expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
     expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number()"');
