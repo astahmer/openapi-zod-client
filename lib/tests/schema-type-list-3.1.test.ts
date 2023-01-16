@@ -26,6 +26,7 @@ test("schema-type-list-3.1", async () => {
                     properties: {
                         text1: { type: "string" },
                         name: { type: ["string", "null"], enum: ["Dogs", "Cats", "Mice"] },
+                        another: { type: ["string", "number"], enum: ["Dogs", "Cats", "Mice"] },
                     },
                 },
                 test2: { type: ["object", "boolean"], properties: { text2: { type: "number" } } },
@@ -51,6 +52,7 @@ test("schema-type-list-3.1", async () => {
           .object({
             text1: z.string(),
             name: z.union([z.enum(["Dogs", "Cats", "Mice"]), z.null()]),
+            another: z.union([z.enum(["Dogs", "Cats", "Mice"]), z.never()]),
           })
           .partial(),
         z.null(),

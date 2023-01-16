@@ -114,6 +114,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
         if (schemaType && isPrimitiveType(schemaType)) {
             if (schema.enum) {
+                if (schemaType !== "string" && schema.enum.some((e) => typeof e === "string")) {
+                    return t.never();
+                }
+
                 return t.union(schema.enum);
             }
 

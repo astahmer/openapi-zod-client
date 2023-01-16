@@ -123,6 +123,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
             }
 
+            if (schema.enum.some((e) => typeof e === "string")) {
+                return code.assign("z.never()");
+            }
+
             return code.assign(
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 `z.union([${schema.enum.map((value) => `z.literal(${value === null ? "null" : value})`).join(", ")}])`
