@@ -1,9 +1,11 @@
 import { default as petstoreYaml } from "../../../examples/petstore.yaml?raw";
+import { default as petstoreJson } from "../../../examples/petstore-minimal.json?raw";
 import { default as defaultOutputTemplate } from "../../../lib/src/templates/default.hbs?raw";
 
 export const presets = {
     defaultTemplate: defaultOutputTemplate,
     defaultInput: petstoreYaml,
+    defaultInputJson: petstoreJson,
     defaultPrettierConfig: {
         printWidth: 120,
         tabWidth: 4,

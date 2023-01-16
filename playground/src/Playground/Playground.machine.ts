@@ -81,6 +81,7 @@ const initialInputList = [
         index: 2,
         preset: "prettier",
     },
+    { name: "api.doc.json", content: presets.defaultInputJson, index: 3, preset: "petstore.json" },
 ] as const; // TODO as FileTabData[] with ts 4.9 satisfies
 const initialOuputTab = "api.client.ts";
 

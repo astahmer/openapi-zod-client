@@ -38,6 +38,15 @@ export const PlaygroundWithMachine = () => {
                 index: 2,
                 preset: "prettier",
             },
+            {
+                name: "api.doc.json",
+                content:
+                    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+                    (getDecompressedStringFromUrl("doc-json") ?? "") ||
+                    JSON.stringify(initialCtx.inputList[3].content, null, 4),
+                index: 3,
+                preset: "petstore.json",
+            },
         ];
     }
 
