@@ -1,3 +1,32 @@
+## [1.4.18](https://github.com/astahmer/openapi-zod-client/compare/v1.4.17...v1.4.18) (2023-01-16)
+
+
+### Bug Fixes
+
+* **#67:** treat `null` with higher priority ([9f633cc](https://github.com/astahmer/openapi-zod-client/commit/9f633ccc7ae9da74970ec57f68df3e138eca6f39)), closes [#67](https://github.com/astahmer/openapi-zod-client/issues/67)
+* handle invalid number+enum case if schema.type is Array ([07e5133](https://github.com/astahmer/openapi-zod-client/commit/07e5133e76a286bfa418624dd93de6e7cd864583))
+
+
+### Features
+
+* **#60:** support schema.type list from openapi 3.1 ([519de14](https://github.com/astahmer/openapi-zod-client/commit/519de1409be4dbe6efb2c25db58669b3c48f38b7)), closes [#60](https://github.com/astahmer/openapi-zod-client/issues/60)
+* **playground:** add api.doc.json default tab ([75edaf1](https://github.com/astahmer/openapi-zod-client/commit/75edaf1d81af0f7b1e4101c2864af44a31f157dd))
+
+
+
+## [1.4.17](https://github.com/astahmer/openapi-zod-client/compare/v1.4.16...v1.4.17) (2023-01-09)
+
+
+
+## [1.4.16](https://github.com/astahmer/openapi-zod-client/compare/v1.4.15...v1.4.16) (2023-01-05)
+
+
+### Bug Fixes
+
+* **#61:** Combination of enum and minLength leads to invalid zod schmemas ([0c12414](https://github.com/astahmer/openapi-zod-client/commit/0c12414f22e0d7b254bd97f0157a30b5395c240a)), closes [#61](https://github.com/astahmer/openapi-zod-client/issues/61)
+
+
+
 ## [1.4.15](https://github.com/astahmer/openapi-zod-client/compare/v1.4.14...v1.4.15) (2022-12-13)
 
 
