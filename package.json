@@ -18,7 +18,8 @@
         "test": "pnpm --filter=openapi-zod-client test:ci",
         "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
         "postinstall": "preconstruct dev",
-        "gen:samples": "rm -rf ./samples && tsx ./lib/samples-generator.ts"
+        "gen:samples": "rm -rf ./samples && tsx ./lib/samples-generator.ts",
+        "release": "pnpm changeset publish"
     },
     "license": "ISC",
     "dependencies": {
