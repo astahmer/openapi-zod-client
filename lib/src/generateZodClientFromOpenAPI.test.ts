@@ -632,6 +632,10 @@ describe("generateZodClientFromOpenAPI", () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+            return new Zodios(baseUrl, endpoints);
+          }
           "
         `);
     });
@@ -964,6 +968,10 @@ describe("generateZodClientFromOpenAPI", () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+            return new Zodios(baseUrl, endpoints);
+          }
           "
         `);
     });
@@ -1286,6 +1294,10 @@ describe("generateZodClientFromOpenAPI", () => {
           ]);
 
           export const api = new Zodios("http://example.com", endpoints);
+
+          export function createApiClient(baseUrl: string) {
+            return new Zodios(baseUrl, endpoints);
+          }
           "
         `);
     });
@@ -1549,6 +1561,10 @@ test("with optional, partial, all required objects", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });

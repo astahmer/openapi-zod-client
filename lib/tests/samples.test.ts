@@ -51,6 +51,10 @@ describe("samples-generator", async () => {
           const endpoints = makeApi([]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.0/callback-example.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -73,6 +77,10 @@ describe("samples-generator", async () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.0/link-example.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -200,6 +208,10 @@ describe("samples-generator", async () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.0/petstore-expanded.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -278,6 +290,10 @@ describe("samples-generator", async () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.0/petstore.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -322,6 +338,10 @@ describe("samples-generator", async () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.0/uspto.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -414,6 +434,10 @@ describe("samples-generator", async () => {
           ]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.1/non-oauth-scopes.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -421,6 +445,10 @@ describe("samples-generator", async () => {
           const endpoints = makeApi([]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
               "v3.1/webhook-example.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
@@ -428,6 +456,10 @@ describe("samples-generator", async () => {
           const endpoints = makeApi([]);
 
           export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string) {
+              return new Zodios(baseUrl, endpoints);
+          }
           ",
           }
         `);

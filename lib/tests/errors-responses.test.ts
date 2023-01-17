@@ -78,6 +78,10 @@ it("includes errors-responses", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });
@@ -198,6 +202,10 @@ it("determines which status are considered errors-responses", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 
@@ -245,6 +253,10 @@ it("determines which status are considered errors-responses", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });

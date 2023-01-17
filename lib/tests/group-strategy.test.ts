@@ -330,6 +330,10 @@ test("group-strategy", async () => {
       ]);
 
       export const DefaultApi = new Zodios(DefaultEndpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 
@@ -562,6 +566,10 @@ test("group-strategy", async () => {
       ]);
 
       export const putApi = new Zodios(putEndpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });
@@ -922,6 +930,10 @@ test("group-strategy with complex schemas + split files", async () => {
       ]);
 
       export const DefaultApi = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       ",
           "__common": "import { z } from "zod";
 
@@ -987,6 +999,10 @@ test("group-strategy with complex schemas + split files", async () => {
       ]);
 
       export const PetApi = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       ",
           "store": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
@@ -1045,6 +1061,10 @@ test("group-strategy with complex schemas + split files", async () => {
       ]);
 
       export const StoreApi = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       ",
           "user": "import { makeApi, Zodios } from "@zodios/core";
       import { z } from "zod";
@@ -1067,6 +1087,10 @@ test("group-strategy with complex schemas + split files", async () => {
       ]);
 
       export const UserApi = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       ",
       }
     `);
