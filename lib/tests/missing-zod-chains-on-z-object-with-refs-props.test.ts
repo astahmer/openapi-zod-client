@@ -108,6 +108,10 @@ test("missing-zod-chains-on-z-object-with-refs-props", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });

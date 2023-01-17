@@ -71,6 +71,10 @@ test("schema-type-list-3.1", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });

@@ -55,6 +55,10 @@ it("determines which one is-main-response", async () => {
       ]);
 
       export const api = new Zodios(endpoints);
+
+      export function createApiClient(baseUrl: string) {
+        return new Zodios(baseUrl, endpoints);
+      }
       "
     `);
 });
