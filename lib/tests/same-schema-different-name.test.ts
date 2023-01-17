@@ -125,6 +125,11 @@ test("same-schema-different-name", async () => {
         .optional()
         .default("aaa");
 
+      export const schemas = {
+        sameSchemaDifferentName,
+        anotherDifferentNameWithSlightlyDifferentSchema,
+      };
+
       const endpoints = makeApi([
         {
           method: "put",

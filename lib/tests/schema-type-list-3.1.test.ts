@@ -61,6 +61,13 @@ test("schema-type-list-3.1", async () => {
       const test3 = z.union([z.number(), z.object({ text3: z.boolean() }).partial()]);
       const test4 = test1.and(test2).and(test3);
 
+      export const schemas = {
+        test1,
+        test2,
+        test3,
+        test4,
+      };
+
       const endpoints = makeApi([
         {
           method: "put",

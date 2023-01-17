@@ -920,6 +920,11 @@ test("group-strategy with complex schemas + split files", async () => {
           .partial()
       );
 
+      export const schemas = {
+        Country,
+        Store,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",
@@ -970,6 +975,10 @@ test("group-strategy with complex schemas + split files", async () => {
       const Pet = z
         .object({ id: z.number().int(), nickname: z.string(), owner: User })
         .partial();
+
+      export const schemas = {
+        Pet,
+      };
 
       const endpoints = makeApi([
         {
@@ -1044,6 +1053,11 @@ test("group-strategy with complex schemas + split files", async () => {
           })
           .partial()
       );
+
+      export const schemas = {
+        Store,
+        Country,
+      };
 
       const endpoints = makeApi([
         {

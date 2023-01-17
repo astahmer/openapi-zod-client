@@ -91,6 +91,12 @@ describe("samples-generator", async () => {
               .object({ id: z.number().int(), title: z.string(), repository: repository, author: user })
               .partial();
 
+          export const schemas = {
+              user,
+              repository,
+              pullrequest,
+          };
+
           const endpoints = makeApi([
               {
                   method: "get",
@@ -220,6 +226,12 @@ describe("samples-generator", async () => {
           const Pet = NewPet.and(z.object({ id: z.number().int() }));
           const Error = z.object({ code: z.number().int(), message: z.string() });
 
+          export const schemas = {
+              NewPet,
+              Pet,
+              Error,
+          };
+
           const endpoints = makeApi([
               {
                   method: "get",
@@ -302,6 +314,12 @@ describe("samples-generator", async () => {
           const Pets = z.array(Pet);
           const Error = z.object({ code: z.number().int(), message: z.string() });
 
+          export const schemas = {
+              Pet,
+              Pets,
+              Error,
+          };
+
           const endpoints = makeApi([
               {
                   method: "get",
@@ -366,6 +384,11 @@ describe("samples-generator", async () => {
               start: z.number().int().optional(),
               rows: z.number().int().optional().default(100),
           });
+
+          export const schemas = {
+              dataSetList,
+              perform_search_Body,
+          };
 
           const endpoints = makeApi([
               {

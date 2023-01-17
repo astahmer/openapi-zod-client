@@ -11,6 +11,14 @@ import { z } from "zod";
 const {{@key}}{{#if (lookup ../circularTypeByName @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
 {{/each}}
 
+{{#ifNotEmptyObj schemas}}
+export const schemas = {
+{{#each schemas}}
+	{{@key}},
+{{/each}}
+};
+{{/ifNotEmptyObj}}
+
 {{#each endpointsGroups}}
 const {{@key}}Endpoints = makeApi([
 {{#each this.endpoints}}

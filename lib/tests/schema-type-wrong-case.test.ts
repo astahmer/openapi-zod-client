@@ -32,6 +32,10 @@ test("schema-type-wrong-case", async () => {
 
       const test1 = z.object({ text1: z.number() }).partial();
 
+      export const schemas = {
+        test1,
+      };
+
       const endpoints = makeApi([
         {
           method: "put",

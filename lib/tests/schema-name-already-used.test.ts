@@ -187,6 +187,13 @@ test("schema-name-already-used", async () => {
       const schemaNameAlreadyUsed__3 = z.enum(["ddd", "eee", "fff"]).optional();
       const schemaNameAlreadyUsed__4 = z.enum(["ggg", "hhh", "iii"]).optional();
 
+      export const schemas = {
+        schemaNameAlreadyUsed,
+        schemaNameAlreadyUsed__2,
+        schemaNameAlreadyUsed__3,
+        schemaNameAlreadyUsed__4,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",

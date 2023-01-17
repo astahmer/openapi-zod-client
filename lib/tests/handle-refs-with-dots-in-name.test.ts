@@ -115,6 +115,12 @@ test("handle-refs-with-dots-in-name", async () => {
         .object({ thing: Aaa_bbb_CccDdd_eee_Fff_ggg_HhhIiii_jjj })
         .partial();
 
+      export const schemas = {
+        Basic,
+        Aaa_bbb_CccDdd_eee_Fff_ggg_HhhIiii_jjj,
+        Basic_Thing,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",

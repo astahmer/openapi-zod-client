@@ -75,6 +75,11 @@ test("export-schemas-option", async () => {
         .object({ nested_prop: z.boolean(), another: z.string() })
         .partial();
 
+      export const schemas = {
+        Basic,
+        UnusedSchemas,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",
