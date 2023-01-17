@@ -12,6 +12,15 @@ export const getHandlebars = () => {
         // @ts-expect-error
         return options.inverse(this);
     });
+    instance.registerHelper("ifNotEmptyObj", function (obj: Record<string, any>, options: HelperOptions) {
+        if (typeof obj === "object" && Object.keys(obj).length > 0) {
+            // @ts-expect-error
+            return options.fn(this);
+        }
+
+        // @ts-expect-error
+        return options.inverse(this);
+    });
 
     return instance;
 };

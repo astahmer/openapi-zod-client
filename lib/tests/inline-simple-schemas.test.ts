@@ -138,6 +138,12 @@ test("inline-simple-schemas", async () => {
         })
         .partial();
 
+      export const schemas = {
+        BasicString,
+        SimpleObject,
+        ComplexObject,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",

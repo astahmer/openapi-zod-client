@@ -52,6 +52,10 @@ test("operationId-starting-with-number", async () => {
 
       const Basic = z.string();
 
+      export const schemas = {
+        Basic,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",

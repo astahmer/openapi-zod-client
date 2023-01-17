@@ -45,6 +45,10 @@ test("number-default-cast", async () => {
         })
         .partial();
 
+      export const schemas = {
+        test1,
+      };
+
       const endpoints = makeApi([
         {
           method: "put",

@@ -65,6 +65,10 @@ test("param-with-content", async () => {
 
       const test3 = z.object({ text3: z.boolean() }).partial();
 
+      export const schemas = {
+        test3,
+      };
+
       const endpoints = makeApi([
         {
           method: "put",

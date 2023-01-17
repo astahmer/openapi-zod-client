@@ -67,6 +67,13 @@ test("missing-zod-chains-on-z-object-with-refs-props", async () => {
           .regex(/(EmailRegex)/),
       });
 
+      export const schemas = {
+        Email,
+        Password,
+        AddUser,
+        PasswordReminder,
+      };
+
       const endpoints = makeApi([
         {
           method: "post",

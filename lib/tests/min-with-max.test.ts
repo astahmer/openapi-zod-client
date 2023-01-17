@@ -33,6 +33,10 @@ test("allOf-missing-and", async () => {
 
       const test2 = z.object({ text2: z.string().min(5).max(10) }).partial();
 
+      export const schemas = {
+        test2,
+      };
+
       const endpoints = makeApi([
         {
           method: "put",

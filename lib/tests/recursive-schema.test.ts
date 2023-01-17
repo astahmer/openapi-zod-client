@@ -143,6 +143,11 @@ describe("recursive-schema", () => {
             z.object({ name: z.string(), middle: Middle }).partial()
           );
 
+          export const schemas = {
+            Middle,
+            User,
+          };
+
           const endpoints = makeApi([
             {
               method: "get",
@@ -506,6 +511,11 @@ describe("recursive-schema", () => {
               .partial()
           );
 
+          export const schemas = {
+            Friend,
+            UserWithFriends,
+          };
+
           const endpoints = makeApi([
             {
               method: "get",
@@ -636,6 +646,13 @@ describe("recursive-schema", () => {
           const Playlist: z.ZodType<Playlist> = z.lazy(() =>
             z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial()
           );
+
+          export const schemas = {
+            Settings,
+            Author,
+            Song,
+            Playlist,
+          };
 
           const endpoints = makeApi([
             {

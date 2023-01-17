@@ -362,6 +362,15 @@ describe("generateZodClientFromOpenAPI", () => {
             })
             .partial();
 
+          export const schemas = {
+            Category,
+            Tag,
+            Pet,
+            ApiResponse,
+            Order,
+            User,
+          };
+
           const endpoints = makeApi([
             {
               method: "put",
@@ -685,6 +694,15 @@ describe("generateZodClientFromOpenAPI", () => {
               userStatus: z.number().int(),
             })
             .partial();
+
+          export const schemas = {
+            Category,
+            Tag,
+            Pet,
+            ApiResponse,
+            Order,
+            User,
+          };
 
           const endpoints = makeApi([
             {
@@ -1023,6 +1041,15 @@ describe("generateZodClientFromOpenAPI", () => {
               userStatus: z.number().int(),
             })
             .partial();
+
+          export const schemas = {
+            Category,
+            Tag,
+            Pet,
+            ApiResponse,
+            Order,
+            User,
+          };
 
           const endpoints = makeApi([
             {
@@ -1521,6 +1548,14 @@ test("with optional, partial, all required objects", async () => {
           requiredProp: z.string(),
         })
       );
+
+      export const schemas = {
+        VeryDeeplyNested,
+        DeeplyNested,
+        PartialObject,
+        Root2,
+        Nested2,
+      };
 
       const endpoints = makeApi([
         {

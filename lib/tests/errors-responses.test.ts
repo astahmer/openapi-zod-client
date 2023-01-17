@@ -180,6 +180,13 @@ it("determines which status are considered errors-responses", async () => {
         requiredProp: z.string(),
       });
 
+      export const schemas = {
+        VeryDeeplyNested,
+        DeeplyNested,
+        Main,
+        Nested,
+      };
+
       const endpoints = makeApi([
         {
           method: "get",
@@ -230,6 +237,13 @@ it("determines which status are considered errors-responses", async () => {
         circularToMain: Main.optional(),
         requiredProp: z.string(),
       });
+
+      export const schemas = {
+        VeryDeeplyNested,
+        DeeplyNested,
+        Main,
+        Nested,
+      };
 
       const endpoints = makeApi([
         {
