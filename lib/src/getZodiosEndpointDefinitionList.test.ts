@@ -662,7 +662,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
               {
                   "alias": "deletePet",
@@ -689,7 +689,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/pet/:petId",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
               {
                   "alias": "uploadFile",
@@ -803,7 +803,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/store/order/:orderId",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
               {
                   "alias": "createUser",
@@ -820,7 +820,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
               {
                   "alias": "createUsersWithListInput",
@@ -874,7 +874,7 @@ test("petstore.yaml", async () => {
                   "parameters": [],
                   "path": "/user/logout",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
               {
                   "alias": "getUserByName",
@@ -923,7 +923,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
               {
                   "alias": "deleteUser",
@@ -950,7 +950,7 @@ test("petstore.yaml", async () => {
                   ],
                   "path": "/user/:username",
                   "requestFormat": "json",
-                  "response": "",
+                  "response": "z.void()",
               },
           ],
           "issues": {

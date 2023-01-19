@@ -48,7 +48,20 @@ describe("samples-generator", async () => {
               "v3.0/api-with-examples.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const endpoints = makeApi([]);
+          const endpoints = makeApi([
+              {
+                  method: "get",
+                  path: "/",
+                  requestFormat: "json",
+                  response: z.void(),
+              },
+              {
+                  method: "get",
+                  path: "/v2",
+                  requestFormat: "json",
+                  response: z.void(),
+              },
+          ]);
 
           export const api = new Zodios(endpoints);
 
@@ -465,7 +478,14 @@ describe("samples-generator", async () => {
               "v3.1/non-oauth-scopes.": "import { makeApi, Zodios } from "@zodios/core";
           import { z } from "zod";
 
-          const endpoints = makeApi([]);
+          const endpoints = makeApi([
+              {
+                  method: "get",
+                  path: "/users",
+                  requestFormat: "json",
+                  response: z.void(),
+              },
+          ]);
 
           export const api = new Zodios(endpoints);
 
