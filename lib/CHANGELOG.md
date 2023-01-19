@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.0
+
+### Minor Changes
+
+-   [#74](https://github.com/astahmer/openapi-zod-client/pull/74) [`1267233`](https://github.com/astahmer/openapi-zod-client/commit/126723319262c882d0ee0cd10397472a58dd61de) Thanks [@astahmer](https://github.com/astahmer)! - fix(#73): fallback response to void when no schemas
+
 ## 1.4.20
 
 ### Patch Changes
