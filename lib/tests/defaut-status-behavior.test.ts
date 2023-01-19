@@ -38,6 +38,16 @@ test("defaut-status-behavior", () => {
               "requestFormat": "json",
               "response": "z.number()",
           },
+          {
+              "alias": "withDefaultResponse",
+              "description": undefined,
+              "errors": [],
+              "method": "get",
+              "parameters": [],
+              "path": "/with-default-response",
+              "requestFormat": "json",
+              "response": "z.void()",
+          },
       ]
     `);
 

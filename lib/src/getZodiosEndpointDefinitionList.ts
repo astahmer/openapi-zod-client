@@ -82,7 +82,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             // result is complex and would benefit from being re-used
             let formatedName = safeName;
-            
+
             // iteratively add suffix number to prevent overwriting
             let reuseCount = 1;
             let isVarNameAlreadyUsed = false;
@@ -333,6 +333,10 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         }
                     }
                 }
+            }
+
+            if (!endpointDefinition.response) {
+                endpointDefinition.response = voidSchema;
             }
 
             endpoints.push(endpointDefinition);
