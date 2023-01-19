@@ -3,8 +3,7 @@
     "private": true,
     "version": "1.0.0",
     "scripts": {
-        "gen:basic": "tsx ./petstore-generator.ts",
-        "gen:schemas-only": "node ./cli/bin.js ./examples/schemas-only/petstore.yaml -o ./examples/schemas-only/petstore-schemas.ts -t ./examples/schemas-only/schemas-only.hbs -p ./examples/schemas-only/prettier-custom.json --export-schemas"
+        "gen:basic": "tsx ./petstore-generator.ts"
     },
     "devDependencies": {
         "openapi3-ts": "3.0.2",

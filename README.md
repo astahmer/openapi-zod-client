@@ -38,7 +38,7 @@ https://paka.dev/npm/openapi-zod-client
 ## CLI
 
 ```sh
-openapi-zod-client/1.4.7
+openapi-zod-client/1.4.2
 
 Usage:
   $ openapi-zod-client <input>
@@ -225,6 +225,12 @@ const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().o
 const Pets = z.array(Pet);
 const Error = z.object({ code: z.number().int(), message: z.string() });
 
+export const schemas = {
+    Pet,
+    Pets,
+    Error,
+};
+
 const endpoints = makeApi([
     {
         method: "get",
@@ -261,6 +267,10 @@ const endpoints = makeApi([
 ]);
 
 export const api = new Zodios(endpoints);
+
+export function createApiClient(baseUrl: string) {
+    return new Zodios(baseUrl, endpoints);
+}
 ```
 
 # TODO
