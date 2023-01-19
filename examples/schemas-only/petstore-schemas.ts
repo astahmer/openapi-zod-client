@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-const Address = z.object({ street: z.string(), city: z.string(), state: z.string(), zip: z.string() }).partial();
-const Customer = z.object({ id: z.number().int(), username: z.string(), address: z.array(Address) }).partial();
 const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
 const Tag = z.object({ id: z.number().int(), name: z.string() }).partial();
 const Pet = z.object({
@@ -35,14 +33,16 @@ const User = z
         userStatus: z.number().int(),
     })
     .partial();
+const Address = z.object({ street: z.string(), city: z.string(), state: z.string(), zip: z.string() }).partial();
+const Customer = z.object({ id: z.number().int(), username: z.string(), address: z.array(Address) }).partial();
 
 export const schemas = {
-    Address,
-    Customer,
     Category,
     Tag,
     Pet,
     ApiResponse,
     Order,
     User,
+    Address,
+    Customer,
 };
