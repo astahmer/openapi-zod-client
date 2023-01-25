@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.1
+
+### Patch Changes
+
+-   [`b9d5360`](https://github.com/astahmer/openapi-zod-client/commit/b9d536099994150db40ab044dee069437fc2f219) Thanks [@astahmer](https://github.com/astahmer)! - [feat: support undefined schema refs #76](https://github.com/astahmer/openapi-zod-client/pull/76), thanks to [alex-lucas](https://github.com/alex-lucas)
+
 ## 1.5.0
 
 ### Minor Changes
