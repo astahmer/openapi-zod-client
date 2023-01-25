@@ -67,7 +67,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             return input.ref ? ctx.zodSchemaByName[result]! : result;
         }
 
-        if (result.startsWith("z.") && fallbackName) {
+        if ((result.startsWith("z.") || input.ref === undefined) && fallbackName) {
             // result is simple enough that it doesn't need to be assigned to a variable
             if (input.complexity < complexityThreshold) {
                 return result;
