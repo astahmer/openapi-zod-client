@@ -52,6 +52,22 @@ const schemas = {
         },
         xml: { name: "pet" },
     } as SchemaObject,
+    ReasonDetails: {
+        required: ["details"],
+        type: "object",
+        properties: {
+            details: { type: "string", example: "found an owner" },
+        },
+        xml: { name: "reasonDetails" },
+    } as SchemaObject,
+    Reason: {
+        required: ["reason"],
+        type: "object",
+        properties: {
+            reason: { $ref: "#/components/schemas/ReasonDetails" },
+        },
+        xml: { name: "reason" },
+    } as SchemaObject,
     Category: {
         type: "object",
         properties: { id: { type: "integer", format: "int64", example: 1 }, name: { type: "string", example: "Dogs" } },
@@ -290,6 +306,152 @@ test("getZodiosEndpointDefinitionList /pet", () => {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+          },
+      }
+    `);
+});
+
+test("getZodiosEndpointDefinitionList /pet without schema ref", () => {
+    expect(
+        getZodiosEndpointDefinitionList({
+            ...baseDoc,
+            components: {
+                schemas: {
+                    Pet: schemas.Pet,
+                    Category: schemas.Category,
+                    Tag: schemas.Tag,
+                    Reason: schemas.Reason,
+                    ReasonDetails: schemas.ReasonDetails,
+                },
+            },
+            paths: {
+                "/pet": {
+                    put: {
+                        tags: ["pet"],
+                        summary: "Update an existing pet",
+                        description: "Update an existing pet by Id",
+                        operationId: "updatePet",
+                        requestBody: {
+                            description: "Update an existent pet in the store",
+                            content: {
+                                "application/json": {
+                                    schema: {
+                                        allOf: [
+                                            { $ref: "#/components/schemas/Pet" },
+                                            { $ref: "#/components/schemas/Reason" },
+                                        ],
+                                    },
+                                },
+                                "application/xml": {
+                                    schema: {
+                                        allOf: [
+                                            { $ref: "#/components/schemas/Pet" },
+                                            { $ref: "#/components/schemas/Reason" },
+                                        ],
+                                    },
+                                    "application/x-www-form-urlencoded": {
+                                        schema: {
+                                            allOf: [
+                                                { $ref: "#/components/schemas/Pet" },
+                                                { $ref: "#/components/schemas/Reason" },
+                                            ],
+                                        },
+                                    },
+                                },
+                            },
+                            required: true,
+                        },
+                        responses: {
+                            "200": {
+                                description: "Successful operation",
+                                content: {
+                                    "application/json": { schema: { $ref: "#/components/schemas/Pet" } },
+                                    "application/xml": { schema: { $ref: "#/components/schemas/Pet" } },
+                                },
+                            },
+                            "400": { description: "Invalid ID supplied" },
+                            "404": { description: "Pet not found" },
+                            "405": { description: "Validation exception" },
+                        },
+                        security: [{ petstore_auth: ["write:pets", "read:pets"] }],
+                    },
+                },
+            },
+        })
+    ).toMatchInlineSnapshot(`
+      {
+          "deepDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
+              "#/components/schemas/Reason": Set {
+                  "#/components/schemas/ReasonDetails",
+              },
+          },
+          "endpoints": [
+              {
+                  "alias": "updatePet",
+                  "description": "Update an existing pet by Id",
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                      {
+                          "description": "Validation exception",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
+                  "method": "put",
+                  "parameters": [
+                      {
+                          "description": "Update an existent pet in the store",
+                          "name": "body",
+                          "schema": "updatePet_Body",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/pet",
+                  "requestFormat": "json",
+                  "response": "Pet",
+              },
+          ],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
+          "refsDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
+              "#/components/schemas/Reason": Set {
+                  "#/components/schemas/ReasonDetails",
+              },
+          },
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
+          "schemaByName": {
+              "Pet.and(Reason)": "updatePet_Body",
+          },
+          "zodSchemaByName": {
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Reason": "z.object({ reason: ReasonDetails })",
+              "ReasonDetails": "z.object({ details: z.string() })",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "updatePet_Body": "Pet.and(Reason)",
           },
       }
     `);
