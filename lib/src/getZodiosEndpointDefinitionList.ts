@@ -9,6 +9,7 @@ import type {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
+import { omit } from "pastable";
 import { match } from "ts-pattern";
 import { sync } from "whence";
 
@@ -130,14 +131,19 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
     const ignoredGenericError = [] as string[];
 
     for (const path in doc.paths) {
-        const pathItem = doc.paths[path] as PathItemObject;
+        const pathItemObj = doc.paths[path] as PathItemObject;
+        const pathItem = omit(pathItemObj, ["parameters"]);
+        const parametersMap = getParametersMap(pathItemObj.parameters ?? []);
 
         for (const method in pathItem) {
-            const operation = pathItem[method as keyof PathItemObject] as OperationObject;
+            const operation = pathItem[method as Exclude<keyof PathItemObject, "parameters">] as OperationObject;
 
             if (options?.withDeprecatedEndpoints ? false : operation.deprecated) continue;
 
-            const parameters = operation.parameters ?? [];
+            const parameters = Object.entries({
+                ...parametersMap,
+                ...getParametersMap(operation.parameters ?? []),
+            }).map(([_id, param]) => param);
             const operationName = operation.operationId ?? method + pathToVariableName(path);
             const endpointDefinition: EndpointDefinitionWithRefs = {
                 method: method as EndpointDefinitionWithRefs["method"],
@@ -370,6 +376,12 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             ignoredGenericError,
         },
     };
+};
+
+const getParametersMap = (parameters: NonNullable<PathItemObject["parameters"]>) => {
+    return Object.fromEntries(
+        (parameters ?? []).map((param) => [isReferenceObject(param) ? param.$ref : param.name, param] as const)
+    );
 };
 
 const allowedPathInValues = ["query", "header", "path"] as Array<ParameterObject["in"]>;
