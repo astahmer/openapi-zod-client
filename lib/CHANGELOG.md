@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.2
+
+### Patch Changes
+
+-   [#79](https://github.com/astahmer/openapi-zod-client/pull/79) [`e88a7cc`](https://github.com/astahmer/openapi-zod-client/commit/e88a7ccd35871b09030e822bf11d84f5c419b2f8) Thanks [@astahmer](https://github.com/astahmer)! - feat(#78): support common PathItemObject["parameters"]
+
 ## 1.5.1
 
 ### Patch Changes
