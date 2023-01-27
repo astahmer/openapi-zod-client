@@ -9,7 +9,7 @@ import type {
     ResponseObject,
     SchemaObject,
 } from "openapi3-ts";
-import { omit } from "pastable";
+import type { ObjectLiteral } from "pastable";
 import { match } from "ts-pattern";
 import { sync } from "whence";
 
@@ -132,12 +132,12 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
     for (const path in doc.paths) {
         const pathItemObj = doc.paths[path] as PathItemObject;
-        const pathItem = omit(pathItemObj, ["parameters"]);
+        const pathItem = pick(pathItemObj, ["get", "put", "post", "delete", "options", "head", "patch", "trace"]);
         const parametersMap = getParametersMap(pathItemObj.parameters ?? []);
 
         for (const method in pathItem) {
-            const operation = pathItem[method as Exclude<keyof PathItemObject, "parameters">] as OperationObject;
-
+            const operation = pathItem[method as keyof typeof pathItem] as OperationObject | undefined;
+            if (!operation) continue;
             if (options?.withDeprecatedEndpoints ? false : operation.deprecated) continue;
 
             const parameters = Object.entries({
@@ -412,3 +412,16 @@ const isAllowedParamMediaTypes = (
     (mediaType.includes("application/") && mediaType.includes("json")) ||
     allowedParamMediaTypes.includes(mediaType as any) ||
     mediaType.includes("text/");
+
+/** Pick given properties in object */
+function pick<T extends ObjectLiteral, K extends keyof T>(obj: T, paths: K[]): Pick<T, K> {
+    const result = {} as Pick<T, K>;
+
+    Object.keys(obj).forEach((key) => {
+        if (!paths.includes(key as K)) return;
+        // @ts-expect-error
+        result[key] = obj[key];
+    });
+
+    return result;
+}
