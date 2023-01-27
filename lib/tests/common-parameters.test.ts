@@ -25,6 +25,14 @@ test("common-parameters", async () => {
                         },
                     },
                 },
+                post: {
+                    responses: {
+                        "200": {
+                            description: "Successful operation",
+                            content: { "application/json": { schema: { type: "boolean" } } },
+                        },
+                    },
+                },
             },
         },
         components: {
@@ -62,6 +70,24 @@ test("common-parameters", async () => {
             },
           ],
           response: z.string(),
+        },
+        {
+          method: "post",
+          path: "/pet",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "petId",
+              type: "Query",
+              schema: z.string(),
+            },
+            {
+              name: "otherParam",
+              type: "Query",
+              schema: z.number().optional(),
+            },
+          ],
+          response: z.boolean(),
         },
       ]);
 
