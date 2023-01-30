@@ -53,7 +53,7 @@ it("includes errors-responses", async () => {
     const result = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const endpoints = makeApi([
@@ -79,8 +79,8 @@ it("includes errors-responses", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);
@@ -167,7 +167,7 @@ it("determines which status are considered errors-responses", async () => {
     });
 
     expect(result).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
@@ -210,8 +210,8 @@ it("determines which status are considered errors-responses", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);
@@ -225,7 +225,7 @@ it("determines which status are considered errors-responses", async () => {
             openApiDoc,
         })
     ).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
@@ -268,8 +268,8 @@ it("determines which status are considered errors-responses", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);

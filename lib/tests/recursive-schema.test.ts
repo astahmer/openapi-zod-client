@@ -125,7 +125,7 @@ describe("recursive-schema", () => {
 
         const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { makeApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
           type User = Partial<{
@@ -159,8 +159,8 @@ describe("recursive-schema", () => {
 
           export const api = new Zodios(endpoints);
 
-          export function createApiClient(baseUrl: string) {
-            return new Zodios(baseUrl, endpoints);
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
           }
           "
         `);
@@ -468,7 +468,7 @@ describe("recursive-schema", () => {
 
         const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { makeApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
           type User = Partial<{
@@ -529,8 +529,8 @@ describe("recursive-schema", () => {
 
           export const api = new Zodios(endpoints);
 
-          export function createApiClient(baseUrl: string) {
-            return new Zodios(baseUrl, endpoints);
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
           }
           "
         `);
@@ -608,7 +608,7 @@ describe("recursive-schema", () => {
         const openApiDoc = makeOpenApiDoc(schemas, RootSchema);
         const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { makeApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
           type Playlist = Partial<{
@@ -665,8 +665,8 @@ describe("recursive-schema", () => {
 
           export const api = new Zodios(endpoints);
 
-          export function createApiClient(baseUrl: string) {
-            return new Zodios(baseUrl, endpoints);
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
           }
           "
         `);

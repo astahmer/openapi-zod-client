@@ -34,7 +34,7 @@ test("number-default-cast", async () => {
 
     const output = await generateZodClientFromOpenAPI({ disableWriteToFile: true, openApiDoc });
     expect(output).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const test1 = z
@@ -60,8 +60,8 @@ test("number-default-cast", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);
