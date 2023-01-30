@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.3
+
+### Patch Changes
+
+-   [#82](https://github.com/astahmer/openapi-zod-client/pull/82) [`1b1cde2`](https://github.com/astahmer/openapi-zod-client/commit/1b1cde2c7b61ede4494ae829706e5682a05eb85d) Thanks [@astahmer](https://github.com/astahmer)! - feat(default template): createApiClient options?
+
 ## 1.5.2
 
 ### Patch Changes
