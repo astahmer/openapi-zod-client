@@ -116,7 +116,7 @@ test("same-schema-different-name", async () => {
         options: { complexityThreshold: 2 },
     });
     expect(result).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const sameSchemaDifferentName = z.enum(["aaa", "bbb", "ccc"]).optional();
@@ -166,8 +166,8 @@ test("same-schema-different-name", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);

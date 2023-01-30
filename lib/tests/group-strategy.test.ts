@@ -331,8 +331,8 @@ test("group-strategy", async () => {
 
       export const DefaultApi = new Zodios(DefaultEndpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);
@@ -567,8 +567,8 @@ test("group-strategy", async () => {
 
       export const putApi = new Zodios(putEndpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);
@@ -879,7 +879,7 @@ test("group-strategy with complex schemas + split files", async () => {
 
     expect(resultGroupedByTagSplitByFiles).toMatchInlineSnapshot(`
       {
-          "Default": "import { makeApi, Zodios } from "@zodios/core";
+          "Default": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       import { User } from "./common";
@@ -936,8 +936,8 @@ test("group-strategy with complex schemas + split files", async () => {
 
       export const DefaultApi = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       ",
           "__common": "import { z } from "zod";
@@ -967,7 +967,7 @@ test("group-strategy with complex schemas + split files", async () => {
       export { StoreApi } from "./store";
       export { DefaultApi } from "./Default";
       ",
-          "pet": "import { makeApi, Zodios } from "@zodios/core";
+          "pet": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       import { User } from "./common";
@@ -1009,11 +1009,11 @@ test("group-strategy with complex schemas + split files", async () => {
 
       export const PetApi = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       ",
-          "store": "import { makeApi, Zodios } from "@zodios/core";
+          "store": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       import { User } from "./common";
@@ -1076,11 +1076,11 @@ test("group-strategy with complex schemas + split files", async () => {
 
       export const StoreApi = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       ",
-          "user": "import { makeApi, Zodios } from "@zodios/core";
+          "user": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       import { User } from "./common";
@@ -1102,8 +1102,8 @@ test("group-strategy with complex schemas + split files", async () => {
 
       export const UserApi = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       ",
       }

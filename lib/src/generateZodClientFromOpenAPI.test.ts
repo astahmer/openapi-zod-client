@@ -485,7 +485,7 @@ describe("generateZodClientFromOpenAPI", () => {
     test("without options", async () => {
         const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { makeApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
           const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
@@ -953,8 +953,8 @@ describe("generateZodClientFromOpenAPI", () => {
 
           export const api = new Zodios(endpoints);
 
-          export function createApiClient(baseUrl: string) {
-            return new Zodios(baseUrl, endpoints);
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
           }
           "
         `);
@@ -967,7 +967,7 @@ describe("generateZodClientFromOpenAPI", () => {
             options: { withAlias: true },
         });
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { makeApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
           const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
@@ -1454,8 +1454,8 @@ describe("generateZodClientFromOpenAPI", () => {
 
           export const api = new Zodios(endpoints);
 
-          export function createApiClient(baseUrl: string) {
-            return new Zodios(baseUrl, endpoints);
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
           }
           "
         `);
@@ -1470,7 +1470,7 @@ describe("generateZodClientFromOpenAPI", () => {
             },
         });
         expect(prettyOutput).toMatchInlineSnapshot(`
-          "import { makeApi, Zodios } from "@zodios/core";
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
           const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
@@ -1938,8 +1938,8 @@ describe("generateZodClientFromOpenAPI", () => {
 
           export const api = new Zodios("http://example.com", endpoints);
 
-          export function createApiClient(baseUrl: string) {
-            return new Zodios(baseUrl, endpoints);
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
           }
           "
         `);
@@ -2119,7 +2119,7 @@ test("with optional, partial, all required objects", async () => {
 
     const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
     expect(prettyOutput).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       type Root2 = {
@@ -2213,8 +2213,8 @@ test("with optional, partial, all required objects", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);

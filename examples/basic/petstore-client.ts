@@ -1,4 +1,4 @@
-import { makeApi, Zodios } from "@zodios/core";
+import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
 const Category = z.object({ id: z.number().int(), name: z.string() }).partial();
@@ -461,6 +461,6 @@ const endpoints = makeApi([
 
 export const api = new Zodios(endpoints);
 
-export function createApiClient(baseUrl: string) {
-    return new Zodios(baseUrl, endpoints);
+export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+    return new Zodios(baseUrl, endpoints, options);
 }

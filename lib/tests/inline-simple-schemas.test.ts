@@ -122,7 +122,7 @@ test("inline-simple-schemas", async () => {
 
     const ctx = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
     expect(ctx).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const BasicString = z.string();
@@ -189,8 +189,8 @@ test("inline-simple-schemas", async () => {
 
       export const api = new Zodios(endpoints);
 
-      export function createApiClient(baseUrl: string) {
-        return new Zodios(baseUrl, endpoints);
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
       }
       "
     `);
