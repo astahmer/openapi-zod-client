@@ -15,7 +15,7 @@ import { defaultOptionValues } from "../components/OptionsForm";
 import type { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
 import { toasts } from "../toasts";
 import { deletingParamInUrl, resetUrl, updateUrlWithCompressedString, updateUrlWithParam } from "../url-saver";
-import { isValidDocumentName, isValidTemplateName, isValidPrettierConfig } from "./Playground.asserts";
+import { isValidDocumentName, isValidPrettierConfig, isValidTemplateName } from "./Playground.asserts";
 import type { PresetTemplate } from "./Playground.consts";
 import { presetTemplateList } from "./Playground.consts";
 import { presets } from "./presets";

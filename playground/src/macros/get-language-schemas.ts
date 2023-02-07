@@ -1,7 +1,6 @@
-import { parse } from "yaml";
-import { JSONSchema7 } from "json-schema";
+import type { AwaitFn } from "pastable";
+
 import schemaPrettier from "./schema-prettierrc.json";
-import { AwaitFn } from "pastable";
 
 const getLanguageSchemas = async () => {
     return {
@@ -16,6 +15,7 @@ const getLanguageSchemas = async () => {
     };
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export default getLanguageSchemas;
 
 export type GetLanguageSchemasData = AwaitFn<typeof getLanguageSchemas>["data"];
