@@ -3,6 +3,7 @@ import {
     Button,
     ButtonGroup,
     ButtonProps,
+    Center,
     Code,
     Drawer,
     DrawerBody,
@@ -37,9 +38,9 @@ import Editor, { EditorProps } from "@monaco-editor/react";
 import { BaseField, Field, FieldProps, FormDialog, FormLayout, useFormContext, useWatch } from "@saas-ui/react";
 import { useActor, useSelector } from "@xstate/react";
 import type { TemplateContextOptions } from "openapi-zod-client";
+import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { match } from "ts-pattern";
 import { defaultOptionValues, OptionsForm, OptionsFormValues } from "../components/OptionsForm";
-import { SplitPane } from "../components/SplitPane/SplitPane";
 import type { GetLanguageSchemasData } from "../macros/get-language-schemas";
 import { isValidDocumentName, isValidPrettierConfig, isValidTemplateName } from "./Playground.asserts";
 import { presetTemplateList } from "./Playground.consts";
@@ -71,8 +72,8 @@ export const Playground = () => {
     return (
         <Flex h="100%" pos="relative">
             <Box display="flex" boxSize="100%">
-                <SplitPane defaultSize="50%" onResize={(ctx) => send({ type: "Resize", context: ctx })}>
-                    <Box h="100%" flexGrow={1} flexShrink={0}>
+                <PanelGroup direction="horizontal">
+                    <Panel defaultSize={50} minSize={20}>
                         <Tabs variant="line" size="sm" index={activeInputIndex}>
                             <TabList
                                 minH="42px"
@@ -145,8 +146,17 @@ export const Playground = () => {
                                 });
                             }}
                         />
-                    </Box>
-                    <Box h="100%" flexGrow={1} flexShrink={0} minW={0}>
+                    </Panel>
+                    <PanelResizeHandle>
+                        <Center mx={2} h={"100%"}>
+                            <Box
+                                aria-label="Panel Resize"
+                                className="i-material-symbols-drag-indicator"
+                                boxSize="1em"
+                            />
+                        </Center>
+                    </PanelResizeHandle>
+                    <Panel defaultSize={50} minSize={20}>
                         <Tabs
                             variant="line"
                             size="sm"
@@ -194,8 +204,8 @@ export const Playground = () => {
                                 send({ type: "Editor Loaded", editor, name: "output", monaco })
                             }
                         />
-                    </Box>
-                </SplitPane>
+                    </Panel>
+                </PanelGroup>
             </Box>
             <FileTabForm />
             <OptionsDrawer />
@@ -537,8 +547,8 @@ const OptionsDrawer = () => {
                 </DrawerHeader>
 
                 <DrawerBody>
-                    <SplitPane direction="column" defaultSize="50%">
-                        <Box height="100%" overflow="auto">
+                    <PanelGroup direction="vertical">
+                        <Panel defaultSize={60} minSize={20}>
                             <OptionsForm
                                 key={state.context.optionsFormKey}
                                 id="options-form"
@@ -549,8 +559,17 @@ const OptionsDrawer = () => {
                                 onSubmit={(values) => send({ type: "Save options", options: values })}
                                 defaultValues={state.context.previewOptions}
                             />
-                        </Box>
-                        <Box maxHeight="100%" overflow="auto" py="4" fontSize="small">
+                        </Panel>
+                        <PanelResizeHandle>
+                            <Center mb={6}>
+                                <Box
+                                    aria-label="Panel Resize"
+                                    className="i-material-symbols-drag-handle"
+                                    boxSize="1em"
+                                />
+                            </Center>
+                        </PanelResizeHandle>
+                        <Panel defaultSize={40} minSize={20}>
                             <Box display="flex" alignItems="center">
                                 <Code lang="sh" rounded="md" px="2" py="1" mr="4" fontSize="xs">
                                     {cliCode}
@@ -560,8 +579,8 @@ const OptionsDrawer = () => {
                             <Box as="pre" padding="5" rounded="8px" my="4" bg="bgHover" color="text">
                                 {JSON.stringify(relevantOptions, null, 2)}
                             </Box>
-                        </Box>
-                    </SplitPane>
+                        </Panel>
+                    </PanelGroup>
                 </DrawerBody>
             </DrawerContent>
         </Drawer>
