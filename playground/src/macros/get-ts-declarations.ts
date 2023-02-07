@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { safeJSONParse } from "pastable";
 import { rollup } from "rollup";
 import dts from "rollup-plugin-dts";
-import { PackageJson } from "type-fest";
+import type { PackageJson } from "type-fest";
 
 const getDeps = (pkg: PackageJson) =>
     Object.keys(pkg.dependencies ?? {}).concat(Object.keys(pkg.peerDependencies ?? {}));
@@ -38,6 +39,7 @@ const getTsDeclarations = async () => {
     };
 };
 
+// eslint-disable-next-line import/no-unused-modules
 export default getTsDeclarations;
 
 // uncomment to run with tsx
