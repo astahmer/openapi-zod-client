@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.5
+
+### Patch Changes
+
+-   [#89](https://github.com/astahmer/openapi-zod-client/pull/89) [`b3e273a`](https://github.com/astahmer/openapi-zod-client/commit/b3e273abc89a3b7240119ba61ee48ad0de86c38f) Thanks [@feychenie](https://github.com/feychenie)! - Fixes and issue where default values for objects are incorrectly set (or ommited) in the zod schema.
+
 ## 1.5.4
 
 ### Patch Changes
