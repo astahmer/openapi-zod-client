@@ -81,7 +81,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
-            return getZodSchema({ schema: schema.oneOf[0]!, ctx, meta, options });
+            const type = getZodSchema({ schema: schema.oneOf[0]!, ctx, meta, options });
+            return code.assign(type.toString());
         }
 
         return code.assign(
@@ -92,7 +93,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
     if (schema.anyOf) {
         if (schema.anyOf.length === 1) {
-            return getZodSchema({ schema: schema.anyOf[0]!, ctx, meta, options });
+            const type = getZodSchema({ schema: schema.anyOf[0]!, ctx, meta, options });
+            return code.assign(type.toString());
         }
 
         const types = schema.anyOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ");
@@ -102,7 +104,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (schema.allOf) {
         if (schema.allOf.length === 1) {
-            return getZodSchema({ schema: schema.allOf[0]!, ctx, meta, options });
+            const type = getZodSchema({ schema: schema.allOf[0]!, ctx, meta, options });
+            return code.assign(type.toString());
         }
 
         const types = schema.allOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options }));
