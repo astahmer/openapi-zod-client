@@ -130,6 +130,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 return code.assign("z.never()");
             }
 
+            if (schema.enum.length === 1) {
+                const value = schema.enum[0];
+                return code.assign(`z.literal(${value === null ? "null" : value})`);
+            }
+
             return code.assign(
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 `z.union([${schema.enum.map((value) => `z.literal(${value === null ? "null" : value})`).join(", ")}])`
