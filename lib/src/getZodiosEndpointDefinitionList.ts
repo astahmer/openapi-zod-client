@@ -58,6 +58,12 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 : options.isMediaTypeAllowed;
     }
 
+    let getOperationAlias = (path: string, method: string, operation: OperationObject) =>
+        operation.operationId ?? method + pathToVariableName(path);
+    if (options?.withAlias && typeof options.withAlias === "function") {
+        getOperationAlias = options.withAlias;
+    }
+
     const ctx: ConversionTypeContext = { resolver, zodSchemaByName: {}, schemaByName: {} };
     const complexityThreshold = options?.complexityThreshold ?? 4;
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
@@ -144,7 +150,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 ...parametersMap,
                 ...getParametersMap(operation.parameters ?? []),
             }).map(([_id, param]) => param);
-            const operationName = operation.operationId ?? method + pathToVariableName(path);
+            const operationName = getOperationAlias(path, method, operation);
             const endpointDefinition: EndpointDefinitionWithRefs = {
                 method: method as EndpointDefinitionWithRefs["method"],
                 path: path.replaceAll(pathParamRegex, ":$1"),

@@ -1,4 +1,4 @@
-import type { OpenAPIObject, PathItemObject } from "openapi3-ts";
+import type { OpenAPIObject, OperationObject, PathItemObject } from "openapi3-ts";
 import { sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
 import { ts } from "tanu";
 import { match } from "ts-pattern";
@@ -229,8 +229,18 @@ export type TemplateContext = {
 export type TemplateContextOptions = {
     /** @see https://www.zodios.org/docs/client#baseurl */
     baseUrl?: string;
-    /** @see https://www.zodios.org/docs/client#zodiosalias */
-    withAlias?: boolean;
+    /**
+     * When true, will either use the `operationId` as `alias`, or auto-generate it from the method and path.
+     *
+     * You can alternatively provide a custom function to generate the alias with the following signature:
+     * `(path: string, method: string, operation: OperationObject) => string`
+     * `OperationObject` is the OpenAPI operation object as defined in `openapi3-ts` npm package.
+     * @see https://github.com/metadevpro/openapi3-ts/blob/master/src/model/OpenApi.ts#L110
+     *
+     * @see https://www.zodios.org/docs/client#zodiosalias
+     * @default false
+     */
+    withAlias?: boolean | ((path: string, method: string, operation: OperationObject) => string);
     /**
      * when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
      *
