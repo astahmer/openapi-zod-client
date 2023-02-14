@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.6
+
+### Patch Changes
+
+-   [#91](https://github.com/astahmer/openapi-zod-client/pull/91) [`6ca10ff`](https://github.com/astahmer/openapi-zod-client/commit/6ca10ffae57332ef94e2e3b5f3bacf03a7759bbc) Thanks [@feychenie](https://github.com/feychenie)! - Fixed an issue with non-string enums containing a single value, resulting in an invalid zod union
+
 ## 1.5.5
 
 ### Patch Changes
