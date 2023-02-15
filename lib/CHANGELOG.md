@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.5.7
+
+### Patch Changes
+
+-   [#93](https://github.com/astahmer/openapi-zod-client/pull/93) [`16f5ccc`](https://github.com/astahmer/openapi-zod-client/commit/16f5ccc43f738122c4e06f79ede41a35efb801c1) Thanks [@feychenie](https://github.com/feychenie)! - Improvement: add the ability to set a custom `alias` generation function in the `withAlias` option.
+
 ## 1.5.6
 
 ### Patch Changes
