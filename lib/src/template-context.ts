@@ -295,6 +295,12 @@ export type TemplateContextOptions = {
      */
     withImplicitRequiredProps?: boolean;
     /**
+     * when true, will add the default values from the openapi schemas to the generated zod schemas
+     *
+     * @default true
+     */
+    withDefaultValues?: boolean;
+    /**
      * when true, will keep deprecated endpoints in the api output
      * @default false
      */

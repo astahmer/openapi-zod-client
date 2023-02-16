@@ -200,7 +200,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
                 const propCode =
                     getZodSchema({ schema: propSchema, ctx, meta: propMetadata, options }) +
-                    getZodChain(propActualSchema as SchemaObject, propMetadata);
+                    getZodChain({ schema: propActualSchema as SchemaObject, meta: propMetadata, options });
 
                 return [prop, propCode.toString()];
             });
@@ -220,7 +220,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     throw new Error(`Unsupported schema type: ${schemaType}`);
 }
 
-export const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
+type ZodChainArgs = { schema: SchemaObject; meta?: CodeMetaData; options?: TemplateContext["options"] };
+
+export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
     const chains: string[] = [];
 
     match(schema.type)
@@ -230,7 +232,10 @@ export const getZodChain = (schema: SchemaObject, meta?: CodeMetaData) => {
         .otherwise(() => void 0);
 
     const output = chains
-        .concat(getZodChainablePresence(schema, meta), getZodChainableDefault(schema))
+        .concat(
+            getZodChainablePresence(schema, meta),
+            options?.withDefaultValues !== false ? getZodChainableDefault(schema) : []
+        )
         .filter(Boolean)
         .join(".");
     return output ? `.${output}` : "";
@@ -265,8 +270,7 @@ const getZodChainableDefault = (schema: SchemaObject) => {
     if (schema.default) {
         const value = match(schema.type)
             .with("number", "integer", () => unwrapQuotesIfNeeded(schema.default))
-            .with("array", "object", () => JSON.stringify(schema.default))
-            .otherwise(() => (typeof schema.default === "string" ? `"${schema.default}"` : schema.default));
+            .otherwise(() => JSON.stringify(schema.default));
         return `default(${value})`;
     }
 

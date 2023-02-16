@@ -120,7 +120,7 @@ test("getSchemaWithChainableAsZodString", () => {
     );
 });
 
-test("CodeMeta with ref", () => {
+test("CodeMeta with missing ref", () => {
     const ctx: ConversionTypeContext = {
         resolver: makeSchemaResolver({ components: { schemas: {} } } as any),
         zodSchemaByName: {},
@@ -149,7 +149,7 @@ test("CodeMeta with ref", () => {
     ).toThrowErrorMatchingInlineSnapshot('"Schema Example not found"');
 });
 
-test("CodeMeta with missing ref", () => {
+test("CodeMeta with ref", () => {
     const schemas = {
         Example: {
             type: "object",
