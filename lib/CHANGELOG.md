@@ -1,5 +1,13 @@
 # openapi-zod-client
 
+## 1.5.8
+
+### Patch Changes
+
+-   [#96](https://github.com/astahmer/openapi-zod-client/pull/96) [`dc16074`](https://github.com/astahmer/openapi-zod-client/commit/dc16074f377492d1337ae55366ce54573865adc9) Thanks [@feychenie](https://github.com/feychenie)! - Improvement: Add `withDefaultValues` (default `true`) config option to control presend of default values in the zod schemas
+
+-   [#96](https://github.com/astahmer/openapi-zod-client/pull/96) [`dc16074`](https://github.com/astahmer/openapi-zod-client/commit/dc16074f377492d1337ae55366ce54573865adc9) Thanks [@feychenie](https://github.com/feychenie)! - Improves default values conversion to not depend on the presence of a single-value "type" schema attribute
+
 ## 1.5.7
 
 ### Patch Changes
