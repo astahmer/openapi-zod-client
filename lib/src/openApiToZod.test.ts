@@ -16,6 +16,8 @@ test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
     expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number()"');
     expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.number()"');
+    // expect(getSchemaAsZodString({ type: "string", format: "date-time" })).toMatchInlineSnapshot('"z.string().datetime()"');
+    // expect(getSchemaAsZodString({ type: "number", nullable: true, minimum: 0 })).toMatchInlineSnapshot('"z.number().nullable().gte(0)"');
 
     expect(getSchemaAsZodString({ type: "array", items: { type: "string" } })).toMatchInlineSnapshot(
         '"z.array(z.string())"'
@@ -24,9 +26,31 @@ test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "object", properties: { str: { type: "string" } } })).toMatchInlineSnapshot(
         '"z.object({ str: z.string() }).partial()"'
     );
+
+     expect(getSchemaAsZodString({ type: "object", properties: { str: { type: "string" } } })).toMatchInlineSnapshot(
+        '"z.object({ str: z.string() }).partial()"'
+    );
+
     expect(
-        getSchemaAsZodString({ type: "object", properties: { str: { type: "string" }, nb: { type: "number" } } })
-    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nb: z.number() }).partial()"');
+        getSchemaAsZodString({ type: "object", properties: {  nb: { type: "integer" } } })
+    ).toMatchInlineSnapshot('"z.object({ nb: z.number().int() }).partial()"');
+
+    expect(
+        getSchemaAsZodString({ type: "object", properties: {  pa: { type: "number", minimum: 0 } } })
+    ).toMatchInlineSnapshot('"z.object({ pa: z.number().gte(0) }).partial()"');
+
+    expect(
+        getSchemaAsZodString({ type: "object", properties: {  pa: { type: "number", minimum: 0, maximum: 100 } } })
+    ).toMatchInlineSnapshot(`"z.object({ pa: z.number().gte(0).lte(100) }).partial()"`);
+
+    expect(
+        getSchemaAsZodString({ type: "object", properties: {  ml: { type: "string", minLength: 0 } } })
+    ).toMatchInlineSnapshot(`"z.object({ ml: z.string().min(0) }).partial()"`);
+
+    expect(
+        getSchemaAsZodString({ type: "object", properties: {  dt: { type: "string", format: "date-time" } } })
+    ).toMatchInlineSnapshot(`"z.object({ dt: z.string().datetime() }).partial()"`);
+
 
     expect(
         getSchemaAsZodString({

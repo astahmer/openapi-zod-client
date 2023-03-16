@@ -291,11 +291,11 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
     if (!schema.enum) {
-        if (schema.minLength) {
+        if (schema.minLength !== undefined) {
             validations.push(`min(${schema.minLength})`);
         }
 
-        if (schema.maxLength) {
+        if (schema.maxLength !== undefined) {
             validations.push(`max(${schema.maxLength})`);
         }
     }
@@ -310,6 +310,7 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
             .with("hostname", () => "url()")
             .with("uri", () => "url()")
             .with("uuid", () => "uuid()")
+            .with("date-time", () => "datetime()")
             .otherwise(() => "");
 
         if (chain) {
@@ -327,8 +328,8 @@ const getZodChainableNumberValidations = (schema: SchemaObject) => {
         validations.push("int()");
     }
 
-    if (schema.minimum) {
-        if (schema.exclusiveMinimum) {
+    if (schema.minimum !== undefined) {
+        if (schema.exclusiveMinimum !== undefined) {
             validations.push(`gt(${schema.minimum})`);
         } else {
             validations.push(`gte(${schema.minimum})`);
@@ -337,8 +338,8 @@ const getZodChainableNumberValidations = (schema: SchemaObject) => {
         validations.push(`gt(${schema.exclusiveMinimum})`);
     }
 
-    if (schema.maximum) {
-        if (schema.exclusiveMaximum) {
+    if (schema.maximum !== undefined) {
+        if (schema.exclusiveMaximum !== undefined) {
             validations.push(`lt(${schema.maximum})`);
         } else {
             validations.push(`lte(${schema.maximum})`);
