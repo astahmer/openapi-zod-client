@@ -1,5 +1,20 @@
 # openapi-zod-client
 
+## 1.6.0
+
+### Minor Changes
+
+-   [#98](https://github.com/astahmer/openapi-zod-client/pull/98) [`3e2406d`](https://github.com/astahmer/openapi-zod-client/commit/3e2406d8432e3f1de6edcf635e9946304533e38d) Thanks [@sirtimbly](https://github.com/sirtimbly)! - ## Feature: Support for Datetime string format
+
+    > **Warning**<br>
+    > Upgrade your zod package to version >= 3.2.0
+
+    Because zod now supports validating strings as proper ISO datetimes with `.datetime()` since [Zod 3.2.0](https://github.com/colinhacks/zod/releases/tag/v3.20), and 'date-time' is one of the supported string `format` values in the OpenAPI and JSON Schema spec. Any string with that datetime format will now be validated as being a ISO UTC datetime string.
+
+    ## Fixed: Minimum 0 and MinLength 0
+
+    Minimum 0 and MinLength 0 were not being converted to `.gte()` and `.min()` because of a type coercion bug.
+
 ## 1.5.8
 
 ### Patch Changes
