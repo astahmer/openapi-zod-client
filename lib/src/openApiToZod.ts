@@ -85,6 +85,16 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code.assign(type.toString());
         }
 
+        if (schema.discriminator) {
+            const propertyName = schema.discriminator.propertyName;
+
+            return code.assign(`
+                z.discriminatedUnion("${propertyName}", [${schema.oneOf
+                .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
+                .join(", ")}]);
+            `);
+        }
+
         return code.assign(
             `z.union([${schema.oneOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ")}])`
         );
