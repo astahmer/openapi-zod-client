@@ -122,6 +122,12 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     if (schemaType && isPrimitiveType(schemaType)) {
         if (schema.enum) {
             if (schemaType === "string") {
+                if (schema.enum.length === 1) {
+                    const value = schema.enum[0];
+                    const valueString = value === null ? "null" : `"${value}"`;
+                    return code.assign(`z.literal(${valueString})`);
+                }
+
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
             }
