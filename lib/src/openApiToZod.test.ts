@@ -105,6 +105,45 @@ test("getSchemaAsZodString", () => {
     expect(
         getSchemaAsZodString({
             type: "object",
+            oneOf: [
+                {
+                    type: "object",
+                    required: ["type", "a"],
+                    properties: {
+                        type: {
+                            type: "string",
+                            enum: ["a"],
+                        },
+                        a: {
+                            type: "string",
+                        },
+                    },
+                },
+                {
+                    type: "object",
+                    required: ["type", "b"],
+                    properties: {
+                        type: {
+                            type: "string",
+                            enum: ["b"],
+                        },
+                        b: {
+                            type: "string",
+                        },
+                    },
+                },
+            ],
+            discriminator: { propertyName: "type" },
+        })
+    ).toMatchInlineSnapshot(`
+      "
+                      z.discriminatedUnion("type", [z.object({ type: z.literal("a"), a: z.string() }), z.object({ type: z.literal("b"), b: z.string() })]);
+                  "
+    `);
+
+    expect(
+        getSchemaAsZodString({
+            type: "object",
             properties: {
                 unionOrArrayOfUnion: { anyOf: [{ type: "string" }, { type: "number" }] },
             },
