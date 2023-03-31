@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.6.1
+
+### Patch Changes
+
+-   [#106](https://github.com/astahmer/openapi-zod-client/pull/106) [`9594450`](https://github.com/astahmer/openapi-zod-client/commit/95944505551a2fc37e96d4f72c104af8f03e6a4e) Thanks [@dominik-parkopedia](https://github.com/dominik-parkopedia)! - Make use of discriminated unions if oneOf discriminator is defined
+
 ## 1.6.0
 
 ### Minor Changes
