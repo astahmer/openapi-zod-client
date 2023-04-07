@@ -60,6 +60,6 @@ export const escapeControlCharacters = (str: string): string => {
                 if (dec <= 0xFF) return `\\x${`00${hex}`.slice(-2)}`;
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 return `\\u${`0000${hex}`.slice(-4)}`;
-            }
-    );
+            })
+        .replace(/\//g, "\\/");
 };

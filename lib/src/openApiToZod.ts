@@ -294,11 +294,11 @@ const getZodChainableDefault = (schema: SchemaObject) => {
 };
 
 const formatPatternIfNeeded = (pattern: string) => {
-    pattern = escapeControlCharacters(pattern);
-
     if (pattern.startsWith("/") && pattern.endsWith("/")) {
-        return pattern;
+        pattern = pattern.slice(1, -1);
     }
+
+    pattern = escapeControlCharacters(pattern);
 
     return `/${pattern}/`;
 };
