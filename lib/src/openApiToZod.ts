@@ -345,7 +345,7 @@ const getZodChainableNumberValidations = (schema: SchemaObject) => {
     }
 
     if (schema.minimum !== undefined) {
-        if (schema.exclusiveMinimum !== undefined) {
+        if (schema.exclusiveMinimum === true) {
             validations.push(`gt(${schema.minimum})`);
         } else {
             validations.push(`gte(${schema.minimum})`);
@@ -355,7 +355,7 @@ const getZodChainableNumberValidations = (schema: SchemaObject) => {
     }
 
     if (schema.maximum !== undefined) {
-        if (schema.exclusiveMaximum !== undefined) {
+        if (schema.exclusiveMaximum === true) {
             validations.push(`lt(${schema.maximum})`);
         } else {
             validations.push(`lte(${schema.maximum})`);
