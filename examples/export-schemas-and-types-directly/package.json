@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "scripts": {
-    "gen:schemas-directly": "openapi-zod-client https://raw.githubusercontent.com/aacitelli/credit-card-bonuses-api/main/src/api.yaml -t schemas-only.hbs --output schemas.ts --export-schemas"
+    "gen:schemas-directly": "openapi-zod-client ./schema.yaml -t schemas-only.hbs --output schemas.ts --export-schemas"
   },
   "devDependencies": {
     "typescript": "^4.8.4"
