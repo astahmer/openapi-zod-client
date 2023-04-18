@@ -1,0 +1,16 @@
+{
+  "name": "openapi-zod-client-examples-export-schemas-and-types-directly",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "gen:schemas-directly": "openapi-zod-client https://raw.githubusercontent.com/aacitelli/credit-card-bonuses-api/main/src/api.yaml -t schemas-only.hbs --output schemas.ts --export-schemas"
+  },
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "openapi-zod-client": "workspace:^1.0.0",
+    "zod": "^3.19.1"
+  }
+}
