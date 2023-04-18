@@ -1,5 +1,13 @@
 # openapi-zod-client
 
+## 1.6.2
+
+### Patch Changes
+
+-   [#119](https://github.com/astahmer/openapi-zod-client/pull/119) [`d340a17`](https://github.com/astahmer/openapi-zod-client/commit/d340a17df0907975148f06709baccdc57fecc980) Thanks [@robert-wysocki-sparkbit](https://github.com/robert-wysocki-sparkbit)! - Fix handling patterns with forward slashes
+
+-   [#113](https://github.com/astahmer/openapi-zod-client/pull/113) [`a4607b0`](https://github.com/astahmer/openapi-zod-client/commit/a4607b0f10fabbce9e291827712673581887c24b) Thanks [@robert-wysocki-sparkbit](https://github.com/robert-wysocki-sparkbit)! - Fix handling "exclusiveMinimum: false"
+
 ## 1.6.1
 
 ### Patch Changes
