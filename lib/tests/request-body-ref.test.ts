@@ -3,7 +3,7 @@ import { expect, test } from "vitest";
 import { generateZodClientFromOpenAPI } from "../src";
 
 // https://github.com/astahmer/openapi-zod-client/issues/120
-test("allOf-missing-and", async () => {
+test("request-body-ref", async () => {
     const openApiDoc: OpenAPIObject = {
         openapi: "3.0.3",
         info: {
