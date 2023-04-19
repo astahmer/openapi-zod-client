@@ -163,7 +163,11 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             };
 
             if (operation.requestBody) {
-                const requestBody = operation.requestBody as RequestBodyObject;
+                const requestBody = (
+                    isReferenceObject(operation.requestBody)
+                        ? ctx.resolver.getSchemaByRef(operation.requestBody.$ref)
+                        : operation.requestBody
+                ) as RequestBodyObject;
                 const mediaTypes = Object.keys(requestBody.content ?? {});
                 const matchingMediaType = mediaTypes.find(isAllowedParamMediaTypes);
 
