@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.6.3
+
+### Patch Changes
+
+-   [#122](https://github.com/astahmer/openapi-zod-client/pull/122) [`5965c3f`](https://github.com/astahmer/openapi-zod-client/commit/5965c3fb2ad543de14c4c1546aadb0dc76948a1f) Thanks [@FakeGodd](https://github.com/FakeGodd)! - added support for requestBody.$ref
+
 ## 1.6.2
 
 ### Patch Changes
