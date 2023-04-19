@@ -1,5 +1,5 @@
 ---
-"openapi-zod-client": major
+"openapi-zod-client": patch
 ---
 
 added support for requestBody.$ref
