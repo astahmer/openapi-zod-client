@@ -90,6 +90,7 @@ Exemple: `--success-expr "status >= 200 && status < 300"`
     `pnpx openapi-zod-client https://raw.githubusercontent.com/OAI/OpenAPI-Specification/main/examples/v3.0/petstore.yaml -o ./petstore.ts`
 
 -   Also, multiple-files-documents ($ref pointing to another file) should work out-of-the-box as well, but if it doesn't, maybe [dereferencing](https://apitools.dev/swagger-parser/docs/swagger-parser.html#dereferenceapi-options-callback) your document before passing it to `openapi-zod-client` could help
+-   If you only need a few portions of your OpenAPI spec (i.e. only using a few endpoints from the [GitHub REST API OpenAPI Spec](https://github.com/OAI/OpenAPI-Specification)), consider using [openapi-endpoint-trimmer](https://github.com/aacitelli/openapi-endpoint-trimmer) to trim unneeded paths from your spec first. It supports prefix-based omitting of paths, helping significantly cut down on the length of your output types file, which generally improves editor speed and compilation times.
 
 ## Example
 
