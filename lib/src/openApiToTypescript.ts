@@ -25,8 +25,9 @@ export const getTypescriptFromOpenApi = ({
     ctx,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
 TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
+    let name = inheritedMeta?.name;
     const meta = {} as TsConversionArgs["meta"];
-    const isInline = !inheritedMeta?.name;
+    const isInline = !name;
 
     if (ctx?.visitedsRefs && inheritedMeta?.$ref) {
         ctx.rootRef = inheritedMeta.$ref;
@@ -203,14 +204,14 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 return isPartial ? t.reference("Partial", [objectType]) : objectType;
             }
 
-            if (!inheritedMeta?.name) {
+            if (!name) {
                 throw new Error("Name is required to convert an object schema to a type reference");
             }
 
-            const base = t.type(inheritedMeta.name, objectType);
+            const base = t.type(name, objectType);
             if (!isPartial) return base;
 
-            return t.type(inheritedMeta.name, t.reference("Partial", [objectType]));
+            return t.type(name, t.reference("Partial", [objectType]));
         }
 
         if (!schemaType) return t.unknown();
@@ -220,9 +221,12 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     };
 
     const tsResult = getTs();
-    return canBeWrapped
-        ? wrapTypeIfInline({ isInline, name: inheritedMeta?.name, typeDef: tsResult as TypeDefinition })
-        : tsResult;
+    if (typeof tsResult === "string") {
+        canBeWrapped = true;
+        name = tsResult;
+    }
+
+    return canBeWrapped ? wrapTypeIfInline({ isInline: !name, name, typeDef: tsResult as TypeDefinition }) : tsResult;
 };
 
 type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
