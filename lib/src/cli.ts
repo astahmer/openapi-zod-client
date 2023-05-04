@@ -7,8 +7,8 @@ import type { OpenAPIObject } from "openapi3-ts";
 import { safeJSONParse } from "pastable/server";
 import { resolveConfig } from "prettier";
 
-import { generateZodClientFromOpenAPI } from "./generateZodClientFromOpenAPI";
 import { P, match } from "ts-pattern";
+import { generateZodClientFromOpenAPI, PredefinedTemplates } from "./generateZodClientFromOpenAPI";
 
 const cli = cac("openapi-zod-client");
 const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf8"));
@@ -17,7 +17,9 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     .option("-o, --output <path>", "Output path for the zodios api client ts file (defaults to `<input>.client.ts`)")
     .option(
         "-t, --template <path>",
-        "Template path for the handlebars template that will be used to generate the output"
+        `Template path for the handlebars template that will be used to generate the output, or a predefined template: ${PredefinedTemplates.join(
+            ", "
+        )}`
     )
     .option("-p, --prettier <path>", "Prettier config path that will be used to format the output client file")
     .option("-b, --base-url <url>", "Base url for the api")

@@ -1,5 +1,5 @@
-import { makeApi, Zodios } from "@zodios/core";
-import { z } from "zod";
+import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
+{{> imports}}
 
 {{#if types}}
 {{#each types}}
@@ -20,64 +20,23 @@ export const schemas = {
 {{/ifNotEmptyObj}}
 
 {{#each endpointsGroups}}
-const {{@key}}Endpoints = makeApi([
+const {{camel-case @key "endpoints"}} = makeApi([
 {{#each this.endpoints}}
-	{
-		method: "{{method}}",
-		path: "{{path}}",
-		{{#if @root.options.withAlias}}
-		{{#if alias}}
-		alias: "{{alias}}",
-		{{/if}}
-		{{/if}}
-		{{#if description}}
-		description: `{{description}}`,
-		{{/if}}
-		{{#if requestFormat}}
-		requestFormat: "{{requestFormat}}",
-		{{/if}}
-		{{#if parameters}}
-		parameters: [
-			{{#each parameters}}
-			{
-				name: "{{name}}",
-				{{#if description}}
-				description: `{{description}}`,
-				{{/if}}
-				{{#if type}}
-				type: "{{type}}",
-				{{/if}}
-				schema: {{{schema}}}
-			},
-			{{/each}}
-		],
-		{{/if}}
-		response: {{{response}}},
-		{{#if errors.length}}
-		errors: [
-			{{#each errors}}
-			{
-				{{#ifeq status "default" }}
-				status: "default",
-				{{else}}
-				status: {{status}},
-				{{/ifeq}}
-				{{#if description}}
-				description: `{{description}}`,
-				{{/if}}
-				schema: {{{schema}}}
-			},
-			{{/each}}
-		]
-		{{/if}}
-	},
+	{{> endpoint}},
 {{/each}}
 ]);
-
-export const {{@key}}Api = new Zodios({{#if options.baseUrl}}"{{options.baseUrl}}", {{/if}}{{@key}}Endpoints);
-
 {{/each}}
 
-export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-    return new Zodios(baseUrl, endpoints, options);
+const endpoints = {
+{{#each endpointsGroups}}
+	"{{@key}}":  {{camel-case @key "endpoints"}},
+{{/each}}
+}
+
+{{#each endpointsGroups}}
+export const {{camel-case @key @root.options.apiClientName}} = new Zodios({{#if @root.options.baseUrl}}"{{@root.options.baseUrl}}", {{/if}}{{camel-case @key "endpoints"}});
+{{/each}}
+
+export function createApiClient(endpointGroup: keyof typeof endpoints, baseUrl: string, options?: ZodiosOptions) {
+	return new Zodios(baseUrl, endpoints[endpointGroup], options)
 }

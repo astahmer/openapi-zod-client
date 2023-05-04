@@ -8,17 +8,12 @@ import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 {{/if}}
 
 {{#each schemas}}
-const {{@key}}{{#if (lookup ../emittedType @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
-{{/each}}
+export const {{@key}}{{#if (lookup ../circularTypeByName @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
+{{#unless (lookup ../types @key)}}
+export type {{@key}} = z.infer<typeof {{@key}}>;
+{{/unless}}
 
-{{#ifNotEmptyObj schemas}}
-export const schemas = {
-{{#each schemas}}
-	{{@key}},
 {{/each}}
-};
-{{/ifNotEmptyObj}}
-
 const endpoints = makeApi([
 {{#each endpoints}}
 	{{> endpoint}},

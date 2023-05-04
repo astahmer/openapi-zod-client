@@ -1,0 +1,6 @@
+import { z } from "zod";
+{{#if this.imports}}
+{{#each this.imports}}
+import { {{{@key}}} } from "./{{{this}}}"
+{{/each}}
+{{/if}}
