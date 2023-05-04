@@ -51,7 +51,7 @@ For more info, run any command with the `--help` flag:
 
 Options:
   -o, --output <path>       Output path for the zodios api client ts file (defaults to `<input>.client.ts`)
-  -t, --template <path>     Template path for the handlebars template that will be used to generate the output
+  -t, --template <path>     Template path for the handlebars template that will be used to generate the output, or a predefined template: schemas-only, export-schemas
   -p, --prettier <path>     Prettier config path that will be used to format the output client file
   -b, --base-url <url>      Base url for the api
   -a, --with-alias          With alias as api client methods
@@ -285,6 +285,16 @@ NOT tested/expected to work with OpenAPI before v3, please migrate your specs to
 
 ## Contributing:
 
--   `pnpm i && pnpm gen`
+* A `.node-version` file has been provided in the repository root, use your preferred Node.js manager which [supports](https://github.com/shadowspawn/node-version-usage#supporting-products) the standard to manage the development Node.js environment
+* The monorepo supports [corepack](https://nodejs.org/api/corepack.html), follow the linked instructions to locally install the development package manager (i.e. [pnpm](https://pnpm.io/))
 
-if you fix an edge case please make a dedicated minimal reproduction test in the [`tests`](./tests) folder so that it doesn't break in future versions
+```bash
+> pnpm install
+> pnpm test
+```
+
+Assuming no issue were raised by the tests, you may use `pnpm dev` to watch for code changes during development.
+
+If you fix an edge case please make a dedicated minimal reproduction test in the [`tests`](./tests) folder so that it doesn't break in future versions
+
+Make sure to generate a [changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md) before submitting your PR.

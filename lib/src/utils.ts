@@ -51,15 +51,13 @@ export const escapeControlCharacters = (str: string): string => {
         .replace(/\t/g, "\\t") // U+0009
         .replace(/\n/g, "\\n") // U+000A
         .replace(/\r/g, "\\r") // U+000D
-        .replace(
-            /([\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uFFFE\uFFFF])/g,
-            (_m, p1) => {
-                const dec: number = p1.codePointAt();
-                const hex: string = dec.toString(16);
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
-                if (dec <= 0xFF) return `\\x${`00${hex}`.slice(-2)}`;
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
-                return `\\u${`0000${hex}`.slice(-4)}`;
-            })
+        .replace(/([\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uFFFE\uFFFF])/g, (_m, p1) => {
+            const dec: number = p1.codePointAt();
+            const hex: string = dec.toString(16);
+            // eslint-disable-next-line sonarjs/no-nested-template-literals
+            if (dec <= 0xff) return `\\x${`00${hex}`.slice(-2)}`;
+            // eslint-disable-next-line sonarjs/no-nested-template-literals
+            return `\\u${`0000${hex}`.slice(-4)}`;
+        })
         .replace(/\//g, "\\/");
 };

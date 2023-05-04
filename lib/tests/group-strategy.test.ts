@@ -236,7 +236,7 @@ test("group-strategy", async () => {
         options: { groupStrategy: "tag" },
     });
     expect(resultGroupedByTag).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const petEndpoints = makeApi([
@@ -265,9 +265,6 @@ test("group-strategy", async () => {
           response: z.string(),
         },
       ]);
-
-      export const petApi = new Zodios(petEndpoints);
-
       const storeEndpoints = makeApi([
         {
           method: "get",
@@ -282,9 +279,6 @@ test("group-strategy", async () => {
           response: z.string(),
         },
       ]);
-
-      export const storeApi = new Zodios(storeEndpoints);
-
       const userEndpoints = makeApi([
         {
           method: "get",
@@ -311,10 +305,7 @@ test("group-strategy", async () => {
           response: z.string(),
         },
       ]);
-
-      export const userApi = new Zodios(userEndpoints);
-
-      const DefaultEndpoints = makeApi([
+      const defaultEndpoints = makeApi([
         {
           method: "get",
           path: "/no-tags",
@@ -329,10 +320,24 @@ test("group-strategy", async () => {
         },
       ]);
 
-      export const DefaultApi = new Zodios(DefaultEndpoints);
+      const endpoints = {
+        pet: petEndpoints,
+        store: storeEndpoints,
+        user: userEndpoints,
+        Default: defaultEndpoints,
+      };
 
-      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-        return new Zodios(baseUrl, endpoints, options);
+      export const petApi = new Zodios(petEndpoints);
+      export const storeApi = new Zodios(storeEndpoints);
+      export const userApi = new Zodios(userEndpoints);
+      export const defaultApi = new Zodios(defaultEndpoints);
+
+      export function createApiClient(
+        endpointGroup: keyof typeof endpoints,
+        baseUrl: string,
+        options?: ZodiosOptions
+      ) {
+        return new Zodios(baseUrl, endpoints[endpointGroup], options);
       }
       "
     `);
@@ -482,7 +487,7 @@ test("group-strategy", async () => {
     });
 
     expect(resultGroupedByMethod).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const getEndpoints = makeApi([
@@ -523,9 +528,6 @@ test("group-strategy", async () => {
           response: z.string(),
         },
       ]);
-
-      export const getApi = new Zodios(getEndpoints);
-
       const putEndpoints = makeApi([
         {
           method: "put",
@@ -565,10 +567,20 @@ test("group-strategy", async () => {
         },
       ]);
 
+      const endpoints = {
+        get: getEndpoints,
+        put: putEndpoints,
+      };
+
+      export const getApi = new Zodios(getEndpoints);
       export const putApi = new Zodios(putEndpoints);
 
-      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-        return new Zodios(baseUrl, endpoints, options);
+      export function createApiClient(
+        endpointGroup: keyof typeof endpoints,
+        baseUrl: string,
+        options?: ZodiosOptions
+      ) {
+        return new Zodios(baseUrl, endpoints[endpointGroup], options);
       }
       "
     `);
@@ -881,7 +893,6 @@ test("group-strategy with complex schemas + split files", async () => {
       {
           "Default": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-
       import { User } from "./common";
 
       type Country = Partial<{
@@ -969,7 +980,6 @@ test("group-strategy with complex schemas + split files", async () => {
       ",
           "pet": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-
       import { User } from "./common";
 
       const Pet = z
@@ -1015,7 +1025,6 @@ test("group-strategy with complex schemas + split files", async () => {
       ",
           "store": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-
       import { User } from "./common";
 
       type Store = Partial<{
@@ -1082,7 +1091,6 @@ test("group-strategy with complex schemas + split files", async () => {
       ",
           "user": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-
       import { User } from "./common";
 
       const endpoints = makeApi([

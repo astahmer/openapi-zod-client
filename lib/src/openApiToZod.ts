@@ -7,8 +7,10 @@ import { isReferenceObject } from "./isReferenceObject";
 import type { TemplateContext } from "./template-context";
 import { escapeControlCharacters, isPrimitiveType, wrapWithQuotesIfNeeded } from "./utils";
 
+type ExtensionAttributes = { "x-enumNames"?: string[] };
+
 type ConversionArgs = {
-    schema: SchemaObject | ReferenceObject;
+    schema: (SchemaObject & ExtensionAttributes) | ReferenceObject;
     ctx?: ConversionTypeContext | undefined;
     meta?: CodeMetaData | undefined;
     options?: TemplateContext["options"] | undefined;
@@ -144,6 +146,15 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
             if (schema.enum.some((e) => typeof e === "string")) {
                 return code.assign("z.never()");
+            }
+
+            if (schema["x-enumNames"]?.length === schema.enum?.length) {
+                const values = schema?.enum;
+                return code.assign(
+                    `z.nativeEnum({${schema["x-enumNames"]
+                        .map((name, index) => `${name}: ${values[index] ?? "null"}`)
+                        .join(", ")}} as const)`
+                );
             }
 
             if (schema.enum.length === 1) {

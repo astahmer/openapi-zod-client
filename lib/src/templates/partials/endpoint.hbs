@@ -1,0 +1,49 @@
+{
+	method: "{{method}}",
+	path: "{{path}}",
+	{{#if @root.options.withAlias}}
+	{{#if alias}}
+	alias: "{{alias}}",
+	{{/if}}
+	{{/if}}
+	{{#if description}}
+	description: `{{description}}`,
+	{{/if}}
+	{{#if requestFormat}}
+	requestFormat: "{{requestFormat}}",
+	{{/if}}
+	{{#if parameters}}
+	parameters: [
+		{{#each parameters}}
+		{
+			name: "{{name}}",
+			{{#if description}}
+			description: `{{description}}`,
+			{{/if}}
+			{{#if type}}
+			type: "{{type}}",
+			{{/if}}
+			schema: {{{schema}}}
+		},
+		{{/each}}
+	],
+	{{/if}}
+	response: {{{response}}},
+	{{#if errors.length}}
+	errors: [
+		{{#each errors}}
+		{
+			{{#ifeq status "default" }}
+			status: "default",
+			{{else}}
+			status: {{status}},
+			{{/ifeq}}
+			{{#if description}}
+			description: `{{description}}`,
+			{{/if}}
+			schema: {{{schema}}}
+		},
+		{{/each}}
+	]
+	{{/if}}
+}
