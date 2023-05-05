@@ -20,7 +20,13 @@ import { makeSchemaResolver } from "./makeSchemaResolver";
 import { getZodChain, getZodSchema } from "./openApiToZod";
 import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";
-import { asComponentSchema, normalizeString, pathToVariableName } from "./utils";
+import {
+    asComponentSchema,
+    pathParamToVariableName,
+    replaceHyphatedPath,
+    normalizeString,
+    pathToVariableName,
+} from "./utils";
 
 const voidSchema = "z.void()";
 
@@ -153,7 +159,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             const operationName = getOperationAlias(path, method, operation);
             const endpointDefinition: EndpointDefinitionWithRefs = {
                 method: method as EndpointDefinitionWithRefs["method"],
-                path: path.replaceAll(pathParamRegex, ":$1"),
+                path: replaceHyphatedPath(path),
                 alias: operationName,
                 description: operation.description,
                 requestFormat: "json",
@@ -259,7 +265,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                     });
 
                     endpointDefinition.parameters.push({
-                        name: paramItem.name,
+                        name: match(paramItem.in)
+                            .with("path", () => pathParamToVariableName(paramItem.name))
+                            .otherwise(() => paramItem.name),
                         type: match(paramItem.in)
                             .with("header", () => "Header")
                             .with("query", () => "Query")
@@ -410,8 +418,6 @@ export type EndpointDefinitionWithRefs = Omit<
     >;
     errors: Array<Omit<Required<ZodiosEndpointDefinition<any>>["errors"][number], "schema"> & { schema: string }>;
 };
-
-const pathParamRegex = /{(\w+)}/g;
 
 const allowedParamMediaTypes = [
     "application/octet-stream",
