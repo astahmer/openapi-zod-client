@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.6.4
+
+### Patch Changes
+
+-   [#137](https://github.com/astahmer/openapi-zod-client/pull/137) [`d6091c9`](https://github.com/astahmer/openapi-zod-client/commit/d6091c9d87152e03a18e8e94b890c528b088b847) Thanks [@jmiller14](https://github.com/jmiller14)! - fix extraneous semicolon after discriminated union
+
 ## 1.6.3
 
 ### Patch Changes
