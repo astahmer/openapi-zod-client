@@ -1,5 +1,5 @@
 import type { SchemaObject } from "openapi3-ts";
-import { capitalize, kebabToCamel } from "pastable/server";
+import { capitalize, kebabToCamel, snakeToCamel } from "pastable/server";
 
 export const asComponentSchema = (name: string) => `#/components/schemas/${name}`;
 
@@ -34,6 +34,21 @@ const prefixStringStartingWithNumberIfNeeded = (str: string) => {
 const pathParamWithBracketsRegex = /({\w+})/g;
 const wordPrecededByNonWordCharacter = /[^\w\-]+/g;
 
+export const pathParamToVariableName = (name: string) => snakeToCamel(name.replaceAll("-", "_"));
+
+const matcherRegex = /{(\b\w+(?:-\w+)*\b)}/g;
+export const replaceHyphatedPath = (path: string) => {
+    const matches = path.match(matcherRegex);
+    if (matches === null) {
+        return path.replaceAll(matcherRegex, ":$1");
+    }
+    matches.forEach((match) => {
+        const replacement = pathParamToVariableName(match.replaceAll(matcherRegex, ":$1"));
+        path = path.replaceAll(match, replacement);
+    });
+    return path;
+};
+
 /** @example turns `/media-objects/{id}` into `MediaObjectsId` */
 export const pathToVariableName = (path: string) =>
     capitalize(kebabToCamel(path).replaceAll("/", "")) // /media-objects/{id} -> MediaObjects{id}
@@ -51,15 +66,13 @@ export const escapeControlCharacters = (str: string): string => {
         .replace(/\t/g, "\\t") // U+0009
         .replace(/\n/g, "\\n") // U+000A
         .replace(/\r/g, "\\r") // U+000D
-        .replace(
-            /([\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uFFFE\uFFFF])/g,
-            (_m, p1) => {
-                const dec: number = p1.codePointAt();
-                const hex: string = dec.toString(16);
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
-                if (dec <= 0xFF) return `\\x${`00${hex}`.slice(-2)}`;
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
-                return `\\u${`0000${hex}`.slice(-4)}`;
-            })
+        .replace(/([\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uFFFE\uFFFF])/g, (_m, p1) => {
+            const dec: number = p1.codePointAt();
+            const hex: string = dec.toString(16);
+            // eslint-disable-next-line sonarjs/no-nested-template-literals
+            if (dec <= 0xff) return `\\x${`00${hex}`.slice(-2)}`;
+            // eslint-disable-next-line sonarjs/no-nested-template-literals
+            return `\\u${`0000${hex}`.slice(-4)}`;
+        })
         .replace(/\//g, "\\/");
 };
