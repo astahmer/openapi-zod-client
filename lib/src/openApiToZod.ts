@@ -91,7 +91,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code.assign(`
                 z.discriminatedUnion("${propertyName}", [${schema.oneOf
                 .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
-                .join(", ")}]);
+                .join(", ")}])
             `);
         }
 

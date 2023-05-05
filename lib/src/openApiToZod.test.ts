@@ -137,7 +137,7 @@ test("getSchemaAsZodString", () => {
         })
     ).toMatchInlineSnapshot(`
       "
-                      z.discriminatedUnion("type", [z.object({ type: z.literal("a"), a: z.string() }), z.object({ type: z.literal("b"), b: z.string() })]);
+                      z.discriminatedUnion("type", [z.object({ type: z.literal("a"), a: z.string() }), z.object({ type: z.literal("b"), b: z.string() })])
                   "
     `);
 
