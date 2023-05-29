@@ -193,6 +193,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         const hasRequiredArray = schema.required && schema.required.length > 0;
         const isPartial = options?.withImplicitRequiredProps ? false : !schema.required?.length;
         let properties = "{}";
+
         if (schema.properties) {
             const propsMap = Object.entries(schema.properties).map(([prop, propSchema]) => {
                 const propMetadata = {
@@ -246,6 +247,10 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
         .with("number", "integer", () => chains.push(getZodChainableNumberValidations(schema)))
         .with("array", () => chains.push(getZodChainableArrayValidations(schema)))
         .otherwise(() => void 0);
+
+    if (typeof schema.description === "string" && schema.description !== "") {
+        chains.push(`describe('${schema.description}')`);
+    }
 
     const output = chains
         .concat(
