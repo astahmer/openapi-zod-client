@@ -69,32 +69,6 @@ describe("samples-generator", async () => {
               return new Zodios(baseUrl, endpoints, options);
           }
           ",
-              "v3.0/callback-example.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
-          import { z } from "zod";
-
-          const endpoints = makeApi([
-              {
-                  method: "post",
-                  path: "/streams",
-                  description: \`subscribes a client to receive out-of-band data\`,
-                  requestFormat: "json",
-                  parameters: [
-                      {
-                          name: "callbackUrl",
-                          type: "Query",
-                          schema: z.string().url(),
-                      },
-                  ],
-                  response: z.object({ subscriptionId: z.string() }),
-              },
-          ]);
-
-          export const api = new Zodios(endpoints);
-
-          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-              return new Zodios(baseUrl, endpoints, options);
-          }
-          ",
               "v3.0/link-example.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
@@ -259,12 +233,12 @@ describe("samples-generator", async () => {
                       {
                           name: "tags",
                           type: "Query",
-                          schema: z.array(z.string()).optional(),
+                          schema: z.array(z.string()).describe("tags to filter by").optional(),
                       },
                       {
                           name: "limit",
                           type: "Query",
-                          schema: z.number().int().optional(),
+                          schema: z.number().int().describe("maximum number of results to return").optional(),
                       },
                   ],
                   response: z.array(Pet),
@@ -293,7 +267,7 @@ describe("samples-generator", async () => {
                       {
                           name: "id",
                           type: "Path",
-                          schema: z.number().int(),
+                          schema: z.number().int().describe("ID of pet to fetch"),
                       },
                   ],
                   response: Pet,
@@ -307,7 +281,7 @@ describe("samples-generator", async () => {
                       {
                           name: "id",
                           type: "Path",
-                          schema: z.number().int(),
+                          schema: z.number().int().describe("ID of pet to delete"),
                       },
                   ],
                   response: z.void(),
@@ -342,7 +316,7 @@ describe("samples-generator", async () => {
                       {
                           name: "limit",
                           type: "Query",
-                          schema: z.number().int().optional(),
+                          schema: z.number().int().describe("How many items to return at one time (max 100)").optional(),
                       },
                   ],
                   response: z.array(Pet),
@@ -361,7 +335,7 @@ describe("samples-generator", async () => {
                       {
                           name: "petId",
                           type: "Path",
-                          schema: z.string(),
+                          schema: z.string().describe("The id of the pet to retrieve"),
                       },
                   ],
                   response: Pet,
@@ -383,19 +357,31 @@ describe("samples-generator", async () => {
                   apis: z.array(
                       z
                           .object({
-                              apiKey: z.string(),
-                              apiVersionNumber: z.string(),
-                              apiUrl: z.string(),
-                              apiDocumentationUrl: z.string(),
+                              apiKey: z.string().describe("To be used as a dataset parameter value"),
+                              apiVersionNumber: z.string().describe("To be used as a version parameter value"),
+                              apiUrl: z.string().describe("The URL describing the dataset's fields"),
+                              apiDocumentationUrl: z.string().describe("A URL to the API console for each API"),
                           })
                           .partial()
                   ),
               })
               .partial();
           const perform_search_Body = z.object({
-              criteria: z.string().default("*:*"),
-              start: z.number().int().optional(),
-              rows: z.number().int().optional().default(100),
+              criteria: z
+                  .string()
+                  .describe(
+                      "Uses Lucene Query Syntax in the format of propertyName:value, propertyName:[num1 TO num2] and date range format: propertyName:[yyyyMMdd TO yyyyMMdd]. In the response please see the 'docs' element which has the list of record objects. Each record structure would consist of all the fields and their corresponding values."
+                  )
+                  .default("*:*"),
+              start: z.number().int().describe("Starting record number. Default value is 0.").optional(),
+              rows: z
+                  .number()
+                  .int()
+                  .describe(
+                      "Specify number of rows to be returned. If you run the search with default values, in the response you will see 'numFound' attribute which will tell the number of records available in the dataset."
+                  )
+                  .optional()
+                  .default(100),
           });
 
           export const schemas = {
@@ -419,12 +405,12 @@ describe("samples-generator", async () => {
                       {
                           name: "dataset",
                           type: "Path",
-                          schema: z.string(),
+                          schema: z.string().describe("Name of the dataset."),
                       },
                       {
                           name: "version",
                           type: "Path",
-                          schema: z.string(),
+                          schema: z.string().describe("Version of the dataset."),
                       },
                   ],
                   response: z.string(),
@@ -450,12 +436,15 @@ describe("samples-generator", async () => {
                       {
                           name: "version",
                           type: "Path",
-                          schema: z.string().default("v1"),
+                          schema: z.string().describe("Version of the dataset.").default("v1"),
                       },
                       {
                           name: "dataset",
                           type: "Path",
-                          schema: z.string().default("oa_citations"),
+                          schema: z
+                              .string()
+                              .describe("Name of the dataset. In this case, the default value is oa_citations")
+                              .default("oa_citations"),
                       },
                   ],
                   response: z.array(z.record(z.object({}).partial())),

@@ -78,7 +78,7 @@ test("param-with-content", async () => {
             {
               name: "store",
               type: "Path",
-              schema: z.number().int(),
+              schema: z.number().int().describe("Store number"),
             },
             {
               name: "thing",
@@ -93,7 +93,11 @@ test("param-with-content", async () => {
             {
               name: "Accept-Language",
               type: "Header",
-              schema: z.string().optional().default("EN"),
+              schema: z
+                .string()
+                .describe("Accept language (fr-CA)")
+                .optional()
+                .default("EN"),
             },
             {
               name: "missing",

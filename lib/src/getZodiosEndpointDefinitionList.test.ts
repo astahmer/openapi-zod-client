@@ -150,7 +150,7 @@ test("getZodiosEndpointDefinitionList /store/order", () => {
           },
           "schemaByName": {},
           "zodSchemaByName": {
-              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime(), status: z.enum(["placed", "approved", "delivered"]).describe("Order Status"), complete: z.boolean() }).partial()",
           },
       }
     `);
@@ -304,7 +304,7 @@ test("getZodiosEndpointDefinitionList /pet", () => {
           "schemaByName": {},
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).describe("pet status in the store").optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
           },
       }
@@ -447,7 +447,7 @@ test("getZodiosEndpointDefinitionList /pet without schema ref", () => {
           },
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).describe("pet status in the store").optional() })",
               "Reason": "z.object({ reason: ReasonDetails })",
               "ReasonDetails": "z.object({ details: z.string() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
@@ -596,7 +596,7 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "z.enum(["available", "pending", "sold"]).optional().default("available")",
+                          "schema": "z.enum(["available", "pending", "sold"]).describe("Status values that need to be considered for filter").optional().default("available")",
                           "type": "Query",
                       },
                   ],
@@ -618,7 +618,7 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "z.array(z.string()).optional()",
+                          "schema": "z.array(z.string()).describe("Tags to filter by").optional()",
                           "type": "Query",
                       },
                   ],
@@ -645,7 +645,7 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
           "schemaByName": {},
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).describe("pet status in the store").optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
           },
       }
@@ -737,7 +737,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "status",
-                          "schema": "z.enum(["available", "pending", "sold"]).optional().default("available")",
+                          "schema": "z.enum(["available", "pending", "sold"]).describe("Status values that need to be considered for filter").optional().default("available")",
                           "type": "Query",
                       },
                   ],
@@ -759,7 +759,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "tags",
-                          "schema": "z.array(z.string()).optional()",
+                          "schema": "z.array(z.string()).describe("Tags to filter by").optional()",
                           "type": "Query",
                       },
                   ],
@@ -786,7 +786,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number().int()",
+                          "schema": "z.number().int().describe("ID of pet to return")",
                           "type": "Path",
                       },
                   ],
@@ -808,17 +808,17 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "petId",
-                          "schema": "z.number().int()",
+                          "schema": "z.number().int().describe("ID of pet that needs to be updated")",
                           "type": "Path",
                       },
                       {
                           "name": "name",
-                          "schema": "z.string().optional()",
+                          "schema": "z.string().describe("Name of pet that needs to be updated").optional()",
                           "type": "Query",
                       },
                       {
                           "name": "status",
-                          "schema": "z.string().optional()",
+                          "schema": "z.string().describe("Status of pet that needs to be updated").optional()",
                           "type": "Query",
                       },
                   ],
@@ -845,7 +845,7 @@ test("petstore.yaml", async () => {
                       },
                       {
                           "name": "petId",
-                          "schema": "z.number().int()",
+                          "schema": "z.number().int().describe("Pet id to delete")",
                           "type": "Path",
                       },
                   ],
@@ -867,12 +867,12 @@ test("petstore.yaml", async () => {
                       },
                       {
                           "name": "petId",
-                          "schema": "z.number().int()",
+                          "schema": "z.number().int().describe("ID of pet to update")",
                           "type": "Path",
                       },
                       {
                           "name": "additionalMetadata",
-                          "schema": "z.string().optional()",
+                          "schema": "z.string().describe("Additional Metadata").optional()",
                           "type": "Query",
                       },
                   ],
@@ -932,7 +932,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "orderId",
-                          "schema": "z.number().int()",
+                          "schema": "z.number().int().describe("ID of order that needs to be fetched")",
                           "type": "Path",
                       },
                   ],
@@ -959,7 +959,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "orderId",
-                          "schema": "z.number().int()",
+                          "schema": "z.number().int().describe("ID of the order that needs to be deleted")",
                           "type": "Path",
                       },
                   ],
@@ -1015,12 +1015,12 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "username",
-                          "schema": "z.string().optional()",
+                          "schema": "z.string().describe("The user name for login").optional()",
                           "type": "Query",
                       },
                       {
                           "name": "password",
-                          "schema": "z.string().optional()",
+                          "schema": "z.string().describe("The password for login in clear text").optional()",
                           "type": "Query",
                       },
                   ],
@@ -1057,7 +1057,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "username",
-                          "schema": "z.string()",
+                          "schema": "z.string().describe("The name that needs to be fetched. Use user1 for testing. ")",
                           "type": "Path",
                       },
                   ],
@@ -1079,7 +1079,7 @@ test("petstore.yaml", async () => {
                       },
                       {
                           "name": "username",
-                          "schema": "z.string()",
+                          "schema": "z.string().describe("name that need to be deleted")",
                           "type": "Path",
                       },
                   ],
@@ -1106,7 +1106,7 @@ test("petstore.yaml", async () => {
                   "parameters": [
                       {
                           "name": "username",
-                          "schema": "z.string()",
+                          "schema": "z.string().describe("The name that needs to be deleted")",
                           "type": "Path",
                       },
                   ],
@@ -1143,10 +1143,10 @@ test("petstore.yaml", async () => {
           "zodSchemaByName": {
               "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime(), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime(), status: z.enum(["placed", "approved", "delivered"]).describe("Order Status"), complete: z.boolean() }).partial()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).describe("pet status in the store").optional() })",
               "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
+              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int().describe("User Status") }).partial()",
           },
       }
     `);
