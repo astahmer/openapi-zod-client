@@ -66,8 +66,33 @@ describe("samples-generator", async () => {
           export const api = new Zodios(endpoints);
 
           export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-              return new Zodios(baseUrl, endpoints, options);
+            return new Zodios(baseUrl, endpoints, options);
           }
+          ",
+            "v3.0/callback-example.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
+            import { z } from "zod";
+            const endpoints = makeApi([
+                {
+                    method: "post",
+                    path: "/streams",
+                    description: \`subscribes a client to receive out-of-band data\`,
+                    requestFormat: "json",
+                    parameters: [
+                        {
+                            name: "callbackUrl",
+                            type: "Query",
+                            schema: z.string().url().describe("the location where data will be sent.  Must be network accessible by the source server"),
+                        },
+                    ],
+                    response: z.object({ subscriptionId: z.string() }),
+                },
+            ]);
+
+            export const api = new Zodios(endpoints);
+
+            export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+                return new Zodios(baseUrl, endpoints, options);
+            }
           ",
               "v3.0/link-example.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
