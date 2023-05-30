@@ -1,7 +1,13 @@
-import { z } from "zod";
+{{> imports}}
+
+{{#if types}}
+{{#each types}}
+{{{this}}};
+{{/each}}
+{{/if}}
 
 {{#each schemas}}
-const {{@key}} = {{{this}}};
+const {{@key}}{{#if (lookup ../circularTypeByName @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
 {{/each}}
 
 export const schemas = {
