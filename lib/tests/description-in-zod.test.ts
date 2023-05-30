@@ -56,14 +56,18 @@ test("description-in-zod", async () => {
             {
               name: "foo",
               type: "Query",
-              schema: z.union([z.literal(1), z.literal(-2), z.literal(3)]).describe("foo description").optional(),
+              schema: z
+                .union([z.literal(1), z.literal(-2), z.literal(3)])
+                .describe("foo description")
+                .optional(),
             },
             {
               name: "bar",
               type: "Query",
               schema: z
                 .union([z.literal(1.2), z.literal(34), z.literal(-56.789)])
-                .describe("bar description").optional(),
+                .describe("bar description")
+                .optional(),
             },
           ],
           response: z.void(),
