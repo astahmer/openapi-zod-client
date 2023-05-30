@@ -249,7 +249,7 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
         .otherwise(() => void 0);
 
     if (typeof schema.description === "string" && schema.description !== "") {
-        chains.push(`describe('${schema.description}')`);
+        chains.push(`describe("${schema.description}")`);
     }
 
     const output = chains
