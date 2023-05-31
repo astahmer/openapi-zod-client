@@ -34,6 +34,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set"
     )
     .option("--with-deprecated", "when true, will keep deprecated endpoints in the api output")
+    .option("--with-description", "when true, will add z.describe(xxx)")
     .option(
         "--group-strategy",
         "groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'"
@@ -70,6 +71,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 groupStrategy: options.groupStrategy,
                 complexityThreshold: options.complexityThreshold,
                 defaultStatusBehavior: options.defaultStatus,
+                withDescription: options.withDescription,
             },
         });
         console.log(`Done generating <${distPath}> !`);

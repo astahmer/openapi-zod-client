@@ -334,4 +334,9 @@ export type TemplateContextOptions = {
      */
     defaultStatusBehavior?: "spec-compliant" | "auto-correct";
     willSuppressWarnings?: boolean;
+    /**
+     * when true, will add z.describe(xxx)
+     * @see https://github.com/astahmer/openapi-zod-client/pull/143
+     */
+    withDescription?: boolean;
 };

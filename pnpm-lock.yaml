@@ -1,8 +1,4 @@
-lockfileVersion: '6.1'
-
-settings:
-  autoInstallPeers: true
-  excludeLinksFromLockfile: false
+lockfileVersion: '6.0'
 
 importers:
 
@@ -75,7 +71,7 @@ importers:
         version: link:../../lib
       zod:
         specifier: ^3.19.1
-        version: 3.21.4
+        version: 3.20.0
     devDependencies:
       typescript:
         specifier: ^4.8.4
@@ -219,7 +215,7 @@ importers:
         version: 3.0.1(@types/react@18.0.25)(react@18.2.0)(xstate@4.34.0)
       '@zodios/core':
         specifier: ^10.3.1
-        version: 10.7.0(axios@0.27.2)(zod@3.21.4)
+        version: 10.7.0(axios@0.27.2)(zod@3.20.0)
       framer-motion:
         specifier: ^7.6.2
         version: 7.6.7(react-dom@18.2.0)(react@18.2.0)
@@ -255,7 +251,7 @@ importers:
         version: 2.1.3
       zod:
         specifier: ^3.20.0
-        version: 3.21.4
+        version: 3.20.0
     devDependencies:
       '@astahmer/eslint-config-ts':
         specifier: ^0.1.5
@@ -3974,23 +3970,23 @@ packages:
   /@supabase/functions-js@2.1.1:
     resolution: {integrity: sha512-bIR1Puae6W+1/MzPfYBWOG/SCWGo4B5CB7c0ZZksvliNEAzhxNBJ0UFKYINcGdGtxG8ZC+1xr3utWpNZNwnoRw==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/gotrue-js@2.22.3:
-    resolution: {integrity: sha512-GBu+YT7jaWgmmVRNPZnT2YmO7TjscjoBVMzMDnr2yPL6C2ImzRmOKIbHnGliDeI5EaEsPPljWoYR4xB+WJb98w==}
+  /@supabase/gotrue-js@2.28.1:
+    resolution: {integrity: sha512-i2IR8IRDhcrWfBjC7o5T0F8liOA1X6+moqCam6F5pIURI5PM+087hH+tDZ9dKu0AqAFgT0TpLmWK82fKWQlkfg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
     transitivePeerDependencies:
       - encoding
     dev: false
 
-  /@supabase/postgrest-js@1.6.0:
-    resolution: {integrity: sha512-HCphMC6KjtoaGcowSlkKRVKBOlNpmKWE2CwoumMwwsfhnRxplIy1zBiIYIL3zIYo/Bm20H/1C6enqjBeTvSwXg==}
+  /@supabase/postgrest-js@1.7.0:
+    resolution: {integrity: sha512-wLADHZ5jm7LljF4GigK0H2vc1wGupBY2hGYfb4fVo0UuyMftmA6tOYy+ZpMH/vPq01CUFwXGwvIke6kyqh/QDg==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -3998,7 +3994,7 @@ packages:
   /@supabase/realtime-js@2.7.2:
     resolution: {integrity: sha512-Fi6xAl5PUkqnjl3wo4rdcQIbMG3+yTRX1aUZe/yfvTG84RMvmCXJ1yN6MmafVLeZpU1xkaz5Vx4L0tnHcLiy6w==}
     dependencies:
-      '@types/phoenix': 1.5.6
+      '@types/phoenix': 1.6.0
       '@types/websocket': 1.0.5
       websocket: 1.0.34
     transitivePeerDependencies:
@@ -4008,7 +4004,7 @@ packages:
   /@supabase/storage-js@2.5.1:
     resolution: {integrity: sha512-nkR0fQA9ScAtIKA3vNoPEqbZv1k5B5HVRYEvRWdlP6mUpFphM9TwPL2jZ/ztNGMTG5xT6SrHr+H7Ykz8qzbhjw==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -4017,11 +4013,11 @@ packages:
     resolution: {integrity: sha512-zewk3U8wSe2UlKqzUk7iNxeMZzgDa5kjosSG4SKuAizIv+xzS+c2EZsYnNtc2byGjah4QT1dw3t91k2E+j+Akg==}
     dependencies:
       '@supabase/functions-js': 2.1.1
-      '@supabase/gotrue-js': 2.22.3
-      '@supabase/postgrest-js': 1.6.0
+      '@supabase/gotrue-js': 2.28.1
+      '@supabase/postgrest-js': 1.7.0
       '@supabase/realtime-js': 2.7.2
       '@supabase/storage-js': 2.5.1
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
     transitivePeerDependencies:
       - encoding
       - supports-color
@@ -4059,7 +4055,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
-    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -4069,7 +4064,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [arm64]
     os: [linux]
-    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -4079,7 +4073,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
-    libc: [glibc]
     requiresBuild: true
     dev: true
     optional: true
@@ -4089,7 +4082,6 @@ packages:
     engines: {node: '>=10'}
     cpu: [x64]
     os: [linux]
-    libc: [musl]
     requiresBuild: true
     dev: true
     optional: true
@@ -4313,8 +4305,8 @@ packages:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
     dev: false
 
-  /@types/phoenix@1.5.6:
-    resolution: {integrity: sha512-e7jZ6I9uyRGsg7MNwQcarmBvRlbGb9DibbocE9crVnxqsy6C23RMxLWbJ2CQ3vgCW7taoL1L+F02EcjA6ld7XA==}
+  /@types/phoenix@1.6.0:
+    resolution: {integrity: sha512-qwfpsHmFuhAS/dVd4uBIraMxRd56vwBUYQGZ6GpXnFuM2XMRFJbIyruFKKlW2daQliuYZwe0qfn/UjFCDKic5g==}
     dev: false
 
   /@types/prettier@2.7.1:
@@ -4710,14 +4702,14 @@ packages:
       zod: 3.19.1
     dev: false
 
-  /@zodios/core@10.7.0(axios@0.27.2)(zod@3.21.4):
+  /@zodios/core@10.7.0(axios@0.27.2)(zod@3.20.0):
     resolution: {integrity: sha512-JN4oLMeGhiBbHoHZ+z7Ddu+ptpkOkFtOFw8t9fp3qC95l1uemZeop5ZSIVlhqzUfMFC3RgY2+kPwecFJojcEDA==}
     peerDependencies:
       axios: ^0.x || ^1.0.0
       zod: ^3.x
     dependencies:
       axios: 0.27.2
-      zod: 3.21.4
+      zod: 3.20.0
     dev: false
 
   /JSONStream@1.3.5:
@@ -5550,10 +5542,10 @@ packages:
     resolution: {integrity: sha512-dcKFX3jn0MpIaXjisoRvexIJVEKzaq7z2rZKxf+MSr9TkdmHmsU4m2lcLojrj/FHl8mk5VxMmYA+ftRkP/3oKQ==}
     dev: true
 
-  /cross-fetch@3.1.5:
-    resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
+  /cross-fetch@3.1.6:
+    resolution: {integrity: sha512-riRvo06crlE8HiqOwIpQhxwdOk4fOeR7FVM/wXoxchFEqMNUjvbs3bfo4OTgMEMHzppd4DxFBDbyySj8Cv781g==}
     dependencies:
-      node-fetch: 2.6.7
+      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -8101,8 +8093,8 @@ packages:
     resolution: {integrity: sha512-ZNaury9r0NxaT2oL65GvdGDy+5PlSaHTovT6JV5tOW07k1TQmgC0olZETa4C9KZg0+6zBr99ctTYa3Utqj9P/Q==}
     dev: true
 
-  /node-fetch@2.6.7:
-    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+  /node-fetch@2.6.11:
+    resolution: {integrity: sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
       encoding: ^0.1.0
@@ -10234,6 +10226,6 @@ packages:
     resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
     dev: false
 
-  /zod@3.21.4:
-    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+  /zod@3.20.0:
+    resolution: {integrity: sha512-ZWxs7oM5ixoo1BMoxTNeDMYSih/F/FUnExsnRtHT04rG6q0Bd74TKS45RGXw07TOalOZyyzdKaYH38k8yTEv9A==}
     dev: false

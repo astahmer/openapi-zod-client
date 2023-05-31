@@ -251,7 +251,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         paramSchema = paramItem.schema;
                     }
 
-                    (paramSchema as SchemaObject).description = paramItem.description ?? "";
+                    if (options?.withDescription && paramSchema) {
+                        (paramSchema as SchemaObject).description = (paramItem.description ?? "")?.replace("\n", "");
+                    }
 
                     // resolve ref if needed, and fallback to default (unknown) value if needed
                     paramSchema = paramSchema
