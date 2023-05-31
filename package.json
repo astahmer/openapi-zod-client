@@ -12,6 +12,7 @@
         ]
     },
     "author": "Alexandre Stahmer <alexandre.stahmer@gmail.com>",
+    "packageManager": "^pnpm@8.2.0",
     "scripts": {
         "dev": "preconstruct watch",
         "build": "preconstruct build",

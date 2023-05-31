@@ -42,7 +42,11 @@ test("description-in-zod", async () => {
         },
     };
 
-    const output = await generateZodClientFromOpenAPI({ disableWriteToFile: true, openApiDoc });
+    const output = await generateZodClientFromOpenAPI({
+        disableWriteToFile: true,
+        openApiDoc,
+        options: { withDescription: true },
+    });
     expect(output).toMatchInlineSnapshot(`
       "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
