@@ -490,4 +490,54 @@ describe("getSchemaAsTsString with context", () => {
           }>;"
         `);
     });
+
+    test("anyOf with refs", () => {
+        const schemas = {
+            User: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                },
+            },
+            Member: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                },
+            },
+            Root: {
+                type: "object",
+                properties: {
+                    user: { oneOf: [{ $ref: "#/components/schemas/User" }, { $ref: "#/components/schemas/Member" }] },
+                    users: {
+                        type: "array",
+                        items: {
+                            anyOf: [{ $ref: "#/components/schemas/User" }, { $ref: "#/components/schemas/Member" }],
+                        },
+                    },
+                    basic: { type: "number" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        const result = getTypescriptFromOpenApi({
+            schema: schemas["Root"]!,
+            meta: { name: "Root", $ref: "#/components/schemas/Root" },
+            ctx,
+        }) as ts.Node;
+
+        expect(printTs(result)).toMatchInlineSnapshot(`
+        "export type Root = Partial<{
+            user: User | Member;
+            users: Array<(User | Member) | Array<User | Member>>;
+            basic: number;
+        }>;"
+      `);
+    });
 });
