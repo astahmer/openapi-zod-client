@@ -45,7 +45,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             let result = ctx.nodeByRef[schema.$ref];
             const schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
             if (ctx.visitedsRefs[schema.$ref]) {
-                return schemaName;
+                return t.reference(schemaName);
             }
 
             if (!result) {
@@ -58,7 +58,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
             }
 
-            return schemaName;
+            return t.reference(schemaName);
         }
 
         if (Array.isArray(schema.type)) {
