@@ -1,5 +1,17 @@
 # openapi-zod-client
 
+## 1.7.0
+
+### Minor Changes
+
+-   [#148](https://github.com/astahmer/openapi-zod-client/pull/148) [`1fb7603`](https://github.com/astahmer/openapi-zod-client/commit/1fb7603633d6f78d0429908df73a545559a83964) Thanks [@astahmer](https://github.com/astahmer)! - parameter descriptions in openapi are included in the zod schema
+
+### Patch Changes
+
+-   [#140](https://github.com/astahmer/openapi-zod-client/pull/140) [`6e5605b`](https://github.com/astahmer/openapi-zod-client/commit/6e5605b8e392f3fb482333de00a213f47f388a3b) Thanks [@janwvjaarsveld](https://github.com/janwvjaarsveld)! - Handle hyphenated path parameters on endpoint definition
+
+-   [#149](https://github.com/astahmer/openapi-zod-client/pull/149) [`d165193`](https://github.com/astahmer/openapi-zod-client/commit/d1651936c60f98abb5665d40294f128f8952e2fa) Thanks [@feychenie](https://github.com/feychenie)! - Fix TS generation of [any|one|all]Of when used with refs
+
 ## 1.6.4
 
 ### Patch Changes
