@@ -48,7 +48,7 @@ export const makeSchemaResolver = (doc: OpenAPIObject) => {
     return {
         getSchemaByRef,
         resolveRef: (ref: string) => byRef.get(autocorrectRef(ref))!,
-        resolveSchemaName: (normalized: string) => byNormalized.get(normalized)!,
+        resolveSchemaName: (normalized: string) => byNormalized.get(normalized),
     };
 };
 

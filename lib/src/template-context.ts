@@ -142,15 +142,17 @@ export const getZodClientTemplateContext = (
                     }
 
                     group.schemas[schemaName] = data.schemas[schemaName]!;
-
-                    depsGraphs.deepDependencyGraph[result.resolver.resolveSchemaName(schemaName).ref]?.forEach(
-                        (transitiveRef) => {
-                            const transitiveSchemaName = result.resolver.resolveRef(transitiveRef).normalized;
-                            addDependencyIfNeeded(transitiveSchemaName);
-                            group.types[transitiveSchemaName] = data.types[transitiveSchemaName]!;
-                            group.schemas[transitiveSchemaName] = data.schemas[transitiveSchemaName]!;
-                        }
-                    );
+                    const ref = result.resolver.resolveSchemaName(schemaName)?.ref;
+                    if (ref) {
+                        depsGraphs.deepDependencyGraph[ref]?.forEach(
+                            (transitiveRef) => {
+                                const transitiveSchemaName = result.resolver.resolveRef(transitiveRef).normalized;
+                                addDependencyIfNeeded(transitiveSchemaName);
+                                group.types[transitiveSchemaName] = data.types[transitiveSchemaName]!;
+                                group.schemas[transitiveSchemaName] = data.schemas[transitiveSchemaName]!;
+                            }
+                        );
+                    }
                 });
             }
         }
