@@ -145,11 +145,11 @@ test("getSchemaAsZodString", () => {
         getSchemaAsZodString({
             type: "object",
             properties: {
-                unionOrArrayOfUnion: { anyOf: [{ type: "string" }, { type: "number" }] },
+                anyOfExample: { anyOf: [{ type: "string" }, { type: "number" }] },
             },
         })
     ).toMatchInlineSnapshot(
-        '"z.object({ unionOrArrayOfUnion: z.union([z.union([z.string(), z.number()]), z.array(z.union([z.string(), z.number()]))]) }).partial()"'
+        '"z.object({ anyOfExample: z.union([z.string(), z.number()]) }).partial()"'
     );
 
     expect(
