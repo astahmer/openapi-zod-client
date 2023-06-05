@@ -107,9 +107,22 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code.assign(type.toString());
         }
 
-        const types = schema.anyOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ");
-        const oneOf = `z.union([${types}])`;
-        return code.assign(`z.union([${oneOf}, z.array(${oneOf})])`);
+        const types = schema.anyOf
+            .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
+            .map((type) => {
+                let isPrimitive = false;
+
+                if ("type" in type.schema && !Array.isArray(type.schema.type)) {
+                    const schemaType = type.schema.type.toLowerCase() as NonNullable<typeof schema.type>;
+                    isPrimitive = isPrimitiveType(schemaType);
+                }
+
+                // primitive types don't need to be wrapped in passthrough
+                return isPrimitive ? type.toString() : `${type.toString()}.passthrough()`;
+            })
+            .join(", ");
+
+        return code.assign(`z.union([${types}])`);
     }
 
     if (schema.allOf) {
