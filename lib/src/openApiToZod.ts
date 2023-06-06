@@ -110,15 +110,19 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         const types = schema.anyOf
             .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
             .map((type) => {
-                let isPrimitive = false;
+                let isObject = true;
 
-                if ("type" in type.schema && !Array.isArray(type.schema.type)) {
-                    const schemaType = type.schema.type.toLowerCase() as NonNullable<typeof schema.type>;
-                    isPrimitive = isPrimitiveType(schemaType);
+                if ("type" in type.schema) {
+                    if (Array.isArray(type.schema.type)) {
+                        isObject = false;
+                    } else {
+                        const schemaType = type.schema.type.toLowerCase() as NonNullable<typeof schema.type>;
+                        isObject = !isPrimitiveType(schemaType);
+                    }
                 }
 
-                // primitive types don't need to be wrapped in passthrough
-                return isPrimitive ? type.toString() : `${type.toString()}.passthrough()`;
+                // only object types need passthrough, primitives and arrays are fine
+                return isObject ? `${type.toString()}.passthrough()` : type.toString();
             })
             .join(", ");
 
