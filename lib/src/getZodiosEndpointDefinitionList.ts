@@ -23,7 +23,7 @@ import type { TemplateContext } from "./template-context";
 import {
     asComponentSchema,
     pathParamToVariableName,
-    replaceHyphatedPath,
+    replaceHyphenatedPath,
     normalizeString,
     pathToVariableName,
 } from "./utils";
@@ -159,7 +159,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             const operationName = getOperationAlias(path, method, operation);
             const endpointDefinition: EndpointDefinitionWithRefs = {
                 method: method as EndpointDefinitionWithRefs["method"],
-                path: replaceHyphatedPath(path),
+                path: replaceHyphenatedPath(path),
                 alias: operationName,
                 description: operation.description,
                 requestFormat: "json",
