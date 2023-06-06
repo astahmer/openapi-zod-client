@@ -1,116 +1,177 @@
 import { describe, test, expect } from "vitest";
+import { z } from "zod";
 import { makeSchemaResolver } from "../src/makeSchemaResolver.js";
 import { getZodSchema } from "../src/openApiToZod.js";
 import { asComponentSchema } from "../src/utils.js";
+import { CodeMeta } from "../src/CodeMeta.js";
 
-// these tests use modified examples from: https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/#anyof
+// the schemas and fixtures used in these tests are modified from examples here: https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/#anyof
+
+function createValidator(zodSchema: CodeMeta) {
+    return new Function(
+        "input",
+        `
+        with(this) {
+            return ${zodSchema}.parse(input)
+        }
+    `
+    ).bind({ z });
+}
+
+const fixtures = {
+    petByAge: { age: 4 },
+    petByType: { pet_type: "Cat" },
+    petByAgeAndType: {
+        nickname: "Fido",
+        pet_type: "Dog",
+        age: 4,
+    },
+    invalid: {
+        nickname: "Mr. Paws",
+        hunts: false,
+    },
+};
 
 describe("anyOf behavior", () => {
     test("adds passthrough() to objects", () => {
-        expect(
-            getZodSchema({
-                schema: {
-                    anyOf: [
-                        {
-                            type: "object",
-                            properties: {
-                                age: {
-                                    type: "integer",
-                                },
-                                nickname: {
-                                    type: "string",
-                                },
+        const zodSchema = getZodSchema({
+            schema: {
+                anyOf: [
+                    {
+                        type: "object",
+                        properties: {
+                            age: {
+                                type: "integer",
                             },
-                            required: ["age"],
-                        },
-                        {
-                            type: "object",
-                            properties: {
-                                pet_type: {
-                                    type: "string",
-                                    enum: ["Cat", "Dog"],
-                                },
-                                hunts: {
-                                    type: "boolean",
-                                },
+                            nickname: {
+                                type: "string",
                             },
-                            required: ["pet_type"],
                         },
-                    ],
-                },
-            })
-        ).toMatchInlineSnapshot(
+                        required: ["age"],
+                    },
+                    {
+                        type: "object",
+                        properties: {
+                            pet_type: {
+                                type: "string",
+                                enum: ["Cat", "Dog"],
+                            },
+                            hunts: {
+                                type: "boolean",
+                            },
+                        },
+                        required: ["pet_type"],
+                    },
+                ],
+            },
+        });
+
+        expect(zodSchema).toMatchInlineSnapshot(
             '"z.union([z.object({ age: z.number().int(), nickname: z.string().optional() }).passthrough(), z.object({ pet_type: z.enum(["Cat", "Dog"]), hunts: z.boolean().optional() }).passthrough()])"'
         );
+
+        const validator = createValidator(zodSchema);
+        expect(validator(fixtures.petByAge)).toEqual(fixtures.petByAge);
+        expect(validator(fixtures.petByType)).toEqual(fixtures.petByType);
+        expect(validator(fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
+        expect(() => validator(fixtures.invalid)).toThrowError();
     });
 
     test("handles mixes of primitive types and objects", () => {
-        expect(
-            getZodSchema({
-                schema: {
-                    anyOf: [
-                        {
-                            type: "object",
-                            properties: {
-                                age: {
-                                    type: "integer",
-                                },
-                                nickname: {
-                                    type: "string",
-                                },
+        const zodSchema = getZodSchema({
+            schema: {
+                anyOf: [
+                    {
+                        type: "object",
+                        properties: {
+                            age: {
+                                type: "integer",
                             },
-                            required: ["age"],
-                        },
-                        {
-                            type: "object",
-                            properties: {
-                                pet_type: {
-                                    type: "string",
-                                    enum: ["Cat", "Dog"],
-                                },
-                                hunts: {
-                                    type: "boolean",
-                                },
+                            nickname: {
+                                type: "string",
                             },
-                            required: ["pet_type"],
                         },
-                        { type: "number" },
-                    ],
-                },
-            })
-        ).toMatchInlineSnapshot(
+                        required: ["age"],
+                    },
+                    {
+                        type: "object",
+                        properties: {
+                            pet_type: {
+                                type: "string",
+                                enum: ["Cat", "Dog"],
+                            },
+                            hunts: {
+                                type: "boolean",
+                            },
+                        },
+                        required: ["pet_type"],
+                    },
+                    { type: "number" },
+                ],
+            },
+        });
+
+        expect(zodSchema).toMatchInlineSnapshot(
             '"z.union([z.object({ age: z.number().int(), nickname: z.string().optional() }).passthrough(), z.object({ pet_type: z.enum(["Cat", "Dog"]), hunts: z.boolean().optional() }).passthrough(), z.number()])"'
         );
+
+        const validator = createValidator(zodSchema);
+        expect(validator(fixtures.petByAge)).toEqual(fixtures.petByAge);
+        expect(validator(fixtures.petByType)).toEqual(fixtures.petByType);
+        expect(validator(fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
+        expect(() => validator(fixtures.invalid)).toThrowError();
+        expect(validator(1)).toEqual(1);
     });
 
     test("handles an array of types", () => {
-        expect(
-            getZodSchema({
-                schema: {
-                    anyOf: [
-                        {
-                            type: ["number", "boolean"],
-                        },
-                        {
-                            type: "object",
-                            properties: {
-                                pet_type: {
-                                    type: "string",
-                                    enum: ["Cat", "Dog"],
-                                },
-                                hunts: {
-                                    type: "boolean",
-                                },
+        const zodSchema = getZodSchema({
+            schema: {
+                anyOf: [
+                    {
+                        type: ["number", "boolean"],
+                    },
+                    {
+                        type: "object",
+                        properties: {
+                            age: {
+                                type: "integer",
                             },
-                            required: ["pet_type"],
+                            nickname: {
+                                type: "string",
+                            },
                         },
-                        { type: "string" },
-                    ],
-                },
-            })
-        ).toMatchInlineSnapshot(
-            '"z.union([z.union([z.number(), z.boolean()]), z.object({ pet_type: z.enum(["Cat", "Dog"]), hunts: z.boolean().optional() }).passthrough(), z.string()])"'
+                        required: ["age"],
+                    },
+                    {
+                        type: "object",
+                        properties: {
+                            pet_type: {
+                                type: "string",
+                                enum: ["Cat", "Dog"],
+                            },
+                            hunts: {
+                                type: "boolean",
+                            },
+                        },
+                        required: ["pet_type"],
+                    },
+                    { type: "string" },
+                ],
+            },
+        });
+
+        expect(zodSchema).toMatchInlineSnapshot(
+            '"z.union([z.union([z.number(), z.boolean()]), z.object({ age: z.number().int(), nickname: z.string().optional() }).passthrough(), z.object({ pet_type: z.enum(["Cat", "Dog"]), hunts: z.boolean().optional() }).passthrough(), z.string()])"'
         );
+
+        const validator = createValidator(zodSchema);
+        expect(validator(fixtures.petByAge)).toEqual(fixtures.petByAge);
+        expect(validator(fixtures.petByType)).toEqual(fixtures.petByType);
+        expect(validator(fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
+        expect(() => validator(fixtures.invalid)).toThrowError();
+        expect(validator(1)).toEqual(1);
+        expect(validator("hello")).toEqual("hello");
+        expect(validator(true)).toEqual(true);
     });
 
     test("handles $refs", () => {
@@ -149,13 +210,13 @@ describe("anyOf behavior", () => {
         };
         Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
 
-        expect(
-            getZodSchema({
-                schema: {
-                    anyOf: [{ $ref: "#/components/schemas/PetByAge" }, { $ref: "#/components/schemas/PetByType" }],
-                },
-                ctx,
-            })
-        ).toMatchInlineSnapshot('"z.union([PetByAge.passthrough(), PetByType.passthrough()])"');
+        const zodSchema = getZodSchema({
+            schema: {
+                anyOf: [{ $ref: "#/components/schemas/PetByAge" }, { $ref: "#/components/schemas/PetByType" }],
+            },
+            ctx,
+        });
+
+        expect(zodSchema).toMatchInlineSnapshot('"z.union([PetByAge.passthrough(), PetByType.passthrough()])"');
     });
 });
