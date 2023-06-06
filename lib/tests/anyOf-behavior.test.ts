@@ -7,15 +7,10 @@ import { CodeMeta } from "../src/CodeMeta.js";
 
 // the schemas and fixtures used in these tests are modified from examples here: https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/#anyof
 
+type Validator = <T>(zod: typeof z, input: T) => T;
+
 function createValidator(zodSchema: CodeMeta) {
-    return new Function(
-        "input",
-        `
-        with(this) {
-            return ${zodSchema}.parse(input)
-        }
-    `
-    ).bind({ z });
+    return new Function("z", "input", `return ${zodSchema}.parse(input)`) as Validator;
 }
 
 const fixtures = {
@@ -71,10 +66,10 @@ describe("anyOf behavior", () => {
         );
 
         const validator = createValidator(zodSchema);
-        expect(validator(fixtures.petByAge)).toEqual(fixtures.petByAge);
-        expect(validator(fixtures.petByType)).toEqual(fixtures.petByType);
-        expect(validator(fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
-        expect(() => validator(fixtures.invalid)).toThrowError();
+        expect(validator(z, fixtures.petByAge)).toEqual(fixtures.petByAge);
+        expect(validator(z, fixtures.petByType)).toEqual(fixtures.petByType);
+        expect(validator(z, fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
+        expect(() => validator(z, fixtures.invalid)).toThrowError();
     });
 
     test("handles mixes of primitive types and objects", () => {
@@ -116,11 +111,11 @@ describe("anyOf behavior", () => {
         );
 
         const validator = createValidator(zodSchema);
-        expect(validator(fixtures.petByAge)).toEqual(fixtures.petByAge);
-        expect(validator(fixtures.petByType)).toEqual(fixtures.petByType);
-        expect(validator(fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
-        expect(() => validator(fixtures.invalid)).toThrowError();
-        expect(validator(1)).toEqual(1);
+        expect(validator(z, fixtures.petByAge)).toEqual(fixtures.petByAge);
+        expect(validator(z, fixtures.petByType)).toEqual(fixtures.petByType);
+        expect(validator(z, fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
+        expect(() => validator(z, fixtures.invalid)).toThrowError();
+        expect(validator(z, 1)).toEqual(1);
     });
 
     test("handles an array of types", () => {
@@ -165,13 +160,13 @@ describe("anyOf behavior", () => {
         );
 
         const validator = createValidator(zodSchema);
-        expect(validator(fixtures.petByAge)).toEqual(fixtures.petByAge);
-        expect(validator(fixtures.petByType)).toEqual(fixtures.petByType);
-        expect(validator(fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
-        expect(() => validator(fixtures.invalid)).toThrowError();
-        expect(validator(1)).toEqual(1);
-        expect(validator("hello")).toEqual("hello");
-        expect(validator(true)).toEqual(true);
+        expect(validator(z, fixtures.petByAge)).toEqual(fixtures.petByAge);
+        expect(validator(z, fixtures.petByType)).toEqual(fixtures.petByType);
+        expect(validator(z, fixtures.petByAgeAndType)).toEqual(fixtures.petByAgeAndType);
+        expect(() => validator(z, fixtures.invalid)).toThrowError();
+        expect(validator(z, 1)).toEqual(1);
+        expect(validator(z, "hello")).toEqual("hello");
+        expect(validator(z, true)).toEqual(true);
     });
 
     test("handles $refs", () => {
