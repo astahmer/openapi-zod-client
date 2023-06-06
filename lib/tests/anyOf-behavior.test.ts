@@ -1,5 +1,7 @@
 import { test, expect } from "vitest";
+import { makeSchemaResolver } from "../src/makeSchemaResolver.js";
 import { getZodSchema } from "../src/openApiToZod";
+import { asComponentSchema } from "../src/utils.js";
 
 test("anyOf-matches-json-schema", () => {
     // handle objects
@@ -106,4 +108,49 @@ test("anyOf-matches-json-schema", () => {
     ).toMatchInlineSnapshot(
         '"z.union([z.union([z.number(), z.boolean()]), z.object({ pet_type: z.enum(["Cat", "Dog"]), hunts: z.boolean().optional() }).passthrough(), z.string()])"'
     );
+
+    // handle $ref
+    const schemas = {
+        PetByAge: {
+            type: "object",
+            properties: {
+                age: {
+                    type: "integer",
+                },
+                nickname: {
+                    type: "string",
+                },
+            },
+            required: ["age"],
+        },
+        PetByType: {
+            type: "object",
+            properties: {
+                pet_type: {
+                    type: "string",
+                    enum: ["Cat", "Dog"],
+                },
+                hunts: {
+                    type: "boolean",
+                },
+            },
+            required: ["pet_type"],
+        },
+    };
+
+    const ctx = {
+        resolver: makeSchemaResolver({ components: { schemas } } as any),
+        zodSchemaByName: {},
+        schemaByName: {},
+    };
+    Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+
+    expect(
+        getZodSchema({
+            schema: {
+                anyOf: [{ $ref: "#/components/schemas/PetByAge" }, { $ref: "#/components/schemas/PetByType" }],
+            },
+            ctx,
+        })
+    ).toMatchInlineSnapshot('"z.union([PetByAge.passthrough(), PetByType.passthrough()])"');
 });
