@@ -34,14 +34,19 @@ const prefixStringStartingWithNumberIfNeeded = (str: string) => {
 const pathParamWithBracketsRegex = /({\w+})/g;
 const wordPrecededByNonWordCharacter = /[^\w\-]+/g;
 
-export const pathParamToVariableName = (name: string) => snakeToCamel(name.replaceAll("-", "_"));
+export const pathParamToVariableName = (name: string) => {
+    // Replace all underscores with # to preserve them when doing snakeToCamel
+    const preserveUnderscore = name.replaceAll("_", "#");
+    return snakeToCamel(preserveUnderscore.replaceAll("-", "_")).replaceAll("#", "_");
+};
 
 const matcherRegex = /{(\b\w+(?:-\w+)*\b)}/g;
-export const replaceHyphatedPath = (path: string) => {
+export const replaceHyphenatedPath = (path: string) => {
     const matches = path.match(matcherRegex);
     if (matches === null) {
         return path.replaceAll(matcherRegex, ":$1");
     }
+
     matches.forEach((match) => {
         const replacement = pathParamToVariableName(match.replaceAll(matcherRegex, ":$1"));
         path = path.replaceAll(match, replacement);

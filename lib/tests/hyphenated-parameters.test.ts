@@ -19,6 +19,28 @@ test("common-parameters", async () => {
                     },
                 },
             },
+            "/pet/{owner_name}": {
+                post: {
+                    parameters: [{ name: "owner_name", in: "path", required: true, schema: { type: "string" } }],
+                    responses: {
+                        "200": {
+                            description: "Successful operation",
+                            content: { "application/json": { schema: { type: "boolean" } } },
+                        },
+                    },
+                },
+            },
+            "/pet/{owner_name-id}": {
+                post: {
+                    parameters: [{ name: "owner_name-id", in: "path", required: true, schema: { type: "string" } }],
+                    responses: {
+                        "200": {
+                            description: "Successful operation",
+                            content: { "application/json": { schema: { type: "boolean" } } },
+                        },
+                    },
+                },
+            },
         },
     };
 
@@ -28,6 +50,32 @@ test("common-parameters", async () => {
       import { z } from "zod";
 
       const endpoints = makeApi([
+        {
+          method: "post",
+          path: "/pet/:owner_name",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "owner_name",
+              type: "Path",
+              schema: z.string(),
+            },
+          ],
+          response: z.boolean(),
+        },
+        {
+          method: "post",
+          path: "/pet/:owner_nameId",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "owner_nameId",
+              type: "Path",
+              schema: z.string(),
+            },
+          ],
+          response: z.boolean(),
+        },
         {
           method: "post",
           path: "/pet/:petId/uploadImage",
