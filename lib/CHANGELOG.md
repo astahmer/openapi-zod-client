@@ -1,5 +1,13 @@
 # openapi-zod-client
 
+## 1.7.1
+
+### Patch Changes
+
+-   [#154](https://github.com/astahmer/openapi-zod-client/pull/154) [`2486ce5`](https://github.com/astahmer/openapi-zod-client/commit/2486ce5535f4366a534e027ee1e92293be3034c7) Thanks [@janwvjaarsveld](https://github.com/janwvjaarsveld)! - Fix issue where path parameters containing underscores were also converted to camelCase
+
+-   [#151](https://github.com/astahmer/openapi-zod-client/pull/151) [`2ef2cb1`](https://github.com/astahmer/openapi-zod-client/commit/2ef2cb137231557961feeebfecaa831937e38fa7) Thanks [@WickyNilliams](https://github.com/WickyNilliams)! - improve types for anyOf, to closer match json-schema behavior
+
 ## 1.7.0
 
 ### Minor Changes
