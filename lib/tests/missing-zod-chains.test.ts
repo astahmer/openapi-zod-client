@@ -15,6 +15,13 @@ test("missing-zod-chains", async () => {
                     required: ["text", "num"],
                     properties: { text: { type: "string", minLength: 5 }, num: { type: "integer", minimum: 10 } },
                 },
+                nulltype: { type: "object", nullable: true },
+                anyOfType: {
+                    anyOf: [
+                        { type: "object", nullable: true },
+                        { type: "object", properties: { foo: { type: "string" } } },
+                    ],
+                },
             },
         },
         paths: {
@@ -32,6 +39,14 @@ test("missing-zod-chains", async () => {
                         "402": {
                             description: "Successful operation",
                             content: { "application/json": { schema: { $ref: "#/components/schemas/test3" } } },
+                        },
+                        "403": {
+                            description: "Successful operation",
+                            content: { "application/json": { schema: { $ref: "#/components/schemas/nulltype" } } },
+                        },
+                        "404": {
+                            description: "Successful operation",
+                            content: { "application/json": { schema: { $ref: "#/components/schemas/anyOfType" } } },
                         },
                     },
                 },
