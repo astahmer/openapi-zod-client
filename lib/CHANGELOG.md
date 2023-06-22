@@ -1,5 +1,13 @@
 # openapi-zod-client
 
+## 1.7.2
+
+### Patch Changes
+
+-   [#160](https://github.com/astahmer/openapi-zod-client/pull/160) [`bdcc143`](https://github.com/astahmer/openapi-zod-client/commit/bdcc143a157d28b80cc786eb491e2377e3fca362) Thanks [@WickyNilliams](https://github.com/WickyNilliams)! - add missing zod chains to response bodies
+
+-   [#161](https://github.com/astahmer/openapi-zod-client/pull/161) [`5d98868`](https://github.com/astahmer/openapi-zod-client/commit/5d98868b75a5464d4aa6ac02bdf4dd07a65e6c2b) Thanks [@WickyNilliams](https://github.com/WickyNilliams)! - allow timezones in date-time strings
+
 ## 1.7.1
 
 ### Patch Changes
