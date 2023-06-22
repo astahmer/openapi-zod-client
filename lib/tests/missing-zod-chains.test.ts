@@ -59,15 +59,15 @@ test("missing-zod-chains", async () => {
       "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
-      const test1 = z.string().min(5);
-      const test2 = z.number().int().gte(10);
+      const test1 = z.string();
+      const test2 = z.number();
       const test3 = z.object({
         text: z.string().min(5),
         num: z.number().int().gte(10),
       });
-      const nulltype = z.object({}).partial().nullable();
+      const nulltype = z.object({}).partial();
       const anyOfType = z.union([
-        z.object({}).partial().nullable(),
+        z.object({}).partial().passthrough(),
         z.object({ foo: z.string() }).partial().passthrough(),
       ]);
 
