@@ -4,6 +4,8 @@ import { makeSchemaResolver } from "../src/makeSchemaResolver.js";
 import { getZodSchema } from "../src/openApiToZod.js";
 import { asComponentSchema } from "../src/utils.js";
 import { CodeMeta } from "../src/CodeMeta.js";
+import { OpenAPIObject } from "openapi3-ts";
+import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI.js";
 
 // the schemas and fixtures used in these tests are modified from examples here: https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/#anyof
 
@@ -169,49 +171,103 @@ describe("anyOf behavior", () => {
         expect(validator(z, true)).toEqual(true);
     });
 
-    test("handles $refs", () => {
-        const schemas = {
-            PetByAge: {
-                type: "object",
-                properties: {
-                    age: {
-                        type: "integer",
-                    },
-                    nickname: {
-                        type: "string",
-                    },
-                },
-                required: ["age"],
+    test("handles $refs", async () => {
+        const openApiDoc: OpenAPIObject = {
+            openapi: "3.0.2",
+            info: {
+                title: "anyOf with refs",
+                version: "v1",
             },
-            PetByType: {
-                type: "object",
-                properties: {
-                    pet_type: {
-                        type: "string",
-                        enum: ["Cat", "Dog"],
-                    },
-                    hunts: {
-                        type: "boolean",
+            paths: {
+                "/test": {
+                    get: {
+                        parameters: [
+                            {
+                                name: "anyOfRef",
+                                schema: {
+                                    anyOf: [
+                                        { $ref: "#/components/schemas/PetByAge" },
+                                        { $ref: "#/components/schemas/PetByType" },
+                                    ],
+                                },
+                                in: "query",
+                            },
+                        ],
                     },
                 },
-                required: ["pet_type"],
+            },
+            components: {
+                schemas: {
+                    PetByAge: {
+                        type: "object",
+                        properties: {
+                            age: {
+                                type: "integer",
+                            },
+                            nickname: {
+                                type: "string",
+                            },
+                        },
+                        required: ["age"],
+                    },
+                    PetByType: {
+                        type: "object",
+                        properties: {
+                            pet_type: {
+                                type: "string",
+                                enum: ["Cat", "Dog"],
+                            },
+                            hunts: {
+                                type: "boolean",
+                            },
+                        },
+                        required: ["pet_type"],
+                    },
+                },
             },
         };
 
-        const ctx = {
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-            zodSchemaByName: {},
-            schemaByName: {},
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        const output = await generateZodClientFromOpenAPI({ disableWriteToFile: true, openApiDoc });
+        expect(output).toMatchInlineSnapshot(`
+          "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
+          import { z } from "zod";
 
-        const zodSchema = getZodSchema({
-            schema: {
-                anyOf: [{ $ref: "#/components/schemas/PetByAge" }, { $ref: "#/components/schemas/PetByType" }],
+          const PetByAge = z
+            .object({ age: z.number().int(), nickname: z.string().optional() })
+            .passthrough();
+          const PetByType = z
+            .object({ pet_type: z.enum(["Cat", "Dog"]), hunts: z.boolean().optional() })
+            .passthrough();
+          const anyOfRef = z.union([PetByAge, PetByType]).optional();
+
+          export const schemas = {
+            PetByAge,
+            PetByType,
+            anyOfRef,
+          };
+
+          const endpoints = makeApi([
+            {
+              method: "get",
+              path: "/test",
+              requestFormat: "json",
+              parameters: [
+                {
+                  name: "anyOfRef",
+                  type: "Query",
+                  schema: anyOfRef,
+                },
+              ],
+              response: z.void(),
             },
-            ctx,
-        });
+          ]);
 
-        expect(zodSchema).toMatchInlineSnapshot('"z.union([PetByAge.passthrough(), PetByType.passthrough()])"');
+          export const api = new Zodios(endpoints);
+
+          export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+            return new Zodios(baseUrl, endpoints, options);
+          }
+          "
+        `);
     });
 });
