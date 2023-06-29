@@ -4,13 +4,36 @@ import { getZodSchema } from "../src";
 // see: https://swagger.io/docs/specification/data-models/data-types/#free-form
 describe("additional-properties", () => {
     test("plain free-form object", () => {
-        const additionalPropertiesByDefault = getZodSchema({
+        const schema = getZodSchema({
             schema: {
                 type: "object",
             },
         });
 
-        expect(additionalPropertiesByDefault).toMatchInlineSnapshot('"z.object({}).partial().passthrough()"');
+        expect(schema).toMatchInlineSnapshot('"z.object({}).partial().passthrough()"');
+    });
+
+    test("additionalProperties is true", () => {
+        const schema = getZodSchema({
+            schema: {
+                type: "object",
+                additionalProperties: true,
+            },
+        });
+
+        expect(schema).toMatchInlineSnapshot('"z.object({}).partial().passthrough()"');
+    });
+
+    test("additionalProperties is empty object", () => {
+        const schema = getZodSchema({
+            schema: {
+                type: "object",
+                // empty object is equivalent to true according to swagger docs above
+                additionalProperties: {},
+            },
+        });
+
+        expect(schema).toMatchInlineSnapshot('"z.object({}).partial().passthrough()"');
     });
 
     test("additional properties opt-out", () => {
@@ -25,7 +48,7 @@ describe("additional-properties", () => {
     });
 
     test("object with some properties", () => {
-        const additionalPropertiesByDefault = getZodSchema({
+        const schema = getZodSchema({
             schema: {
                 type: "object",
                 properties: {
@@ -35,7 +58,7 @@ describe("additional-properties", () => {
             },
         });
 
-        expect(additionalPropertiesByDefault).toMatchInlineSnapshot(
+        expect(schema).toMatchInlineSnapshot(
             '"z.object({ foo: z.string(), bar: z.number() }).partial().passthrough()"'
         );
     });
