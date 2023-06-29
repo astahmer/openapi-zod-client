@@ -121,8 +121,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                     }
                 }
 
-                // only object types need passthrough, primitives and arrays are fine
-                return isObject ? `${type.toString()}.passthrough()` : type.toString();
+                return type.toString();
             })
             .join(", ");
 
@@ -195,13 +194,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     }
 
     if (schemaType === "object" || schema.properties || schema.additionalProperties) {
-        let additionalProps = "";
-        if (
-            (typeof schema.additionalProperties === "boolean" && schema.additionalProperties) ||
-            (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length === 0)
-        ) {
-            additionalProps = ".passthrough()";
-        } else if (typeof schema.additionalProperties === "object") {
+        // additional properties are allowed by default unless explicitly opting out
+        const additionalProps = schema.additionalProperties === false ? "" : ".passthrough()";
+
+        if (typeof schema.additionalProperties === "object") {
             return code.assign(
                 `z.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta, options }).toString()})`
             );
