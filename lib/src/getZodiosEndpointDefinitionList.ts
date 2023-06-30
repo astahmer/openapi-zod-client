@@ -160,7 +160,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             const endpointDefinition: EndpointDefinitionWithRefs = {
                 method: method as EndpointDefinitionWithRefs["method"],
                 path: replaceHyphenatedPath(path),
-                alias: operationName,
+                ...(options?.withAlias && { alias: operationName }),
                 description: operation.description,
                 requestFormat: "json",
                 parameters: [],
