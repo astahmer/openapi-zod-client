@@ -20,7 +20,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     )
     .option("-p, --prettier <path>", "Prettier config path that will be used to format the output client file")
     .option("-b, --base-url <url>", "Base url for the api")
-    .option("-a, --with-alias", "With alias as api client methods")
+    .option("-a, --with-alias", "With alias as api client methods", { default: true })
     .option(
         "--api-client-name <name>",
         "when using the default `template.hbs`, allow customizing the `export const {apiClientName}`"

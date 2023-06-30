@@ -21,7 +21,7 @@ export type OptionsFormValues = z.infer<typeof schema>;
 
 export const defaultOptionValues = {
     baseUrl: "",
-    withAlias: false,
+    withAlias: true,
     apiClientName: "api",
     isMainResponseStatus: "status >= 200 && status < 300",
     isErrorStatus: "!(status >= 200 && status < 300)",
