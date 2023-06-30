@@ -10,7 +10,7 @@ import type {
     SchemaObject,
 } from "openapi3-ts";
 import type { ObjectLiteral } from "pastable";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import { sync } from "whence";
 
 import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
@@ -40,35 +40,29 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
     const endpoints = [];
 
-    let isMainResponseStatus = (status: number) => status >= 200 && status < 300;
-    if (options?.isMainResponseStatus) {
-        isMainResponseStatus =
-            typeof options.isMainResponseStatus === "string"
-                ? (status: number) => sync(options.isMainResponseStatus, { status }, { functions: true })
-                : options.isMainResponseStatus;
-    }
+    const isMainResponseStatus = match(options?.isMainResponseStatus)
+        .with(P.string, (option) => (status: number) => sync(option, { status }, { functions: true }))
+        .with(P.nullish, () => (status: number) => status >= 200 && status < 300)
+        .otherwise((fn) => fn);
 
-    let isErrorStatus = (status: number) => !(status >= 200 && status < 300);
-    if (options?.isErrorStatus) {
-        isErrorStatus =
-            typeof options.isErrorStatus === "string"
-                ? (status: number) => sync(options.isErrorStatus, { status }, { functions: true })
-                : options.isErrorStatus;
-    }
+    const isErrorStatus = match(options?.isErrorStatus)
+        .with(P.string, (option) => (status: number) => sync(option, { status }, { functions: true }))
+        .with(P.nullish, () => (status: number) => !(status >= 200 && status < 300))
+        .otherwise((fn) => fn);
 
-    let isMediaTypeAllowed = (mediaType: string) => mediaType === "application/json";
-    if (options?.isMediaTypeAllowed) {
-        isMediaTypeAllowed =
-            typeof options.isMediaTypeAllowed === "string"
-                ? (mediaType: string) => sync(options.isMediaTypeAllowed, { mediaType }, { functions: true })
-                : options.isMediaTypeAllowed;
-    }
+    const isMediaTypeAllowed = match(options?.isMediaTypeAllowed)
+        .with(P.string, (option) => (mediaType: string) => sync(option, { mediaType }, { functions: true }))
+        .with(P.nullish, () => (mediaType: string) => mediaType === "application/json")
+        .otherwise((fn) => fn);
 
-    let getOperationAlias = (path: string, method: string, operation: OperationObject) =>
-        operation.operationId ?? method + pathToVariableName(path);
-    if (options?.withAlias && typeof options.withAlias === "function") {
-        getOperationAlias = options.withAlias;
-    }
+    const getOperationAlias = match(options?.withAlias)
+        .with(
+            P.boolean,
+            P.nullish,
+            () => (path: string, method: string, operation: OperationObject) =>
+                operation.operationId ?? method + pathToVariableName(path)
+        )
+        .otherwise((fn) => fn);
 
     const ctx: ConversionTypeContext = { resolver, zodSchemaByName: {}, schemaByName: {} };
     const complexityThreshold = options?.complexityThreshold ?? 4;
@@ -179,24 +173,12 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                 const bodySchema = matchingMediaType && requestBody.content?.[matchingMediaType]?.schema;
                 if (bodySchema) {
-                    match(matchingMediaType)
-                        .with("application/octet-stream", () => {
-                            endpointDefinition.requestFormat = "binary";
-                        })
-                        .with("application/x-www-form-urlencoded", () => {
-                            endpointDefinition.requestFormat = "form-url";
-                        })
-                        .with("multipart/form-data", () => {
-                            endpointDefinition.requestFormat = "form-data";
-                        })
-                        .otherwise((value) => {
-                            if (value.includes("json")) {
-                                endpointDefinition.requestFormat = "json";
-                                return;
-                            }
-
-                            endpointDefinition.requestFormat = "text";
-                        });
+                    endpointDefinition.requestFormat = match(matchingMediaType)
+                        .with("application/octet-stream", () => "binary" as const)
+                        .with("application/x-www-form-urlencoded", () => "form-url" as const)
+                        .with("multipart/form-data", () => "form-data" as const)
+                        .with(P.string.includes("json"), () => "json" as const)
+                        .otherwise(() => "text" as const);
 
                     const bodyCode = getZodSchema({
                         schema: bodySchema,
