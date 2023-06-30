@@ -238,7 +238,7 @@ export type TemplateContextOptions = {
      * @see https://github.com/metadevpro/openapi3-ts/blob/master/src/model/OpenApi.ts#L110
      *
      * @see https://www.zodios.org/docs/client#zodiosalias
-     * @default false
+     * @default true
      */
     withAlias?: boolean | ((path: string, method: string, operation: OperationObject) => string);
     /**
