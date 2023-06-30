@@ -29,7 +29,6 @@ test("defaut-status-behavior", () => {
     expect(defaultResult.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "withDefaultError",
               "description": undefined,
               "errors": [],
               "method": "get",
@@ -39,7 +38,6 @@ test("defaut-status-behavior", () => {
               "response": "z.number()",
           },
           {
-              "alias": "withDefaultResponse",
               "description": undefined,
               "errors": [],
               "method": "get",
@@ -55,7 +53,6 @@ test("defaut-status-behavior", () => {
     expect(withAutoCorrectResult.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "withDefaultError",
               "description": undefined,
               "errors": [
                   {
@@ -71,7 +68,6 @@ test("defaut-status-behavior", () => {
               "response": "z.number()",
           },
           {
-              "alias": "withDefaultResponse",
               "description": undefined,
               "errors": [],
               "method": "get",

@@ -32,7 +32,6 @@ test("name-with-special-characters", async () => {
     expect(ctx.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "nameWithSPecialCharacters",
               "description": undefined,
               "errors": [],
               "method": "get",

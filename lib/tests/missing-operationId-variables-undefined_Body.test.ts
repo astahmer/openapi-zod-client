@@ -29,7 +29,6 @@ test("missing operationId outputs variables['undefined_Body']", () => {
     expect(result.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "putMediaObjectsId",
               "description": undefined,
               "errors": [],
               "method": "put",

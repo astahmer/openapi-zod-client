@@ -13,7 +13,6 @@ test("ref-in-another-file", async () => {
           "deepDependencyGraph": {},
           "endpoints": [
               {
-                  "alias": "getRobots_txt",
                   "description": "Gets robots.txt",
                   "errors": [],
                   "method": "get",

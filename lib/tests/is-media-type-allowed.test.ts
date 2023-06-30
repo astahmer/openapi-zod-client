@@ -32,7 +32,6 @@ test("is-media-type-allowed", () => {
     expect(defaultResult.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "getWithUnusualRefFormat",
               "description": undefined,
               "errors": [],
               "method": "get",
@@ -50,7 +49,6 @@ test("is-media-type-allowed", () => {
     expect(withCustomOption.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "getWithUnusualRefFormat",
               "description": undefined,
               "errors": [],
               "method": "get",

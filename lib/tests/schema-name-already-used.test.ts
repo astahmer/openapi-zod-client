@@ -93,7 +93,6 @@ test("schema-name-already-used", async () => {
           "circularTypeByName": {},
           "endpoints": [
               {
-                  "alias": "getSchemaNameAlreadyUsed",
                   "description": undefined,
                   "errors": [],
                   "method": "get",
@@ -109,7 +108,6 @@ test("schema-name-already-used", async () => {
                   "response": "z.string()",
               },
               {
-                  "alias": "putSchemaNameAlreadyUsed",
                   "description": undefined,
                   "errors": [],
                   "method": "put",
@@ -125,7 +123,6 @@ test("schema-name-already-used", async () => {
                   "response": "z.string()",
               },
               {
-                  "alias": "deleteSchemaNameAlreadyUsed",
                   "description": undefined,
                   "errors": [],
                   "method": "delete",
@@ -141,7 +138,6 @@ test("schema-name-already-used", async () => {
                   "response": "z.string()",
               },
               {
-                  "alias": "postSchemaNameAlreadyUsed",
                   "description": undefined,
                   "errors": [],
                   "method": "post",

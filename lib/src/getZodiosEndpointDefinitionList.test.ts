@@ -115,7 +115,6 @@ test("getZodiosEndpointDefinitionList /store/order", () => {
           "deepDependencyGraph": {},
           "endpoints": [
               {
-                  "alias": "placeOrder",
                   "description": "Place a new order in the store",
                   "errors": [
                       {
@@ -230,7 +229,6 @@ test("getZodiosEndpointDefinitionList /pet", () => {
           },
           "endpoints": [
               {
-                  "alias": "updatePet",
                   "description": "Update an existing pet by Id",
                   "errors": [
                       {
@@ -263,7 +261,6 @@ test("getZodiosEndpointDefinitionList /pet", () => {
                   "response": "Pet",
               },
               {
-                  "alias": "addPet",
                   "description": "Add a new pet to the store",
                   "errors": [
                       {
@@ -391,7 +388,6 @@ test("getZodiosEndpointDefinitionList /pet without schema ref", () => {
           },
           "endpoints": [
               {
-                  "alias": "updatePet",
                   "description": "Update an existing pet by Id",
                   "errors": [
                       {
@@ -583,7 +579,6 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
           },
           "endpoints": [
               {
-                  "alias": "findPetsByStatus",
                   "description": "Multiple status values can be provided with comma separated strings",
                   "errors": [
                       {
@@ -605,7 +600,6 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
                   "response": "z.array(Pet)",
               },
               {
-                  "alias": "findPetsByTags",
                   "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
                   "errors": [
                       {
@@ -668,7 +662,6 @@ test("petstore.yaml", async () => {
           },
           "endpoints": [
               {
-                  "alias": "updatePet",
                   "description": "Update an existing pet by Id",
                   "errors": [
                       {
@@ -701,7 +694,6 @@ test("petstore.yaml", async () => {
                   "response": "Pet",
               },
               {
-                  "alias": "addPet",
                   "description": "Add a new pet to the store",
                   "errors": [
                       {
@@ -724,7 +716,6 @@ test("petstore.yaml", async () => {
                   "response": "Pet",
               },
               {
-                  "alias": "findPetsByStatus",
                   "description": "Multiple status values can be provided with comma separated strings",
                   "errors": [
                       {
@@ -746,7 +737,6 @@ test("petstore.yaml", async () => {
                   "response": "z.array(Pet)",
               },
               {
-                  "alias": "findPetsByTags",
                   "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
                   "errors": [
                       {
@@ -768,7 +758,6 @@ test("petstore.yaml", async () => {
                   "response": "z.array(Pet)",
               },
               {
-                  "alias": "getPetById",
                   "description": "Returns a single pet",
                   "errors": [
                       {
@@ -795,7 +784,6 @@ test("petstore.yaml", async () => {
                   "response": "Pet",
               },
               {
-                  "alias": "updatePetWithForm",
                   "description": "",
                   "errors": [
                       {
@@ -827,7 +815,6 @@ test("petstore.yaml", async () => {
                   "response": "z.void()",
               },
               {
-                  "alias": "deletePet",
                   "description": "delete a pet",
                   "errors": [
                       {
@@ -854,7 +841,6 @@ test("petstore.yaml", async () => {
                   "response": "z.void()",
               },
               {
-                  "alias": "uploadFile",
                   "description": "",
                   "errors": [],
                   "method": "post",
@@ -881,7 +867,6 @@ test("petstore.yaml", async () => {
                   "response": "ApiResponse",
               },
               {
-                  "alias": "getInventory",
                   "description": "Returns a map of status codes to quantities",
                   "errors": [],
                   "method": "get",
@@ -891,7 +876,6 @@ test("petstore.yaml", async () => {
                   "response": "z.record(z.number())",
               },
               {
-                  "alias": "placeOrder",
                   "description": "Place a new order in the store",
                   "errors": [
                       {
@@ -914,7 +898,6 @@ test("petstore.yaml", async () => {
                   "response": "Order",
               },
               {
-                  "alias": "getOrderById",
                   "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
                   "errors": [
                       {
@@ -941,7 +924,6 @@ test("petstore.yaml", async () => {
                   "response": "Order",
               },
               {
-                  "alias": "deleteOrder",
                   "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
                   "errors": [
                       {
@@ -968,7 +950,6 @@ test("petstore.yaml", async () => {
                   "response": "z.void()",
               },
               {
-                  "alias": "createUser",
                   "description": "This can only be done by the logged in user.",
                   "errors": [],
                   "method": "post",
@@ -985,7 +966,6 @@ test("petstore.yaml", async () => {
                   "response": "z.void()",
               },
               {
-                  "alias": "createUsersWithListInput",
                   "description": "Creates list of users with given input array",
                   "errors": [],
                   "method": "post",
@@ -1002,7 +982,6 @@ test("petstore.yaml", async () => {
                   "response": "User",
               },
               {
-                  "alias": "loginUser",
                   "description": "",
                   "errors": [
                       {
@@ -1029,7 +1008,6 @@ test("petstore.yaml", async () => {
                   "response": "z.string()",
               },
               {
-                  "alias": "logoutUser",
                   "description": "",
                   "errors": [],
                   "method": "get",
@@ -1039,7 +1017,6 @@ test("petstore.yaml", async () => {
                   "response": "z.void()",
               },
               {
-                  "alias": "getUserByName",
                   "description": "",
                   "errors": [
                       {
@@ -1066,7 +1043,6 @@ test("petstore.yaml", async () => {
                   "response": "User",
               },
               {
-                  "alias": "updateUser",
                   "description": "This can only be done by the logged in user.",
                   "errors": [],
                   "method": "put",
@@ -1088,7 +1064,6 @@ test("petstore.yaml", async () => {
                   "response": "z.void()",
               },
               {
-                  "alias": "deleteUser",
                   "description": "This can only be done by the logged in user.",
                   "errors": [
                       {

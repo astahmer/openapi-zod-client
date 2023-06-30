@@ -27,7 +27,6 @@ test("with-deprecated", () => {
     expect(defaultResult.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "newEndpoint",
               "description": undefined,
               "errors": [],
               "method": "get",
@@ -45,7 +44,6 @@ test("with-deprecated", () => {
     expect(withCustomOption.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "deprecatedEndpoint",
               "description": undefined,
               "errors": [],
               "method": "get",
@@ -55,7 +53,6 @@ test("with-deprecated", () => {
               "response": "z.string()",
           },
           {
-              "alias": "newEndpoint",
               "description": undefined,
               "errors": [],
               "method": "get",

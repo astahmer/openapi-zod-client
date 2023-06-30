@@ -28,7 +28,6 @@ test("operationId-starting-with-number", async () => {
     expect(ctx.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "123_example",
               "description": undefined,
               "errors": [],
               "method": "get",
