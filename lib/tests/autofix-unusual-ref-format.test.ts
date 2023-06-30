@@ -39,7 +39,6 @@ test("autofix-unusual-ref-format", () => {
           "deepDependencyGraph": {},
           "endpoints": [
               {
-                  "alias": "getWithUsualRefFormat",
                   "description": undefined,
                   "errors": [],
                   "method": "get",
@@ -49,7 +48,6 @@ test("autofix-unusual-ref-format", () => {
                   "response": "z.string()",
               },
               {
-                  "alias": "getWithUnusualRefFormat",
                   "description": undefined,
                   "errors": [],
                   "method": "get",

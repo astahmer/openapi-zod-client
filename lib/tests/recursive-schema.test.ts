@@ -222,7 +222,6 @@ describe("recursive-schema", () => {
               },
               "endpoints": [
                   {
-                      "alias": "getExample",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -368,7 +367,6 @@ describe("recursive-schema", () => {
               },
               "endpoints": [
                   {
-                      "alias": "getExample",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -423,7 +421,6 @@ describe("recursive-schema", () => {
               },
               "endpoints": [
                   {
-                      "alias": "getExample",
                       "description": undefined,
                       "errors": [],
                       "method": "get",

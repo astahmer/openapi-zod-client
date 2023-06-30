@@ -42,7 +42,6 @@ test("export-schemas-option", async () => {
     expect(ctx.endpoints).toMatchInlineSnapshot(`
       [
           {
-              "alias": "123_example",
               "description": undefined,
               "errors": [],
               "method": "get",

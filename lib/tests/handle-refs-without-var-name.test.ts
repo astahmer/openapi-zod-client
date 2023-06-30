@@ -33,7 +33,6 @@ test("handle-refs-without-var-name", () => {
           "circularTypeByName": {},
           "endpoints": [
               {
-                  "alias": "getSomething",
                   "description": undefined,
                   "errors": [],
                   "method": "get",

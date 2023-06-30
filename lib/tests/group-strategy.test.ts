@@ -86,7 +86,6 @@ test("group-strategy", async () => {
           "Default": {
               "endpoints": [
                   {
-                      "alias": "noTagsGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -96,7 +95,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "noTagsPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -112,7 +110,6 @@ test("group-strategy", async () => {
           "pet": {
               "endpoints": [
                   {
-                      "alias": "petGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -122,7 +119,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "petPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -132,7 +128,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "petAllGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -142,7 +137,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "petAllPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -158,7 +152,6 @@ test("group-strategy", async () => {
           "store": {
               "endpoints": [
                   {
-                      "alias": "storeGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -168,7 +161,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "storePut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -184,7 +176,6 @@ test("group-strategy", async () => {
           "user": {
               "endpoints": [
                   {
-                      "alias": "userGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -194,7 +185,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -204,7 +194,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -214,7 +203,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -343,7 +331,6 @@ test("group-strategy", async () => {
           "get": {
               "endpoints": [
                   {
-                      "alias": "petGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -353,7 +340,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "petAllGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -363,7 +349,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "storeGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -373,7 +358,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -383,7 +367,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -393,7 +376,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "noTagsGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -409,7 +391,6 @@ test("group-strategy", async () => {
           "put": {
               "endpoints": [
                   {
-                      "alias": "petPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -419,7 +400,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "petAllPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -429,7 +409,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "storePut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -439,7 +418,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -449,7 +427,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "userPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -459,7 +436,6 @@ test("group-strategy", async () => {
                       "response": "z.string()",
                   },
                   {
-                      "alias": "noTagsPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -709,7 +685,6 @@ test("group-strategy with complex schemas + split files", async () => {
           "Default": {
               "endpoints": [
                   {
-                      "alias": "noTagsGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -745,7 +720,6 @@ test("group-strategy with complex schemas + split files", async () => {
           "pet": {
               "endpoints": [
                   {
-                      "alias": "petGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -755,7 +729,6 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "Pet",
                   },
                   {
-                      "alias": "petPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -765,7 +738,6 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "Pet",
                   },
                   {
-                      "alias": "petAllGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -775,7 +747,6 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "z.array(Pet)",
                   },
                   {
-                      "alias": "petAllPost",
                       "description": undefined,
                       "errors": [],
                       "method": "post",
@@ -796,7 +767,6 @@ test("group-strategy with complex schemas + split files", async () => {
           "store": {
               "endpoints": [
                   {
-                      "alias": "storeGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -806,7 +776,6 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "Store",
                   },
                   {
-                      "alias": "storePut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",
@@ -842,7 +811,6 @@ test("group-strategy with complex schemas + split files", async () => {
           "user": {
               "endpoints": [
                   {
-                      "alias": "userGet",
                       "description": undefined,
                       "errors": [],
                       "method": "get",
@@ -852,7 +820,6 @@ test("group-strategy with complex schemas + split files", async () => {
                       "response": "User",
                   },
                   {
-                      "alias": "userPut",
                       "description": undefined,
                       "errors": [],
                       "method": "put",

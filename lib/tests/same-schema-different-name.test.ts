@@ -60,7 +60,6 @@ test("same-schema-different-name", async () => {
           "circularTypeByName": {},
           "endpoints": [
               {
-                  "alias": "putSameSchemaDifferentName",
                   "description": undefined,
                   "errors": [],
                   "method": "put",
@@ -76,7 +75,6 @@ test("same-schema-different-name", async () => {
                   "response": "z.string()",
               },
               {
-                  "alias": "postSameSchemaDifferentName",
                   "description": undefined,
                   "errors": [],
                   "method": "post",
