@@ -1,5 +1,13 @@
 # openapi-zod-client
 
+## 1.8.0
+
+### Minor Changes
+
+-   [#166](https://github.com/astahmer/openapi-zod-client/pull/166) [`2308541`](https://github.com/astahmer/openapi-zod-client/commit/2308541bb9ecdca068243f1479a0fc0785439de0) Thanks [@scarf005](https://github.com/scarf005)! - take `withAlias: false` into account
+
+-   [#165](https://github.com/astahmer/openapi-zod-client/pull/165) [`4860e75`](https://github.com/astahmer/openapi-zod-client/commit/4860e75db9eb5904725e09d4d5e68ea7182ecc10) Thanks [@scarf005](https://github.com/scarf005)! - updated and used ts-pattern more
+
 ## 1.7.2
 
 ### Patch Changes
