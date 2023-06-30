@@ -215,26 +215,23 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                         if (!matchingMediaType) {
                             throw new Error(
-                                `Unsupported media type for param ${paramItem.name}: ` + mediaTypes.join(", ")
+                                `Unsupported media type for param ${paramItem.name}: ${mediaTypes.join(", ")}`
                             );
                         }
 
                         const mediaTypeObject = paramItem.content[matchingMediaType];
                         if (!mediaTypeObject) {
                             throw new Error(
-                                `No content with media type for param ${paramItem.name}: ` + matchingMediaType
+                                `No content with media type for param ${paramItem.name}: ${matchingMediaType}`
                             );
                         }
 
-                        paramSchema = mediaTypeObject?.schema;
 
                         // this fallback is needed to autofix openapi docs that put the $ref in the wrong place
                         // (it should be in the mediaTypeObject.schema, not in the mediaTypeObject itself)
                         // https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#style-values (just above this anchor)
-                        if (!paramSchema) {
-                            // @ts-expect-error
-                            paramSchema = mediaTypeObject;
-                        }
+                        // @ts-expect-error
+                        paramSchema = mediaTypeObject?.schema ?? mediaTypeObject;
                     } else {
                         paramSchema = isReferenceObject(paramItem.schema)
                             ? ctx.resolver.getSchemaByRef(paramItem.schema.$ref)
