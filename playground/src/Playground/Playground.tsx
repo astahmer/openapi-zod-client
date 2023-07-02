@@ -607,7 +607,7 @@ const CopyButton = ({ code, ...props }: ButtonProps & { code: string }) => {
 
 type CliOptions = Exclude<keyof OptionsFormValues, "useMainResponseDescriptionAsEndpointDefinitionFallback">;
 const optionNameToCliOptionName = {
-    withAlias: "--with-alias",
+    noWithAlias: "--no-with-alias",
     baseUrl: "--base-url",
     apiClientName: "--api-client-name",
     isErrorStatus: "--error-expr",
@@ -626,7 +626,7 @@ const createPnpmCommand = (outputPath: string, relevantOptions: TemplateContextO
     ${Object.entries(relevantOptions).reduce(
         (acc, [optionName, value]) =>
             `${acc} ${optionNameToCliOptionName[optionName as keyof typeof optionNameToCliOptionName]}="${
-                value as string
+                value.toString()
             }"`,
         ""
     )}
