@@ -151,7 +151,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 ...getParametersMap(operation.parameters ?? []),
             }).map(([_id, param]) => param);
             const operationName = getOperationAlias(path, method, operation);
-            const endpointDefinition: EndpointDefinitionWithRefs = {
+            let endpointDefinition: EndpointDefinitionWithRefs = {
                 method: method as EndpointDefinitionWithRefs["method"],
                 path: replaceHyphenatedPath(path),
                 ...(options?.withAlias && { alias: operationName }),
@@ -161,6 +161,12 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 errors: [],
                 response: "",
             };
+
+            if (options?.endpointDefinitionRefiner) {
+                // Refine the endpoint definition, in case consumer wants to add some specific fields
+                // to be rendered in the Handlebars template.
+                endpointDefinition = options.endpointDefinitionRefiner(endpointDefinition, operation);
+            }
 
             if (operation.requestBody) {
                 const requestBody = (
@@ -225,7 +231,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                                 `No content with media type for param ${paramItem.name}: ${matchingMediaType}`
                             );
                         }
-
 
                         // this fallback is needed to autofix openapi docs that put the $ref in the wrong place
                         // (it should be in the mediaTypeObject.schema, not in the mediaTypeObject itself)
