@@ -605,6 +605,7 @@ const CopyButton = ({ code, ...props }: ButtonProps & { code: string }) => {
     );
 };
 
+type CliOptions = Exclude<keyof OptionsFormValues, "useMainResponseDescriptionAsEndpointDefinitionFallback">;
 const optionNameToCliOptionName = {
     withAlias: "--with-alias",
     baseUrl: "--base-url",
@@ -618,7 +619,7 @@ const optionNameToCliOptionName = {
     groupStrategy: "--group-strategy",
     complexityThreshold: "--complexity-threshold",
     defaultStatusBehavior: "--default-status",
-} as const;
+} as const satisfies Record<CliOptions, string>;
 
 const createPnpmCommand = (outputPath: string, relevantOptions: TemplateContextOptions) => {
     return `pnpx openapi-zod-client ./petstore.yaml -o ./${outputPath}
