@@ -226,7 +226,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                             );
                         }
 
-
                         // this fallback is needed to autofix openapi docs that put the $ref in the wrong place
                         // (it should be in the mediaTypeObject.schema, not in the mediaTypeObject itself)
                         // https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md#style-values (just above this anchor)
@@ -238,8 +237,8 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                             : paramItem.schema;
                     }
 
-                    if (options?.withDescription && paramSchema) {
-                        (paramSchema as SchemaObject).description = (paramItem.description ?? "")?.replace("\n", "");
+                    if (options?.withDescription && paramSchema && paramItem.description) {
+                        (paramSchema as SchemaObject).description = paramItem.description;
                     }
 
                     // resolve ref if needed, and fallback to default (unknown) value if needed

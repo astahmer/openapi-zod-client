@@ -265,8 +265,10 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
         .with("array", () => chains.push(getZodChainableArrayValidations(schema)))
         .otherwise(() => void 0);
 
-    if (typeof schema.description === "string" && schema.description !== "" && options?.withDescription) {
-        chains.push(`describe("${schema.description}")`);
+    const desc = schema.description;
+    if (options?.withDescription && typeof desc === "string" && desc !== "") {
+        const result = options?.withDescription === "multiline" ? desc : desc?.replaceAll(/\n\s*/g, " ");
+        chains.push(`describe(\`${result}\`)`);
     }
 
     const output = chains

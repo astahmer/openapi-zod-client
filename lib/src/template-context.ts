@@ -335,8 +335,12 @@ export type TemplateContextOptions = {
     defaultStatusBehavior?: "spec-compliant" | "auto-correct";
     willSuppressWarnings?: boolean;
     /**
-     * when true, will add z.describe(xxx)
+     * adds z.describe(xxx).
+     *
+     * - when true, will truncate newlines and trailing spaces into a single space.
+     * - when "multiline", will not truncate newlines.
+     *
      * @see https://github.com/astahmer/openapi-zod-client/pull/143
      */
-    withDescription?: boolean;
+    withDescription?: boolean | "multiline";
 };
