@@ -33,7 +33,7 @@ export const defaultOptionValues = {
     groupStrategy: "none",
     complexityThreshold: 4,
     defaultStatusBehavior: "spec-compliant",
-} as const;
+} as const satisfies OptionsFormValues;
 
 export const OptionsForm = (props: FormProps<OptionsFormValues>) => {
     return (
@@ -55,7 +55,7 @@ export const OptionsForm = (props: FormProps<OptionsFormValues>) => {
                                 label: "Use main response.description as endpoint definition fallback ?",
                                 value: "useMainResponseDescriptionAsEndpointDefinitionFallback",
                             },
-                        ]}
+                        ] satisfies Array<{ label: string; value: keyof OptionsFormValues }>}
                         defaultValue={[]}
                         multiple
                     />
