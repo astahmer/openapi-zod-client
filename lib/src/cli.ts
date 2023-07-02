@@ -8,6 +8,7 @@ import { safeJSONParse } from "pastable/server";
 import { resolveConfig } from "prettier";
 
 import { generateZodClientFromOpenAPI } from "./generateZodClientFromOpenAPI";
+import { P, match } from "ts-pattern";
 
 const cli = cac("openapi-zod-client");
 const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf8"));
@@ -20,6 +21,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     )
     .option("-p, --prettier <path>", "Prettier config path that will be used to format the output client file")
     .option("-b, --base-url <url>", "Base url for the api")
+    .option("--no-with-alias", "With alias as api client methods")
     .option("-a, --with-alias", "With alias as api client methods", { default: true })
     .option(
         "--api-client-name <name>",
@@ -52,6 +54,9 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
         const prettierConfig = await resolveConfig(options.prettier || "./");
         const distPath = options.output || input + ".client.ts";
+        const withAlias = match(options.withAlias)
+            .with(P.nullish, P.string.regex(/^false$/i), false, () => false)
+            .otherwise(() => true);
 
         await generateZodClientFromOpenAPI({
             openApiDoc,
@@ -59,7 +64,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
             prettierConfig,
             templatePath: options.template,
             options: {
-                withAlias: options.withAlias,
+                withAlias,
                 baseUrl: options.baseUrl,
                 apiClientName: options.apiClientName,
                 isErrorStatus: options.errorExpr,

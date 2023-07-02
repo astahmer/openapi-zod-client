@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const schema = z.object({
     baseUrl: z.string(),
-    withAlias: z.boolean(),
+    noWithAlias: z.boolean(),
     apiClientName: z.string().default("api"),
     isMainResponseStatus: z.string(),
     isErrorStatus: z.string(),
@@ -21,7 +21,7 @@ export type OptionsFormValues = z.infer<typeof schema>;
 
 export const defaultOptionValues = {
     baseUrl: "",
-    withAlias: true,
+    noWithAlias: false,
     apiClientName: "api",
     isMainResponseStatus: "status >= 200 && status < 300",
     isErrorStatus: "!(status >= 200 && status < 300)",
@@ -47,7 +47,7 @@ export const OptionsForm = (props: FormProps<OptionsFormValues>) => {
                         name="booleans"
                         label="Booleans options"
                         options={[
-                            { label: "With alias ?", value: "withAlias" },
+                            { label: "Without alias ?", value: "noWithAlias" },
                             { label: "Should export all schemas ?", value: "shouldExportAllSchemas" },
                             { label: "With implicit required props ?", value: "withImplicitRequiredProps" },
                             { label: "With deprecated endpoints ?", value: "withDeprecatedEndpoints" },
