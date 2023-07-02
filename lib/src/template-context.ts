@@ -339,4 +339,12 @@ export type TemplateContextOptions = {
      * @see https://github.com/astahmer/openapi-zod-client/pull/143
      */
     withDescription?: boolean;
+    /**
+     * A function to refine the default endpoint definition. Mostly useful for adding fields from OperationObject
+     * that aren't defined yet in the default definition.
+     */
+    endpointDefinitionRefiner?: (
+        defaultDefinition: EndpointDefinitionWithRefs,
+        operation: OperationObject
+    ) => EndpointDefinitionWithRefs;
 };
