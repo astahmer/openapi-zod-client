@@ -72,12 +72,15 @@ test("object-default-values", async () => {
       "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
-      const MyComponent = z.object({ id: z.number(), name: z.string() }).partial();
+      const MyComponent = z
+        .object({ id: z.number(), name: z.string() })
+        .partial()
+        .passthrough();
 
       export const schemas = {
         MyComponent,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "get",
@@ -87,7 +90,12 @@ test("object-default-values", async () => {
             {
               name: "empty-object",
               type: "Query",
-              schema: z.object({ foo: z.string() }).partial().optional().default({}),
+              schema: z
+                .object({ foo: z.string() })
+                .partial()
+                .passthrough()
+                .optional()
+                .default({}),
             },
             {
               name: "default-object",
@@ -95,6 +103,7 @@ test("object-default-values", async () => {
               schema: z
                 .object({ foo: z.string() })
                 .partial()
+                .passthrough()
                 .optional()
                 .default({ foo: "bar" }),
             },

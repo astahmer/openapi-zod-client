@@ -13,5 +13,5 @@ test("infer-as-object-when-only-properties-set", () => {
                 },
             },
         })
-    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nested: z.record(z.number()) }).partial()"');
+    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nested: z.record(z.number()) }).partial().passthrough()"');
 });

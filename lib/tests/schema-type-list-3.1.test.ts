@@ -54,11 +54,18 @@ test("schema-type-list-3.1", async () => {
             name: z.union([z.enum(["Dogs", "Cats", "Mice"]), z.null()]),
             another: z.union([z.enum(["Dogs", "Cats", "Mice"]), z.never()]),
           })
-          .partial(),
+          .partial()
+          .passthrough(),
         z.null(),
       ]);
-      const test2 = z.union([z.object({ text2: z.number() }).partial(), z.boolean()]);
-      const test3 = z.union([z.number(), z.object({ text3: z.boolean() }).partial()]);
+      const test2 = z.union([
+        z.object({ text2: z.number() }).partial().passthrough(),
+        z.boolean(),
+      ]);
+      const test3 = z.union([
+        z.number(),
+        z.object({ text3: z.boolean() }).partial().passthrough(),
+      ]);
       const test4 = test1.and(test2).and(test3);
 
       export const schemas = {

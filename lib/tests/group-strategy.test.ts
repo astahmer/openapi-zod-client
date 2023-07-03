@@ -698,8 +698,8 @@ test("group-strategy with complex schemas + split files", async () => {
                   "User": "common",
               },
               "schemas": {
-                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial())",
-                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial())",
+                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial().passthrough())",
+                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial().passthrough())",
               },
               "types": {
                   "Country": "type Country = Partial<{
@@ -760,7 +760,7 @@ test("group-strategy with complex schemas + split files", async () => {
                   "User": "common",
               },
               "schemas": {
-                  "Pet": "z.object({ id: z.number().int(), nickname: z.string(), owner: User }).partial()",
+                  "Pet": "z.object({ id: z.number().int(), nickname: z.string(), owner: User }).partial().passthrough()",
               },
               "types": {},
           },
@@ -789,8 +789,8 @@ test("group-strategy with complex schemas + split files", async () => {
                   "User": "common",
               },
               "schemas": {
-                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial())",
-                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial())",
+                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial().passthrough())",
+                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial().passthrough())",
               },
               "types": {
                   "Country": "type Country = Partial<{
@@ -874,6 +874,7 @@ test("group-strategy with complex schemas + split files", async () => {
             store_list: z.array(Store),
           })
           .partial()
+          .passthrough()
       );
       const Store: z.ZodType<Store> = z.lazy(() =>
         z
@@ -885,6 +886,7 @@ test("group-strategy with complex schemas + split files", async () => {
             owner: User,
           })
           .partial()
+          .passthrough()
       );
 
       export const schemas = {
@@ -927,6 +929,7 @@ test("group-strategy with complex schemas + split files", async () => {
             friends: z.array(User),
           })
           .partial()
+          .passthrough()
       );
       ",
           "__index": "export { PetApi } from "./pet";
@@ -941,7 +944,8 @@ test("group-strategy with complex schemas + split files", async () => {
 
       const Pet = z
         .object({ id: z.number().int(), nickname: z.string(), owner: User })
-        .partial();
+        .partial()
+        .passthrough();
 
       export const schemas = {
         Pet,
@@ -1009,6 +1013,7 @@ test("group-strategy with complex schemas + split files", async () => {
             owner: User,
           })
           .partial()
+          .passthrough()
       );
       const Country: z.ZodType<Country> = z.lazy(() =>
         z
@@ -1019,6 +1024,7 @@ test("group-strategy with complex schemas + split files", async () => {
             store_list: z.array(Store),
           })
           .partial()
+          .passthrough()
       );
 
       export const schemas = {

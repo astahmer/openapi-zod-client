@@ -85,7 +85,7 @@ describe("samples-generator", async () => {
                           schema: z.string().url(),
                       },
                   ],
-                  response: z.object({ subscriptionId: z.string() }),
+                  response: z.object({ subscriptionId: z.string() }).passthrough(),
               },
           ]);
 
@@ -98,11 +98,12 @@ describe("samples-generator", async () => {
               "v3.0/link-example.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
-          const user = z.object({ username: z.string(), uuid: z.string() }).partial();
-          const repository = z.object({ slug: z.string(), owner: user }).partial();
+          const user = z.object({ username: z.string(), uuid: z.string() }).partial().passthrough();
+          const repository = z.object({ slug: z.string(), owner: user }).partial().passthrough();
           const pullrequest = z
               .object({ id: z.number().int(), title: z.string(), repository: repository, author: user })
-              .partial();
+              .partial()
+              .passthrough();
 
           export const schemas = {
               user,
@@ -235,9 +236,9 @@ describe("samples-generator", async () => {
               "v3.0/petstore-expanded.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
-          const NewPet = z.object({ name: z.string(), tag: z.string().optional() });
-          const Pet = NewPet.and(z.object({ id: z.number().int() }));
-          const Error = z.object({ code: z.number().int(), message: z.string() });
+          const NewPet = z.object({ name: z.string(), tag: z.string().optional() }).passthrough();
+          const Pet = NewPet.and(z.object({ id: z.number().int() }).passthrough());
+          const Error = z.object({ code: z.number().int(), message: z.string() }).passthrough();
 
           export const schemas = {
               NewPet,
@@ -323,9 +324,9 @@ describe("samples-generator", async () => {
               "v3.0/petstore.": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
-          const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() });
+          const Pet = z.object({ id: z.number().int(), name: z.string(), tag: z.string().optional() }).passthrough();
           const Pets = z.array(Pet);
-          const Error = z.object({ code: z.number().int(), message: z.string() });
+          const Error = z.object({ code: z.number().int(), message: z.string() }).passthrough();
 
           export const schemas = {
               Pet,
@@ -389,14 +390,18 @@ describe("samples-generator", async () => {
                               apiDocumentationUrl: z.string(),
                           })
                           .partial()
+                          .passthrough()
                   ),
               })
-              .partial();
-          const perform_search_Body = z.object({
-              criteria: z.string().default("*:*"),
-              start: z.number().int().optional(),
-              rows: z.number().int().optional().default(100),
-          });
+              .partial()
+              .passthrough();
+          const perform_search_Body = z
+              .object({
+                  criteria: z.string().default("*:*"),
+                  start: z.number().int().optional(),
+                  rows: z.number().int().optional().default(100),
+              })
+              .passthrough();
 
           export const schemas = {
               dataSetList,
@@ -458,7 +463,7 @@ describe("samples-generator", async () => {
                           schema: z.string().default("oa_citations"),
                       },
                   ],
-                  response: z.array(z.record(z.object({}).partial())),
+                  response: z.array(z.record(z.object({}).partial().passthrough())),
                   errors: [
                       {
                           status: 404,

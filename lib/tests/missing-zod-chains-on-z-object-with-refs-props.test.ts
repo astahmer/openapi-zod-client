@@ -53,19 +53,23 @@ test("missing-zod-chains-on-z-object-with-refs-props", async () => {
 
       const Email = z.string();
       const Password = z.string();
-      const AddUser = z.object({
-        email: Email.min(6)
-          .max(255)
-          .regex(/(EmailRegex)/),
-        password: Password.min(16)
-          .max(255)
-          .regex(/(PasswordRegex)/),
-      });
-      const PasswordReminder = z.object({
-        email: Email.min(6)
-          .max(255)
-          .regex(/(EmailRegex)/),
-      });
+      const AddUser = z
+        .object({
+          email: Email.min(6)
+            .max(255)
+            .regex(/(EmailRegex)/),
+          password: Password.min(16)
+            .max(255)
+            .regex(/(PasswordRegex)/),
+        })
+        .passthrough();
+      const PasswordReminder = z
+        .object({
+          email: Email.min(6)
+            .max(255)
+            .regex(/(EmailRegex)/),
+        })
+        .passthrough();
 
       export const schemas = {
         Email,
@@ -83,14 +87,16 @@ test("missing-zod-chains-on-z-object-with-refs-props", async () => {
             {
               name: "body",
               type: "Body",
-              schema: z.object({
-                email: Email.min(6)
-                  .max(255)
-                  .regex(/(EmailRegex)/),
-                password: Password.min(16)
-                  .max(255)
-                  .regex(/(PasswordRegex)/),
-              }),
+              schema: z
+                .object({
+                  email: Email.min(6)
+                    .max(255)
+                    .regex(/(EmailRegex)/),
+                  password: Password.min(16)
+                    .max(255)
+                    .regex(/(PasswordRegex)/),
+                })
+                .passthrough(),
             },
           ],
           response: z.void(),
@@ -103,11 +109,13 @@ test("missing-zod-chains-on-z-object-with-refs-props", async () => {
             {
               name: "body",
               type: "Body",
-              schema: z.object({
-                email: Email.min(6)
-                  .max(255)
-                  .regex(/(EmailRegex)/),
-              }),
+              schema: z
+                .object({
+                  email: Email.min(6)
+                    .max(255)
+                    .regex(/(EmailRegex)/),
+                })
+                .passthrough(),
             },
           ],
           response: z.void(),

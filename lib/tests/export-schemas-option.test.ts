@@ -56,7 +56,7 @@ test("export-schemas-option", async () => {
     expect(ctx.schemas).toMatchInlineSnapshot(`
       {
           "Basic": "z.string()",
-          "UnusedSchemas": "z.object({ nested_prop: z.boolean(), another: z.string() }).partial()",
+          "UnusedSchemas": "z.object({ nested_prop: z.boolean(), another: z.string() }).partial().passthrough()",
       }
     `);
 
@@ -72,7 +72,8 @@ test("export-schemas-option", async () => {
       const Basic = z.string();
       const UnusedSchemas = z
         .object({ nested_prop: z.boolean(), another: z.string() })
-        .partial();
+        .partial()
+        .passthrough();
 
       export const schemas = {
         Basic,
