@@ -61,11 +61,10 @@ test("missing-zod-chains", async () => {
 
       const test1 = z.string();
       const test2 = z.number();
-      const test3 = z.object({
-        text: z.string().min(5),
-        num: z.number().int().gte(10),
-      });
-      const nulltype = z.object({}).partial();
+      const test3 = z
+        .object({ text: z.string().min(5), num: z.number().int().gte(10) })
+        .passthrough();
+      const nulltype = z.object({}).partial().passthrough();
       const anyOfType = z.union([
         z.object({}).partial().passthrough(),
         z.object({ foo: z.string() }).partial().passthrough(),
@@ -94,15 +93,14 @@ test("missing-zod-chains", async () => {
             {
               status: 402,
               description: \`Successful operation\`,
-              schema: z.object({
-                text: z.string().min(5),
-                num: z.number().int().gte(10),
-              }),
+              schema: z
+                .object({ text: z.string().min(5), num: z.number().int().gte(10) })
+                .passthrough(),
             },
             {
               status: 403,
               description: \`Successful operation\`,
-              schema: z.object({}).partial().nullable(),
+              schema: z.object({}).partial().passthrough().nullable(),
             },
             {
               status: 404,

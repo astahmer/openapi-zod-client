@@ -48,7 +48,7 @@ test("handle-refs-without-var-name", () => {
               "withAlias": false,
           },
           "schemas": {
-              "Basic": "z.object({}).partial()",
+              "Basic": "z.object({}).partial().passthrough()",
           },
           "types": {},
       }

@@ -149,7 +149,7 @@ test("getZodiosEndpointDefinitionList /store/order", () => {
           },
           "schemaByName": {},
           "zodSchemaByName": {
-              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime({ offset: true }), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime({ offset: true }), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().passthrough()",
           },
       }
     `);
@@ -300,9 +300,9 @@ test("getZodiosEndpointDefinitionList /pet", () => {
           },
           "schemaByName": {},
           "zodSchemaByName": {
-              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
           },
       }
     `);
@@ -442,11 +442,11 @@ test("getZodiosEndpointDefinitionList /pet without schema ref", () => {
               "Pet.and(Reason)": "updatePet_Body",
           },
           "zodSchemaByName": {
-              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "Reason": "z.object({ reason: ReasonDetails })",
-              "ReasonDetails": "z.object({ details: z.string() })",
-              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough()",
+              "Reason": "z.object({ reason: ReasonDetails }).passthrough()",
+              "ReasonDetails": "z.object({ details: z.string() }).passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
               "updatePet_Body": "Pet.and(Reason)",
           },
       }
@@ -638,9 +638,9 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
           },
           "schemaByName": {},
           "zodSchemaByName": {
-              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
           },
       }
     `);
@@ -1116,12 +1116,12 @@ test("petstore.yaml", async () => {
           },
           "schemaByName": {},
           "zodSchemaByName": {
-              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial()",
-              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime({ offset: true }), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial()",
-              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() })",
-              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial()",
-              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial()",
+              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial().passthrough()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime({ offset: true }), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).partial().passthrough()",
           },
       }
     `);

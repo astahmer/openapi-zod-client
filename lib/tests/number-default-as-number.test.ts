@@ -43,7 +43,8 @@ test("number-default-cast", async () => {
           shouldBeFixed: z.number().default(20),
           isFine: z.number().default(30),
         })
-        .partial();
+        .partial()
+        .passthrough();
 
       export const schemas = {
         test1,

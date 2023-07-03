@@ -61,12 +61,12 @@ it("includes errors-responses", async () => {
           method: "get",
           path: "/example",
           requestFormat: "json",
-          response: z.object({ str: z.string(), nb: z.number() }),
+          response: z.object({ str: z.string(), nb: z.number() }).passthrough(),
           errors: [
             {
               status: 400,
               description: \`Bad request\`,
-              schema: z.object({ is400: z.boolean() }).partial(),
+              schema: z.object({ is400: z.boolean() }).partial().passthrough(),
             },
             {
               status: 500,
@@ -172,13 +172,15 @@ it("determines which status are considered errors-responses", async () => {
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
       const DeeplyNested = z.array(VeryDeeplyNested);
-      const Main = z.object({ str: z.string(), nb: z.number() });
-      const Nested = z.object({
-        nested_prop: z.boolean().optional(),
-        deeplyNested: DeeplyNested.optional(),
-        circularToMain: Main.optional(),
-        requiredProp: z.string(),
-      });
+      const Main = z.object({ str: z.string(), nb: z.number() }).passthrough();
+      const Nested = z
+        .object({
+          nested_prop: z.boolean().optional(),
+          deeplyNested: DeeplyNested.optional(),
+          circularToMain: Main.optional(),
+          requiredProp: z.string(),
+        })
+        .passthrough();
 
       export const schemas = {
         VeryDeeplyNested,
@@ -192,12 +194,15 @@ it("determines which status are considered errors-responses", async () => {
           method: "get",
           path: "/example",
           requestFormat: "json",
-          response: z.object({ str: z.string(), nb: z.number() }),
+          response: z.object({ str: z.string(), nb: z.number() }).passthrough(),
           errors: [
             {
               status: 400,
               description: \`Bad request\`,
-              schema: z.object({ is400: z.boolean(), nested: Nested }).partial(),
+              schema: z
+                .object({ is400: z.boolean(), nested: Nested })
+                .partial()
+                .passthrough(),
             },
             {
               status: 500,
@@ -230,13 +235,15 @@ it("determines which status are considered errors-responses", async () => {
 
       const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
       const DeeplyNested = z.array(VeryDeeplyNested);
-      const Main = z.object({ str: z.string(), nb: z.number() });
-      const Nested = z.object({
-        nested_prop: z.boolean().optional(),
-        deeplyNested: DeeplyNested.optional(),
-        circularToMain: Main.optional(),
-        requiredProp: z.string(),
-      });
+      const Main = z.object({ str: z.string(), nb: z.number() }).passthrough();
+      const Nested = z
+        .object({
+          nested_prop: z.boolean().optional(),
+          deeplyNested: DeeplyNested.optional(),
+          circularToMain: Main.optional(),
+          requiredProp: z.string(),
+        })
+        .passthrough();
 
       export const schemas = {
         VeryDeeplyNested,
@@ -250,12 +257,15 @@ it("determines which status are considered errors-responses", async () => {
           method: "get",
           path: "/example",
           requestFormat: "json",
-          response: z.object({ str: z.string(), nb: z.number() }),
+          response: z.object({ str: z.string(), nb: z.number() }).passthrough(),
           errors: [
             {
               status: 400,
               description: \`Bad request\`,
-              schema: z.object({ is400: z.boolean(), nested: Nested }).partial(),
+              schema: z
+                .object({ is400: z.boolean(), nested: Nested })
+                .partial()
+                .passthrough(),
             },
             {
               status: 500,

@@ -104,10 +104,13 @@ test("array-default-values", async () => {
       import { z } from "zod";
 
       const array_object = z
-        .array(z.object({ foo: z.string() }).partial())
+        .array(z.object({ foo: z.string() }).partial().passthrough())
         .optional()
         .default([{ foo: "bar" }]);
-      const MyComponent = z.object({ id: z.number(), name: z.string() }).partial();
+      const MyComponent = z
+        .object({ id: z.number(), name: z.string() })
+        .partial()
+        .passthrough();
       const MyEnum = z.enum(["one", "two", "three"]);
 
       export const schemas = {
@@ -115,7 +118,7 @@ test("array-default-values", async () => {
         MyComponent,
         MyEnum,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "get",

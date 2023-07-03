@@ -19,7 +19,7 @@ test("ref-in-another-file", async () => {
                   "parameters": [],
                   "path": "/robots.txt",
                   "requestFormat": "json",
-                  "response": "z.object({ name: z.string(), completed: z.boolean() })",
+                  "response": "z.object({ name: z.string(), completed: z.boolean() }).passthrough()",
               },
           ],
           "issues": {

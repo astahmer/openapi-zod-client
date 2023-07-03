@@ -31,7 +31,10 @@ test("allOf-missing-and", async () => {
       "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
-      const test2 = z.object({ text2: z.string().min(5).max(10) }).partial();
+      const test2 = z
+        .object({ text2: z.string().min(5).max(10) })
+        .partial()
+        .passthrough();
 
       export const schemas = {
         test2,
@@ -42,7 +45,10 @@ test("allOf-missing-and", async () => {
           method: "put",
           path: "/pet",
           requestFormat: "json",
-          response: z.object({ text2: z.string().min(5).max(10) }).partial(),
+          response: z
+            .object({ text2: z.string().min(5).max(10) })
+            .partial()
+            .passthrough(),
         },
       ]);
 

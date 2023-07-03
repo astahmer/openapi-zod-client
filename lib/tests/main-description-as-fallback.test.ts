@@ -49,7 +49,7 @@ it("use main-description-as-fallback", async () => {
           path: "/example",
           description: \`get example\`,
           requestFormat: "json",
-          response: z.object({ str: z.string(), nb: z.number() }),
+          response: z.object({ str: z.string(), nb: z.number() }).passthrough(),
         },
       ]);
 
