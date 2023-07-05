@@ -736,7 +736,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number()),
+              response: z.record(z.number().int()),
             },
             {
               method: "post",
@@ -1238,7 +1238,7 @@ describe("generateZodClientFromOpenAPI", () => {
               alias: "getInventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number()),
+              response: z.record(z.number().int()),
             },
             {
               method: "post",
@@ -1741,7 +1741,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number()),
+              response: z.record(z.number().int()),
             },
             {
               method: "post",
@@ -1955,8 +1955,8 @@ describe("generateZodClientFromOpenAPI", () => {
             return new Zodios(baseUrl, endpoints, options);
           }
           "
-        `)
-    })
+        `);
+    });
 
     test("withAlias as a custom function", async () => {
         const prettyOutput = await generateZodClientFromOpenAPI({
@@ -2248,7 +2248,7 @@ describe("generateZodClientFromOpenAPI", () => {
               alias: "getInventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number()),
+              response: z.record(z.number().int()),
             },
             {
               method: "post",
@@ -2753,7 +2753,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number()),
+              response: z.record(z.number().int()),
             },
             {
               method: "post",
@@ -3245,7 +3245,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number()),
+              response: z.record(z.number().int()),
             },
             {
               method: "post",
