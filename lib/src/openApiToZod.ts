@@ -109,20 +109,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         const types = schema.anyOf
             .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
-            .map((type) => {
-                let isObject = true;
-
-                if ("type" in type.schema) {
-                    if (Array.isArray(type.schema.type)) {
-                        isObject = false;
-                    } else {
-                        const schemaType = type.schema.type.toLowerCase() as NonNullable<typeof schema.type>;
-                        isObject = !isPrimitiveType(schemaType);
-                    }
-                }
-
-                return type.toString();
-            })
+            .map((type) => type.toString())
             .join(", ");
 
         return code.assign(`z.union([${types}])`);
