@@ -646,6 +646,99 @@ test("getZodiosEndpointDefinitionList /pet/findXXX", () => {
     `);
 });
 
+test("getZodiosEndpointDefinitionList /pet/{petId}:action-name", () => {
+    expect(
+        getZodiosEndpointDefinitionList({
+            ...baseDoc,
+            components: { schemas: { Pet: schemas.Pet, Category: schemas.Category, Tag: schemas.Tag } },
+            paths: {
+                "/pet/{petId}:action-name": {
+                    "get": {
+                        "tags": [
+                            "pet"
+                        ],
+                        "summary": "Runs action for a pet",
+                        "description": "Runs action for a pet",
+                        "operationId": "petByIdAction",
+                        "parameters": [
+                            {
+                                "name": "petId",
+                                "in": "path",
+                                "description": "ID of pet to return",
+                                "required": true,
+                                "schema": {
+                                    "type": "integer",
+                                    "format": "int64"
+                                }
+                            }
+                        ],
+                        "responses": {
+                            "200": {
+                                "description": "successful action call",
+                                "content": {
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/Pet"
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "security": []
+                    },
+                }
+            },
+        })
+    ).toMatchInlineSnapshot(`
+      {
+          "deepDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
+          },
+          "endpoints": [
+              {
+                  "description": "Runs action for a pet",
+                  "errors": [],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/pet/:petId:action-name",
+                  "requestFormat": "json",
+                  "response": "Pet",
+              },
+          ],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
+          "refsDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
+          },
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
+          "schemaByName": {},
+          "zodSchemaByName": {
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+          },
+      }
+    `);
+});
+
 test("petstore.yaml", async () => {
     const openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
     const result = getZodiosEndpointDefinitionList(openApiDoc);
