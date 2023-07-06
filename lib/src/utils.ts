@@ -42,6 +42,7 @@ export const pathParamToVariableName = (name: string) => {
 
 const matcherRegex = /{(\b\w+(?:-\w+)*\b)}/g;
 export const replaceHyphenatedPath = (path: string) => {
+    path = path.replace(":", encodeURIComponent(":"))
     const matches = path.match(matcherRegex);
     if (matches === null) {
         return path.replaceAll(matcherRegex, ":$1");

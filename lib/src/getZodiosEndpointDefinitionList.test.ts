@@ -709,7 +709,7 @@ test("getZodiosEndpointDefinitionList /pet/{petId}:action-name", () => {
                           "type": "Path",
                       },
                   ],
-                  "path": "/pet/:petId:action-name",
+                  "path": "/pet/:petId%3Aaction-name",
                   "requestFormat": "json",
                   "response": "Pet",
               },
