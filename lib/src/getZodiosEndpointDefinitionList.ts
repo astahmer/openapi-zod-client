@@ -106,7 +106,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             ctx.zodSchemaByName[formatedName] = result;
             ctx.schemaByName[result] = formatedName;
-            return formatedName;
+            return result;
         }
 
         // result is a reference to another schema
