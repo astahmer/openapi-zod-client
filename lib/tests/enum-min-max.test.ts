@@ -20,7 +20,8 @@ test("enum-min-max", async () => {
                             schema: {
                                 type: "integer",
                                 enum: [1, -2, 3],
-                                min: 4,
+                                minimum: 4,
+                                maximum: 10,
                             },
                         },
                         {

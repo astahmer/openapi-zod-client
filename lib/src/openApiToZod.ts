@@ -358,7 +358,12 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
 const getZodChainableNumberValidations = (schema: SchemaObject) => {
     const validations: string[] = [];
 
-    if (schema.type === "integer" && !schema.enum) {
+    // none of the chains are valid for enums
+    if (schema.enum) {
+        return "";
+    }
+
+    if (schema.type === "integer") {
         validations.push("int()");
     }
 
