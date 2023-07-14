@@ -1,5 +1,13 @@
 # openapi-zod-client
 
+## 1.9.0
+
+### Minor Changes
+
+-   [#163](https://github.com/astahmer/openapi-zod-client/pull/163) [`0270e4c`](https://github.com/astahmer/openapi-zod-client/commit/0270e4c50b3559ec284a0b75f338c76fdc006e48) Thanks [@WickyNilliams](https://github.com/WickyNilliams)! - treat additionalProperties as defaulting to true, allowing passthrough() unless explicitly opting-out
+
+-   [#174](https://github.com/astahmer/openapi-zod-client/pull/174) [`b12151d`](https://github.com/astahmer/openapi-zod-client/commit/b12151d92b0998566ca450d38e647b42401e2b79) Thanks [@imballinst](https://github.com/imballinst)! - feat: add endpointDefinitionRefiner to TemplateContext options
+
 ## 1.8.0
 
 ### Minor Changes
