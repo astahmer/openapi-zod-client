@@ -199,7 +199,14 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         if (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length > 0) {
             return code.assign(
-                `z.record(${getZodSchema({ schema: schema.additionalProperties, ctx, meta, options }).toString()})`
+                `z.record(${(
+                    getZodSchema({ schema: schema.additionalProperties, ctx, meta, options }) +
+                    getZodChain({
+                        schema: schema.additionalProperties as SchemaObject,
+                        meta: { ...meta, isRequired: true },
+                        options,
+                    })
+                ).toString()})`
             );
         }
 
