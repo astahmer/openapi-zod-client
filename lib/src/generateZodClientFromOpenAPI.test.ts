@@ -3462,7 +3462,7 @@ describe.only("generateZodClientFromOpenAPI", () => {
         `);
     });
 
-    test.only("without options", async () => {
+    test.only("with tag-file groupStrategy", async () => {
         const prettyOutput = await generateZodClientFromOpenAPI({
             openApiDoc,
             disableWriteToFile: true,
