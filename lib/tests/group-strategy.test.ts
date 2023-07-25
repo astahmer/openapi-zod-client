@@ -550,7 +550,7 @@ test("group-strategy", async () => {
     `);
 });
 
-test.only("group-strategy with complex schemas + split files", async () => {
+test("group-strategy with complex schemas + split files", async () => {
     const openApiDoc: OpenAPIObject = {
         openapi: "3.0.3",
         info: { version: "1", title: "Example API" },
