@@ -1,5 +1,19 @@
 # openapi-zod-client
 
+## 1.10.0
+
+### Minor Changes
+
+-   [#183](https://github.com/astahmer/openapi-zod-client/pull/183) [`c9118af`](https://github.com/astahmer/openapi-zod-client/commit/c9118af8bfc05e42daa1b3c50c63c394f73d74bf) Thanks [@simonbinwang](https://github.com/simonbinwang)! - Add nullable support for additional properties
+
+-   [#189](https://github.com/astahmer/openapi-zod-client/pull/189) [`d897485`](https://github.com/astahmer/openapi-zod-client/commit/d897485021271734c54925da53e829689ae06838) Thanks [@jbach](https://github.com/jbach)! - handle $ref in responses object
+
+-   [#190](https://github.com/astahmer/openapi-zod-client/pull/190) [`e23b42d`](https://github.com/astahmer/openapi-zod-client/commit/e23b42de097f2fcf4b83de57a43495779946e449) Thanks [@imballinst](https://github.com/imballinst)! - feat: reduce dependency count threshold for a type to be imported from common file to just 1
+
+### Patch Changes
+
+-   [#184](https://github.com/astahmer/openapi-zod-client/pull/184) [`44a5587`](https://github.com/astahmer/openapi-zod-client/commit/44a558767e85871b8116038fed3df60c46baf6d1) Thanks [@imballinst](https://github.com/imballinst)! - fix: fix order of schemas when using option groupStrategy: tag-file
+
 ## 1.9.0
 
 ### Minor Changes
