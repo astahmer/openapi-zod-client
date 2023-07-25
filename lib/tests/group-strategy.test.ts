@@ -1,4 +1,5 @@
-import { OpenAPIObject } from "openapi3-ts";
+import { OpenAPIObject, SchemaObject } from "openapi3-ts";
+import SwaggerParser from "@apidevtools/swagger-parser";
 import { expect, test } from "vitest";
 import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "../src";
 
@@ -550,6 +551,554 @@ test("group-strategy", async () => {
     `);
 });
 
+test("group-strategy: tag-file with modified petstore schema", async () => {
+    const openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
+    // Add `Pet` object into `Order`.
+    const orderObject = openApiDoc.components!.schemas!.Order as SchemaObject;
+    orderObject!.properties!.pet = {
+        $ref: "#/components/schemas/Pet",
+    };
+
+    const result = await generateZodClientFromOpenAPI({
+        openApiDoc,
+        disableWriteToFile: true,
+        options: { groupStrategy: "tag-file" },
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+          "__common": "import { z } from "zod";
+
+      export const Category = z
+        .object({ id: z.number().int(), name: z.string() })
+        .partial()
+        .passthrough();
+      export const Tag = z
+        .object({ id: z.number().int(), name: z.string() })
+        .partial()
+        .passthrough();
+      export const Pet = z
+        .object({
+          id: z.number().int().optional(),
+          name: z.string(),
+          category: Category.optional(),
+          photoUrls: z.array(z.string()),
+          tags: z.array(Tag).optional(),
+          status: z.enum(["available", "pending", "sold"]).optional(),
+        })
+        .passthrough();
+      ",
+          "__index": "export { PetApi } from "./pet";
+      export { StoreApi } from "./store";
+      export { UserApi } from "./user";
+      ",
+          "pet": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
+      import { z } from "zod";
+      
+      import { Pet } from "./common";
+      import { Category } from "./common";
+      import { Tag } from "./common";
+      
+      const ApiResponse = z
+        .object({ code: z.number().int(), type: z.string(), message: z.string() })
+        .partial()
+        .passthrough();
+      
+      export const schemas = {
+        ApiResponse,
+      };
+      
+      const endpoints = makeApi([
+        {
+          method: "put",
+          path: "/pet",
+          description: \`Update an existing pet by Id\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "body",
+              description: \`Update an existent pet in the store\`,
+              type: "Body",
+              schema: Pet,
+            },
+          ],
+          response: Pet,
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid ID supplied\`,
+              schema: z.void(),
+            },
+            {
+              status: 404,
+              description: \`Pet not found\`,
+              schema: z.void(),
+            },
+            {
+              status: 405,
+              description: \`Validation exception\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "post",
+          path: "/pet",
+          description: \`Add a new pet to the store\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "body",
+              description: \`Create a new pet in the store\`,
+              type: "Body",
+              schema: Pet,
+            },
+          ],
+          response: Pet,
+          errors: [
+            {
+              status: 405,
+              description: \`Invalid input\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "get",
+          path: "/pet/findByStatus",
+          description: \`Multiple status values can be provided with comma separated strings\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "status",
+              type: "Query",
+              schema: z
+                .enum(["available", "pending", "sold"])
+                .optional()
+                .default("available"),
+            },
+          ],
+          response: z.array(Pet),
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid status value\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "get",
+          path: "/pet/findByTags",
+          description: \`Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "tags",
+              type: "Query",
+              schema: z.array(z.string()).optional(),
+            },
+          ],
+          response: z.array(Pet),
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid tag value\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "get",
+          path: "/pet/:petId",
+          description: \`Returns a single pet\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "petId",
+              type: "Path",
+              schema: z.number().int(),
+            },
+          ],
+          response: Pet,
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid ID supplied\`,
+              schema: z.void(),
+            },
+            {
+              status: 404,
+              description: \`Pet not found\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "post",
+          path: "/pet/:petId",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "petId",
+              type: "Path",
+              schema: z.number().int(),
+            },
+            {
+              name: "name",
+              type: "Query",
+              schema: z.string().optional(),
+            },
+            {
+              name: "status",
+              type: "Query",
+              schema: z.string().optional(),
+            },
+          ],
+          response: z.void(),
+          errors: [
+            {
+              status: 405,
+              description: \`Invalid input\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "delete",
+          path: "/pet/:petId",
+          description: \`delete a pet\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "api_key",
+              type: "Header",
+              schema: z.string().optional(),
+            },
+            {
+              name: "petId",
+              type: "Path",
+              schema: z.number().int(),
+            },
+          ],
+          response: z.void(),
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid pet value\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "post",
+          path: "/pet/:petId/uploadImage",
+          requestFormat: "binary",
+          parameters: [
+            {
+              name: "body",
+              type: "Body",
+              schema: z.instanceof(File),
+            },
+            {
+              name: "petId",
+              type: "Path",
+              schema: z.number().int(),
+            },
+            {
+              name: "additionalMetadata",
+              type: "Query",
+              schema: z.string().optional(),
+            },
+          ],
+          response: ApiResponse,
+        },
+      ]);
+      
+      export const PetApi = new Zodios(endpoints);
+      
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
+      }
+      ",
+          "store": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
+      import { z } from "zod";
+      
+      import { Pet } from "./common";
+      import { Category } from "./common";
+      import { Tag } from "./common";
+      
+      const Order = z
+        .object({
+          id: z.number().int(),
+          petId: z.number().int(),
+          quantity: z.number().int(),
+          shipDate: z.string().datetime({ offset: true }),
+          status: z.enum(["placed", "approved", "delivered"]),
+          complete: z.boolean(),
+          pet: Pet,
+        })
+        .partial()
+        .passthrough();
+      
+      export const schemas = {
+        Order,
+      };
+      
+      const endpoints = makeApi([
+        {
+          method: "get",
+          path: "/store/inventory",
+          description: \`Returns a map of status codes to quantities\`,
+          requestFormat: "json",
+          response: z.record(z.number().int()),
+        },
+        {
+          method: "post",
+          path: "/store/order",
+          description: \`Place a new order in the store\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "body",
+              type: "Body",
+              schema: Order,
+            },
+          ],
+          response: Order,
+          errors: [
+            {
+              status: 405,
+              description: \`Invalid input\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "get",
+          path: "/store/order/:orderId",
+          description: \`For valid response try integer IDs with value &lt;&#x3D; 5 or &gt; 10. Other values will generate exceptions.\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "orderId",
+              type: "Path",
+              schema: z.number().int(),
+            },
+          ],
+          response: Order,
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid ID supplied\`,
+              schema: z.void(),
+            },
+            {
+              status: 404,
+              description: \`Order not found\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "delete",
+          path: "/store/order/:orderId",
+          description: \`For valid response try integer IDs with value &lt; 1000. Anything above 1000 or nonintegers will generate API errors\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "orderId",
+              type: "Path",
+              schema: z.number().int(),
+            },
+          ],
+          response: z.void(),
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid ID supplied\`,
+              schema: z.void(),
+            },
+            {
+              status: 404,
+              description: \`Order not found\`,
+              schema: z.void(),
+            },
+          ],
+        },
+      ]);
+      
+      export const StoreApi = new Zodios(endpoints);
+      
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
+      }
+      ",
+          "user": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
+      import { z } from "zod";
+      
+      const User = z
+        .object({
+          id: z.number().int(),
+          username: z.string(),
+          firstName: z.string(),
+          lastName: z.string(),
+          email: z.string(),
+          password: z.string(),
+          phone: z.string(),
+          userStatus: z.number().int(),
+        })
+        .partial()
+        .passthrough();
+      
+      export const schemas = {
+        User,
+      };
+      
+      const endpoints = makeApi([
+        {
+          method: "post",
+          path: "/user",
+          description: \`This can only be done by the logged in user.\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "body",
+              description: \`Created user object\`,
+              type: "Body",
+              schema: User,
+            },
+          ],
+          response: z.void(),
+        },
+        {
+          method: "post",
+          path: "/user/createWithList",
+          description: \`Creates list of users with given input array\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "body",
+              type: "Body",
+              schema: z.array(User),
+            },
+          ],
+          response: User,
+        },
+        {
+          method: "get",
+          path: "/user/login",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "username",
+              type: "Query",
+              schema: z.string().optional(),
+            },
+            {
+              name: "password",
+              type: "Query",
+              schema: z.string().optional(),
+            },
+          ],
+          response: z.string(),
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid username/password supplied\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "get",
+          path: "/user/logout",
+          requestFormat: "json",
+          response: z.void(),
+        },
+        {
+          method: "get",
+          path: "/user/:username",
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "username",
+              type: "Path",
+              schema: z.string(),
+            },
+          ],
+          response: User,
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid username supplied\`,
+              schema: z.void(),
+            },
+            {
+              status: 404,
+              description: \`User not found\`,
+              schema: z.void(),
+            },
+          ],
+        },
+        {
+          method: "put",
+          path: "/user/:username",
+          description: \`This can only be done by the logged in user.\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "body",
+              description: \`Update an existent user in the store\`,
+              type: "Body",
+              schema: User,
+            },
+            {
+              name: "username",
+              type: "Path",
+              schema: z.string(),
+            },
+          ],
+          response: z.void(),
+        },
+        {
+          method: "delete",
+          path: "/user/:username",
+          description: \`This can only be done by the logged in user.\`,
+          requestFormat: "json",
+          parameters: [
+            {
+              name: "username",
+              type: "Path",
+              schema: z.string(),
+            },
+          ],
+          response: z.void(),
+          errors: [
+            {
+              status: 400,
+              description: \`Invalid username supplied\`,
+              schema: z.void(),
+            },
+            {
+              status: 404,
+              description: \`User not found\`,
+              schema: z.void(),
+            },
+          ],
+        },
+      ]);
+      
+      export const UserApi = new Zodios(endpoints);
+      
+      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, endpoints, options);
+      }
+      ",
+      }
+    `);
+});
+
 test("group-strategy with complex schemas + split files", async () => {
     const openApiDoc: OpenAPIObject = {
         openapi: "3.0.3",
@@ -695,27 +1244,12 @@ test("group-strategy with complex schemas + split files", async () => {
                   },
               ],
               "imports": {
+                  "Country": "common",
+                  "Store": "common",
                   "User": "common",
               },
-              "schemas": {
-                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial().passthrough())",
-                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial().passthrough())",
-              },
-              "types": {
-                  "Country": "type Country = Partial<{
-          id: number;
-          name: string;
-          code: string;
-          store_list: Array<Store>;
-      }>;",
-                  "Store": "type Store = Partial<{
-          id: number;
-          name: string;
-          address: string;
-          country: Country;
-          owner: User;
-      }>;",
-              },
+              "schemas": {},
+              "types": {},
           },
           "pet": {
               "endpoints": [
@@ -786,27 +1320,12 @@ test("group-strategy with complex schemas + split files", async () => {
                   },
               ],
               "imports": {
+                  "Country": "common",
+                  "Store": "common",
                   "User": "common",
               },
-              "schemas": {
-                  "Country": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), code: z.string(), store_list: z.array(Store) }).partial().passthrough())",
-                  "Store": "z.lazy(() => z.object({ id: z.number().int(), name: z.string(), address: z.string(), country: Country, owner: User }).partial().passthrough())",
-              },
-              "types": {
-                  "Country": "type Country = Partial<{
-          id: number;
-          name: string;
-          code: string;
-          store_list: Array<Store>;
-      }>;",
-                  "Store": "type Store = Partial<{
-          id: number;
-          name: string;
-          address: string;
-          country: Country;
-          owner: User;
-      }>;",
-              },
+              "schemas": {},
+              "types": {},
           },
           "user": {
               "endpoints": [
@@ -849,50 +1368,9 @@ test("group-strategy with complex schemas + split files", async () => {
           "Default": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
+      import { Country } from "./common";
+      import { Store } from "./common";
       import { User } from "./common";
-
-      type Country = Partial<{
-        id: number;
-        name: string;
-        code: string;
-        store_list: Array<Store>;
-      }>;
-      type Store = Partial<{
-        id: number;
-        name: string;
-        address: string;
-        country: Country;
-        owner: User;
-      }>;
-
-      const Country: z.ZodType<Country> = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            name: z.string(),
-            code: z.string(),
-            store_list: z.array(Store),
-          })
-          .partial()
-          .passthrough()
-      );
-      const Store: z.ZodType<Store> = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            name: z.string(),
-            address: z.string(),
-            country: Country,
-            owner: User,
-          })
-          .partial()
-          .passthrough()
-      );
-
-      export const schemas = {
-        Country,
-        Store,
-      };
 
       const endpoints = makeApi([
         {
@@ -918,6 +1396,19 @@ test("group-strategy with complex schemas + split files", async () => {
         email: string;
         friends: Array<User>;
       }>;
+      export type Country = Partial<{
+        id: number;
+        name: string;
+        code: string;
+        store_list: Array<Store>;
+      }>;
+      export type Store = Partial<{
+        id: number;
+        name: string;
+        address: string;
+        country: Country;
+        owner: User;
+      }>;
 
       export const User = z.lazy(() =>
         z
@@ -927,6 +1418,29 @@ test("group-strategy with complex schemas + split files", async () => {
             lastname: z.string(),
             email: z.string(),
             friends: z.array(User),
+          })
+          .partial()
+          .passthrough()
+      );
+      export const Country = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            name: z.string(),
+            code: z.string(),
+            store_list: z.array(Store),
+          })
+          .partial()
+          .passthrough()
+      );
+      export const Store = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            name: z.string(),
+            address: z.string(),
+            country: Country,
+            owner: User,
           })
           .partial()
           .passthrough()
@@ -987,50 +1501,9 @@ test("group-strategy with complex schemas + split files", async () => {
           "store": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
+      import { Store } from "./common";
+      import { Country } from "./common";
       import { User } from "./common";
-
-      type Store = Partial<{
-        id: number;
-        name: string;
-        address: string;
-        country: Country;
-        owner: User;
-      }>;
-      type Country = Partial<{
-        id: number;
-        name: string;
-        code: string;
-        store_list: Array<Store>;
-      }>;
-
-      const Country: z.ZodType<Country> = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            name: z.string(),
-            code: z.string(),
-            store_list: z.array(Store),
-          })
-          .partial()
-          .passthrough()
-      );
-      const Store: z.ZodType<Store> = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            name: z.string(),
-            address: z.string(),
-            country: Country,
-            owner: User,
-          })
-          .partial()
-          .passthrough()
-      );
-
-      export const schemas = {
-        Country,
-        Store,
-      };
 
       const endpoints = makeApi([
         {
