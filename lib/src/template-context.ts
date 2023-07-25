@@ -175,7 +175,7 @@ export const getZodClientTemplateContext = (
             const groupTypes = {} as Record<string, string>;
             Object.entries(group.schemas).forEach(([name, schema]) => {
                 const count = dependenciesCount.get(name) ?? 0;
-                if (count > 1) {
+                if (count >= 1) {
                     group.imports![name] = "common";
                     commonSchemaNames.add(name);
                 } else {
