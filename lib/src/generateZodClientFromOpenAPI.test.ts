@@ -2970,7 +2970,7 @@ describe("generateZodClientFromOpenAPI", () => {
         `);
     });
 
-    test("with tag-file option", async () => {
+    test("without default values", async () => {
         const prettyOutput = await generateZodClientFromOpenAPI({
             openApiDoc,
             disableWriteToFile: true,
