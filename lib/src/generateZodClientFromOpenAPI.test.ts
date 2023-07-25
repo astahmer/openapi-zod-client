@@ -463,7 +463,7 @@ test("getZodClientTemplateContext", async () => {
     `);
 });
 
-describe.only("generateZodClientFromOpenAPI", () => {
+describe("generateZodClientFromOpenAPI", () => {
     test("without options", async () => {
         const prettyOutput = await generateZodClientFromOpenAPI({ openApiDoc, disableWriteToFile: true });
         expect(prettyOutput).toMatchInlineSnapshot(`
@@ -3462,7 +3462,7 @@ describe.only("generateZodClientFromOpenAPI", () => {
         `);
     });
 
-    test.only("with tag-file groupStrategy", async () => {
+    test("with tag-file groupStrategy", async () => {
         const prettyOutput = await generateZodClientFromOpenAPI({
             openApiDoc,
             disableWriteToFile: true,
@@ -3496,9 +3496,9 @@ describe.only("generateZodClientFromOpenAPI", () => {
           .passthrough();
 
         export const schemas = {
-          Pet,
           Category,
           Tag,
+          Pet,
           ApiResponse,
         };
 

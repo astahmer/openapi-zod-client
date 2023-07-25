@@ -187,11 +187,11 @@ export const getZodClientTemplateContext = (
                 }
             });
 
-            group.schemas = sortObjKeysFromArray(groupSchemas, schemaOrderedByDependencies);
+            group.schemas = sortObjKeysFromArray(groupSchemas, getPureSchemaNames(schemaOrderedByDependencies));
             group.types = groupTypes;
         });
         data.commonSchemaNames = new Set(
-            sortListFromRefArray(Array.from(commonSchemaNames), schemaOrderedByDependencies)
+            sortListFromRefArray(Array.from(commonSchemaNames), getPureSchemaNames(schemaOrderedByDependencies))
         );
     }
 
@@ -215,6 +215,12 @@ const makeTemplateContext = (): TemplateContext => {
 
 const originalPathParam = /:(\w+)/g;
 const getOriginalPathWithBrackets = (path: string) => path.replaceAll(originalPathParam, "{$1}");
+// Example full schema name is like: #/components/schemas/Category.
+// We only want to get the "Category".
+//
+// This is because when using `sortObjKeysFromArray`, the string array needs to be exactly the same
+// like the object keys. Otherwise, the object keys won't be re-ordered.
+const getPureSchemaNames = (fullSchemaNames: string[]) => fullSchemaNames.map((name) => name.split("/").at(-1)!);
 
 export type TemplateContext = {
     schemas: Record<string, string>;

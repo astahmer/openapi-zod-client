@@ -550,7 +550,7 @@ test("group-strategy", async () => {
     `);
 });
 
-test("group-strategy with complex schemas + split files", async () => {
+test.only("group-strategy with complex schemas + split files", async () => {
     const openApiDoc: OpenAPIObject = {
         openapi: "3.0.3",
         info: { version: "1", title: "Example API" },
@@ -1003,6 +1003,17 @@ test("group-strategy with complex schemas + split files", async () => {
         store_list: Array<Store>;
       }>;
 
+      const Country: z.ZodType<Country> = z.lazy(() =>
+        z
+          .object({
+            id: z.number().int(),
+            name: z.string(),
+            code: z.string(),
+            store_list: z.array(Store),
+          })
+          .partial()
+          .passthrough()
+      );
       const Store: z.ZodType<Store> = z.lazy(() =>
         z
           .object({
@@ -1015,21 +1026,10 @@ test("group-strategy with complex schemas + split files", async () => {
           .partial()
           .passthrough()
       );
-      const Country: z.ZodType<Country> = z.lazy(() =>
-        z
-          .object({
-            id: z.number().int(),
-            name: z.string(),
-            code: z.string(),
-            store_list: z.array(Store),
-          })
-          .partial()
-          .passthrough()
-      );
 
       export const schemas = {
-        Store,
         Country,
+        Store,
       };
 
       const endpoints = makeApi([
