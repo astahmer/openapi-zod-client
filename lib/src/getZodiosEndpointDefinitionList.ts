@@ -281,7 +281,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             }
 
             for (const statusCode in operation.responses) {
-                const responseItem = operation.responses[statusCode] as ResponseObject;
+                const responseItem = (
+                    isReferenceObject(operation.responses[statusCode]) ? ctx.resolver.getSchemaByRef(operation.responses[statusCode].$ref) : operation.responses[statusCode]
+                ) as ResponseObject;
 
                 const mediaTypes = Object.keys(responseItem.content ?? {});
                 const matchingMediaType = mediaTypes.find(isMediaTypeAllowed);
