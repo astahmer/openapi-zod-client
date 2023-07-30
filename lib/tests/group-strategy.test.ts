@@ -1396,18 +1396,18 @@ test("group-strategy with complex schemas + split files", async () => {
         email: string;
         friends: Array<User>;
       }>;
-      export type Country = Partial<{
-        id: number;
-        name: string;
-        code: string;
-        store_list: Array<Store>;
-      }>;
       export type Store = Partial<{
         id: number;
         name: string;
         address: string;
         country: Country;
         owner: User;
+      }>;
+      export type Country = Partial<{
+        id: number;
+        name: string;
+        code: string;
+        store_list: Array<Store>;
       }>;
 
       export const User = z.lazy(() =>

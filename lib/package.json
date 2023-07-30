@@ -29,7 +29,7 @@
         "handlebars": "^4.7.7",
         "openapi-types": "^12.0.2",
         "openapi3-ts": "3.1.0",
-        "pastable": "^2.0.13",
+        "pastable": "^2.2.0",
         "prettier": "^2.7.1",
         "tanu": "^0.1.13",
         "ts-pattern": "^5.0.1",
