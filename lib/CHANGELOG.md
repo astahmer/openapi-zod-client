@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.10.1
+
+### Patch Changes
+
+-   [`ed41d1c`](https://github.com/astahmer/openapi-zod-client/commit/ed41d1cb7d482cc3e8bda6739e57b751d05d55aa) Thanks [@astahmer](https://github.com/astahmer)! - update pastable to a version with license
+
 ## 1.10.0
 
 ### Minor Changes
