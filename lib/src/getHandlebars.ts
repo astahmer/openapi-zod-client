@@ -21,6 +21,18 @@ export const getHandlebars = () => {
         // @ts-expect-error
         return options.inverse(this);
     });
+    instance.registerHelper("toCamelCase", function (input: string) {
+        const words = input.split(/[\s_-]/);
+        return words
+            .map((word, index) => {
+                if (index === 0) {
+                    return word.toLowerCase();
+                }
+
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            })
+            .join("");
+    });
 
     return instance;
 };
