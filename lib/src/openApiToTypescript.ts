@@ -115,16 +115,18 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         if (schemaType && isPrimitiveType(schemaType)) {
             if (schema.enum) {
                 if (schemaType !== "string" && schema.enum.some((e) => typeof e === "string")) {
-                    return t.never();
+                    return schema.nullable ? t.union([t.never(), t.reference("null")]) : t.never();
                 }
 
-                return t.union(schema.enum);
+                return schema.nullable ? t.union([...schema.enum, t.reference("null")]) : t.union(schema.enum);
             }
 
-            if (schemaType === "string") return t.string();
-            if (schemaType === "boolean") return t.boolean();
-            if (schemaType === "number" || schemaType === "integer") return t.number();
-            if (schemaType === "null") return t.reference("null");
+            if (schemaType === "string")
+                return schema.nullable ? t.union([t.string(), t.reference("null")]) : t.string();
+            if (schemaType === "boolean")
+                return schema.nullable ? t.union([t.boolean(), t.reference("null")]) : t.boolean();
+            if (schemaType === "number" || schemaType === "integer")
+                return schema.nullable ? t.union([t.number(), t.reference("null")]) : t.number();
         }
 
         if (schemaType === "array") {
@@ -135,10 +137,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     arrayOfType = t.reference(arrayOfType);
                 }
 
-                return t.array(arrayOfType);
+                return schema.nullable ? t.union([t.array(arrayOfType), t.reference("null")]) : t.array(arrayOfType);
             }
 
-            return t.array(t.any());
+            return schema.nullable ? t.union([t.array(t.any()), t.reference("null")]) : t.array(t.any());
         }
 
         if (schemaType === "object" || schema.properties || schema.additionalProperties) {
@@ -229,7 +231,7 @@ type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
 
 const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as const;
-type PrimitiveType = typeof primitiveTypeList[number];
+type PrimitiveType = (typeof primitiveTypeList)[number];
 
 const wrapTypeIfInline = ({
     isInline,
