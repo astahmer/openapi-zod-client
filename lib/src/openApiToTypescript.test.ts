@@ -275,6 +275,36 @@ test("getSchemaAsTsString", () => {
         '""aaa" | "bbb" | "ccc""'
     );
     expect(getSchemaAsTsString({ type: "number", enum: [1, 2, 3] })).toMatchInlineSnapshot('"1 | 2 | 3"');
+
+    expect(
+        getSchemaAsTsString(
+            {
+                type: "object",
+                required: ["propNumber", "propString", "propBoolean"],
+                properties: {
+                    propNumber: {
+                        type: ["number"],
+                        nullable: true,
+                    },
+                    propString: {
+                        type: ["string"],
+                        nullable: true,
+                    },
+                    propBoolean: {
+                        type: ["boolean"],
+                        nullable: true,
+                    },
+                },
+            },
+            { name: "Category" }
+        )
+    ).toMatchInlineSnapshot(`
+      "export type Category = {
+    propNumber: number | null;
+    propString: string | null;
+    propBoolean: boolean | null;
+      };"
+    `);
 });
 
 describe("getSchemaAsTsString with context", () => {
@@ -348,12 +378,12 @@ describe("getSchemaAsTsString with context", () => {
         expect(
             printTs(getTypescriptFromOpenApi({ schema: schemas["Root2"]!, meta: { name: "Root2" }, ctx }) as ts.Node)
         ).toMatchInlineSnapshot(`
-              "export type Root2 = Partial<{
-                  str: string;
-                  nb: number;
-                  nested: Nested2;
-              }>;"
-            `);
+          "export type Root2 = Partial<{
+              str: string;
+              nb: number;
+              nested: Nested2;
+          }>;"
+        `);
     });
 
     test("with indirect recursive ref", async () => {
@@ -533,11 +563,11 @@ describe("getSchemaAsTsString with context", () => {
         }) as ts.Node;
 
         expect(printTs(result)).toMatchInlineSnapshot(`
-        "export type Root = Partial<{
-            user: User | Member;
-            users: Array<(User | Member) | Array<User | Member>>;
-            basic: number;
-        }>;"
-      `);
+          "export type Root = Partial<{
+              user: User | Member;
+              users: Array<(User | Member) | Array<User | Member>>;
+              basic: number;
+          }>;"
+        `);
     });
 });
