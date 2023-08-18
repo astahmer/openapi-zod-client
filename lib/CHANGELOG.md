@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.10.5
+
+### Patch Changes
+
+-   [#206](https://github.com/astahmer/openapi-zod-client/pull/206) [`9a25ee0`](https://github.com/astahmer/openapi-zod-client/commit/9a25ee0a79e40f4221ba3565d39cb08f25b2bdf3) Thanks [@eli0shin](https://github.com/eli0shin)! - Add --export-types option to generate types for all schemas
+
 ## 1.10.4
 
 ### Patch Changes
