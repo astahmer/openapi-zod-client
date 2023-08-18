@@ -74,13 +74,16 @@ export const getZodClientTemplateContext = (
                 const isDepCircular = depsGraphs.deepDependencyGraph[depRef]?.has(depRef);
 
                 if (!isDepCircular && !data.types[depSchemaName]) {
+                    const nodeSchema = result.resolver.getSchemaByRef(depRef);
                     const node = getTypescriptFromOpenApi({
-                        schema: result.resolver.getSchemaByRef(depRef),
+                        schema: nodeSchema,
                         ctx,
                         meta: { name: depSchemaName },
                     }) as ts.Node;
                     data.types[depSchemaName] = printTs(node).replace("export ", "");
-                    if (options?.shouldExportAllTypes) {
+                    // defining types for strings and using the `z.ZodType<string>` type for their schema
+                    // prevents consumers of the type from adding zod validations like `.min()` to the type
+                    if (options?.shouldExportAllTypes && nodeSchema.type === "object") {
                         data.emittedType[depSchemaName] = true;
                     }
                 }

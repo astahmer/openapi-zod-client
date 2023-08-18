@@ -613,6 +613,7 @@ const optionNameToCliOptionName = {
     isErrorStatus: "--error-expr",
     isMainResponseStatus: "--success-expr",
     shouldExportAllSchemas: "--export-schemas",
+    shouldExportAllTypes: "--export-types",
     isMediaTypeAllowed: "--media-type-expr",
     withImplicitRequiredProps: "--implicit-required",
     withDeprecatedEndpoints: "--with-deprecated",

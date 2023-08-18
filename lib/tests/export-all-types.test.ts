@@ -45,10 +45,34 @@ describe("export-all-types", () => {
             },
         } as SchemaObject;
 
+        const Title = {
+            type: "string",
+            minLength: 1,
+            maxLength: 30,
+        } as SchemaObject;
+
+        const Id = {
+            type: "number",
+        } as SchemaObject;
+
+        const Features = {
+            type: "array",
+            items: {
+                type: "string",
+            },
+            minItems: 1,
+        } as SchemaObject;
+
         const Author = {
             type: "object",
             properties: {
                 name: { nullable: true, oneOf: [{ type: "string", nullable: true }, { type: "number" }] },
+                title: {
+                    $ref: "#/components/schemas/Title",
+                },
+                id: {
+                    $ref: "#/components/schemas/Id",
+                },
                 mail: { type: "string" },
                 settings: { $ref: "#/components/schemas/Settings" },
             },
@@ -58,9 +82,12 @@ describe("export-all-types", () => {
             type: "object",
             properties: {
                 theme_color: { type: "string" },
+                features: {
+                    $ref: "#/components/schemas/Features",
+                },
             },
         } as SchemaObject;
-        const schemas = { Playlist, Song, Author, Settings };
+        const schemas = { Playlist, Song, Author, Settings, Title, Id, Features };
 
         const RootSchema = {
             type: "object",
@@ -76,11 +103,14 @@ describe("export-all-types", () => {
 
         expect(data).toEqual({
             schemas: {
-                Settings: "z.object({ theme_color: z.string() }).partial().passthrough()",
-                Author: "z.object({ name: z.union([z.string(), z.number()]).nullable(), mail: z.string(), settings: Settings }).partial().passthrough()",
+                Settings: "z.object({ theme_color: z.string(), features: Features.min(1) }).partial().passthrough()",
+                Author: "z.object({ name: z.union([z.string(), z.number()]).nullable(), title: Title.min(1).max(30), id: Id, mail: z.string(), settings: Settings }).partial().passthrough()",
+                Features: "z.array(z.string())",
                 Song: "z.object({ name: z.string(), duration: z.number() }).partial().passthrough()",
                 Playlist:
                     "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial().passthrough().and(Settings)",
+                Title: "z.string()",
+                Id: "z.number()",
             },
             endpoints: [
                 {
@@ -96,6 +126,8 @@ describe("export-all-types", () => {
             types: {
                 Author: `type Author = Partial<{
     name: (string | null) | number | null;
+    title: Title;
+    id: Id;
     mail: string;
     settings: Settings;
 }>;`,
@@ -106,11 +138,15 @@ describe("export-all-types", () => {
 }> & Settings;`,
                 Settings: `type Settings = Partial<{
     theme_color: string;
+    features: Features;
 }>;`,
                 Song: `type Song = Partial<{
     name: string;
     duration: number;
 }>;`,
+                Features: "type Features = Array<string>;",
+                Id: "type Id = number;",
+                Title: "type Title = string;",
             },
             circularTypeByName: {},
             endpointsGroups: {},
@@ -145,24 +181,35 @@ describe("export-all-types", () => {
             Settings;
           type Author = Partial<{
             name: (string | null) | number | null;
+            title: Title;
+            id: Id;
             mail: string;
             settings: Settings;
           }>;
+          type Title = string;
+          type Id = number;
           type Settings = Partial<{
             theme_color: string;
+            features: Features;
           }>;
+          type Features = Array<string>;
           type Song = Partial<{
             name: string;
             duration: number;
           }>;
 
+          const Title = z.string();
+          const Id = z.number();
+          const Features = z.array(z.string());
           const Settings: z.ZodType<Settings> = z
-            .object({ theme_color: z.string() })
+            .object({ theme_color: z.string(), features: Features.min(1) })
             .partial()
             .passthrough();
           const Author: z.ZodType<Author> = z
             .object({
               name: z.union([z.string(), z.number()]).nullable(),
+              title: Title.min(1).max(30),
+              id: Id,
               mail: z.string(),
               settings: Settings,
             })
@@ -179,6 +226,9 @@ describe("export-all-types", () => {
             .and(Settings);
 
           export const schemas = {
+            Title,
+            Id,
+            Features,
             Settings,
             Author,
             Song,
