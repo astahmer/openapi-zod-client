@@ -229,8 +229,24 @@ test("getSchemaAsTsString", () => {
         getSchemaAsTsString({ allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" })
     ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
 
-    expect(getSchemaAsTsString({ anyOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
-        '"(string | number) | Array<string | number>"'
+    expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"(string | number) | Array<string | number> | null"'
+    );
+    expect(getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"string | number | null"'
+    );
+    expect(
+        getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] }, { name: "StringOrNumber" })
+    ).toMatchInlineSnapshot('"export type StringOrNumber = string | number | null;"');
+
+    expect(getSchemaAsTsString({ nullable: true, allOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"(string & number) | null"'
+    );
+    expect(
+        getSchemaAsTsString({ nullable: true, allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" })
+    ).toMatchInlineSnapshot('"export type StringAndNumber = (string & number) | null;"');
+    expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
+        '"(string | number) | Array<string | number> | null"'
     );
     expect(
         getSchemaAsTsString(

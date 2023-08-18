@@ -20,14 +20,21 @@ const makeOpenApiDoc = (schemas: SchemasObject, responseSchema: SchemaObject) =>
 });
 
 describe("export-all-types", () => {
-    test("shouldExportAllTypes option, non-circular types are be exported", async () => {
+    test("shouldExportAllTypes option, non-circular types are exported", async () => {
         const Playlist = {
-            type: "object",
-            properties: {
-                name: { type: "string" },
-                author: { $ref: "#/components/schemas/Author" },
-                songs: { type: "array", items: { $ref: "#/components/schemas/Song" } },
-            },
+            allOf: [
+                {
+                    type: "object",
+                    properties: {
+                        name: { type: "string" },
+                        author: { $ref: "#/components/schemas/Author" },
+                        songs: { type: "array", items: { $ref: "#/components/schemas/Song" } },
+                    },
+                },
+                {
+                    $ref: "#/components/schemas/Settings",
+                },
+            ],
         } as SchemaObject;
 
         const Song = {
@@ -41,11 +48,12 @@ describe("export-all-types", () => {
         const Author = {
             type: "object",
             properties: {
-                name: { type: "string" },
+                name: { nullable: true, oneOf: [{ type: "string", nullable: true }, { type: "number" }] },
                 mail: { type: "string" },
                 settings: { $ref: "#/components/schemas/Settings" },
             },
         } as SchemaObject;
+
         const Settings = {
             type: "object",
             properties: {
@@ -69,10 +77,10 @@ describe("export-all-types", () => {
         expect(data).toEqual({
             schemas: {
                 Settings: "z.object({ theme_color: z.string() }).partial().passthrough()",
-                Author: "z.object({ name: z.string(), mail: z.string(), settings: Settings }).partial().passthrough()",
+                Author: "z.object({ name: z.union([z.string(), z.number()]).nullable(), mail: z.string(), settings: Settings }).partial().passthrough()",
                 Song: "z.object({ name: z.string(), duration: z.number() }).partial().passthrough()",
                 Playlist:
-                    "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial().passthrough()",
+                    "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial().passthrough().and(Settings)",
             },
             endpoints: [
                 {
@@ -87,7 +95,7 @@ describe("export-all-types", () => {
             ],
             types: {
                 Author: `type Author = Partial<{
-    name: string;
+    name: (string | null) | number | null;
     mail: string;
     settings: Settings;
 }>;`,
@@ -95,7 +103,7 @@ describe("export-all-types", () => {
     name: string;
     author: Author;
     songs: Array<Song>;
-}>;`,
+}> & Settings;`,
                 Settings: `type Settings = Partial<{
     theme_color: string;
 }>;`,
@@ -133,9 +141,10 @@ describe("export-all-types", () => {
             name: string;
             author: Author;
             songs: Array<Song>;
-          }>;
+          }> &
+            Settings;
           type Author = Partial<{
-            name: string;
+            name: (string | null) | number | null;
             mail: string;
             settings: Settings;
           }>;
@@ -152,7 +161,11 @@ describe("export-all-types", () => {
             .partial()
             .passthrough();
           const Author: z.ZodType<Author> = z
-            .object({ name: z.string(), mail: z.string(), settings: Settings })
+            .object({
+              name: z.union([z.string(), z.number()]).nullable(),
+              mail: z.string(),
+              settings: Settings,
+            })
             .partial()
             .passthrough();
           const Song: z.ZodType<Song> = z
@@ -162,7 +175,8 @@ describe("export-all-types", () => {
           const Playlist: z.ZodType<Playlist> = z
             .object({ name: z.string(), author: Author, songs: z.array(Song) })
             .partial()
-            .passthrough();
+            .passthrough()
+            .and(Settings);
 
           export const schemas = {
             Settings,
