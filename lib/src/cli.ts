@@ -49,6 +49,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "--default-status",
         "when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared"
     )
+    .option("--export-types", "When true, will defined types for all schemas in `#/components/schemas`")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -70,6 +71,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 isErrorStatus: options.errorExpr,
                 isMainResponseStatus: options.successExpr,
                 shouldExportAllSchemas: options.exportSchemas,
+                shouldExportAllTypes: options.exportTypes,
                 isMediaTypeAllowed: options.mediaTypeExpr,
                 withImplicitRequiredProps: options.implicitRequired,
                 withDeprecatedEndpoints: options.withDeprecated,

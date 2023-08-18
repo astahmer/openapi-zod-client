@@ -56,14 +56,18 @@ export const getZodClientTemplateContext = (
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         const ctx: TsConversionContext = { nodeByRef: {}, resolver: result.resolver, visitedsRefs: {} };
 
-        const schemaName = isCircular ? result.resolver.resolveRef(ref).normalized : undefined;
-        if (isCircular && schemaName && !data.types[schemaName]) {
+        // Specifically check isCircular if shouldExportAllTypes is false. Either should cause shouldGenerateType to be true.
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        const shouldGenerateType = options?.shouldExportAllTypes || isCircular;
+        const schemaName = shouldGenerateType ? result.resolver.resolveRef(ref).normalized : undefined;
+        if (shouldGenerateType && schemaName && !data.types[schemaName]) {
             const node = getTypescriptFromOpenApi({
                 schema: result.resolver.getSchemaByRef(ref),
                 ctx,
                 meta: { name: schemaName },
             }) as ts.Node;
             data.types[schemaName] = printTs(node).replace("export ", "");
+            data.emittedType[schemaName] = true;
 
             for (const depRef of depsGraphs.deepDependencyGraph[ref] ?? []) {
                 const depSchemaName = result.resolver.resolveRef(depRef).normalized;
@@ -76,6 +80,9 @@ export const getZodClientTemplateContext = (
                         meta: { name: depSchemaName },
                     }) as ts.Node;
                     data.types[depSchemaName] = printTs(node).replace("export ", "");
+                    if (options?.shouldExportAllTypes) {
+                        data.emittedType[depSchemaName] = true;
+                    }
                 }
             }
         }
@@ -209,6 +216,7 @@ const makeTemplateContext = (): TemplateContext => {
         ...makeEndpointTemplateContext(),
         circularTypeByName: {},
         endpointsGroups: {},
+        emittedType: {},
         options: { withAlias: false, baseUrl: "" },
     };
 };
@@ -228,6 +236,7 @@ export type TemplateContext = {
     endpointsGroups: Record<string, MinimalTemplateContext>;
     types: Record<string, string>;
     circularTypeByName: Record<string, true>;
+    emittedType: Record<string, true>;
     commonSchemaNames?: Set<string>;
     options?: TemplateContextOptions | undefined;
 };
@@ -295,6 +304,11 @@ export type TemplateContextOptions = {
      * @see https://github.com/astahmer/openapi-zod-client/issues/19
      */
     shouldExportAllSchemas?: boolean;
+    /**
+     * When true, will generate and output types for all schemas, not just circular ones.
+     * This helps with "The inferred type of this node exceeds the maximum length the compiler will serialize. An explicit type annotation is needed.ts(7056)" errors.
+     */
+    shouldExportAllTypes?: boolean;
     /**
      * when true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
      * @see https://github.com/astahmer/openapi-zod-client/issues/23

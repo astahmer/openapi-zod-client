@@ -31,6 +31,7 @@ test("handle-refs-without-var-name", () => {
     ).toMatchInlineSnapshot(`
       {
           "circularTypeByName": {},
+          "emittedType": {},
           "endpoints": [
               {
                   "description": undefined,
