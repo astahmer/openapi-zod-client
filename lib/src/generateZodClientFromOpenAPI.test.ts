@@ -15,6 +15,7 @@ test("getZodClientTemplateContext", async () => {
     expect(result).toMatchInlineSnapshot(`
       {
           "circularTypeByName": {},
+          "emittedType": {},
           "endpoints": [
               {
                   "description": "Update an existing pet by Id",
@@ -3809,6 +3810,10 @@ test("with optional, partial, all required objects", async () => {
     expect(data).toMatchInlineSnapshot(`
       {
           "circularTypeByName": {
+              "Nested2": true,
+              "Root2": true,
+          },
+          "emittedType": {
               "Nested2": true,
               "Root2": true,
           },

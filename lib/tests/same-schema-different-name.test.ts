@@ -58,6 +58,7 @@ test("same-schema-different-name", async () => {
     expect(ctx).toMatchInlineSnapshot(`
       {
           "circularTypeByName": {},
+          "emittedType": {},
           "endpoints": [
               {
                   "description": undefined,

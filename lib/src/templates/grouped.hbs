@@ -8,7 +8,7 @@ import { z } from "zod";
 {{/if}}
 
 {{#each schemas}}
-const {{@key}}{{#if (lookup ../circularTypeByName @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
+const {{@key}}{{#if (lookup ../emittedType @key)}}: z.ZodType<{{@key}}>{{/if}} = {{{this}}};
 {{/each}}
 
 {{#ifNotEmptyObj schemas}}

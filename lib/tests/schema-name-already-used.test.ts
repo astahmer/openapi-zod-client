@@ -91,6 +91,7 @@ test("schema-name-already-used", async () => {
     expect(ctx).toMatchInlineSnapshot(`
       {
           "circularTypeByName": {},
+          "emittedType": {},
           "endpoints": [
               {
                   "description": undefined,

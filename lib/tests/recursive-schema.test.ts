@@ -422,6 +422,12 @@ describe("recursive-schema", () => {
                   "Friend": true,
                   "UserWithFriends": true,
               },
+              "emittedType": {
+                  "Friend": true,
+                  "ObjectWithRecursiveArray": true,
+                  "User": true,
+                  "UserWithFriends": true,
+              },
               "endpoints": [
                   {
                       "description": undefined,
