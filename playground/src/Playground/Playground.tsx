@@ -556,7 +556,10 @@ const OptionsDrawer = () => {
                                 onChange={(update) =>
                                     send({ type: "Update preview options", options: update as OptionsFormValues })
                                 }
-                                onSubmit={(values) => send({ type: "Save options", options: values })}
+                                onSubmit={(values) => {
+                                    const booleanOptions = getRelevantOptions(values);
+                                    send({ type: "Save options", options: { ...values, ...booleanOptions } });
+                                }}
                                 defaultValues={state.context.previewOptions}
                             />
                         </Panel>
