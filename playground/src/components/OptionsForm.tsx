@@ -11,6 +11,7 @@ const schema = z.object({
     isMediaTypeAllowed: z.string(),
     useMainResponseDescriptionAsEndpointDefinitionFallback: z.boolean(),
     shouldExportAllSchemas: z.boolean(),
+    shouldExportAllTypes: z.boolean(),
     withImplicitRequiredProps: z.boolean(),
     withDeprecatedEndpoints: z.boolean(),
     groupStrategy: z.enum(["none", "tag", "method", "tag-file", "method-file"]).default("none"),
@@ -29,6 +30,7 @@ export const defaultOptionValues = {
     useMainResponseDescriptionAsEndpointDefinitionFallback: false,
     shouldExportAllSchemas: false,
     withImplicitRequiredProps: false,
+    shouldExportAllTypes: false,
     withDeprecatedEndpoints: false,
     groupStrategy: "none",
     complexityThreshold: 4,
@@ -49,6 +51,7 @@ export const OptionsForm = (props: FormProps<OptionsFormValues>) => {
                         options={[
                             { label: "Without alias ?", value: "noWithAlias" },
                             { label: "Should export all schemas ?", value: "shouldExportAllSchemas" },
+                            { label: "Should export types for each schema ?", value: "shouldExportAllTypes" },
                             { label: "With implicit required props ?", value: "withImplicitRequiredProps" },
                             { label: "With deprecated endpoints ?", value: "withDeprecatedEndpoints" },
                             {
