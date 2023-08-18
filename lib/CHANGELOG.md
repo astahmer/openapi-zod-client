@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.10.6
+
+### Patch Changes
+
+-   [#210](https://github.com/astahmer/openapi-zod-client/pull/210) [`675a132`](https://github.com/astahmer/openapi-zod-client/commit/675a13226ec3c4598130d16b09c5a79969d77177) Thanks [@eli0shin](https://github.com/eli0shin)! - Support nullable for array of types, oneOf, anyOf, and allOf in generated typescript types
+
 ## 1.10.5
 
 ### Patch Changes
