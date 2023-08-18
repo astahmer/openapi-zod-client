@@ -1,5 +1,19 @@
 # openapi-zod-client
 
+## 1.10.4
+
+### Patch Changes
+
+-   [#204](https://github.com/astahmer/openapi-zod-client/pull/204) [`477bbec`](https://github.com/astahmer/openapi-zod-client/commit/477bbecda5669a99355cccde3290ef907325a4b7) Thanks [@filipbekic01](https://github.com/filipbekic01)! - Add nullable primitives and arrays support
+
+## 1.10.3
+
+### Patch Changes
+
+-   [#202](https://github.com/astahmer/openapi-zod-client/pull/202) [`f18e3ea`](https://github.com/astahmer/openapi-zod-client/commit/f18e3ea6b8f9606e9b505fcaf4fb311c81ce8a42) Thanks [@PeterMK85](https://github.com/PeterMK85)! - Add `camelCase` formatting to `hbs` files.
+
+-   [#197](https://github.com/astahmer/openapi-zod-client/pull/197) [`bd6e958`](https://github.com/astahmer/openapi-zod-client/commit/bd6e958337cd1085e2bc9eb122a0147d02937135) Thanks [@mjperrone](https://github.com/mjperrone)! - Fix bug with regex's that have / in them
+
 ## 1.10.2
 
 ### Patch Changes

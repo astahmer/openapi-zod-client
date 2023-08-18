@@ -7,18 +7,23 @@ Generates a [zodios](https://github.com/ecyrbe/zodios) (_typescript http client 
 -   can be used programmatically _(do w/e you want with the computed schemas/endpoints)_
 -   or used as a CLI _(generates a prettier .ts file with deduplicated variables when pointing to the same schema/$ref)_
 
--   client typesafety using [zodios](https://github.com/ecyrbe/zodios)
+-   client typesafety and runtime validation using [zodios](https://github.com/ecyrbe/zodios)
 -   tested (using [vitest](https://vitest.dev/)) against official [OpenAPI specs samples](https://github.com/OAI/OpenAPI-Specification/tree/main/schemas)
 
 # Why this exists
 
-sometimes you don't have control on your API, maybe you need to consume APIs from other teams (who might each use a different language/framework), you only have their Open API spec as source of truth, then this might help 😇
+Sometimes you don't have control on your API, maybe you need to consume APIs from other teams (who might each use a different language/framework), you only have their Open API spec as source of truth, then this might help 😇
 
-you could use `openapi-zod-client` to automate the API integration part (doesn't matter if you consume it in your front or back-end, zodios is agnostic) on your CI and just import the generated `api` client
+You could use `openapi-zod-client` to automate the API integration part (doesn't matter if you consume it in your front or back-end, zodios is agnostic) on your CI and just import the generated `api` client
 
-## Comparison vs tRPC etc
+## Comparison vs tRPC zodios ts-rest etc
 
-please just use [tRPC](https://github.com/trpc/trpc) or alternatives ([zodios](https://www.zodios.org/) is actually a full-featured solution and not just an api client, [ts-rest](https://ts-rest.com/) looks cool as well) if you do have control on your API/back-end
+If you do have control on your API/back-end, you should probably use a RPC-like solution like [tRPC](https://github.com/trpc/trpc), [zodios](https://www.zodios.org/) or [ts-rest](https://ts-rest.com/) instead of this.
+
+# Comparison vs typed-openapi
+
+-   `openapi-zod-client` is a CLI that generates a [zodios](https://www.zodios.org/) API client (typescript http client with zod validation), currently using axios as http client
+-   [`typed-openapi`](https://github.com/astahmer/typed-openapi) is a CLI/library that generates a headless (bring your own fetcher : fetch, axios, ky, etc...) Typescript API client from an OpenAPI spec, that can output schemas as either just TS types (providing instant suggestions in your IDE) or different runtime validation schemas (zod, typebox, arktype, valibot, io-ts, yup)
 
 # Usage
 
@@ -283,8 +288,15 @@ export function createApiClient(baseUrl: string) {
 
 NOT tested/expected to work with OpenAPI before v3, please migrate your specs to v3+ if you want to use this
 
+You can do so by using the official Swagger Editor: https://editor.swagger.io/ using the Edit -> Convert to OpenAPI 3.0 menu
+
 ## Contributing:
 
--   `pnpm i && pnpm gen`
+```bash
+pnpm install
+pnpm test
+```
 
-if you fix an edge case please make a dedicated minimal reproduction test in the [`tests`](./tests) folder so that it doesn't break in future versions
+Assuming no issue were raised by the tests, you may use `pnpm dev` to watch for code changes during development.
+If you fix an edge case please make a dedicated minimal reproduction test in the [`tests`](./tests) folder so that it doesn't break in future versions
+Make sure to generate a [changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md) before submitting your PR.
