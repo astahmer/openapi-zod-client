@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.10.7
+
+### Patch Changes
+
+-   [#212](https://github.com/astahmer/openapi-zod-client/pull/212) [`63c32a0`](https://github.com/astahmer/openapi-zod-client/commit/63c32a01408bf90efeeb5d506d5c3994d297c39e) Thanks [@eli0shin](https://github.com/eli0shin)! - Limit --export-types to object types to prevent type errors from zod validation methods like `.min`
+
 ## 1.10.6
 
 ### Patch Changes
