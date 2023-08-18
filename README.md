@@ -292,11 +292,16 @@ You can do so by using the official Swagger Editor: https://editor.swagger.io/ u
 
 ## Contributing:
 
+-   A `.node-version` file has been provided in the repository root, use your preferred Node.js manager which [supports](https://github.com/shadowspawn/node-version-usage#supporting-products) the standard to manage the development Node.js environment
+-   The monorepo supports [corepack](https://nodejs.org/api/corepack.html), follow the linked instructions to locally install the development package manager (i.e. [pnpm](https://pnpm.io/))
+
 ```bash
-pnpm install
-pnpm test
+> pnpm install
+> pnpm test
 ```
 
 Assuming no issue were raised by the tests, you may use `pnpm dev` to watch for code changes during development.
+
 If you fix an edge case please make a dedicated minimal reproduction test in the [`tests`](./tests) folder so that it doesn't break in future versions
+
 Make sure to generate a [changeset](https://github.com/changesets/changesets/blob/main/docs/adding-a-changeset.md) before submitting your PR.
