@@ -187,9 +187,11 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (schemaType === "array") {
         if (schema.items) {
+            // TODO here
             return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})`);
         }
 
+        // TODO here
         return code.assign("z.array(z.any())");
     }
 
@@ -248,6 +250,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 " }";
         }
 
+        // TODO here
         return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
     }
 
