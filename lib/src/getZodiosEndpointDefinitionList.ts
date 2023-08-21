@@ -258,6 +258,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         schema: paramSchema ?? {},
                         ctx,
                         meta: { isRequired: paramItem.in === "path" ? true : paramItem.required ?? false },
+                        options
                     });
 
                     endpointDefinition.parameters.push({
