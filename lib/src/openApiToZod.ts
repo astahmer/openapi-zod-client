@@ -200,6 +200,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         const additionalProps = schema.additionalProperties === false ? "" : ".passthrough()";
 
         if (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length > 0) {
+            // TODO here
             return code.assign(
                 `z.record(${(
                     getZodSchema({ schema: schema.additionalProperties, ctx, meta, options }) +
