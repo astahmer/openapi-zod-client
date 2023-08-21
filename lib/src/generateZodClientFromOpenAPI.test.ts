@@ -10,6 +10,462 @@ beforeAll(async () => {
     openApiDoc = (await SwaggerParser.parse("./tests/petstore.yaml")) as OpenAPIObject;
 });
 
+test('getZodClientTemplateContext with allReadonly', async () => {
+    const result = getZodClientTemplateContext(openApiDoc, {
+        allReadonly: true
+    });
+    expect(result).toMatchInlineSnapshot(`
+      {
+          "circularTypeByName": {},
+          "emittedType": {},
+          "endpoints": [
+              {
+                  "description": "Update an existing pet by Id",
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                      {
+                          "description": "Validation exception",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
+                  "method": "put",
+                  "parameters": [
+                      {
+                          "description": "Update an existent pet in the store",
+                          "name": "body",
+                          "schema": "Pet",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/pet",
+                  "requestFormat": "json",
+                  "response": "Pet",
+              },
+              {
+                  "description": "Add a new pet to the store",
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "description": "Create a new pet in the store",
+                          "name": "body",
+                          "schema": "Pet",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/pet",
+                  "requestFormat": "json",
+                  "response": "Pet",
+              },
+              {
+                  "description": "Returns a single pet",
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Pet not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/pet/:petId",
+                  "requestFormat": "json",
+                  "response": "Pet",
+              },
+              {
+                  "description": "",
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "name": "petId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                      {
+                          "name": "name",
+                          "schema": "z.string().optional()",
+                          "type": "Query",
+                      },
+                      {
+                          "name": "status",
+                          "schema": "z.string().optional()",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/pet/:petId",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+              {
+                  "description": "delete a pet",
+                  "errors": [
+                      {
+                          "description": "Invalid pet value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
+                  "method": "delete",
+                  "parameters": [
+                      {
+                          "name": "api_key",
+                          "schema": "z.string().optional()",
+                          "type": "Header",
+                      },
+                      {
+                          "name": "petId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/pet/:petId",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+              {
+                  "description": "",
+                  "errors": [],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "description": undefined,
+                          "name": "body",
+                          "schema": "z.instanceof(File)",
+                          "type": "Body",
+                      },
+                      {
+                          "name": "petId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                      {
+                          "name": "additionalMetadata",
+                          "schema": "z.string().optional()",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/pet/:petId/uploadImage",
+                  "requestFormat": "binary",
+                  "response": "ApiResponse",
+              },
+              {
+                  "description": "Multiple status values can be provided with comma separated strings",
+                  "errors": [
+                      {
+                          "description": "Invalid status value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "status",
+                          "schema": "z.enum(["available", "pending", "sold"]).optional().default("available")",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/pet/findByStatus",
+                  "requestFormat": "json",
+                  "response": "z.array(Pet).readonly()",
+              },
+              {
+                  "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+                  "errors": [
+                      {
+                          "description": "Invalid tag value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "tags",
+                          "schema": "z.array(z.string()).readonly().optional()",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/pet/findByTags",
+                  "requestFormat": "json",
+                  "response": "z.array(Pet)",
+              },
+              {
+                  "description": "Returns a map of status codes to quantities",
+                  "errors": [],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/store/inventory",
+                  "requestFormat": "json",
+                  "response": "z.record(z.number().int())",
+              },
+              {
+                  "description": "Place a new order in the store",
+                  "errors": [
+                      {
+                          "description": "Invalid input",
+                          "schema": "z.void()",
+                          "status": 405,
+                      },
+                  ],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "description": undefined,
+                          "name": "body",
+                          "schema": "Order",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/store/order",
+                  "requestFormat": "json",
+                  "response": "Order",
+              },
+              {
+                  "description": "For valid response try integer IDs with value <= 5 or > 10. Other values will generate exceptions.",
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Order not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "orderId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/store/order/:orderId",
+                  "requestFormat": "json",
+                  "response": "Order",
+              },
+              {
+                  "description": "For valid response try integer IDs with value < 1000. Anything above 1000 or nonintegers will generate API errors",
+                  "errors": [
+                      {
+                          "description": "Invalid ID supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Order not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
+                  "method": "delete",
+                  "parameters": [
+                      {
+                          "name": "orderId",
+                          "schema": "z.number().int()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/store/order/:orderId",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+              {
+                  "description": "This can only be done by the logged in user.",
+                  "errors": [],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "description": "Created user object",
+                          "name": "body",
+                          "schema": "User",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/user",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+              {
+                  "description": "",
+                  "errors": [
+                      {
+                          "description": "Invalid username supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "User not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/user/:username",
+                  "requestFormat": "json",
+                  "response": "User",
+              },
+              {
+                  "description": "This can only be done by the logged in user.",
+                  "errors": [],
+                  "method": "put",
+                  "parameters": [
+                      {
+                          "description": "Update an existent user in the store",
+                          "name": "body",
+                          "schema": "User",
+                          "type": "Body",
+                      },
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/user/:username",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+              {
+                  "description": "This can only be done by the logged in user.",
+                  "errors": [
+                      {
+                          "description": "Invalid username supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "User not found",
+                          "schema": "z.void()",
+                          "status": 404,
+                      },
+                  ],
+                  "method": "delete",
+                  "parameters": [
+                      {
+                          "name": "username",
+                          "schema": "z.string()",
+                          "type": "Path",
+                      },
+                  ],
+                  "path": "/user/:username",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+              {
+                  "description": "Creates list of users with given input array",
+                  "errors": [],
+                  "method": "post",
+                  "parameters": [
+                      {
+                          "description": undefined,
+                          "name": "body",
+                          "schema": "z.array(User).readonly()",
+                          "type": "Body",
+                      },
+                  ],
+                  "path": "/user/createWithList",
+                  "requestFormat": "json",
+                  "response": "User",
+              },
+              {
+                  "description": "",
+                  "errors": [
+                      {
+                          "description": "Invalid username/password supplied",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [
+                      {
+                          "name": "username",
+                          "schema": "z.string().optional()",
+                          "type": "Query",
+                      },
+                      {
+                          "name": "password",
+                          "schema": "z.string().optional()",
+                          "type": "Query",
+                      },
+                  ],
+                  "path": "/user/login",
+                  "requestFormat": "json",
+                  "response": "z.string()",
+              },
+              {
+                  "description": "",
+                  "errors": [],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/user/logout",
+                  "requestFormat": "json",
+                  "response": "z.void()",
+              },
+          ],
+          "endpointsGroups": {},
+          "options": {
+              "baseUrl": "",
+              "withAlias": false,
+          },
+          "schemas": {
+              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).readonly().partial().passthrough()",
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).redadonly().partial().passthrough()",
+              "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime({ offset: true }), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).readonly().partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()).readonly(), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).readonly().passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).readonly().partial().passthrough()",
+              "User": "z.object({ id: z.number().int(), username: z.string(), firstName: z.string(), lastName: z.string(), email: z.string(), password: z.string(), phone: z.string(), userStatus: z.number().int() }).readonly().partial().passthrough()",
+          },
+          "types": {},
+      }
+    `);
+});
+
 test("getZodClientTemplateContext", async () => {
     const result = getZodClientTemplateContext(openApiDoc);
     expect(result).toMatchInlineSnapshot(`
