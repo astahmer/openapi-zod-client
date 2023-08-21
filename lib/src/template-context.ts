@@ -370,4 +370,9 @@ export type TemplateContextOptions = {
         defaultDefinition: EndpointDefinitionWithRefs,
         operation: OperationObject
     ) => EndpointDefinitionWithRefs;
+
+    /**
+     * When true, all generated objects and arrays will be readonly.
+     */
+    allReadonly?: boolean;
 };
