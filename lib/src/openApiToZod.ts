@@ -184,15 +184,15 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 .otherwise((type) => `z.${type}()`)
         );
     }
+    
+    const readonly = options?.allReadonly ? ".readonly()" : "";
 
     if (schemaType === "array") {
         if (schema.items) {
-            // TODO here
-            return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})`);
+            return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})${readonly}`);
         }
 
-        // TODO here
-        return code.assign("z.array(z.any())");
+        return code.assign(`z.array(z.any())${readonly}`);
     }
 
     if (schemaType === "object" || schema.properties || schema.additionalProperties) {
@@ -251,8 +251,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 " }";
         }
 
-        // TODO here
-        return code.assign(`z.object(${properties})${isPartial ? ".partial()" : ""}${additionalProps}`);
+        const partial = isPartial ? ".partial()" : "";
+
+        return code.assign(`z.object(${properties})${readonly}${partial}${additionalProps}`);
     }
 
     if (!schemaType) return code.assign("z.unknown()");
