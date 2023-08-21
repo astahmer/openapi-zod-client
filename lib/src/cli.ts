@@ -49,6 +49,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "--default-status",
         "when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared"
     )
+    .option("--all-readonly", "when true, all generated objects and arrays will be readonly")
     .option("--export-types", "When true, will defined types for all object schemas in `#/components/schemas`")
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
@@ -79,6 +80,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 complexityThreshold: options.complexityThreshold,
                 defaultStatusBehavior: options.defaultStatus,
                 withDescription: options.withDescription,
+                allReadonly: options.allReadonly
             },
         });
         console.log(`Done generating <${distPath}> !`);
