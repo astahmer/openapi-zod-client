@@ -22,6 +22,11 @@ export const getHandlebars = () => {
         return options.inverse(this);
     });
     instance.registerHelper("toCamelCase", function (input: string) {
+        // Check if input string is already in camelCase
+        if (/^[a-z][a-zA-Z0-9]*$/.test(input)) {
+            return input
+        }
+
         const words = input.split(/[\s_-]/);
         return words
             .map((word, index) => {
