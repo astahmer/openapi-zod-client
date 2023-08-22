@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.10.8
+
+### Patch Changes
+
+-   [#219](https://github.com/astahmer/openapi-zod-client/pull/219) [`114e809`](https://github.com/astahmer/openapi-zod-client/commit/114e809f4bb66e43fb6371942aad99f42c4bc86d) Thanks [@PeterMK85](https://github.com/PeterMK85)! - Handlebars helper `toCamelCase` should not touch the string if it's already in camel case.
+
 ## 1.10.7
 
 ### Patch Changes
