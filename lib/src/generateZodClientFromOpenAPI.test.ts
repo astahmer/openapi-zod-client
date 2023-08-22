@@ -222,7 +222,7 @@ test('getZodClientTemplateContext with allReadonly', async () => {
                   ],
                   "path": "/pet/findByTags",
                   "requestFormat": "json",
-                  "response": "z.array(Pet)",
+                  "response": "z.array(Pet).readonly()",
               },
               {
                   "description": "Returns a map of status codes to quantities",
