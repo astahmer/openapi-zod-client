@@ -253,7 +253,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         const partial = isPartial ? ".partial()" : "";
 
-        return code.assign(`z.object(${properties})${readonly}${partial}${additionalProps}`);
+        return code.assign(`z.object(${properties})${partial}${additionalProps}${readonly}`);
     }
 
     if (!schemaType) return code.assign("z.unknown()");
