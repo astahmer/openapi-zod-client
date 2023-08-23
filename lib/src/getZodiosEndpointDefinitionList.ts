@@ -22,10 +22,10 @@ import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";
 import {
     asComponentSchema,
-    pathParamToVariableName,
-    replaceHyphenatedPath,
     normalizeString,
+    pathParamToVariableName,
     pathToVariableName,
+    replaceHyphenatedPath,
 } from "./utils";
 
 const voidSchema = "z.void()";
@@ -258,7 +258,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         schema: paramSchema ?? {},
                         ctx,
                         meta: { isRequired: paramItem.in === "path" ? true : paramItem.required ?? false },
-                        options
+                        options,
                     });
 
                     endpointDefinition.parameters.push({
@@ -283,7 +283,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             for (const statusCode in operation.responses) {
                 const responseItem = (
-                    isReferenceObject(operation.responses[statusCode]) ? ctx.resolver.getSchemaByRef(operation.responses[statusCode].$ref) : operation.responses[statusCode]
+                    isReferenceObject(operation.responses[statusCode])
+                        ? ctx.resolver.getSchemaByRef(operation.responses[statusCode].$ref)
+                        : operation.responses[statusCode]
                 ) as ResponseObject;
 
                 const mediaTypes = Object.keys(responseItem.content ?? {});

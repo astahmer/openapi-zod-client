@@ -4,14 +4,14 @@ import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
 import { isReferenceObject } from "./isReferenceObject";
 import type { DocumentResolver } from "./makeSchemaResolver";
+import type { TemplateContext } from "./template-context";
 import { wrapWithQuotesIfNeeded } from "./utils";
-import type {TemplateContext} from './template-context';
 
 type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;
     ctx?: TsConversionContext | undefined;
     meta?: { name?: string; $ref?: string; isInline?: boolean } | undefined;
-    options?: TemplateContext["options"]
+    options?: TemplateContext["options"];
 };
 
 export type TsConversionContext = {
@@ -25,7 +25,7 @@ export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
     ctx,
-    options
+    options,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
 TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     const meta = {} as TsConversionArgs["meta"];
