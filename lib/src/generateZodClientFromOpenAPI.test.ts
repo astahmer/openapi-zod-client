@@ -454,7 +454,7 @@ test('getZodClientTemplateContext with allReadonly', async () => {
               "withAlias": false,
           },
           "schemas": {
-              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).passthrough().partial().readonly()",
+              "ApiResponse": "z.object({ code: z.number().int(), type: z.string(), message: z.string() }).partial().passthrough().readonly()",
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough().readonly()",
               "Order": "z.object({ id: z.number().int(), petId: z.number().int(), quantity: z.number().int(), shipDate: z.string().datetime({ offset: true }), status: z.enum(["placed", "approved", "delivered"]), complete: z.boolean() }).partial().passthrough().readonly()",
               "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()).readonly(), tags: z.array(Tag).readonly().optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough().readonly()",
