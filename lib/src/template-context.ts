@@ -65,6 +65,7 @@ export const getZodClientTemplateContext = (
                 schema: result.resolver.getSchemaByRef(ref),
                 ctx,
                 meta: { name: schemaName },
+                options
             }) as ts.Node;
             data.types[schemaName] = printTs(node).replace("export ", "");
             data.emittedType[schemaName] = true;
