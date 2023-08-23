@@ -356,13 +356,13 @@ test("getSchemaAsTsString with readonly", () => {
 
     expect(getSchemaAsTsString({ type: "array", items: { type: "string" } }, undefined, options)).toMatchInlineSnapshot('"Array<string>"');
     expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" }, options)).toMatchInlineSnapshot(
-        '"export type EmptyObject = {};"'
+        '"export type EmptyObject = Readonly<{}>;"'
     );
     expect(getSchemaAsTsString({ type: "object", properties: { str: { type: "string" } } }, { name: "BasicObject" }, options))
         .toMatchInlineSnapshot(`
-          "export type BasicObject = Partial<{
+          "export type BasicObject = Partial<Readonly<{
               str: string;
-          }>;"
+          }>>;"
         `);
     expect(
         getSchemaAsTsString(
@@ -371,10 +371,10 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type BasicObject2 = Partial<{
+      "export type BasicObject2 = Partial<Readonly<{
           str: string;
           nb: number;
-      }>;"
+      }>>;"
     `);
 
     expect(
@@ -388,10 +388,10 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type AllPropertiesRequired = {
+      "export type AllPropertiesRequired = Readonly<{
           str: string;
           nb: number;
-      };"
+      }>;"
     `);
     expect(
         getSchemaAsTsString(
@@ -400,10 +400,10 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type SomeOptionalProps = {
+      "export type SomeOptionalProps = Readonly<{
           str: string;
           nb?: number | undefined;
-      };"
+      }>;"
     `);
 
     expect(
@@ -425,13 +425,13 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithNestedProp = Partial<{
+      "export type ObjectWithNestedProp = Partial<Readonly<{
           str: string;
           nb: number;
           nested: Partial<{
               nested_prop: boolean;
           }>;
-      }>;"
+      }>>;"
     `);
 
     expect(
@@ -441,11 +441,11 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithAdditionalPropsNb = Partial<{
+      "export type ObjectWithAdditionalPropsNb = Partial<Readonly<{
           str: string;
       } & {
           [key: string]: number;
-      }>;"
+      }>>;"
     `);
 
     expect(
@@ -459,13 +459,13 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithNestedRecordBoolean = Partial<{
+      "export type ObjectWithNestedRecordBoolean = Partial<Readonly<{
           str: string;
       } & {
-          [key: string]: Partial<{
+          [key: string]: Partial<Readonly<{
               prop: boolean;
-          }>;
-      }>;"
+          }>>;
+      }>>;"
     `);
 
     expect(
@@ -479,9 +479,9 @@ test("getSchemaAsTsString with readonly", () => {
             },
         }, undefined, options)
     ).toMatchInlineSnapshot(`
-      "Array<Partial<{
+      "ReadonlyArray<Partial<Readonly<{
           str: string;
-      }>>"
+      }>>>"
     `);
 
     expect(
@@ -494,7 +494,7 @@ test("getSchemaAsTsString with readonly", () => {
                 },
             },
         }, undefined, options)
-    ).toMatchInlineSnapshot('"Array<Array<string>>"');
+    ).toMatchInlineSnapshot('"ReadonlyArray<ReadonlyArray<string>>"');
 
     expect(
         getSchemaAsTsString(
@@ -508,9 +508,9 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithEnum = Partial<{
+      "export type ObjectWithEnum = Partial<Readonly<{
           enumprop: "aaa" | "bbb" | "ccc";
-      }>;"
+      }>>;"
     `);
 
     expect(getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] }, undefined, options)).toMatchInlineSnapshot(
@@ -532,9 +532,9 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithUnion = Partial<{
+      "export type ObjectWithUnion = Partial<Readonly<{
           union: string | number;
-      }>;"
+      }>>;"
     `);
     expect(getSchemaAsTsString({ oneOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
         '"string | number"'
@@ -551,7 +551,7 @@ test("getSchemaAsTsString with readonly", () => {
     ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
 
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, , options)).toMatchInlineSnapshot(
-        '"(string | number) | Array<string | number> | null"'
+        '"(string | number) | ReadonlyArray<string | number> | null"'
     );
     expect(getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
         '"string | number | null"'
@@ -567,7 +567,7 @@ test("getSchemaAsTsString with readonly", () => {
         getSchemaAsTsString({ nullable: true, allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" }, options)
     ).toMatchInlineSnapshot('"export type StringAndNumber = (string & number) | null;"');
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
-        '"(string | number) | Array<string | number> | null"'
+        '"(string | number) | ReadonlyArray<string | number> | null"'
     );
     expect(
         getSchemaAsTsString(
@@ -575,7 +575,8 @@ test("getSchemaAsTsString with readonly", () => {
             { name: "StringAndNumberMaybeMultiple" },
             undefined, options
         )
-    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | Array<string | number>;"');
+    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | ReadonlyArray<string | number>;"');
+    // TODO stopping here
 
     expect(
         getSchemaAsTsString(
