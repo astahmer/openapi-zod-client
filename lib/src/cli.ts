@@ -6,9 +6,9 @@ import cac from "cac";
 import type { OpenAPIObject } from "openapi3-ts";
 import { safeJSONParse } from "pastable/server";
 import { resolveConfig } from "prettier";
+import { match, P } from "ts-pattern";
 
 import { generateZodClientFromOpenAPI } from "./generateZodClientFromOpenAPI";
-import { P, match } from "ts-pattern";
 
 const cli = cac("openapi-zod-client");
 const packageJson = safeJSONParse(readFileSync(resolve(__dirname, "../../package.json"), "utf8"));
@@ -80,7 +80,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 complexityThreshold: options.complexityThreshold,
                 defaultStatusBehavior: options.defaultStatus,
                 withDescription: options.withDescription,
-                allReadonly: options.allReadonly
+                allReadonly: options.allReadonly,
             },
         });
         console.log(`Done generating <${distPath}> !`);

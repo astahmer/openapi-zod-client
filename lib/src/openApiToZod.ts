@@ -184,12 +184,14 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 .otherwise((type) => `z.${type}()`)
         );
     }
-    
+
     const readonly = options?.allReadonly ? ".readonly()" : "";
 
     if (schemaType === "array") {
         if (schema.items) {
-            return code.assign(`z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})${readonly}`);
+            return code.assign(
+                `z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})${readonly}`
+            );
         }
 
         return code.assign(`z.array(z.any())${readonly}`);
