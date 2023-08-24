@@ -550,7 +550,7 @@ test("getSchemaAsTsString with readonly", () => {
         getSchemaAsTsString({ allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" }, options)
     ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
 
-    expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, , options)).toMatchInlineSnapshot(
+    expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
         '"(string | number) | ReadonlyArray<string | number> | null"'
     );
     expect(getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
@@ -573,10 +573,9 @@ test("getSchemaAsTsString with readonly", () => {
         getSchemaAsTsString(
             { anyOf: [{ type: "string" }, { type: "number" }] },
             { name: "StringAndNumberMaybeMultiple" },
-            undefined, options
+            options
         )
     ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | ReadonlyArray<string | number>;"');
-    // TODO stopping here
 
     expect(
         getSchemaAsTsString(
@@ -590,9 +589,9 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithArrayUnion = Partial<{
+      "export type ObjectWithArrayUnion = Partial<Readonly<{
           unionOrArrayOfUnion: (string | number) | Array<string | number>;
-      }>;"
+      }>>;"
     `);
 
     expect(
@@ -607,9 +606,9 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithIntersection = Partial<{
+      "export type ObjectWithIntersection = Partial<Readonly<{
           intersection: string & number;
-      }>;"
+      }>>;"
     `);
 
     expect(getSchemaAsTsString({ type: "string", enum: ["aaa", "bbb", "ccc"] }, undefined, options)).toMatchInlineSnapshot(
@@ -641,11 +640,11 @@ test("getSchemaAsTsString with readonly", () => {
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type Category = {
+      "export type Category = Readonly<{
     propNumber: number | null;
     propString: string | null;
     propBoolean: boolean | null;
-      };"
+      }>;"
     `);
 });
 
