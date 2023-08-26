@@ -428,10 +428,10 @@ test("getSchemaAsTsString with readonly", () => {
       "export type ObjectWithNestedProp = Partial<Readonly<{
           str: string;
           nb: number;
-          nested: Partial<{
+          nested: Partial<Readonly<{
               nested_prop: boolean;
           }>;
-      }>>;"
+      }>>>;"
     `);
 
     expect(
