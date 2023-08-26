@@ -2,6 +2,7 @@ import { Box, Code, IconButton, Stack, useColorMode } from "@chakra-ui/react";
 import { PropsWithChildren } from "react";
 
 import "./layout.css";
+import { TwitterIcon } from "../components/twitter-icon";
 
 const version: string = import.meta.compileTime("../macros/get-package-version.ts");
 
@@ -31,31 +32,7 @@ export const MainLayout = ({ children }: PropsWithChildren) => {
                         openapi-zod-client v{version}
                     </Code>
                 </Box>
-                <Stack direction="row">
-                    <Box
-                        // as={StyledLink}
-                        as="a"
-                        href="/"
-                        px="2"
-                        py="1"
-                        borderRadius="md"
-                        _hover={{ backgroundColor: "bg-darker" }}
-                        // activeClass="activeLink"
-                    >
-                        Playground
-                    </Box>
-                    <Box
-                        // as={StyledLink}
-                        as="a"
-                        href="/docs"
-                        px="2"
-                        py="1"
-                        borderRadius="md"
-                        _hover={{ backgroundColor: "bg-darker" }}
-                        // activeClass="activeLink"
-                    >
-                        Documentation
-                    </Box>
+                <Stack direction="row" alignItems="center">
                     <Box
                         // as={StyledLink}
                         as="a"
@@ -68,6 +45,11 @@ export const MainLayout = ({ children }: PropsWithChildren) => {
                         _hover={{ backgroundColor: "bg-darker" }}
                     >
                         <Box className="i-mdi-github" boxSize="1.5em" />
+                    </Box>
+                    <Box as="a" target="blank" href="https://twitter.com/astahmer_dev">
+                        <IconButton aria-label="Twitter">
+                            <TwitterIcon />
+                        </IconButton>
                     </Box>
                     <Box
                         // as={StyledLink}
