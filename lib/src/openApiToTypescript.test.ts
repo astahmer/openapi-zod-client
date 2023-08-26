@@ -356,7 +356,7 @@ test("getSchemaAsTsString with readonly", () => {
 
     expect(getSchemaAsTsString({ type: "array", items: { type: "string" } }, undefined, options)).toMatchInlineSnapshot('"Array<string>"');
     expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" }, options)).toMatchInlineSnapshot(
-        '"export type EmptyObject = Readonly<{}>;"'
+        '"export type EmptyObject = {}};"'
     );
     expect(getSchemaAsTsString({ type: "object", properties: { str: { type: "string" } } }, { name: "BasicObject" }, options))
         .toMatchInlineSnapshot(`
