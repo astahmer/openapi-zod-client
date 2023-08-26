@@ -21,7 +21,7 @@ export type TsConversionContext = {
     visitedsRefs?: Record<string, boolean>;
 };
 
-const wrapReadOnly = (options: TemplateContext["options"]) => (theType: ts.TypeAliasDeclaration): ts.Node | TypeDefinitionObject => {
+const wrapReadOnly = (options: TemplateContext["options"]) => (theType: ts.TypeNode): ts.TypeNode => {
     if (options?.allReadonly) {
         return t.readonly(theType);
     }
@@ -226,10 +226,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 throw new Error("Name is required to convert an object schema to a type reference");
             }
 
-            const base = doWrapReadOnly(t.type(inheritedMeta.name, objectType));
+            const base = t.type(inheritedMeta.name, doWrapReadOnly(objectType));
             if (!isPartial) return base;
 
-            return doWrapReadOnly(t.type(inheritedMeta.name, t.reference("Partial", [objectType])));
+            return t.type(inheritedMeta.name, t.reference("Partial", [doWrapReadOnly(objectType)]));
         }
 
         if (!schemaType) return t.unknown();
