@@ -3,19 +3,14 @@
 export interface Typegen0 {
     "@@xstate/typegen": true;
     internalEvents: {
-        "done.invoke.getPresetTemplates": {
-            type: "done.invoke.getPresetTemplates";
-            data: unknown;
-            __tip: "See the XState TS docs to learn how to strongly type this.";
-        };
         "xstate.init": { type: "xstate.init" };
     };
     invokeSrcNameMap: {};
     missingImplementations: {
         actions: never;
-        services: never;
-        guards: never;
         delays: never;
+        guards: never;
+        services: never;
     };
     eventsCausingActions: {
         assignEditorRef: "Editor Loaded";
@@ -47,9 +42,9 @@ export interface Typegen0 {
         updateSelectedOpenApiFileName: "Remove file" | "Select input tab" | "Submit file modal";
         updateSelectedPrettierConfig: "Remove file" | "Select input tab" | "Submit file modal";
         updateSelectedTemplateName: "Remove file" | "Select input tab" | "Submit file modal";
-        updateUrl: "Save";
+        updateUrl: "Save" | "Update input";
     };
-    eventsCausingServices: {};
+    eventsCausingDelays: {};
     eventsCausingGuards: {
         isNextTabAnotherOpenApiDoc: "Select input tab";
         isNextTabAnotherPrettierConfig: "Select input tab";
@@ -57,7 +52,9 @@ export interface Typegen0 {
         wasInputEmpty: "Update input";
         willInputAndOutputEditorBothBeReady: "Editor Loaded";
     };
-    eventsCausingDelays: {};
+    eventsCausingServices: {
+        getPresetTemplates: "Close modal" | "Close options" | "Editor Loaded" | "Save options" | "Submit file modal";
+    };
     matchesStates:
         | "loading"
         | "ready"

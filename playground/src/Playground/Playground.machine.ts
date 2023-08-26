@@ -150,10 +150,15 @@ export const playgroundMachine =
                             on: {
                                 "Update input": [
                                     {
-                                        actions: ["updateInput", "updateOutput", "updateSelectedDocOrTemplate"],
+                                        actions: [
+                                            "updateInput",
+                                            "updateUrl",
+                                            "updateOutput",
+                                            "updateSelectedDocOrTemplate",
+                                        ],
                                         cond: "wasInputEmpty",
                                     },
-                                    { actions: ["updateInput", "updateOutput"] },
+                                    { actions: ["updateInput", "updateUrl", "updateOutput"] },
                                 ],
                                 "Select input tab": [
                                     {
