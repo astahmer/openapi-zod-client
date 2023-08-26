@@ -21,7 +21,11 @@ export type TsConversionContext = {
     visitedsRefs?: Record<string, boolean>;
 };
 
-const wrapReadOnly = (options: TemplateContext["options"]) => (theType: ts.TypeNode): ts.TypeNode => {
+type MaybeWrapReadOnlyType = ts.TypeNode | {
+    [k: string]: number | bigint | boolean | TypeDefinitionObject | ts.TypeNode | ts.TypeAliasDeclaration | ts.InterfaceDeclaration | ts.EnumDeclaration;
+};
+
+const wrapReadOnly = (options: TemplateContext["options"]) => (theType: MaybeWrapReadOnlyType): MaybeWrapReadOnlyType => {
     if (options?.allReadonly) {
         return t.readonly(theType);
     }
