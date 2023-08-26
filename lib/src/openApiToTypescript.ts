@@ -72,7 +72,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 }
 
                 ctx.visitedsRefs[schema.$ref] = true;
-                result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx }) as ts.Node;
+                result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx, options }) as ts.Node;
             }
 
             return t.reference(schemaName);
@@ -80,11 +80,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
         if (Array.isArray(schema.type)) {
             if (schema.type.length === 1) {
-                return getTypescriptFromOpenApi({ schema: { ...schema, type: schema.type[0]! }, ctx, meta });
+                return getTypescriptFromOpenApi({ schema: { ...schema, type: schema.type[0]! }, ctx, meta, options });
             }
 
             const types = schema.type.map(
-                (prop) => getTypescriptFromOpenApi({ schema: { ...schema, type: prop }, ctx, meta }) as TypeDefinition
+                (prop) => getTypescriptFromOpenApi({ schema: { ...schema, type: prop }, ctx, meta, options }) as TypeDefinition
             );
 
             return schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types);
@@ -96,11 +96,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
         if (schema.oneOf) {
             if (schema.oneOf.length === 1) {
-                return getTypescriptFromOpenApi({ schema: schema.oneOf[0]!, ctx, meta });
+                return getTypescriptFromOpenApi({ schema: schema.oneOf[0]!, ctx, meta, options });
             }
 
             const types = schema.oneOf.map(
-                (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition
+                (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta, options }) as TypeDefinition
             );
 
             return schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types);
@@ -109,11 +109,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
         if (schema.anyOf) {
             if (schema.anyOf.length === 1) {
-                return getTypescriptFromOpenApi({ schema: schema.anyOf[0]!, ctx, meta });
+                return getTypescriptFromOpenApi({ schema: schema.anyOf[0]!, ctx, meta, options });
             }
 
             const oneOf = t.union(
-                schema.anyOf.map((prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition)
+                schema.anyOf.map((prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta, options }) as TypeDefinition)
             );
 
             return schema.nullable
@@ -123,11 +123,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
         if (schema.allOf) {
             if (schema.allOf.length === 1) {
-                return getTypescriptFromOpenApi({ schema: schema.allOf[0]!, ctx, meta });
+                return getTypescriptFromOpenApi({ schema: schema.allOf[0]!, ctx, meta, options });
             }
 
             const types = schema.allOf.map(
-                (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta }) as TypeDefinition
+                (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta, options }) as TypeDefinition
             );
             return schema.nullable ? t.union([t.intersection(types), t.reference("null")]) : t.intersection(types);
         }
@@ -152,7 +152,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
         if (schemaType === "array") {
             if (schema.items) {
-                let arrayOfType = getTypescriptFromOpenApi({ schema: schema.items, ctx, meta }) as TypeDefinition;
+                let arrayOfType = getTypescriptFromOpenApi({ schema: schema.items, ctx, meta, options }) as TypeDefinition;
                 if (typeof arrayOfType === "string") {
                     if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
                     arrayOfType = t.reference(arrayOfType);
@@ -186,6 +186,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                         schema: schema.additionalProperties,
                         ctx,
                         meta,
+                        options
                     });
                 }
 
@@ -208,7 +209,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
             const props = Object.fromEntries(
                 Object.entries(schema.properties).map(([prop, propSchema]) => {
-                    let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta }) as TypeDefinition;
+                    let propType = getTypescriptFromOpenApi({ schema: propSchema, ctx, meta, options }) as TypeDefinition;
                     if (typeof propType === "string") {
                         if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
                         // TODO Partial ?
