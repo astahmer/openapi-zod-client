@@ -217,7 +217,8 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     }
 
                     const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
-                    return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? propType : t.optional(propType)];
+                    const readonlyWrappedPropType = Object.hasOwn(propSchema, "type") && propSchema.type === "object" ? wrapReadOnly(propType) : propType;
+                    return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? readonlyWrappedPropType : t.optional(readonlyWrappedPropType)];
                 })
             );
 
