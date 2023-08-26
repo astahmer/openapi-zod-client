@@ -21,6 +21,14 @@ export type TsConversionContext = {
     visitedsRefs?: Record<string, boolean>;
 };
 
+const wrapReadOnly = (options: TemplateContext["options"]) => (theType: ts.TypeAliasDeclaration): ts.Node | TypeDefinitionObject => {
+    if (options?.allReadonly) {
+        return t.readonly(theType);
+    }
+
+    return theType;
+};
+
 export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
@@ -30,6 +38,8 @@ export const getTypescriptFromOpenApi = ({
 TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     const meta = {} as TsConversionArgs["meta"];
     const isInline = !inheritedMeta?.name;
+
+    const doWrapReadOnly = wrapReadOnly(options);
 
     if (ctx?.visitedsRefs && inheritedMeta?.$ref) {
         ctx.rootRef = inheritedMeta.$ref;
@@ -216,10 +226,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 throw new Error("Name is required to convert an object schema to a type reference");
             }
 
-            const base = t.type(inheritedMeta.name, objectType);
+            const base = doWrapReadOnly(t.type(inheritedMeta.name, objectType));
             if (!isPartial) return base;
 
-            return t.type(inheritedMeta.name, t.reference("Partial", [objectType]));
+            return doWrapReadOnly(t.type(inheritedMeta.name, t.reference("Partial", [objectType])));
         }
 
         if (!schemaType) return t.unknown();
