@@ -1,6 +1,6 @@
 import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
 
-import type {OpenAPIObject, SchemaObject, SchemasObject} from "openapi3-ts";
+import type {SchemaObject, SchemasObject} from "openapi3-ts";
 import { ts } from "tanu";
 import {beforeAll, describe, expect, test} from "vitest";
 import { makeSchemaResolver } from "./makeSchemaResolver";
@@ -8,16 +8,21 @@ import { asComponentSchema } from "./utils";
 import type {TemplateContext} from "./template-context";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import path from "path";
-import {OpenAPI} from 'openapi-types';
-import Document = OpenAPI.Document;
+import type { OpenAPIV3 } from "openapi-types";
+type Document = OpenAPIV3.Document;
 
-const makeSchema = (schema: SchemaObject) => schema;
+const makeSchema = (schema: SchemaObject | OpenAPIV3.SchemaObject) => schema as SchemaObject;
 const getSchemaAsTsString = (schema: SchemaObject, meta?: { name: string }, options?: TemplateContext['options']) =>
     printTs(getTypescriptFromOpenApi({ schema: makeSchema(schema), meta, options }) as ts.Node);
+const getV3SchemaAsTsString = (schema: OpenAPIV3.SchemaObject, name: string, allReadonly: boolean): string =>
+    printTs(getTypescriptFromOpenApi({ schema: makeSchema(schema), meta: { name }, options: { allReadonly } }) as ts.Node);
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
+
+const isSchemaObject = (value: OpenAPIV3.ReferenceObject | OpenAPIV3.SchemaObject): value is OpenAPIV3.SchemaObject =>
+    Object.hasOwn(value, "type");
 
 describe("cm-expense-tracker", () => {
     const readonlyOptions: TemplateContext["options"] = {
@@ -29,8 +34,30 @@ describe("cm-expense-tracker", () => {
     });
 
     test("default", () => {
-        getSchemaAsTsString(openApiDoc, null, readonlyOptions);
-        throw new Error()
+        /*
+         * UpdateTransactionsRequest
+         * TransactionToUpdate
+         * ConfirmTransactionsRequest
+         * TransactionDuplicateResponse
+         */
+        console.log(openApiDoc);
+        const schemas = Object.entries(openApiDoc.components?.schemas ?? {})
+            .filter(([, value]) => isSchemaObject(value))
+            .map(([key, value]): [string, OpenAPIV3.SchemaObject] => [key, value as OpenAPIV3.SchemaObject])
+            .reduce<Record<string, OpenAPIV3.SchemaObject>>((acc, [key, value]) => {
+                acc[key] = value;
+                return acc;
+            }, {});
+        const {
+            UpdateTransactionsRequest
+        } = schemas;
+        expect(getV3SchemaAsTsString(UpdateTransactionsRequest!, "UpdateTransactionsRequest", false))
+            .toEqual(`
+                type UpdateTransactionsRequest = Readonly<{
+                    transactions: Readonly<Array<TransactionToUpdate>>;
+                }>;
+            `);
+        // TODO add more
     });
 
     test("all readonly", () => {
