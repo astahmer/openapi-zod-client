@@ -69,6 +69,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     let canBeWrapped = !isInline;
     const getTs = (): ts.Node | TypeDefinitionObject | string => {
         if (isReferenceObject(schema)) {
+            console.log('SCHEMA', schema);
             if (!ctx?.visitedsRefs || !ctx?.resolver) throw new Error("Context is required for OpenAPI $ref");
 
             let result = ctx.nodeByRef[schema.$ref];

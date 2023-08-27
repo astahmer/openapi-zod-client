@@ -3,7 +3,7 @@ import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypesc
 import type {SchemaObject, SchemasObject, OpenAPIObject, ReferenceObject} from "openapi3-ts";
 import { ts } from "tanu";
 import {beforeAll, describe, expect, test} from "vitest";
-import { makeSchemaResolver } from "./makeSchemaResolver";
+import {DocumentResolver, makeSchemaResolver} from "./makeSchemaResolver";
 import { asComponentSchema } from "./utils";
 import type {TemplateContext} from "./template-context";
 import SwaggerParser from "@apidevtools/swagger-parser";
@@ -11,8 +11,10 @@ import path from "path";
 import type { OpenAPIV3 } from "openapi-types";
 
 const makeSchema = (schema: SchemaObject | OpenAPIV3.SchemaObject) => schema as SchemaObject;
-const getSchemaAsTsString = (schema: SchemaObject, meta?: { name: string }, options?: TemplateContext['options']) =>
+const getSchemaAsTsString = (schema: SchemaObject, meta?: { name: string }, options?: TemplateContext["options"]) =>
     printTs(getTypescriptFromOpenApi({ schema: makeSchema(schema), meta, options }) as ts.Node);
+const fullGetSchemaAsTsString = (name: string, schema: SchemaObject, ctx: TsConversionContext, options?: TemplateContext["options"]) =>
+    printTs(getTypescriptFromOpenApi({ schema: makeSchema(schema), meta: { name }, ctx, options }) as ts.Node);
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -22,9 +24,11 @@ const isSchemaObject = (value: ReferenceObject | SchemaObject): value is SchemaO
     Object.hasOwn(value, "type");
 
 describe("cm-expense-tracker", () => {
+    let openApiDoc: OpenAPIObject;
     let schemas: Record<string, SchemaObject>;
+    let ctx: TsConversionContext;
     beforeAll(async () => {
-        const openApiDoc = (await SwaggerParser.parse(path.join(__dirname, "..", "tests", "cm-expense-tracker.json"))) as OpenAPIObject;
+        openApiDoc = (await SwaggerParser.parse(path.join(__dirname, "..", "tests", "cm-expense-tracker.json"))) as OpenAPIObject;
         schemas = Object.entries(openApiDoc.components?.schemas ?? {})
             .filter(([, value]) => isSchemaObject(value))
             .map(([key, value]): [string, SchemaObject] => [key, value as SchemaObject])
@@ -32,6 +36,11 @@ describe("cm-expense-tracker", () => {
                 acc[key] = value;
                 return acc;
             }, {});
+        const resolver = makeSchemaResolver(openApiDoc);
+        ctx = {
+            resolver,
+            nodeByRef: {}
+        }
     });
 
     test("default", () => {
@@ -40,14 +49,14 @@ describe("cm-expense-tracker", () => {
             TransactionToUpdate
         } = schemas;
 
-        expect(getSchemaAsTsString(UpdateTransactionsRequest!, { name: "UpdateTransactionsRequest" }))
+        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx))
             .toEqual(`
                 type UpdateTransactionsRequest = {
                     transactions: Array<TransactionToUpdate>;
                 };
             `);
 
-        expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }))
+        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx))
             .toEqual(`
                 type TransactionToUpdate = {
                     transactionId: string;
@@ -63,14 +72,14 @@ describe("cm-expense-tracker", () => {
             TransactionToUpdate
         } = schemas;
 
-        expect(getSchemaAsTsString(UpdateTransactionsRequest!, { name: "UpdateTransactionsRequest" }, { allReadonly: true }))
+        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx, { allReadonly: true }))
             .toEqual(`
                 type UpdateTransactionsRequest = Readonly<{
                     transactions: Readonly<Array<TransactionToUpdate>>;
                 }>;
             `);
 
-        expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }, { allReadonly: true }))
+        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx, { allReadonly: true }))
             .toEqual(`
                 type TransactionToUpdate = Readonly<{
                     transactionId: string;
