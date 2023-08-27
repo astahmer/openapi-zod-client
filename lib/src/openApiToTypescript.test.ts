@@ -430,8 +430,8 @@ test("getSchemaAsTsString with readonly", () => {
           nb: number;
           nested: Partial<Readonly<{
               nested_prop: boolean;
-          }>;
-      }>>>;"
+          }>>;
+      }>>;"
     `);
 
     expect(
