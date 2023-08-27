@@ -39,7 +39,8 @@ describe("cm-expense-tracker", () => {
         const resolver = makeSchemaResolver(openApiDoc);
         ctx = {
             resolver,
-            nodeByRef: {}
+            nodeByRef: {},
+            visitedsRefs: {}
         }
     });
 
@@ -51,19 +52,19 @@ describe("cm-expense-tracker", () => {
 
         expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx))
             .toEqual(`
-                type UpdateTransactionsRequest = {
-                    transactions: Array<TransactionToUpdate>;
-                };
-            `);
+type UpdateTransactionsRequest = {
+    transactions: Array<TransactionToUpdate>;
+};
+            `.trim());
 
         expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx))
             .toEqual(`
-                type TransactionToUpdate = {
-                    transactionId: string;
-                    confirmed: boolean;
-                    categoryId?: string | undefined;
-                };
-            `);
+type TransactionToUpdate = {
+    transactionId: string;
+    confirmed: boolean;
+    categoryId?: string | undefined;
+};
+            `.trim());
     });
 
     test("all readonly", () => {
