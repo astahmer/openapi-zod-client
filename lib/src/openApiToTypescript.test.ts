@@ -354,7 +354,7 @@ test("getSchemaAsTsString with readonly", () => {
         '"export type unknownType = unknown;"'
     );
 
-    expect(getSchemaAsTsString({ type: "array", items: { type: "string" } }, undefined, options)).toMatchInlineSnapshot('"Array<string>"');
+    expect(getSchemaAsTsString({ type: "array", items: { type: "string" } }, undefined, options)).toMatchInlineSnapshot('"Readonly<Array<string>>"');
     expect(getSchemaAsTsString({ type: "object" }, { name: "EmptyObject" }, options)).toMatchInlineSnapshot(
         '"export type EmptyObject = {};"'
     );
@@ -479,9 +479,9 @@ test("getSchemaAsTsString with readonly", () => {
             },
         }, undefined, options)
     ).toMatchInlineSnapshot(`
-      "ReadonlyArray<Partial<Readonly<{
+      "Readonly<Array<Partial<Readonly<{
           str: string;
-      }>>>"
+      }>>>>"
     `);
 
     expect(
@@ -494,7 +494,7 @@ test("getSchemaAsTsString with readonly", () => {
                 },
             },
         }, undefined, options)
-    ).toMatchInlineSnapshot('"ReadonlyArray<ReadonlyArray<string>>"');
+    ).toMatchInlineSnapshot('"Readonly<Array<Readonly<Array<string>>>>"');
 
     expect(
         getSchemaAsTsString(
@@ -551,7 +551,7 @@ test("getSchemaAsTsString with readonly", () => {
     ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
 
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
-        '"(string | number) | ReadonlyArray<string | number> | null"'
+        '"(string | number) | Readonly<Array<string | number>> | null"'
     );
     expect(getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
         '"string | number | null"'
@@ -567,7 +567,7 @@ test("getSchemaAsTsString with readonly", () => {
         getSchemaAsTsString({ nullable: true, allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" }, options)
     ).toMatchInlineSnapshot('"export type StringAndNumber = (string & number) | null;"');
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
-        '"(string | number) | ReadonlyArray<string | number> | null"'
+        '"(string | number) | Readonly<Array<string | number>> | null"'
     );
     expect(
         getSchemaAsTsString(
@@ -575,7 +575,7 @@ test("getSchemaAsTsString with readonly", () => {
             { name: "StringAndNumberMaybeMultiple" },
             options
         )
-    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | ReadonlyArray<string | number>;"');
+    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | Readonly<Array<string | number>>;"');
 
     expect(
         getSchemaAsTsString(
