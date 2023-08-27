@@ -23,10 +23,15 @@ const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, no
 const isSchemaObject = (value: ReferenceObject | SchemaObject): value is SchemaObject =>
     Object.hasOwn(value, "type");
 
+const newContext = (resolver: DocumentResolver): TsConversionContext => ({
+    resolver,
+    visitedsRefs: {},
+    nodeByRef: {}
+});
+
 describe("cm-expense-tracker", () => {
     let openApiDoc: OpenAPIObject;
     let schemas: Record<string, SchemaObject>;
-    let ctx: TsConversionContext;
     beforeAll(async () => {
         openApiDoc = (await SwaggerParser.parse(path.join(__dirname, "..", "tests", "cm-expense-tracker.json"))) as OpenAPIObject;
         schemas = Object.entries(openApiDoc.components?.schemas ?? {})
@@ -36,12 +41,6 @@ describe("cm-expense-tracker", () => {
                 acc[key] = value;
                 return acc;
             }, {});
-        const resolver = makeSchemaResolver(openApiDoc);
-        ctx = {
-            resolver,
-            nodeByRef: {},
-            visitedsRefs: {}
-        }
     });
 
     test("default", () => {
@@ -49,6 +48,8 @@ describe("cm-expense-tracker", () => {
             UpdateTransactionsRequest,
             TransactionToUpdate
         } = schemas;
+        const resolver = makeSchemaResolver(openApiDoc);
+        const ctx = newContext(resolver);
 
         expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx))
             .toEqual(`
@@ -72,6 +73,8 @@ export type TransactionToUpdate = {
             UpdateTransactionsRequest,
             TransactionToUpdate
         } = schemas;
+        const resolver = makeSchemaResolver(openApiDoc);
+        const ctx = newContext(resolver);
 
         // The double-readonly on the array type is a consequence of how tanu does not seem to have explicit ReadonlyArray handling
         expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx, { allReadonly: true }))
