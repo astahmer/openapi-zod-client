@@ -220,15 +220,14 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     }
 
                     const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
-                    const readonlyWrappedPropType = isSchemaObject(propSchema) && propSchema.type === "object" ? doWrapReadOnly(propType as Record<string, any>) : propType;
-                    return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? readonlyWrappedPropType : t.optional(readonlyWrappedPropType)];
+                    return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? propType : t.optional(propType)];
                 })
             );
 
             const objectType = additionalProperties ? t.intersection([props, additionalProperties]) : props;
 
             if (isInline) {
-                return isPartial ? t.reference("Partial", [objectType]) : objectType;
+                return isPartial ? t.reference("Partial", [doWrapReadOnly(objectType)]) : doWrapReadOnly(objectType);
             }
 
             if (!inheritedMeta?.name) {
