@@ -52,6 +52,14 @@ export const MainLayout = ({ children }: PropsWithChildren) => {
                         </IconButton>
                     </Box>
                     <Box
+                        as="a"
+                        target="blank"
+                        href="https://typed-openapi-astahmer.vercel.app/"
+                        color={{ base: "colorPalette.500", _dark: "colorPalette.200" }}
+                    >
+                        typed-openapi
+                    </Box>
+                    <Box
                         // as={StyledLink}
                         as="a"
                         href="https://www.zodios.org/"
