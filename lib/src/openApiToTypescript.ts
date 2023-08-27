@@ -69,11 +69,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     let canBeWrapped = !isInline;
     const getTs = (): ts.Node | TypeDefinitionObject | string => {
         if (isReferenceObject(schema)) {
-            console.log('SCHEMA', schema);
             if (!ctx?.visitedsRefs || !ctx?.resolver) throw new Error("Context is required for OpenAPI $ref");
 
             let result = ctx.nodeByRef[schema.$ref];
-            const schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
+            let schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
             if (ctx.visitedsRefs[schema.$ref]) {
                 return t.reference(schemaName);
             }
@@ -86,6 +85,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
                 ctx.visitedsRefs[schema.$ref] = true;
                 result = getTypescriptFromOpenApi({ schema: actualSchema, meta, ctx, options }) as ts.Node;
+            }
+
+            if (!schemaName) {
+                schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
             }
 
             return t.reference(schemaName);
