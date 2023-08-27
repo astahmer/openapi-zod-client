@@ -73,10 +73,11 @@ export type TransactionToUpdate = {
             TransactionToUpdate
         } = schemas;
 
+        // The double-readonly on the array type is a consequence of how tanu does not seem to have explicit ReadonlyArray handling
         expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx, { allReadonly: true }))
             .toEqual(`
 export type UpdateTransactionsRequest = Readonly<{
-    transactions: Readonly<Array<TransactionToUpdate>>;
+    readonly transactions: Readonly<Array<TransactionToUpdate>>;
 }>;
             `.trim());
 
