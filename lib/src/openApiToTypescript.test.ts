@@ -28,13 +28,6 @@ describe("cm-expense-tracker", () => {
     });
 
     test("default", () => {
-        /*
-         * UpdateTransactionsRequest
-         * TransactionToUpdate
-         * ConfirmTransactionsRequest
-         * TransactionDuplicateResponse
-         */
-        console.log(openApiDoc);
         const schemas = Object.entries(openApiDoc.components?.schemas ?? {})
             .filter(([, value]) => isSchemaObject(value))
             .map(([key, value]): [string, SchemaObject] => [key, value as SchemaObject])
@@ -42,16 +35,35 @@ describe("cm-expense-tracker", () => {
                 acc[key] = value;
                 return acc;
             }, {});
+
         const {
-            UpdateTransactionsRequest
+            UpdateTransactionsRequest,
+            TransactionToUpdate,
+            ConfirmTransactionsRequest,
+            TransactionDuplicateResponse
         } = schemas;
+
         expect(getSchemaAsTsString(UpdateTransactionsRequest!, { name: "UpdateTransactionsRequest" }))
             .toEqual(`
                 type UpdateTransactionsRequest = Readonly<{
                     transactions: Readonly<Array<TransactionToUpdate>>;
                 }>;
             `);
-        // TODO add more
+
+        expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }))
+            .toEqual(`
+            
+            `);
+
+        expect(getSchemaAsTsString(ConfirmTransactionsRequest!, { name: "ConfirmTransactionsRequest" }))
+            .toEqual(`
+            
+            `);
+
+        expect(getSchemaAsTsString(TransactionDuplicateResponse!, { name: "TransactionDuplicateResponse" }))
+            .toEqual(`
+            
+            `);
     });
 
     test("all readonly", () => {
