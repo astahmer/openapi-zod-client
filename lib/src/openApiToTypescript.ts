@@ -117,8 +117,8 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             );
 
             return schema.nullable
-                ? t.union([oneOf, t.array(oneOf), t.reference("null")])
-                : t.union([oneOf, t.array(oneOf)]);
+                ? t.union([oneOf, doWrapReadOnly(t.array(oneOf)), t.reference("null")])
+                : t.union([oneOf, doWrapReadOnly(t.array(oneOf))]);
         }
 
         if (schema.allOf) {

@@ -590,7 +590,7 @@ test("getSchemaAsTsString with readonly", () => {
         )
     ).toMatchInlineSnapshot(`
       "export type ObjectWithArrayUnion = Partial<Readonly<{
-          unionOrArrayOfUnion: (string | number) | Array<string | number>;
+          unionOrArrayOfUnion: (string | number) | Readonly<Array<string | number>>;
       }>>;"
     `);
 
