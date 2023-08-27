@@ -38,9 +38,7 @@ describe("cm-expense-tracker", () => {
 
         const {
             UpdateTransactionsRequest,
-            TransactionToUpdate,
-            ConfirmTransactionsRequest,
-            TransactionDuplicateResponse
+            TransactionToUpdate
         } = schemas;
 
         expect(getSchemaAsTsString(UpdateTransactionsRequest!, { name: "UpdateTransactionsRequest" }))
@@ -52,17 +50,11 @@ describe("cm-expense-tracker", () => {
 
         expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }))
             .toEqual(`
-            
-            `);
-
-        expect(getSchemaAsTsString(ConfirmTransactionsRequest!, { name: "ConfirmTransactionsRequest" }))
-            .toEqual(`
-            
-            `);
-
-        expect(getSchemaAsTsString(TransactionDuplicateResponse!, { name: "TransactionDuplicateResponse" }))
-            .toEqual(`
-            
+                type TransactionToUpdate = Readonly<{
+                    transactionId: string;
+                    confirmed: boolean;
+                    categoryId?: string | undefined;
+                }>;
             `);
     });
 
