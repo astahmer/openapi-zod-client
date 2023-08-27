@@ -12,7 +12,6 @@ import { parse } from "yaml";
 
 import type { OptionsFormValues } from "../components/OptionsForm";
 import { defaultOptionValues } from "../components/OptionsForm";
-import type { ResizablePanesContext } from "../components/SplitPane/SplitPane.machine";
 import { toasts } from "../toasts";
 import { deletingParamInUrl, resetUrl, updateUrlWithCompressedString, updateUrlWithParam } from "../url-saver";
 import { isValidDocumentName, isValidPrettierConfig, isValidTemplateName } from "./Playground.asserts";
@@ -69,8 +68,7 @@ type PlaygroundEvent =
     | { type: "Save options"; options: OptionsFormValues }
     | { type: "Update monaco settings" }
     | { type: "Submit file modal"; tab: FileTabData }
-    | { type: "Close modal" }
-    | { type: "Resize"; context: ResizablePanesContext };
+    | { type: "Close modal" };
 
 const initialInputList = [
     { name: "api.doc.yaml", content: presets.defaultInput, index: 0, preset: "petstore.yaml" },
@@ -258,9 +256,6 @@ export const playgroundMachine =
                         },
                     },
                 },
-            },
-            on: {
-                Resize: { actions: "resize" },
             },
         },
         {
@@ -619,13 +614,6 @@ export const playgroundMachine =
                 createNewFile: assign({
                     inputList: (ctx, event) => [...ctx.inputList, event.tab],
                 }),
-                resize: (ctx, event) => {
-                    if (!ctx.outputEditor) return;
-                    ctx.outputEditor.layout({
-                        width: event.context.containerSize - event.context.draggedSize,
-                        height: ctx.outputEditor.getLayoutInfo().height,
-                    });
-                },
             },
             guards: {
                 willInputAndOutputEditorBothBeReady: (ctx) => Boolean(ctx.inputEditor ?? ctx.outputEditor),

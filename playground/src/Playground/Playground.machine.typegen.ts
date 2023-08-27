@@ -20,7 +20,6 @@ export interface Typegen0 {
         removeFile: "Remove file";
         reset: "Reset";
         resetPreviewOptions: "Reset preview options";
-        resize: "Resize";
         selectInputTab: "Select input tab" | "Submit file modal";
         selectOutputTab: "Select output tab";
         selectPresetTemplate: "Select preset template";
