@@ -22,20 +22,19 @@ const isSchemaObject = (value: ReferenceObject | SchemaObject): value is SchemaO
     Object.hasOwn(value, "type");
 
 describe("cm-expense-tracker", () => {
-    let openApiDoc: OpenAPIObject;
+    let schemas: Record<string, SchemaObject>;
     beforeAll(async () => {
-        openApiDoc = (await SwaggerParser.parse(path.join(__dirname, "..", "tests", "cm-expense-tracker.json"))) as OpenAPIObject;
-    });
-
-    test("default", () => {
-        const schemas = Object.entries(openApiDoc.components?.schemas ?? {})
+        const openApiDoc = (await SwaggerParser.parse(path.join(__dirname, "..", "tests", "cm-expense-tracker.json"))) as OpenAPIObject;
+        schemas = Object.entries(openApiDoc.components?.schemas ?? {})
             .filter(([, value]) => isSchemaObject(value))
             .map(([key, value]): [string, SchemaObject] => [key, value as SchemaObject])
             .reduce<Record<string, SchemaObject>>((acc, [key, value]) => {
                 acc[key] = value;
                 return acc;
             }, {});
+    });
 
+    test("default", () => {
         const {
             UpdateTransactionsRequest,
             TransactionToUpdate
@@ -43,12 +42,35 @@ describe("cm-expense-tracker", () => {
 
         expect(getSchemaAsTsString(UpdateTransactionsRequest!, { name: "UpdateTransactionsRequest" }))
             .toEqual(`
+                type UpdateTransactionsRequest = {
+                    transactions: Array<TransactionToUpdate>;
+                };
+            `);
+
+        expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }))
+            .toEqual(`
+                type TransactionToUpdate = {
+                    transactionId: string;
+                    confirmed: boolean;
+                    categoryId?: string | undefined;
+                };
+            `);
+    });
+
+    test("all readonly", () => {
+        const {
+            UpdateTransactionsRequest,
+            TransactionToUpdate
+        } = schemas;
+
+        expect(getSchemaAsTsString(UpdateTransactionsRequest!, { name: "UpdateTransactionsRequest" }, { allReadonly: true }))
+            .toEqual(`
                 type UpdateTransactionsRequest = Readonly<{
                     transactions: Readonly<Array<TransactionToUpdate>>;
                 }>;
             `);
 
-        expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }))
+        expect(getSchemaAsTsString(TransactionToUpdate!, { name: "TransactionToUpdate" }, { allReadonly: true }))
             .toEqual(`
                 type TransactionToUpdate = Readonly<{
                     transactionId: string;
@@ -56,10 +78,6 @@ describe("cm-expense-tracker", () => {
                     categoryId?: string | undefined;
                 }>;
             `);
-    });
-
-    test("all readonly", () => {
-        throw new Error();
     })
 })
 
