@@ -15,6 +15,16 @@ const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
 
+describe("cm-expense-tracker", () => {
+    test("default", () => {
+        throw new Error()
+    });
+
+    test("all readonly", () => {
+        throw new Error();
+    })
+})
+
 test("getSchemaAsTsString", () => {
     expect(getSchemaAsTsString({ type: "null" })).toMatchInlineSnapshot('"null"');
     expect(getSchemaAsTsString({ type: "boolean" })).toMatchInlineSnapshot('"boolean"');
