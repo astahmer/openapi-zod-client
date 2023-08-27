@@ -23,11 +23,14 @@ const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, no
 const isSchemaObject = (value: ReferenceObject | SchemaObject): value is SchemaObject =>
     Object.hasOwn(value, "type");
 
-const newContext = (resolver: DocumentResolver): TsConversionContext => ({
-    resolver,
-    visitedsRefs: {},
-    nodeByRef: {}
-});
+const newContext = (doc: OpenAPIObject): TsConversionContext => {
+    const resolver = makeSchemaResolver(doc);
+    return {
+        resolver,
+        visitedsRefs: {},
+        nodeByRef: {}
+    }
+};
 
 describe("cm-expense-tracker", () => {
     let openApiDoc: OpenAPIObject;
@@ -48,17 +51,15 @@ describe("cm-expense-tracker", () => {
             UpdateTransactionsRequest,
             TransactionToUpdate
         } = schemas;
-        const resolver = makeSchemaResolver(openApiDoc);
-        const ctx = newContext(resolver);
 
-        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx))
+        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, newContext(openApiDoc)))
             .toEqual(`
 export type UpdateTransactionsRequest = {
     transactions: Array<TransactionToUpdate>;
 };
             `.trim());
 
-        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx))
+        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, newContext(openApiDoc)))
             .toEqual(`
 export type TransactionToUpdate = {
     transactionId: string;
@@ -73,18 +74,16 @@ export type TransactionToUpdate = {
             UpdateTransactionsRequest,
             TransactionToUpdate
         } = schemas;
-        const resolver = makeSchemaResolver(openApiDoc);
-        const ctx = newContext(resolver);
 
         // The double-readonly on the array type is a consequence of how tanu does not seem to have explicit ReadonlyArray handling
-        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx, { allReadonly: true }))
+        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, newContext(openApiDoc), { allReadonly: true }))
             .toEqual(`
 export type UpdateTransactionsRequest = Readonly<{
     readonly transactions: Readonly<Array<TransactionToUpdate>>;
 }>;
             `.trim());
 
-        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx, { allReadonly: true }))
+        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, newContext(openApiDoc), { allReadonly: true }))
             .toEqual(`
 export type TransactionToUpdate = Readonly<{
     transactionId: string;
