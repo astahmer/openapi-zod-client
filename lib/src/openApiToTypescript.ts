@@ -33,6 +33,9 @@ const wrapReadOnly = (options: TemplateContext["options"]) => (theType: MaybeWra
     return theType;
 };
 
+const isSchemaObject = (value: SchemaObject | ReferenceObject): value is SchemaObject =>
+    Object.hasOwn(value, "type");
+
 export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
@@ -217,7 +220,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     }
 
                     const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
-                    const readonlyWrappedPropType = Object.hasOwn(propSchema, "type") && propSchema.type === "object" ? wrapReadOnly(propType) : propType;
+                    const readonlyWrappedPropType = isSchemaObject(propSchema) && propSchema.type === "object" ? doWrapReadOnly(propType as Record<string, any>) : propType;
                     return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? readonlyWrappedPropType : t.optional(readonlyWrappedPropType)];
                 })
             );
