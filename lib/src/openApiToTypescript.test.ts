@@ -52,14 +52,14 @@ describe("cm-expense-tracker", () => {
 
         expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx))
             .toEqual(`
-type UpdateTransactionsRequest = {
+export type UpdateTransactionsRequest = {
     transactions: Array<TransactionToUpdate>;
 };
             `.trim());
 
         expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx))
             .toEqual(`
-type TransactionToUpdate = {
+export type TransactionToUpdate = {
     transactionId: string;
     confirmed: boolean;
     categoryId?: string | undefined;
@@ -75,19 +75,19 @@ type TransactionToUpdate = {
 
         expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, ctx, { allReadonly: true }))
             .toEqual(`
-                type UpdateTransactionsRequest = Readonly<{
-                    transactions: Readonly<Array<TransactionToUpdate>>;
-                }>;
-            `);
+export type UpdateTransactionsRequest = Readonly<{
+    transactions: Readonly<Array<TransactionToUpdate>>;
+}>;
+            `.trim());
 
         expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, ctx, { allReadonly: true }))
             .toEqual(`
-                type TransactionToUpdate = Readonly<{
-                    transactionId: string;
-                    confirmed: boolean;
-                    categoryId?: string | undefined;
-                }>;
-            `);
+export type TransactionToUpdate = Readonly<{
+    transactionId: string;
+    confirmed: boolean;
+    categoryId?: string | undefined;
+}>;
+            `.trim());
     })
 })
 
