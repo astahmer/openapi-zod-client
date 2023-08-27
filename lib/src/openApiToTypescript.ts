@@ -158,10 +158,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     arrayOfType = t.reference(arrayOfType);
                 }
 
-                return schema.nullable ? t.union([t.array(arrayOfType), t.reference("null")]) : t.array(arrayOfType);
+                return schema.nullable ? t.union([doWrapReadOnly(t.array(arrayOfType)), t.reference("null")]) : doWrapReadOnly(t.array(arrayOfType));
             }
 
-            return schema.nullable ? t.union([t.array(t.any()), t.reference("null")]) : t.array(t.any());
+            return schema.nullable ? t.union([doWrapReadOnly(t.array(t.any())), t.reference("null")]) : doWrapReadOnly(t.array(t.any()));
         }
 
         if (schemaType === "object" || schema.properties || schema.additionalProperties) {
