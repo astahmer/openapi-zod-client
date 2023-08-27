@@ -33,9 +33,6 @@ const wrapReadOnly = (options: TemplateContext["options"]) => (theType: MaybeWra
     return theType;
 };
 
-const isSchemaObject = (value: SchemaObject | ReferenceObject): value is SchemaObject =>
-    Object.hasOwn(value, "type");
-
 export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
