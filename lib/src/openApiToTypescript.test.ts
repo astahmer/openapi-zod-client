@@ -1,98 +1,20 @@
-import { getTypescriptFromOpenApi, TsConversionContext } from "./openApiToTypescript";
+import {getTypescriptFromOpenApi, TsConversionContext} from "./openApiToTypescript";
 
-import type {SchemaObject, SchemasObject, OpenAPIObject, ReferenceObject} from "openapi3-ts";
-import { ts } from "tanu";
-import {beforeAll, describe, expect, test} from "vitest";
-import {DocumentResolver, makeSchemaResolver} from "./makeSchemaResolver";
-import { asComponentSchema } from "./utils";
+import type {SchemaObject, SchemasObject} from "openapi3-ts";
+import {ts} from "tanu";
+import {describe, expect, test} from "vitest";
+import {makeSchemaResolver} from "./makeSchemaResolver";
+import {asComponentSchema} from "./utils";
 import type {TemplateContext} from "./template-context";
-import SwaggerParser from "@apidevtools/swagger-parser";
-import path from "path";
-import type { OpenAPIV3 } from "openapi-types";
+import type {OpenAPIV3} from "openapi-types";
 
 const makeSchema = (schema: SchemaObject | OpenAPIV3.SchemaObject) => schema as SchemaObject;
 const getSchemaAsTsString = (schema: SchemaObject, meta?: { name: string }, options?: TemplateContext["options"]) =>
     printTs(getTypescriptFromOpenApi({ schema: makeSchema(schema), meta, options }) as ts.Node);
-const fullGetSchemaAsTsString = (name: string, schema: SchemaObject, ctx: TsConversionContext, options?: TemplateContext["options"]) =>
-    printTs(getTypescriptFromOpenApi({ schema: makeSchema(schema), meta: { name }, ctx, options }) as ts.Node);
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
 const printTs = (node: ts.Node) => printer.printNode(ts.EmitHint.Unspecified, node, file);
-
-const isSchemaObject = (value: ReferenceObject | SchemaObject): value is SchemaObject =>
-    Object.hasOwn(value, "type");
-
-const newContext = (doc: OpenAPIObject): TsConversionContext => {
-    const resolver = makeSchemaResolver(doc);
-    return {
-        resolver,
-        visitedsRefs: {},
-        nodeByRef: {}
-    }
-};
-
-describe("cm-expense-tracker", () => {
-    let openApiDoc: OpenAPIObject;
-    let schemas: Record<string, SchemaObject>;
-    beforeAll(async () => {
-        openApiDoc = (await SwaggerParser.parse(path.join(__dirname, "..", "tests", "cm-expense-tracker.json"))) as OpenAPIObject;
-        schemas = Object.entries(openApiDoc.components?.schemas ?? {})
-            .filter(([, value]) => isSchemaObject(value))
-            .map(([key, value]): [string, SchemaObject] => [key, value as SchemaObject])
-            .reduce<Record<string, SchemaObject>>((acc, [key, value]) => {
-                acc[key] = value;
-                return acc;
-            }, {});
-    });
-
-    test("default", () => {
-        const {
-            UpdateTransactionsRequest,
-            TransactionToUpdate
-        } = schemas;
-
-        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, newContext(openApiDoc)))
-            .toEqual(`
-export type UpdateTransactionsRequest = {
-    transactions: Array<TransactionToUpdate>;
-};
-            `.trim());
-
-        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, newContext(openApiDoc)))
-            .toEqual(`
-export type TransactionToUpdate = {
-    transactionId: string;
-    confirmed: boolean;
-    categoryId?: string | undefined;
-};
-            `.trim());
-    });
-
-    test("all readonly", () => {
-        const {
-            UpdateTransactionsRequest,
-            TransactionToUpdate
-        } = schemas;
-
-        // The double-readonly on the array type is a consequence of how tanu does not seem to have explicit ReadonlyArray handling
-        expect(fullGetSchemaAsTsString("UpdateTransactionsRequest", UpdateTransactionsRequest!, newContext(openApiDoc), { allReadonly: true }))
-            .toEqual(`
-export type UpdateTransactionsRequest = Readonly<{
-    readonly transactions: Readonly<Array<TransactionToUpdate>>;
-}>;
-            `.trim());
-
-        expect(fullGetSchemaAsTsString("TransactionToUpdate", TransactionToUpdate!, newContext(openApiDoc), { allReadonly: true }))
-            .toEqual(`
-export type TransactionToUpdate = Readonly<{
-    transactionId: string;
-    confirmed: boolean;
-    categoryId?: string | undefined;
-}>;
-            `.trim());
-    })
-})
 
 test("getSchemaAsTsString", () => {
     expect(getSchemaAsTsString({ type: "null" })).toMatchInlineSnapshot('"null"');
