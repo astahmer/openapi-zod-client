@@ -325,6 +325,271 @@ test("getSchemaAsTsString", () => {
     `);
 });
 
+describe("getSchemaAsTsString with context", () => {
+    test("with ref", () => {
+        const schemas = {
+            Root: {
+                type: "object",
+                properties: {
+                    str: { type: "string" },
+                    nb: { type: "number" },
+                    nested: { $ref: "#/components/schemas/Nested" },
+                },
+            },
+            Nested: {
+                type: "object",
+                properties: {
+                    nested_prop: { type: "boolean" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        expect(printTs(getTypescriptFromOpenApi({ schema: schemas["Root"]!, meta: { name: "Root" }, ctx }) as ts.Node))
+            .toMatchInlineSnapshot(`
+              "export type Root = Partial<{
+                  str: string;
+                  nb: number;
+                  nested: Nested;
+              }>;"
+            `);
+    });
+
+    test("with multiple nested refs", () => {
+        const schemas = {
+            Root2: {
+                type: "object",
+                properties: {
+                    str: { type: "string" },
+                    nb: { type: "number" },
+                    nested: { $ref: "#/components/schemas/Nested2" },
+                },
+            },
+            Nested2: {
+                type: "object",
+                properties: {
+                    nested_prop: { type: "boolean" },
+                    deeplyNested: { $ref: "#/components/schemas/DeeplyNested" },
+                },
+            },
+            DeeplyNested: {
+                type: "array",
+                items: { $ref: "#/components/schemas/VeryDeeplyNested" },
+            },
+            VeryDeeplyNested: {
+                type: "string",
+                enum: ["aaa", "bbb", "ccc"],
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        expect(
+            printTs(getTypescriptFromOpenApi({ schema: schemas["Root2"]!, meta: { name: "Root2" }, ctx }) as ts.Node)
+        ).toMatchInlineSnapshot(`
+          "export type Root2 = Partial<{
+              str: string;
+              nb: number;
+              nested: Nested2;
+          }>;"
+        `);
+    });
+
+    test("with indirect recursive ref", async () => {
+        const schemas = {
+            Root3: {
+                type: "object",
+                properties: {
+                    str: { type: "string" },
+                    nb: { type: "number" },
+                    nested: { $ref: "#/components/schemas/Nested3" },
+                    arrayOfNested: { type: "array", items: { $ref: "#/components/schemas/Nested3" } },
+                },
+            },
+            Nested3: {
+                type: "object",
+                properties: {
+                    nested_prop: { type: "boolean" },
+                    backToRoot: { $ref: "#/components/schemas/Root3" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+
+        expect(
+            printTs(
+                getTypescriptFromOpenApi({
+                    schema: schemas["Root3"]!,
+                    meta: { name: "Root3", $ref: "#/components/schemas/Root3" },
+                    ctx,
+                }) as ts.Node
+            )
+        ).toMatchInlineSnapshot(`
+          "export type Root3 = Partial<{
+              str: string;
+              nb: number;
+              nested: Nested3;
+              arrayOfNested: Array<Nested3>;
+          }>;"
+        `);
+    });
+
+    test("with direct (self) recursive ref", async () => {
+        const schemas = {
+            Root4: {
+                type: "object",
+                properties: {
+                    str: { type: "string" },
+                    nb: { type: "number" },
+                    self: { $ref: "#/components/schemas/Root4" },
+                    nested: { $ref: "#/components/schemas/Nested4" },
+                    arrayOfSelf: { type: "array", items: { $ref: "#/components/schemas/Root4" } },
+                },
+            },
+            Nested4: {
+                type: "object",
+                properties: {
+                    nested_prop: { type: "boolean" },
+                    backToRoot: { $ref: "#/components/schemas/Root4" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        const result = getTypescriptFromOpenApi({
+            schema: schemas["Root4"]!,
+            meta: { name: "Root4", $ref: "#/components/schemas/Root4" },
+            ctx,
+        }) as ts.Node;
+
+        expect(printTs(result)).toMatchInlineSnapshot(`
+          "export type Root4 = Partial<{
+              str: string;
+              nb: number;
+              self: Root4;
+              nested: Nested4;
+              arrayOfSelf: Array<Root4>;
+          }>;"
+        `);
+    });
+
+    test("same schemas as openApiToZod", () => {
+        const schemas = {
+            User: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                    middle: { $ref: "#/components/schemas/Middle" },
+                },
+            },
+            Middle: {
+                type: "object",
+                properties: {
+                    user: { $ref: "#/components/schemas/User" },
+                },
+            },
+            Root: {
+                type: "object",
+                properties: {
+                    recursive: {
+                        $ref: "#/components/schemas/User",
+                    },
+                    basic: { type: "number" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        const result = getTypescriptFromOpenApi({
+            schema: schemas["Root"]!,
+            meta: { name: "Root", $ref: "#/components/schemas/Root" },
+            ctx,
+        }) as ts.Node;
+
+        expect(printTs(result)).toMatchInlineSnapshot(`
+          "export type Root = Partial<{
+              recursive: User;
+              basic: number;
+          }>;"
+        `);
+    });
+
+    test("anyOf with refs", () => {
+        const schemas = {
+            User: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                },
+            },
+            Member: {
+                type: "object",
+                properties: {
+                    name: { type: "string" },
+                },
+            },
+            Root: {
+                type: "object",
+                properties: {
+                    user: { oneOf: [{ $ref: "#/components/schemas/User" }, { $ref: "#/components/schemas/Member" }] },
+                    users: {
+                        type: "array",
+                        items: {
+                            anyOf: [{ $ref: "#/components/schemas/User" }, { $ref: "#/components/schemas/Member" }],
+                        },
+                    },
+                    basic: { type: "number" },
+                },
+            },
+        } as SchemasObject;
+
+        const ctx: TsConversionContext = {
+            nodeByRef: {},
+            visitedsRefs: {},
+            resolver: makeSchemaResolver({ components: { schemas } } as any),
+        };
+        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
+        const result = getTypescriptFromOpenApi({
+            schema: schemas["Root"]!,
+            meta: { name: "Root", $ref: "#/components/schemas/Root" },
+            ctx,
+        }) as ts.Node;
+
+        expect(printTs(result)).toMatchInlineSnapshot(`
+          "export type Root = Partial<{
+              user: User | Member;
+              users: Array<(User | Member) | Array<User | Member>>;
+              basic: number;
+          }>;"
+        `);
+    });
+});
+
 test("getSchemaAsTsString with readonly", () => {
     const options: TemplateContext['options'] = {
         allReadonly: true
@@ -647,269 +912,4 @@ test("getSchemaAsTsString with readonly", () => {
     propBoolean: boolean | null;
       }>;"
     `);
-});
-
-describe("getSchemaAsTsString with context", () => {
-    test("with ref", () => {
-        const schemas = {
-            Root: {
-                type: "object",
-                properties: {
-                    str: { type: "string" },
-                    nb: { type: "number" },
-                    nested: { $ref: "#/components/schemas/Nested" },
-                },
-            },
-            Nested: {
-                type: "object",
-                properties: {
-                    nested_prop: { type: "boolean" },
-                },
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            visitedsRefs: {},
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
-        expect(printTs(getTypescriptFromOpenApi({ schema: schemas["Root"]!, meta: { name: "Root" }, ctx }) as ts.Node))
-            .toMatchInlineSnapshot(`
-              "export type Root = Partial<{
-                  str: string;
-                  nb: number;
-                  nested: Nested;
-              }>;"
-            `);
-    });
-
-    test("with multiple nested refs", () => {
-        const schemas = {
-            Root2: {
-                type: "object",
-                properties: {
-                    str: { type: "string" },
-                    nb: { type: "number" },
-                    nested: { $ref: "#/components/schemas/Nested2" },
-                },
-            },
-            Nested2: {
-                type: "object",
-                properties: {
-                    nested_prop: { type: "boolean" },
-                    deeplyNested: { $ref: "#/components/schemas/DeeplyNested" },
-                },
-            },
-            DeeplyNested: {
-                type: "array",
-                items: { $ref: "#/components/schemas/VeryDeeplyNested" },
-            },
-            VeryDeeplyNested: {
-                type: "string",
-                enum: ["aaa", "bbb", "ccc"],
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            visitedsRefs: {},
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
-        expect(
-            printTs(getTypescriptFromOpenApi({ schema: schemas["Root2"]!, meta: { name: "Root2" }, ctx }) as ts.Node)
-        ).toMatchInlineSnapshot(`
-          "export type Root2 = Partial<{
-              str: string;
-              nb: number;
-              nested: Nested2;
-          }>;"
-        `);
-    });
-
-    test("with indirect recursive ref", async () => {
-        const schemas = {
-            Root3: {
-                type: "object",
-                properties: {
-                    str: { type: "string" },
-                    nb: { type: "number" },
-                    nested: { $ref: "#/components/schemas/Nested3" },
-                    arrayOfNested: { type: "array", items: { $ref: "#/components/schemas/Nested3" } },
-                },
-            },
-            Nested3: {
-                type: "object",
-                properties: {
-                    nested_prop: { type: "boolean" },
-                    backToRoot: { $ref: "#/components/schemas/Root3" },
-                },
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            visitedsRefs: {},
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
-
-        expect(
-            printTs(
-                getTypescriptFromOpenApi({
-                    schema: schemas["Root3"]!,
-                    meta: { name: "Root3", $ref: "#/components/schemas/Root3" },
-                    ctx,
-                }) as ts.Node
-            )
-        ).toMatchInlineSnapshot(`
-          "export type Root3 = Partial<{
-              str: string;
-              nb: number;
-              nested: Nested3;
-              arrayOfNested: Array<Nested3>;
-          }>;"
-        `);
-    });
-
-    test("with direct (self) recursive ref", async () => {
-        const schemas = {
-            Root4: {
-                type: "object",
-                properties: {
-                    str: { type: "string" },
-                    nb: { type: "number" },
-                    self: { $ref: "#/components/schemas/Root4" },
-                    nested: { $ref: "#/components/schemas/Nested4" },
-                    arrayOfSelf: { type: "array", items: { $ref: "#/components/schemas/Root4" } },
-                },
-            },
-            Nested4: {
-                type: "object",
-                properties: {
-                    nested_prop: { type: "boolean" },
-                    backToRoot: { $ref: "#/components/schemas/Root4" },
-                },
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            visitedsRefs: {},
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
-        const result = getTypescriptFromOpenApi({
-            schema: schemas["Root4"]!,
-            meta: { name: "Root4", $ref: "#/components/schemas/Root4" },
-            ctx,
-        }) as ts.Node;
-
-        expect(printTs(result)).toMatchInlineSnapshot(`
-          "export type Root4 = Partial<{
-              str: string;
-              nb: number;
-              self: Root4;
-              nested: Nested4;
-              arrayOfSelf: Array<Root4>;
-          }>;"
-        `);
-    });
-
-    test("same schemas as openApiToZod", () => {
-        const schemas = {
-            User: {
-                type: "object",
-                properties: {
-                    name: { type: "string" },
-                    middle: { $ref: "#/components/schemas/Middle" },
-                },
-            },
-            Middle: {
-                type: "object",
-                properties: {
-                    user: { $ref: "#/components/schemas/User" },
-                },
-            },
-            Root: {
-                type: "object",
-                properties: {
-                    recursive: {
-                        $ref: "#/components/schemas/User",
-                    },
-                    basic: { type: "number" },
-                },
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            visitedsRefs: {},
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
-        const result = getTypescriptFromOpenApi({
-            schema: schemas["Root"]!,
-            meta: { name: "Root", $ref: "#/components/schemas/Root" },
-            ctx,
-        }) as ts.Node;
-
-        expect(printTs(result)).toMatchInlineSnapshot(`
-          "export type Root = Partial<{
-              recursive: User;
-              basic: number;
-          }>;"
-        `);
-    });
-
-    test("anyOf with refs", () => {
-        const schemas = {
-            User: {
-                type: "object",
-                properties: {
-                    name: { type: "string" },
-                },
-            },
-            Member: {
-                type: "object",
-                properties: {
-                    name: { type: "string" },
-                },
-            },
-            Root: {
-                type: "object",
-                properties: {
-                    user: { oneOf: [{ $ref: "#/components/schemas/User" }, { $ref: "#/components/schemas/Member" }] },
-                    users: {
-                        type: "array",
-                        items: {
-                            anyOf: [{ $ref: "#/components/schemas/User" }, { $ref: "#/components/schemas/Member" }],
-                        },
-                    },
-                    basic: { type: "number" },
-                },
-            },
-        } as SchemasObject;
-
-        const ctx: TsConversionContext = {
-            nodeByRef: {},
-            visitedsRefs: {},
-            resolver: makeSchemaResolver({ components: { schemas } } as any),
-        };
-        Object.keys(schemas).forEach((key) => ctx.resolver.getSchemaByRef(asComponentSchema(key)));
-        const result = getTypescriptFromOpenApi({
-            schema: schemas["Root"]!,
-            meta: { name: "Root", $ref: "#/components/schemas/Root" },
-            ctx,
-        }) as ts.Node;
-
-        expect(printTs(result)).toMatchInlineSnapshot(`
-          "export type Root = Partial<{
-              user: User | Member;
-              users: Array<(User | Member) | Array<User | Member>>;
-              basic: number;
-          }>;"
-        `);
-    });
 });
