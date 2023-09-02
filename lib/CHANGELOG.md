@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.11.0
+
+### Minor Changes
+
+-   [#221](https://github.com/astahmer/openapi-zod-client/pull/221) [`5e55304`](https://github.com/astahmer/openapi-zod-client/commit/5e553044dc4dd216e4bebf11b88646a9b9d65f1a) Thanks [@craigmiller160](https://github.com/craigmiller160)! - Added the "all readonly" feature, which allows for generating schemas & types with all arrays and object properties set to readonly.
+
 ## 1.10.8
 
 ### Patch Changes
