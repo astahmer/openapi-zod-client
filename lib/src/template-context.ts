@@ -80,6 +80,7 @@ export const getZodClientTemplateContext = (
                         schema: nodeSchema,
                         ctx,
                         meta: { name: depSchemaName },
+                        options
                     }) as ts.Node;
                     data.types[depSchemaName] = printTs(node).replace("export ", "");
                     // defining types for strings and using the `z.ZodType<string>` type for their schema
