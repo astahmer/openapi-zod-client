@@ -163,7 +163,9 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     return schema.nullable ? t.union([t.never(), t.reference("null")]) : t.never();
                 }
 
-                return schema.nullable ? t.union([...schema.enum, t.reference("null")]) : t.union(schema.enum);
+                const hasNull = schema.enum.includes(null);
+                const withoutNull = schema.enum.filter(f => f !== null);
+                return schema.nullable || hasNull ? t.union([...withoutNull, t.reference("null")]) : t.union(withoutNull);
             }
 
             if (schemaType === "string")
