@@ -155,7 +155,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 }
 
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
-                return code.assign(`z.enum([${schema.enum.map((value) => `"${value}"`).join(", ")}])`);
+                return code.assign(`z.enum([${schema.enum.map((value) => value === null ? "null" : `"${value}"`).join(", ")}])`);
             }
 
             if (schema.enum.some((e) => typeof e === "string")) {
