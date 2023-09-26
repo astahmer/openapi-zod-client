@@ -198,8 +198,10 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     }
 
     if (schemaType === "object" || schema.properties || schema.additionalProperties) {
-        // additional properties are allowed by default unless explicitly opting out
-        const additionalProps = schema.additionalProperties === false ? "" : ".passthrough()";
+        // additional properties default to true if additionalPropertiesDefaultValue not provided
+        const additionalPropsDefaultValue = options?.additionalPropertiesDefaultValue !== undefined ? options?.additionalPropertiesDefaultValue : true;
+        const additionalProps = schema.additionalProperties === null || schema.additionalProperties === undefined ? additionalPropsDefaultValue : schema.additionalProperties;
+        const additionalPropsSchema = additionalProps === false ? "" : ".passthrough()";
 
         if (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length > 0) {
             return code.assign(
@@ -254,7 +256,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         const partial = isPartial ? ".partial()" : "";
 
-        return code.assign(`z.object(${properties})${partial}${additionalProps}${readonly}`);
+        return code.assign(`z.object(${properties})${partial}${additionalPropsSchema}${readonly}`);
     }
 
     if (!schemaType) return code.assign("z.unknown()");

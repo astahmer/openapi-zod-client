@@ -1,4 +1,4 @@
-import type { OpenAPIObject, OperationObject, PathItemObject } from "openapi3-ts";
+import type { OpenAPIObject, OperationObject, PathItemObject, SchemaObject } from "openapi3-ts";
 import { sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
 import { ts } from "tanu";
 import { match } from "ts-pattern";
@@ -377,4 +377,9 @@ export type TemplateContextOptions = {
      * When true, all generated objects and arrays will be readonly.
      */
     allReadonly?: boolean;
+
+    /**
+     * Set default value when additionalProperties is not provided. Default to true.
+     */
+    additionalPropertiesDefaultValue?: boolean | SchemaObject;
 };

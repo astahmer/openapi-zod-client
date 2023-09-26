@@ -51,6 +51,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     )
     .option("--all-readonly", "when true, all generated objects and arrays will be readonly")
     .option("--export-types", "When true, will defined types for all object schemas in `#/components/schemas`")
+    .option("--additional-props-default-value", "Set default value when additionalProperties is not provided. Default to true.", { default: true })
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -81,6 +82,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 defaultStatusBehavior: options.defaultStatus,
                 withDescription: options.withDescription,
                 allReadonly: options.allReadonly,
+                additionalPropertiesDefaultValue: options.additionalPropsDefaultValue
             },
         });
         console.log(`Done generating <${distPath}> !`);
