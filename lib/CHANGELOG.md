@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.12.0
+
+### Minor Changes
+
+-   [`7396fe8`](https://github.com/astahmer/openapi-zod-client/commit/7396fe8a087b9a3e8f7bab52fd5b728a3519a7bd) Thanks [@astahmer](https://github.com/astahmer)! - Add additionalPropsDefaultValue flag in case additionalProperties is not provided
+
 ## 1.11.1
 
 ### Patch Changes
