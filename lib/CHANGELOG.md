@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.12.1
+
+### Patch Changes
+
+-   [#232](https://github.com/astahmer/openapi-zod-client/pull/232) [`efebdf2`](https://github.com/astahmer/openapi-zod-client/commit/efebdf2627e79d2fb759096667d445cc137446fd) Thanks [@ArthurGoupil](https://github.com/ArthurGoupil)! - Pass options object to `getZodSchema` when `shouldExportAllSchemas` is true.
+
 ## 1.12.0
 
 ### Minor Changes
