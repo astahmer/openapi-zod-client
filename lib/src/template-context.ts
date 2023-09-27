@@ -33,7 +33,7 @@ export const getZodClientTemplateContext = (
     if (options?.shouldExportAllSchemas) {
         Object.entries(docSchemas).forEach(([name, schema]) => {
             if (!result.zodSchemaByName[name]) {
-                result.zodSchemaByName[name] = getZodSchema({ schema, ctx: result }).toString();
+                result.zodSchemaByName[name] = getZodSchema({ schema, ctx: result, options }).toString();
             }
         });
     }
