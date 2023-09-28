@@ -382,4 +382,9 @@ export type TemplateContextOptions = {
      * Set default value when additionalProperties is not provided. Default to true.
      */
     additionalPropertiesDefaultValue?: boolean | SchemaObject;
+
+    /**
+     * When true, returns a "responses" array with all responses (both success and errors)
+     */
+    withAllResponses?: boolean;
 };

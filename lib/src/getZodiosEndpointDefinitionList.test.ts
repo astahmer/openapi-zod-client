@@ -1126,3 +1126,173 @@ test("petstore.yaml", async () => {
       }
     `);
 });
+
+test("getZodiosEndpointDefinitionList should return responses if options.withAllResponses is true", () => {
+    expect(
+        getZodiosEndpointDefinitionList({
+            ...baseDoc,
+            components: { schemas: { Pet: schemas.Pet, Category: schemas.Category, Tag: schemas.Tag } },
+            paths: {
+                "/pet/findByStatus": {
+                    get: {
+                        tags: ["pet"],
+                        summary: "Finds Pets by status",
+                        description: "Multiple status values can be provided with comma separated strings",
+                        operationId: "findPetsByStatus",
+                        responses: {
+                            "200": {
+                                description: "successful operation",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: {
+                                                $ref: "#/components/schemas/Pet",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                            "400": {
+                                description: "Invalid status value",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "string",
+                                        },
+                                    },
+                                },
+                            },
+                            "500": {
+                                description: "Network error",
+                            },
+                        },
+                    },
+                },
+                "/pet/findByTags": {
+                    get: {
+                        tags: ["pet"],
+                        summary: "Finds Pets by tags",
+                        description:
+                            "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+                        operationId: "findPetsByTags",
+                        responses: {
+                            "200": {
+                                description: "successful operation",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "array",
+                                            items: {
+                                                $ref: "#/components/schemas/Pet",
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                            "400": {
+                                description: "Invalid tag value",
+                            },
+                        },
+                    },
+                },
+            },
+        }, { withAllResponses: true })
+    ).toMatchInlineSnapshot(`
+      {
+          "deepDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
+          },
+          "endpoints": [
+              {
+                  "description": "Multiple status values can be provided with comma separated strings",
+                  "errors": [
+                      {
+                          "description": "Invalid status value",
+                          "schema": "z.string()",
+                          "status": 400,
+                      },
+                      {
+                          "description": "Network error",
+                          "schema": "z.void()",
+                          "status": 500,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/pet/findByStatus",
+                  "requestFormat": "json",
+                  "response": "z.array(Pet)",
+                  "responses": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.array(Pet)",
+                          "statusCode": "200",
+                      },
+                      {
+                          "description": "Invalid status value",
+                          "schema": "z.string()",
+                          "statusCode": "400",
+                      },
+                      {
+                          "description": "Network error",
+                          "schema": "z.void()",
+                          "statusCode": "500",
+                      },
+                  ],
+              },
+              {
+                  "description": "Multiple tags can be provided with comma separated strings. Use tag1, tag2, tag3 for testing.",
+                  "errors": [
+                      {
+                          "description": "Invalid tag value",
+                          "schema": "z.void()",
+                          "status": 400,
+                      },
+                  ],
+                  "method": "get",
+                  "parameters": [],
+                  "path": "/pet/findByTags",
+                  "requestFormat": "json",
+                  "response": "z.array(Pet)",
+                  "responses": [
+                      {
+                          "description": "successful operation",
+                          "schema": "z.array(Pet)",
+                          "statusCode": "200",
+                      },
+                      {
+                          "description": "Invalid tag value",
+                          "schema": "z.void()",
+                          "statusCode": "400",
+                      },
+                  ],
+              },
+          ],
+          "issues": {
+              "ignoredFallbackResponse": [],
+              "ignoredGenericError": [],
+          },
+          "refsDependencyGraph": {
+              "#/components/schemas/Pet": Set {
+                  "#/components/schemas/Category",
+                  "#/components/schemas/Tag",
+              },
+          },
+          "resolver": {
+              "getSchemaByRef": [Function],
+              "resolveRef": [Function],
+              "resolveSchemaName": [Function],
+          },
+          "schemaByName": {},
+          "zodSchemaByName": {
+              "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+              "Pet": "z.object({ id: z.number().int().optional(), name: z.string(), category: Category.optional(), photoUrls: z.array(z.string()), tags: z.array(Tag).optional(), status: z.enum(["available", "pending", "sold"]).optional() }).passthrough()",
+              "Tag": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",
+          },
+      }
+    `);
+});

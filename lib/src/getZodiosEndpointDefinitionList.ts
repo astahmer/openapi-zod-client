@@ -281,6 +281,10 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 }
             }
 
+            if (options?.withAllResponses) {
+                endpointDefinition.responses = [];
+            }
+
             for (const statusCode in operation.responses) {
                 const responseItem = (
                     isReferenceObject(operation.responses[statusCode])
@@ -306,6 +310,10 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                                 : maybeSchema,
                             meta: schema.meta,
                         });
+                }
+
+                if (endpointDefinition.responses !== undefined) {
+                    endpointDefinition.responses.push({ statusCode, schema: schemaString ?? voidSchema, description: responseItem.description });
                 }
 
                 if (schemaString) {
@@ -432,6 +440,7 @@ export type EndpointDefinitionWithRefs = Omit<
         Omit<Required<ZodiosEndpointDefinition<any>>["parameters"][number], "schema"> & { schema: string }
     >;
     errors: Array<Omit<Required<ZodiosEndpointDefinition<any>>["errors"][number], "schema"> & { schema: string }>;
+    responses?: Array<{ statusCode: string; schema: string; description?: string }>;
 };
 
 const allowedParamMediaTypes = [
