@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.13.0
+
+### Minor Changes
+
+-   [#234](https://github.com/astahmer/openapi-zod-client/pull/234) [`096d8b4`](https://github.com/astahmer/openapi-zod-client/commit/096d8b4f6bbf0c829ef5dd3c02a11468ba2654b4) Thanks [@ArthurGoupil](https://github.com/ArthurGoupil)! - Add option `withAllResponses` to be receive a `responses` array containing all responses (succes & error)
+
 ## 1.12.1
 
 ### Patch Changes
