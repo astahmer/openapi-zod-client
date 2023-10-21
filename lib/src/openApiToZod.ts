@@ -276,6 +276,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 type ZodChainArgs = { schema: SchemaObject; meta?: CodeMetaData; options?: TemplateContext["options"] };
 
 export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
+    if(options?.xZodSchema && schema["x-zod-schema"]) { 
+        return '';
+    }
     const chains: string[] = [];
 
     match(schema.type)
