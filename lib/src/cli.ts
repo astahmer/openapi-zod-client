@@ -83,7 +83,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 defaultStatusBehavior: options.defaultStatus,
                 withDescription: options.withDescription,
                 allReadonly: options.allReadonly,
-                additionalPropertiesDefaultValue: options.additionalPropsDefaultValue,
+                additionalPropertiesDefaultValue: options.additionalPropsDefaultValue === 'false' ? false : options.additionalPropsDefaultValue,
                 xZodSchema: options.xZodSchema,
             },
         });
