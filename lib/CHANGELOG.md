@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.13.1
+
+### Patch Changes
+
+-   [#242](https://github.com/astahmer/openapi-zod-client/pull/242) [`81efd49`](https://github.com/astahmer/openapi-zod-client/commit/81efd491ee6a884b252e8fbaaefdfd565220ef9d) Thanks [@imballinst](https://github.com/imballinst)! - chore: make endpointDefinitionRefiner to receive final fields that are going to be used in handlebars
+
 ## 1.13.0
 
 ### Minor Changes
