@@ -162,12 +162,6 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 response: "",
             };
 
-            if (options?.endpointDefinitionRefiner) {
-                // Refine the endpoint definition, in case consumer wants to add some specific fields
-                // to be rendered in the Handlebars template.
-                endpointDefinition = options.endpointDefinitionRefiner(endpointDefinition, operation);
-            }
-
             if (operation.requestBody) {
                 const requestBody = (
                     isReferenceObject(operation.requestBody)
@@ -387,6 +381,12 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             if (!endpointDefinition.response) {
                 endpointDefinition.response = voidSchema;
+            }
+
+            if (options?.endpointDefinitionRefiner) {
+                // Refine the endpoint definition, in case consumer wants to add some specific fields
+                // to be rendered in the Handlebars template.
+                endpointDefinition = options.endpointDefinitionRefiner(endpointDefinition, operation);
             }
 
             endpoints.push(endpointDefinition);
