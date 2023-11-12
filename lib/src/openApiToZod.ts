@@ -65,7 +65,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
     if (options?.xZodSchema) {
         const xZodSchema = schema["x-zod-schema"];
-        if (xZodSchema) {
+        if (Array.isArray(xZodSchema) && xZodSchema.length > 0) {
+            return code.assign(xZodSchema[0]);
+        } else if(typeof xZodSchema === 'string') {
             return code.assign(xZodSchema);
         }
     }
