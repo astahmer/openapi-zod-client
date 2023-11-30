@@ -94,6 +94,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             return t.reference(schemaName);
         }
 
+        const xZodSchema = schema["x-zod-schema"];
+        if (Array.isArray(xZodSchema) && xZodSchema.length > 1) {
+            return t.reference(xZodSchema[1]);
+        }
+
         if (Array.isArray(schema.type)) {
             if (schema.type.length === 1) {
                 return getTypescriptFromOpenApi({ schema: { ...schema, type: schema.type[0]! }, ctx, meta, options });

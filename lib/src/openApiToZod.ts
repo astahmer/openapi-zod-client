@@ -63,6 +63,16 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code;
     }
 
+    if (options?.xZodSchema) {
+        const xZodSchema = schema["x-zod-schema"];
+        if (Array.isArray(xZodSchema) && xZodSchema.length > 0) {
+            return code.assign(xZodSchema[0]);
+        } else if(typeof xZodSchema === 'string') {
+            return code.assign(xZodSchema);
+        }
+    }
+
+
     if (Array.isArray(schema.type)) {
         if (schema.type.length === 1) {
             return getZodSchema({ schema: { ...schema, type: schema.type[0]! }, ctx, meta, options });
@@ -270,11 +280,14 @@ type ZodChainArgs = { schema: SchemaObject; meta?: CodeMetaData; options?: Templ
 export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
     const chains: string[] = [];
 
-    match(schema.type)
+    if(!(options?.xZodSchema && schema["x-zod-schema"])) {
+        // skip schema type-based chains for escape hatch 
+        match(schema.type)
         .with("string", () => chains.push(getZodChainableStringValidations(schema)))
         .with("number", "integer", () => chains.push(getZodChainableNumberValidations(schema)))
         .with("array", () => chains.push(getZodChainableArrayValidations(schema)))
         .otherwise(() => void 0);
+    }
 
     if (typeof schema.description === "string" && schema.description !== "" && options?.withDescription) {
         chains.push(`describe("${schema.description}")`);

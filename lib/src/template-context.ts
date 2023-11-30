@@ -387,4 +387,9 @@ export type TemplateContextOptions = {
      * When true, returns a "responses" array with all responses (both success and errors)
      */
     withAllResponses?: boolean;
+
+    /**
+     * When true, supports `x-zod-schema` to define the complete zod schema for a given openapi schema. 
+     */
+    xZodSchema?: boolean;
 };
