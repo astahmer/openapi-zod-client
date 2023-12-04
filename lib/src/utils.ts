@@ -15,7 +15,7 @@ export function normalizeString(text: string) {
 }
 
 export const wrapWithQuotesIfNeeded = (str: string) => {
-    if (/^\w+$/.test(str)) {
+    if (/^[a-zA-Z]\w*$/.test(str)) {
         return str;
     }
 
