@@ -1,5 +1,6 @@
 import type { SchemaObject } from "openapi3-ts";
 import { capitalize, kebabToCamel, snakeToCamel } from "pastable/server";
+import { match, P } from "ts-pattern";
 
 export const asComponentSchema = (name: string) => `#/components/schemas/${name}`;
 
@@ -80,3 +81,8 @@ export const escapeControlCharacters = (str: string): string => {
             return `\\u${`0000${hex}`.slice(-4)}`;
         });
 };
+
+export const toBoolean = (value: undefined | string | boolean, defaultValue: boolean) => match(value)
+    .with(P.string.regex(/^false$/i), false, () => false)
+    .with(P.string.regex(/^true$/i), true, () => true)
+    .otherwise(() => defaultValue);
