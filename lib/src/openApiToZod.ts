@@ -1,4 +1,4 @@
-import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+import { isSchemaObject, type ReferenceObject, type SchemaObject } from "openapi3-ts";
 import { match } from "ts-pattern";
 
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
@@ -85,13 +85,16 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             return code.assign(type.toString());
         }
 
-        if (schema.discriminator) {
+        /* when there are multiple allOf we are unable to use a discriminatedUnion as this library adds an
+         *   'z.and' to the schema that it creates which breaks type inference */
+        const hasMultipleAllOf = schema.oneOf?.some((obj) => isSchemaObject(obj) && (obj?.allOf || []).length > 1)
+        if (schema.discriminator && !hasMultipleAllOf) {
             const propertyName = schema.discriminator.propertyName;
 
             return code.assign(`
                 z.discriminatedUnion("${propertyName}", [${schema.oneOf
-                .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
-                .join(", ")}])
+                    .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
+                    .join(", ")}])
             `);
         }
 
@@ -227,8 +230,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                     isRequired: isPartial
                         ? true
                         : hasRequiredArray
-                        ? schema.required?.includes(prop)
-                        : options?.withImplicitRequiredProps,
+                            ? schema.required?.includes(prop)
+                            : options?.withImplicitRequiredProps,
                     name: prop,
                 } as CodeMetaData;
 
