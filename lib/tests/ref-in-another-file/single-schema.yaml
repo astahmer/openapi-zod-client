@@ -5,6 +5,9 @@ properties:
     type: string
   completed:
     type: boolean
+  0_property_starting_with_number:
+    type: number
 required:
   - name
   - completed
+  - 0_property_starting_with_number
