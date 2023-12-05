@@ -1,5 +1,15 @@
 # openapi-zod-client
 
+## 1.13.2
+
+### Patch Changes
+
+-   [#248](https://github.com/astahmer/openapi-zod-client/pull/248) [`fd5f850`](https://github.com/astahmer/openapi-zod-client/commit/fd5f850492bf384586d079350f021475014e1767) Thanks [@nmcdaines](https://github.com/nmcdaines)! - Fixes an issue whereby you aren't able to set additionalPropsDefaultValue from command line as false because the package expects it to be a boolean, however recieves a string value
+
+-   [#249](https://github.com/astahmer/openapi-zod-client/pull/249) [`8dfb265`](https://github.com/astahmer/openapi-zod-client/commit/8dfb265ee23bb79b2c8fe0dd979103c89f0bcf4f) Thanks [@nmcdaines](https://github.com/nmcdaines)! - Fix issue using discriminated union when there are multiple items within an allOf block by reverting to a union type for this case
+
+-   [#247](https://github.com/astahmer/openapi-zod-client/pull/247) [`1e1dcd8`](https://github.com/astahmer/openapi-zod-client/commit/1e1dcd8c40aa9db6bacbe170410543387bbf3403) Thanks [@tillschweneker](https://github.com/tillschweneker)! - When a property from an external json or yaml file starts with a number, e.g. 1st, instead of first, the generated Zod-Schema is corrupt. The change in the wrapWithQuotesIfNeeded method makes sure, that any property starting with a number is wrapped in quotes.
+
 ## 1.13.1
 
 ### Patch Changes
