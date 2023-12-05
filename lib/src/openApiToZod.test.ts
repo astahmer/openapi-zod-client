@@ -141,6 +141,130 @@ test("getSchemaAsZodString", () => {
                   "
     `);
 
+    // returns z.discriminatedUnion, when allOf has single object
+    expect(
+        getSchemaAsZodString({
+            type: "object",
+            oneOf: [
+                {
+                    type: "object",
+                    allOf: [
+                        {
+                            type: "object",
+                            required: ["type", "a"],
+                            properties: {
+                                type: {
+                                    type: "string",
+                                    enum: ["a"],
+                                },
+                                a: {
+                                    type: "string",
+                                },
+                            },
+                        }
+                    ]
+                },
+                {
+                    type: "object",
+                    allOf: [
+                        {
+                            type: "object",
+                            required: ["type", "b"],
+                            properties: {
+                                type: {
+                                    type: "string",
+                                    enum: ["b"],
+                                },
+                                b: {
+                                    type: "string",
+                                },
+                            },
+                        },
+                    ]
+                }
+            ],
+            discriminator: { propertyName: "type" },
+
+        })
+    ).toMatchInlineSnapshot(`
+    "
+                    z.discriminatedUnion("type", [z.object({ type: z.literal("a"), a: z.string() }).passthrough(), z.object({ type: z.literal("b"), b: z.string() }).passthrough()])
+                "
+    `);
+
+    // returns z.union, when allOf has multiple objects
+    expect(
+        getSchemaAsZodString({
+            type: "object",
+            oneOf: [
+                {
+                    type: "object",
+                    allOf: [
+                        {
+                            type: "object",
+                            required: ["type", "a"],
+                            properties: {
+                                type: {
+                                    type: "string",
+                                    enum: ["a"],
+                                },
+                                a: {
+                                    type: "string",
+                                },
+                            },
+                        },
+                        {
+                            type: "object",
+                            required: ["type", "c"],
+                            properties: {
+                                type: {
+                                    type: "string",
+                                    enum: ["c"],
+                                },
+                                c: {
+                                    type: "string",
+                                },
+                            },
+                        },
+                    ]
+                },
+                {
+                    type: "object",
+                    allOf: [
+                        {
+                            type: "object",
+                            required: ["type", "b"],
+                            properties: {
+                                type: {
+                                    type: "string",
+                                    enum: ["b"],
+                                },
+                                b: {
+                                    type: "string",
+                                },
+                            },
+                        },
+                        {
+                            type: "object",
+                            required: ["type", "d"],
+                            properties: {
+                                type: {
+                                    type: "string",
+                                    enum: ["d"],
+                                },
+                                d: {
+                                    type: "string",
+                                },
+                            },
+                        },
+                    ]
+                }
+            ],
+            discriminator: { propertyName: "type" },
+
+        })
+    ).toMatchInlineSnapshot('"z.union([z.object({ type: z.literal("a"), a: z.string() }).passthrough().and(z.object({ type: z.literal("c"), c: z.string() }).passthrough()), z.object({ type: z.literal("b"), b: z.string() }).passthrough().and(z.object({ type: z.literal("d"), d: z.string() }).passthrough())])"');
+
     expect(
         getSchemaAsZodString({
             type: "object",
