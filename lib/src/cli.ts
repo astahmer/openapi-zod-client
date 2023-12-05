@@ -6,8 +6,8 @@ import cac from "cac";
 import type { OpenAPIObject } from "openapi3-ts";
 import { safeJSONParse } from "pastable/server";
 import { resolveConfig } from "prettier";
-import { match, P } from "ts-pattern";
 
+import { toBoolean } from "./utils";
 import { generateZodClientFromOpenAPI } from "./generateZodClientFromOpenAPI";
 
 const cli = cac("openapi-zod-client");
@@ -57,9 +57,8 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
         const prettierConfig = await resolveConfig(options.prettier || "./");
         const distPath = options.output || input + ".client.ts";
-        const withAlias = match(options.withAlias)
-            .with(P.nullish, P.string.regex(/^false$/i), false, () => false)
-            .otherwise(() => true);
+        const withAlias = toBoolean(options.withAlias, true)
+        const additionalPropertiesDefaultValue = toBoolean(options.additionalPropsDefaultValue, true)
 
         await generateZodClientFromOpenAPI({
             openApiDoc,
@@ -82,7 +81,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 defaultStatusBehavior: options.defaultStatus,
                 withDescription: options.withDescription,
                 allReadonly: options.allReadonly,
-                additionalPropertiesDefaultValue: options.additionalPropsDefaultValue
+                additionalPropertiesDefaultValue
             },
         });
         console.log(`Done generating <${distPath}> !`);
