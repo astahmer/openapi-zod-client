@@ -1,7 +1,7 @@
 import type { OpenAPIObject } from "openapi3-ts";
-import { describe, expect, test } from 'vitest';
-import { generateZodClientFromOpenAPI } from '../src';
-import type { TemplateContextGroupStrategy } from '../src/template-context';
+import { describe, expect, test } from "vitest";
+import { generateZodClientFromOpenAPI } from "../src";
+import type { TemplateContextGroupStrategy } from "../src/template-context";
 
 // https://github.com/astahmer/openapi-zod-client/issues/157
 describe("file group strategy with multi-props object as query parameter", async () => {
@@ -73,19 +73,19 @@ const endpoints = makeApi([
   },
 ]);
 
-export const ${groupStrategy === 'method-file' ? 'PostApi' : 'DefaultApi'} = new Zodios(endpoints);
+export const ${groupStrategy === "method-file" ? "PostApi" : "DefaultApi"} = new Zodios(endpoints);
 
 export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
   return new Zodios(baseUrl, endpoints, options);
 }\n",`;
 
-        const expected = groupStrategy === 'method-file'
+        const expected = groupStrategy === "method-file"
           ? `{\n${expectedIndex}\n${expectedApi}\n}`
           : `{\n${expectedApi}\n${expectedIndex}\n}`;
 
         expect(output).toMatchInlineSnapshot(expected);
     };
 
-    test('tag file', () => runTest('tag-file'));
-    test('method file', () => runTest('method-file'));
+    test("tag file", () => runTest("tag-file"));
+    test("method file", () => runTest("method-file"));
 });
