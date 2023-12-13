@@ -155,7 +155,7 @@ export const getZodClientTemplateContext = (
 
                     group.schemas[schemaName] = data.schemas[schemaName]!;
 
-                    depsGraphs.deepDependencyGraph[result.resolver.resolveSchemaName(schemaName).ref]?.forEach(
+                    depsGraphs.deepDependencyGraph[result.resolver.resolveSchemaName(schemaName)?.ref]?.forEach(
                         (transitiveRef) => {
                             const transitiveSchemaName = result.resolver.resolveRef(transitiveRef).normalized;
                             addDependencyIfNeeded(transitiveSchemaName);
@@ -245,6 +245,8 @@ export type TemplateContext = {
     commonSchemaNames?: Set<string>;
     options?: TemplateContextOptions | undefined;
 };
+
+export type TemplateContextGroupStrategy = "none" | "tag" | "method" | "tag-file" | "method-file";
 
 export type TemplateContextOptions = {
     /** @see https://www.zodios.org/docs/client#baseurl */
@@ -337,7 +339,7 @@ export type TemplateContextOptions = {
      *
      * @default "none"
      */
-    groupStrategy?: "none" | "tag" | "method" | "tag-file" | "method-file";
+    groupStrategy?: TemplateContextGroupStrategy;
     /**
      * schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
      * tl;dr higher means more schemas will be inlined (rather than assigned to a variable)
