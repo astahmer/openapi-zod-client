@@ -80,10 +80,10 @@ export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
 }\n",`;
 
         const expected = groupStrategy === 'method-file'
-          ? `\n${expectedIndex}\n${expectedApi}\n`
-          : `\n${expectedApi}\n${expectedIndex}\n`;
+          ? `{\n${expectedIndex}\n${expectedApi}\n}`
+          : `{\n${expectedApi}\n${expectedIndex}\n}`;
 
-        expect(output).toMatchInlineSnapshot(`{${expected}}`);
+        expect(output).toMatchInlineSnapshot(expected);
     };
 
     test('tag file', () => runTest('tag-file'));
