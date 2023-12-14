@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.13.4
+
+### Patch Changes
+
+-   [#254](https://github.com/astahmer/openapi-zod-client/pull/254) [`6e5a589`](https://github.com/astahmer/openapi-zod-client/commit/6e5a589025b070308dbc9dd4402d2fa1fac9d349) Thanks [@jayvdb](https://github.com/jayvdb)! - fix: Bump axios to avoid CVE-2023-45857
+
 ## 1.13.3
 
 ### Patch Changes
