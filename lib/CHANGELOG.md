@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.13.3
+
+### Patch Changes
+
+-   [#251](https://github.com/astahmer/openapi-zod-client/pull/251) [`2859ede`](https://github.com/astahmer/openapi-zod-client/commit/2859edee065fa24fef69be6241ab9c773724fe7f) Thanks [@ezze](https://github.com/ezze)! - Fix "Cannot read properties of undefined (reading 'ref')" type error for file group strategies
+
 ## 1.13.2
 
 ### Patch Changes
