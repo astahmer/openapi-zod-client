@@ -200,7 +200,12 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(`z.array(z.any())${readonly}`);
     }
 
-    if (schemaType === "object" || schema.properties || schema.additionalProperties) {
+    if (
+        schemaType === "object" ||
+        schema.properties ||
+        schema.additionalProperties ||
+        (schema.required && Array.isArray(schema.required))
+    ) {
         // additional properties default to true if additionalPropertiesDefaultValue not provided
         const additionalPropsDefaultValue = options?.additionalPropertiesDefaultValue !== undefined ? options?.additionalPropertiesDefaultValue : true;
         const additionalProps = schema.additionalProperties === null || schema.additionalProperties === undefined ? additionalPropsDefaultValue : schema.additionalProperties;
@@ -259,7 +264,25 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         const partial = isPartial ? ".partial()" : "";
 
-        return code.assign(`z.object(${properties})${partial}${additionalPropsSchema}${readonly}`);
+        const schemaRequired = schema.required;
+        const schemaProperties = schema.properties;
+        // properties in required array but not in properties should be validated seprately, when additional props are allowed
+        const extraPropertiesFromRequiredArray =
+            additionalProps !== false && schemaRequired
+                ? schemaProperties
+                    ? schemaRequired.filter((p) => !(p in schemaProperties))
+                    : schemaRequired
+                : [];
+        const extraProperties =
+            extraPropertiesFromRequiredArray.length > 0
+                ? "z.object({ " + extraPropertiesFromRequiredArray.map((p) => `${p}: z.unknown()`).join(", ") + " })"
+                : "";
+
+        return code.assign(
+            `z.object(${properties})${partial}${
+                extraProperties && ".and(" + extraProperties + ")"
+            }${additionalPropsSchema}${readonly}`
+        );
     }
 
     if (!schemaType) return code.assign("z.unknown()");
