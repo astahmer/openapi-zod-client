@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.14.0
+
+### Minor Changes
+
+-   [#258](https://github.com/astahmer/openapi-zod-client/pull/258) [`8c80b43`](https://github.com/astahmer/openapi-zod-client/commit/8c80b4325048ab9861269739f3011b2380a3b958) Thanks [@marrowleaves](https://github.com/marrowleaves)! - Fix #257 by inferring as object when only required array defined
+
 ## 1.13.4
 
 ### Patch Changes
