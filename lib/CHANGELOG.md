@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.15.0
+
+### Minor Changes
+
+-   [#261](https://github.com/astahmer/openapi-zod-client/pull/261) [`00ed1ee`](https://github.com/astahmer/openapi-zod-client/commit/00ed1ee84ddf88a68e05927395e56a9861394e60) Thanks [@C-ra-ZY](https://github.com/C-ra-ZY)! - Fix #260 by infer types of items in a required only allOf item.
+
 ## 1.14.0
 
 ### Minor Changes
