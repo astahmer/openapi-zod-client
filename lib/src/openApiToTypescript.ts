@@ -6,6 +6,7 @@ import { isReferenceObject } from "./isReferenceObject";
 import type { DocumentResolver } from "./makeSchemaResolver";
 import type { TemplateContext } from "./template-context";
 import { wrapWithQuotesIfNeeded } from "./utils";
+import { inferRequiredSchema } from "./inferRequiredOnly";
 
 type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -96,7 +97,12 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
         if (Array.isArray(schema.type)) {
             if (schema.type.length === 1) {
-                return getTypescriptFromOpenApi({ schema: { ...schema, type: schema.type[0]! }, ctx, meta, options });
+                return getTypescriptFromOpenApi({
+                    schema: { ...schema, type: schema.type[0]! },
+                    ctx,
+                    meta,
+                    options,
+                });
             }
 
             const types = schema.type.map(
@@ -149,10 +155,25 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             if (schema.allOf.length === 1) {
                 return getTypescriptFromOpenApi({ schema: schema.allOf[0]!, ctx, meta, options });
             }
+            const { patchRequiredSchemaInLoop, noRequiredOnlyAllof, composedRequiredSchema } =
+                inferRequiredSchema(schema);
 
-            const types = schema.allOf.map(
-                (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta, options }) as TypeDefinition
-            );
+            const types = noRequiredOnlyAllof.map((prop) => {
+                const type = getTypescriptFromOpenApi({ schema: prop, ctx, meta, options }) as TypeDefinition;
+                ctx?.resolver && patchRequiredSchemaInLoop(prop, ctx.resolver);
+                return type;
+            });
+
+            if (Object.keys(composedRequiredSchema.properties).length) {
+                types.push(
+                    getTypescriptFromOpenApi({
+                        schema: composedRequiredSchema,
+                        ctx,
+                        meta,
+                        options,
+                    }) as TypeDefinition
+                );
+            }
             return schema.nullable ? t.union([t.intersection(types), t.reference("null")]) : t.intersection(types);
         }
 
@@ -164,8 +185,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 }
 
                 const hasNull = schema.enum.includes(null);
-                const withoutNull = schema.enum.filter(f => f !== null);
-                return schema.nullable || hasNull ? t.union([...withoutNull, t.reference("null")]) : t.union(withoutNull);
+                const withoutNull = schema.enum.filter((f) => f !== null);
+                return schema.nullable || hasNull
+                    ? t.union([...withoutNull, t.reference("null")])
+                    : t.union(withoutNull);
             }
 
             if (schemaType === "string")
@@ -278,7 +301,6 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         }
 
         if (!schemaType) return t.unknown();
-
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw new Error(`Unsupported schema type: ${schemaType}`);
     };
@@ -293,7 +315,7 @@ type SingleType = Exclude<SchemaObject["type"], any[] | undefined>;
 const isPrimitiveType = (type: SingleType): type is PrimitiveType => primitiveTypeList.includes(type as any);
 
 const primitiveTypeList = ["string", "number", "integer", "boolean", "null"] as const;
-type PrimitiveType = typeof primitiveTypeList[number];
+type PrimitiveType = (typeof primitiveTypeList)[number];
 
 const wrapTypeIfInline = ({
     isInline,

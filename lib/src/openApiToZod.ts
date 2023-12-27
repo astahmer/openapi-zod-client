@@ -6,6 +6,7 @@ import { CodeMeta } from "./CodeMeta";
 import { isReferenceObject } from "./isReferenceObject";
 import type { TemplateContext } from "./template-context";
 import { escapeControlCharacters, isPrimitiveType, wrapWithQuotesIfNeeded } from "./utils";
+import { inferRequiredSchema } from "./inferRequiredOnly";
 
 type ConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -23,7 +24,6 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     if (!schema) {
         throw new Error("Schema is required");
     }
-
     const code = new CodeMeta(schema, ctx, inheritedMeta);
     const meta = {
         parent: code.inherit(inheritedMeta?.parent),
@@ -87,14 +87,14 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
         /* when there are multiple allOf we are unable to use a discriminatedUnion as this library adds an
          *   'z.and' to the schema that it creates which breaks type inference */
-        const hasMultipleAllOf = schema.oneOf?.some((obj) => isSchemaObject(obj) && (obj?.allOf || []).length > 1)
+        const hasMultipleAllOf = schema.oneOf?.some((obj) => isSchemaObject(obj) && (obj?.allOf || []).length > 1);
         if (schema.discriminator && !hasMultipleAllOf) {
             const propertyName = schema.discriminator.propertyName;
 
             return code.assign(`
                 z.discriminatedUnion("${propertyName}", [${schema.oneOf
-                    .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
-                    .join(", ")}])
+                .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
+                .join(", ")}])
             `);
         }
 
@@ -136,8 +136,24 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
             const type = getZodSchema({ schema: schema.allOf[0]!, ctx, meta, options });
             return code.assign(type.toString());
         }
+        const { patchRequiredSchemaInLoop, noRequiredOnlyAllof, composedRequiredSchema } = inferRequiredSchema(schema);
 
-        const types = schema.allOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options }));
+        const types = noRequiredOnlyAllof.map((prop) => {
+            const zodSchema = getZodSchema({ schema: prop, ctx, meta, options });
+            ctx?.resolver && patchRequiredSchemaInLoop(prop, ctx.resolver);
+            return zodSchema;
+        });
+
+        if (composedRequiredSchema.required.length) {
+            types.push(
+                getZodSchema({
+                    schema: composedRequiredSchema,
+                    ctx,
+                    meta,
+                    options,
+                })
+            );
+        }
         const first = types.at(0)!;
         const rest = types
             .slice(1)
@@ -158,7 +174,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                 }
 
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
-                return code.assign(`z.enum([${schema.enum.map((value) => value === null ? "null" : `"${value}"`).join(", ")}])`);
+                return code.assign(
+                    `z.enum([${schema.enum.map((value) => (value === null ? "null" : `"${value}"`)).join(", ")}])`
+                );
             }
 
             if (schema.enum.some((e) => typeof e === "string")) {
@@ -200,15 +218,14 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         return code.assign(`z.array(z.any())${readonly}`);
     }
 
-    if (
-        schemaType === "object" ||
-        schema.properties ||
-        schema.additionalProperties ||
-        (schema.required && Array.isArray(schema.required))
-    ) {
+    if (schemaType === "object" || schema.properties || schema.additionalProperties) {
         // additional properties default to true if additionalPropertiesDefaultValue not provided
-        const additionalPropsDefaultValue = options?.additionalPropertiesDefaultValue !== undefined ? options?.additionalPropertiesDefaultValue : true;
-        const additionalProps = schema.additionalProperties === null || schema.additionalProperties === undefined ? additionalPropsDefaultValue : schema.additionalProperties;
+        const additionalPropsDefaultValue =
+            options?.additionalPropertiesDefaultValue !== undefined ? options?.additionalPropertiesDefaultValue : true;
+        const additionalProps =
+            schema.additionalProperties === null || schema.additionalProperties === undefined
+                ? additionalPropsDefaultValue
+                : schema.additionalProperties;
         const additionalPropsSchema = additionalProps === false ? "" : ".passthrough()";
 
         if (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length > 0) {
@@ -235,8 +252,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
                     isRequired: isPartial
                         ? true
                         : hasRequiredArray
-                            ? schema.required?.includes(prop)
-                            : options?.withImplicitRequiredProps,
+                        ? schema.required?.includes(prop)
+                        : options?.withImplicitRequiredProps,
                     name: prop,
                 } as CodeMetaData;
 
@@ -263,26 +280,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         }
 
         const partial = isPartial ? ".partial()" : "";
-
-        const schemaRequired = schema.required;
-        const schemaProperties = schema.properties;
-        // properties in required array but not in properties should be validated seprately, when additional props are allowed
-        const extraPropertiesFromRequiredArray =
-            additionalProps !== false && schemaRequired
-                ? schemaProperties
-                    ? schemaRequired.filter((p) => !(p in schemaProperties))
-                    : schemaRequired
-                : [];
-        const extraProperties =
-            extraPropertiesFromRequiredArray.length > 0
-                ? "z.object({ " + extraPropertiesFromRequiredArray.map((p) => `${p}: z.unknown()`).join(", ") + " })"
-                : "";
-
-        return code.assign(
-            `z.object(${properties})${partial}${
-                extraProperties && ".and(" + extraProperties + ")"
-            }${additionalPropsSchema}${readonly}`
-        );
+        return code.assign(`z.object(${properties})${partial}${additionalPropsSchema}${readonly}`);
     }
 
     if (!schemaType) return code.assign("z.unknown()");
