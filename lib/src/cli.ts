@@ -51,14 +51,23 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     )
     .option("--all-readonly", "when true, all generated objects and arrays will be readonly")
     .option("--export-types", "When true, will defined types for all object schemas in `#/components/schemas`")
-    .option("--additional-props-default-value", "Set default value when additionalProperties is not provided. Default to true.", { default: true })
+    .option(
+        "--additional-props-default-value",
+        "Set default value when additionalProperties is not provided. Default to true.",
+        { default: true }
+    )
+    .option(
+        "--strict-objects",
+        "Use strict validation for objects so we don't allow unknown keys. Defaults to false.",
+        { default: false }
+    )
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
         const prettierConfig = await resolveConfig(options.prettier || "./");
         const distPath = options.output || input + ".client.ts";
-        const withAlias = toBoolean(options.withAlias, true)
-        const additionalPropertiesDefaultValue = toBoolean(options.additionalPropsDefaultValue, true)
+        const withAlias = toBoolean(options.withAlias, true);
+        const additionalPropertiesDefaultValue = toBoolean(options.additionalPropsDefaultValue, true);
 
         await generateZodClientFromOpenAPI({
             openApiDoc,
@@ -81,7 +90,8 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 defaultStatusBehavior: options.defaultStatus,
                 withDescription: options.withDescription,
                 allReadonly: options.allReadonly,
-                additionalPropertiesDefaultValue
+                strictObjects: options.strictObjects,
+                additionalPropertiesDefaultValue,
             },
         });
         console.log(`Done generating <${distPath}> !`);

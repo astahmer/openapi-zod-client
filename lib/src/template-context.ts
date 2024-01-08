@@ -381,6 +381,11 @@ export type TemplateContextOptions = {
     allReadonly?: boolean;
 
     /**
+     * When true, all generated zod objects will be strict - meaning now unknown keys will be allowed
+     */
+    strictObjects?: boolean;
+
+    /**
      * Set default value when additionalProperties is not provided. Default to true.
      */
     additionalPropertiesDefaultValue?: boolean | SchemaObject;
