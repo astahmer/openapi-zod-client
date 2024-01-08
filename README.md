@@ -45,7 +45,7 @@ https://paka.dev/npm/openapi-zod-client
 ## CLI
 
 ```sh
-openapi-zod-client/1.4.2
+openapi-zod-client/1.15.0
 
 Usage:
   $ openapi-zod-client <input>
@@ -57,28 +57,29 @@ For more info, run any command with the `--help` flag:
   $ openapi-zod-client --help
 
 Options:
-  -o, --output <path>       Output path for the zodios api client ts file (defaults to `<input>.client.ts`) 
-  -t, --template <path>     Template path for the handlebars template that will be used to generate the output 
-  -p, --prettier <path>     Prettier config path that will be used to format the output client file 
-  -b, --base-url <url>      Base url for the api 
-  --no-with-alias           With alias as api client methods (default: true)
-  -a, --with-alias          With alias as api client methods (default: true)
-  --api-client-name <name>  when using the default `template.hbs`, allow customizing the `export const {apiClientName}` 
-  --error-expr <expr>       Pass an expression to determine if a response status is an error 
-  --success-expr <expr>     Pass an expression to determine which response status is the main success status 
-  --media-type-expr <expr>  Pass an expression to determine which response content should be allowed 
-  --export-schemas          When true, will export all `#/components/schemas` 
-  --implicit-required       When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set 
-  --with-deprecated         when true, will keep deprecated endpoints in the api output 
-  --with-description        when true, will add z.describe(xxx) 
-  --group-strategy          groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file' 
-  --complexity-threshold    schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable 
-  --default-status          when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared 
-  --all-readonly            when true, all generated objects and arrays will be readonly 
-  --export-types            When true, will defined types for all object schemas in `#/components/schemas` 
+  -o, --output <path>               Output path for the zodios api client ts file (defaults to `<input>.client.ts`)
+  -t, --template <path>             Template path for the handlebars template that will be used to generate the output
+  -p, --prettier <path>             Prettier config path that will be used to format the output client file
+  -b, --base-url <url>              Base url for the api
+  --no-with-alias                   With alias as api client methods (default: true)
+  -a, --with-alias                  With alias as api client methods (default: true)
+  --api-client-name <name>          when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
+  --error-expr <expr>               Pass an expression to determine if a response status is an error
+  --success-expr <expr>             Pass an expression to determine which response status is the main success status
+  --media-type-expr <expr>          Pass an expression to determine which response content should be allowed
+  --export-schemas                  When true, will export all `#/components/schemas`
+  --implicit-required               When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
+  --with-deprecated                 when true, will keep deprecated endpoints in the api output
+  --with-description                when true, will add z.describe(xxx)
+  --group-strategy                  groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'
+  --complexity-threshold            schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
+  --default-status                  when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared
+  --all-readonly                    when true, all generated objects and arrays will be readonly
+  --export-types                    When true, will defined types for all object schemas in `#/components/schemas`
   --additional-props-default-value  Set default value when additionalProperties is not provided. Default to true. (default: true)
-  -v, --version             Display version number 
-  -h, --help                Display this message
+  --strict-objects                  Use strict validation for objects so we don't allow unknown keys. Defaults to false. (default: false)
+  -v, --version                     Display version number
+  -h, --help                        Display this message
 ```
 
 ## Customization
