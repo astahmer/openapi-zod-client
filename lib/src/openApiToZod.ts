@@ -280,7 +280,8 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
         }
 
         const partial = isPartial ? ".partial()" : "";
-        return code.assign(`z.object(${properties})${partial}${additionalPropsSchema}${readonly}`);
+        const strict = options?.strictObjects ? ".strict()" : "";
+        return code.assign(`z.object(${properties})${partial}${strict}${additionalPropsSchema}${readonly}`);
     }
 
     if (!schemaType) return code.assign("z.unknown()");
