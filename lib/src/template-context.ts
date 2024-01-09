@@ -381,7 +381,7 @@ export type TemplateContextOptions = {
     allReadonly?: boolean;
 
     /**
-     * When true, all generated zod objects will be strict - meaning now unknown keys will be allowed
+     * When true, all generated zod objects will be strict - meaning no unknown keys will be allowed
      */
     strictObjects?: boolean;
 
