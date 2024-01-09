@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.15.1
+
+### Patch Changes
+
+-   [`73f6726`](https://github.com/astahmer/openapi-zod-client/commit/73f67268fb51a43b8c5ef92427ef9abeedccb086) Thanks [@astahmer](https://github.com/astahmer)! - Add a `--strict-objects` CLI flag: Use strict validation for objects so we don't allow unknown keys. Defaults to false. thanks @iceydee
+
 ## 1.15.0
 
 ### Minor Changes
