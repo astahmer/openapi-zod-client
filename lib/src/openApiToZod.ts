@@ -1,5 +1,5 @@
 import { isSchemaObject, type ReferenceObject, type SchemaObject } from "openapi3-ts";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
 import { CodeMeta } from "./CodeMeta";
@@ -295,11 +295,24 @@ type ZodChainArgs = { schema: SchemaObject; meta?: CodeMetaData; options?: Templ
 export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
     const chains: string[] = [];
 
-    match(schema.type)
-        .with("string", () => chains.push(getZodChainableStringValidations(schema)))
-        .with("number", "integer", () => chains.push(getZodChainableNumberValidations(schema)))
-        .with("array", () => chains.push(getZodChainableArrayValidations(schema)))
-        .otherwise(() => void 0);
+    const brand = schema["x-brand"] ? `brand("${schema["x-brand"]}")` : null;
+
+    const validations = match(schema.type)
+        .with("string", () => getZodChainableStringValidations(schema))
+        .with("number", "integer", () => getZodChainableNumberValidations(schema))
+        .with("array", () => getZodChainableArrayValidations(schema))
+        .otherwise(() => null);
+
+    match([brand, validations])
+        .with([P.nullish, P.nullish], () => {
+            void 0;
+        })
+        .with([P.nullish, P.not(P.nullish)], ([_, validations]) => chains.push(validations))
+        .with([P.not(P.nullish), P.nullish], ([brand]) => chains.push(brand))
+        .with([P.not(P.nullish), P.not(P.nullish)], ([brand, validations]) =>
+            chains.push([validations, brand].join("."))
+        )
+        .exhaustive();
 
     if (typeof schema.description === "string" && schema.description !== "" && options?.withDescription) {
         chains.push(`describe("${schema.description}")`);
