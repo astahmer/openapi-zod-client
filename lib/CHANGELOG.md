@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.16.0
+
+### Minor Changes
+
+-   [#268](https://github.com/astahmer/openapi-zod-client/pull/268) [`f62be48`](https://github.com/astahmer/openapi-zod-client/commit/f62be48c9d66fb432b5b68570f8de4755644d1d5) Thanks [@codingmatty](https://github.com/codingmatty)! - Add `exportAllNamedSchemas` option to allow exporting duplicate schemas with different names.
+
 ## 1.15.1
 
 ### Patch Changes
