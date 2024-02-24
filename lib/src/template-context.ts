@@ -394,4 +394,11 @@ export type TemplateContextOptions = {
      * When true, returns a "responses" array with all responses (both success and errors)
      */
     withAllResponses?: boolean;
+    
+    /**
+     * When true, prevents using the exact same name for the same type
+     * For example, if 2 schemas have the same type, but different names, export each as separate schemas
+     * If 2 schemas have the same name but different types, export subsequent names with numbers appended
+     */
+    exportAllNamedSchemas?: boolean;
 };
