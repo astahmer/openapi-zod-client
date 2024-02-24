@@ -83,7 +83,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             const safeName = normalizeString(fallbackName);
 
             // if schema is already assigned to a variable, re-use that variable name
-            if (ctx.schemaByName[result]) {
+            if (!options?.exportAllNamedSchemas && ctx.schemaByName[result]) {
                 return ctx.schemaByName[result]!;
             }
 
@@ -95,7 +95,9 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             let isVarNameAlreadyUsed = false;
             while ((isVarNameAlreadyUsed = Boolean(ctx.zodSchemaByName[formatedName]))) {
                 if (isVarNameAlreadyUsed) {
-                    if (ctx.zodSchemaByName[formatedName] === safeName) {
+                    if (options?.exportAllNamedSchemas && ctx.schemaByName[result]) {
+                        return ctx.schemaByName[result]!;
+                    } else if (ctx.zodSchemaByName[formatedName] === safeName) {
                         return formatedName;
                     } else {
                         reuseCount += 1;
