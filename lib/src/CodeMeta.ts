@@ -7,7 +7,8 @@ import { getSchemaComplexity } from "./schema-complexity";
 export type ConversionTypeContext = {
     resolver: DocumentResolver;
     zodSchemaByName: Record<string, string>;
-    schemaByName: Record<string, string[]>;
+    schemaByName: Record<string, string>;
+    schemasByName?: Record<string, string[]>;
 };
 
 export type CodeMetaData = {
