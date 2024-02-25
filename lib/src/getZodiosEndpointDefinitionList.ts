@@ -65,6 +65,10 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
         .otherwise((fn) => fn);
 
     const ctx: ConversionTypeContext = { resolver, zodSchemaByName: {}, schemaByName: {} };
+    if (options?.exportAllNamedSchemas) {
+        ctx.schemasByName = {};
+    }
+
     const complexityThreshold = options?.complexityThreshold ?? 4;
     const getZodVarName = (input: CodeMeta, fallbackName?: string) => {
         const result = input.toString();
@@ -84,7 +88,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             // if schema is already assigned to a variable, re-use that variable name
             if (!options?.exportAllNamedSchemas && ctx.schemaByName[result]) {
-                return ctx.schemaByName[result]![0]!;
+                return ctx.schemaByName[result]!;
             }
 
             // result is complex and would benefit from being re-used
@@ -95,7 +99,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             let isVarNameAlreadyUsed = false;
             while ((isVarNameAlreadyUsed = Boolean(ctx.zodSchemaByName[formatedName]))) {
                 if (isVarNameAlreadyUsed) {
-                    if (options?.exportAllNamedSchemas && ctx.schemaByName[result]?.includes(formatedName)) {
+                    if (options?.exportAllNamedSchemas && ctx.schemasByName?.[result]?.includes(formatedName)) {
                         return formatedName;
                     } else if (ctx.zodSchemaByName[formatedName] === safeName) {
                         return formatedName;
@@ -107,11 +111,10 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             }
 
             ctx.zodSchemaByName[formatedName] = result;
+            ctx.schemaByName[result] = formatedName;
 
-            if (options?.exportAllNamedSchemas) {
-                ctx.schemaByName[result] = (ctx.schemaByName[result] ?? []).concat(formatedName);
-            } else {
-                ctx.schemaByName[result] = [formatedName];
+            if (options?.exportAllNamedSchemas && ctx.schemasByName) {
+                ctx.schemasByName[result] = (ctx.schemasByName[result] ?? []).concat(formatedName);
             }
 
             return formatedName;
@@ -315,7 +318,11 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                 }
 
                 if (endpointDefinition.responses !== undefined) {
-                    endpointDefinition.responses.push({ statusCode, schema: schemaString ?? voidSchema, description: responseItem.description });
+                    endpointDefinition.responses.push({
+                        statusCode,
+                        schema: schemaString ?? voidSchema,
+                        description: responseItem.description,
+                    });
                 }
 
                 if (schemaString) {
