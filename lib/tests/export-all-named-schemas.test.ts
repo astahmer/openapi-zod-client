@@ -59,6 +59,11 @@ test("export-all-named-schemas", async () => {
                     },
                     parameters: [
                         {
+                            name: "sameSchemaDifferentName",
+                            in: "query",
+                            schema: { type: "string", enum: ["xxx", "yyy", "zzz"] },
+                        },
+                        {
                             name: "sameSchemaSameName",
                             in: "query",
                             schema: { type: "string", enum: ["xxx", "yyy", "zzz"] },
@@ -129,6 +134,11 @@ test("export-all-named-schemas", async () => {
                   "method": "delete",
                   "parameters": [
                       {
+                          "name": "sameSchemaDifferentName",
+                          "schema": "sameSchemaDifferentName",
+                          "type": "Query",
+                      },
+                      {
                           "name": "sameSchemaSameName",
                           "schema": "sameSchemaSameName",
                           "type": "Query",
@@ -160,6 +170,7 @@ test("export-all-named-schemas", async () => {
               "withAlias": false,
           },
           "schemas": {
+              "sameSchemaDifferentName": "z.enum(["xxx", "yyy", "zzz"]).optional()",
               "sameSchemaSameName": "z.enum(["xxx", "yyy", "zzz"]).optional()",
               "schemaNameAlreadyUsed": "z.enum(["aaa", "bbb", "ccc"]).optional()",
               "schemaNameAlreadyUsed__2": "z.enum(["ggg", "hhh", "iii"]).optional()",
@@ -180,11 +191,13 @@ test("export-all-named-schemas", async () => {
 
       const sameSchemaSameName = z.enum(["xxx", "yyy", "zzz"]).optional();
       const schemaNameAlreadyUsed = z.enum(["aaa", "bbb", "ccc"]).optional();
+      const sameSchemaDifferentName = z.enum(["xxx", "yyy", "zzz"]).optional();
       const schemaNameAlreadyUsed__2 = z.enum(["ggg", "hhh", "iii"]).optional();
 
       export const schemas = {
         sameSchemaSameName,
         schemaNameAlreadyUsed,
+        sameSchemaDifferentName,
         schemaNameAlreadyUsed__2,
       };
 
@@ -220,6 +233,11 @@ test("export-all-named-schemas", async () => {
           path: "/export-all-named-schemas",
           requestFormat: "json",
           parameters: [
+            {
+              name: "sameSchemaDifferentName",
+              type: "Query",
+              schema: sameSchemaDifferentName,
+            },
             {
               name: "sameSchemaSameName",
               type: "Query",
