@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.16.1
+
+### Patch Changes
+
+-   [#270](https://github.com/astahmer/openapi-zod-client/pull/270) [`04dd1b5`](https://github.com/astahmer/openapi-zod-client/commit/04dd1b549118c8b8e5a3b86f6dbed741f44770c8) Thanks [@codingmatty](https://github.com/codingmatty)! - Fix bug with `exportAllNamedSchemas` option where schemas will reuse last schema name with matching schema rather than it's own name that has already been used before.
+
 ## 1.16.0
 
 ### Minor Changes
