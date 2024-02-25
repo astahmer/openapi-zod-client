@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.16.2
+
+### Patch Changes
+
+-   [#271](https://github.com/astahmer/openapi-zod-client/pull/271) [`197316b`](https://github.com/astahmer/openapi-zod-client/commit/197316b50b0b84cea977984ae82441f2ce108ea0) Thanks [@codingmatty](https://github.com/codingmatty)! - Fix invalid output when using array types as the endpoint body with minItems or maxItems and using the tag-file group-strategy.
+
 ## 1.16.1
 
 ### Patch Changes
