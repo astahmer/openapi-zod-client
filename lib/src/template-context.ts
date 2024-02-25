@@ -138,7 +138,9 @@ export const getZodClientTemplateContext = (
             const addDependencyIfNeeded = (schemaName: string) => {
                 if (!schemaName) return;
                 if (schemaName.startsWith("z.")) return;
-                dependencies.add(schemaName);
+                // Sometimes the schema includes a chain that should be removed from the dependency
+                const [normalizedSchemaName] = schemaName.split(".");
+                dependencies.add(normalizedSchemaName!);
             };
 
             addDependencyIfNeeded(endpoint.response);
@@ -394,7 +396,7 @@ export type TemplateContextOptions = {
      * When true, returns a "responses" array with all responses (both success and errors)
      */
     withAllResponses?: boolean;
-    
+
     /**
      * When true, prevents using the exact same name for the same type
      * For example, if 2 schemas have the same type, but different names, export each as separate schemas
