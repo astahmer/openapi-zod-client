@@ -439,7 +439,9 @@ test("getZodiosEndpointDefinitionList /pet without schema ref", () => {
               "resolveSchemaName": [Function],
           },
           "schemaByName": {
-              "Pet.and(Reason)": "updatePet_Body",
+              "Pet.and(Reason)": [
+                  "updatePet_Body",
+              ],
           },
           "zodSchemaByName": {
               "Category": "z.object({ id: z.number().int(), name: z.string() }).partial().passthrough()",

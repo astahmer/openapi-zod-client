@@ -84,7 +84,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
             // if schema is already assigned to a variable, re-use that variable name
             if (!options?.exportAllNamedSchemas && ctx.schemaByName[result]) {
-                return ctx.schemaByName[result]!;
+                return ctx.schemaByName[result]![0]!;
             }
 
             // result is complex and would benefit from being re-used
@@ -95,8 +95,8 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             let isVarNameAlreadyUsed = false;
             while ((isVarNameAlreadyUsed = Boolean(ctx.zodSchemaByName[formatedName]))) {
                 if (isVarNameAlreadyUsed) {
-                    if (options?.exportAllNamedSchemas && ctx.schemaByName[result]) {
-                        return ctx.schemaByName[result]!;
+                    if (options?.exportAllNamedSchemas && ctx.schemaByName[result]?.includes(formatedName)) {
+                        return formatedName;
                     } else if (ctx.zodSchemaByName[formatedName] === safeName) {
                         return formatedName;
                     } else {
@@ -107,7 +107,13 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
             }
 
             ctx.zodSchemaByName[formatedName] = result;
-            ctx.schemaByName[result] = formatedName;
+
+            if (options?.exportAllNamedSchemas) {
+                ctx.schemaByName[result] = (ctx.schemaByName[result] ?? []).concat(formatedName);
+            } else {
+                ctx.schemaByName[result] = [formatedName];
+            }
+
             return formatedName;
         }
 
