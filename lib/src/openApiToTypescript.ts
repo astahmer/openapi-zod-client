@@ -7,6 +7,7 @@ import type { DocumentResolver } from "./makeSchemaResolver";
 import type { TemplateContext } from "./template-context";
 import { wrapWithQuotesIfNeeded } from "./utils";
 import { inferRequiredSchema } from "./inferRequiredOnly";
+import generateJSDocArray from "./generateJSDocArray";
 
 type TsConversionArgs = {
     schema: SchemaObject | ReferenceObject;
@@ -155,6 +156,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             if (schema.allOf.length === 1) {
                 return getTypescriptFromOpenApi({ schema: schema.allOf[0]!, ctx, meta, options });
             }
+
             const { patchRequiredSchemaInLoop, noRequiredOnlyAllof, composedRequiredSchema } =
                 inferRequiredSchema(schema);
 
@@ -164,7 +166,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 return type;
             });
 
-            if (Object.keys(composedRequiredSchema.properties).length) {
+            if (Object.keys(composedRequiredSchema.properties).length > 0) {
                 types.push(
                     getTypescriptFromOpenApi({
                         schema: composedRequiredSchema,
@@ -174,6 +176,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     }) as TypeDefinition
                 );
             }
+
             return schema.nullable ? t.union([t.intersection(types), t.reference("null")]) : t.intersection(types);
         }
 
@@ -294,8 +297,9 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 throw new Error("Name is required to convert an object schema to a type reference");
             }
 
-            const base = t.type(inheritedMeta.name, doWrapReadOnly(objectType));
-            if (!isPartial) return base;
+            if (!isPartial) {
+                return t.type(inheritedMeta.name, doWrapReadOnly(objectType));
+            }
 
             return t.type(inheritedMeta.name, t.reference("Partial", [doWrapReadOnly(objectType)]));
         }
@@ -305,7 +309,21 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         throw new Error(`Unsupported schema type: ${schemaType}`);
     };
 
-    const tsResult = getTs();
+    let tsResult = getTs();
+
+    // Add JSDoc comments
+    if (options?.withDocs && !isReferenceObject(schema)) {
+        const jsDocComments = generateJSDocArray(schema);
+
+        if (
+            jsDocComments.length > 0 &&
+            typeof tsResult === "object" &&
+            tsResult.kind !== ts.SyntaxKind.TypeAliasDeclaration
+        ) {
+            tsResult = t.comment(tsResult, jsDocComments);
+        }
+    }
+
     return canBeWrapped
         ? wrapTypeIfInline({ isInline, name: inheritedMeta?.name, typeDef: tsResult as TypeDefinition })
         : tsResult;
