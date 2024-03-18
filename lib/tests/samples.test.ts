@@ -398,7 +398,7 @@ describe("samples-generator", async () => {
           const perform_search_Body = z
               .object({
                   criteria: z.string().default("*:*"),
-                  start: z.number().int().optional(),
+                  start: z.number().int().optional().default(0),
                   rows: z.number().int().optional().default(100),
               })
               .passthrough();
