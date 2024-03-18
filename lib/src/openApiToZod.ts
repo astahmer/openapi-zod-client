@@ -341,7 +341,7 @@ const unwrapQuotesIfNeeded = (value: string | number) => {
 };
 
 const getZodChainableDefault = (schema: SchemaObject) => {
-    if (schema.default) {
+    if (schema.default !== undefined) {
         const value = match(schema.type)
             .with("number", "integer", () => unwrapQuotesIfNeeded(schema.default))
             .otherwise(() => JSON.stringify(schema.default));
