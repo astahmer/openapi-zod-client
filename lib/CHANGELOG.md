@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.16.3
+
+### Patch Changes
+
+-   [#276](https://github.com/astahmer/openapi-zod-client/pull/276) [`aa4c7a3`](https://github.com/astahmer/openapi-zod-client/commit/aa4c7a3668c6d96492bcd319ccd940f0b735b029) Thanks [@tankers746](https://github.com/tankers746)! - Fixed bug which was excluding falsy default values
+
 ## 1.16.2
 
 ### Patch Changes
