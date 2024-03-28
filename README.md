@@ -71,6 +71,7 @@ Options:
   --implicit-required               When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
   --with-deprecated                 when true, will keep deprecated endpoints in the api output
   --with-description                when true, will add z.describe(xxx)
+  --with-docs                       when true, will add jsdoc comments to generated types 
   --group-strategy                  groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'
   --complexity-threshold            schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
   --default-status                  when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared

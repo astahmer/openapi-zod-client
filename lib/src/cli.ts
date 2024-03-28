@@ -37,6 +37,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     )
     .option("--with-deprecated", "when true, will keep deprecated endpoints in the api output")
     .option("--with-description", "when true, will add z.describe(xxx)")
+    .option("--with-docs", "when true, will add jsdoc comments to generated types")
     .option(
         "--group-strategy",
         "groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'"
@@ -85,6 +86,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 isMediaTypeAllowed: options.mediaTypeExpr,
                 withImplicitRequiredProps: options.implicitRequired,
                 withDeprecatedEndpoints: options.withDeprecated,
+                withDocs: options.withDocs,
                 groupStrategy: options.groupStrategy,
                 complexityThreshold: options.complexityThreshold,
                 defaultStatusBehavior: options.defaultStatus,

@@ -335,6 +335,11 @@ export type TemplateContextOptions = {
      */
     withDeprecatedEndpoints?: boolean;
     /**
+     * when true, will add jsdoc comments to generated types
+     * @default false
+     */
+    withDocs?: boolean;
+    /**
      * groups endpoints by a given strategy
      *
      * when strategy is "tag" and multiple tags are defined for an endpoint, the first one will be used
