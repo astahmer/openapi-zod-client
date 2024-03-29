@@ -2,6 +2,7 @@ import type { OpenAPIObject, OperationObject, PathItemObject, SchemaObject } fro
 import { sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
 import { ts } from "tanu";
 import { match } from "ts-pattern";
+import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import type { EndpointDefinitionWithRefs } from "./getZodiosEndpointDefinitionList";
@@ -376,6 +377,15 @@ export type TemplateContextOptions = {
         defaultDefinition: EndpointDefinitionWithRefs,
         operation: OperationObject
     ) => EndpointDefinitionWithRefs;
+
+    /**
+     * A function to refine each tanu type definition. Mostly useful for adding fields from SchemaObject
+     * that aren't defined yet in the default type definition.
+     */
+    typescriptDefinitionRefiner?: (
+        defaultTs: ts.Node | TypeDefinitionObject | string,
+        schema: SchemaObject
+    ) => ts.Node | TypeDefinitionObject | string;
 
     /**
      * When true, all generated objects and arrays will be readonly.
