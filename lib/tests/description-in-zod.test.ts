@@ -31,6 +31,23 @@ test("description-in-zod", async () => {
                             },
                             description: "bar description",
                         },
+                        {
+                            in: "query",
+                            name: "baz",
+                            schema: {
+                                type: "number",
+                                enum: [1.3, 34.1, -57.89],
+                            },
+                            description: "baz\nmultiline\ndescription",
+                        },
+                        {
+                            in: "query",
+                            name: "qux",
+                            schema: {
+                                type: "string",
+                            },
+                            description: "      ", // spaces only description
+                        },
                     ],
                     responses: {
                         "200": {
@@ -72,6 +89,21 @@ test("description-in-zod", async () => {
                 .union([z.literal(1.2), z.literal(34), z.literal(-56.789)])
                 .describe("bar description")
                 .optional(),
+            },
+            {
+              name: "baz",
+              type: "Query",
+              schema: z
+                .union([z.literal(1.3), z.literal(34.1), z.literal(-57.89)])
+                .describe(
+                  \`baz\nmultiline\ndescription\`
+                )
+                .optional(),
+            },
+            {
+              name: "qux",
+              type: "Query",
+              schema: z.string().optional(),
             },
           ],
           response: z.void(),

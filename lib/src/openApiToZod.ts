@@ -302,7 +302,11 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
         .otherwise(() => void 0);
 
     if (typeof schema.description === "string" && schema.description !== "" && options?.withDescription) {
-        chains.push(`describe("${schema.description}")`);
+        if (["\n", "\r", "\r\n"].some((c) => String.prototype.includes.call(schema.description, c))) {
+            chains.push(`describe(\`${schema.description}\`)`);
+        } else {
+            chains.push(`describe("${schema.description}")`);
+        }
     }
 
     const output = chains
