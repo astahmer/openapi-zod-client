@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.16.4
+
+### Patch Changes
+
+-   [#279](https://github.com/astahmer/openapi-zod-client/pull/279) [`f3ee25e`](https://github.com/astahmer/openapi-zod-client/commit/f3ee25efc191d0be97231498924fe50fd977fb88) Thanks [@dgadelha](https://github.com/dgadelha)! - Fix multiline descriptions when `describe` is enabled
+
 ## 1.16.3
 
 ### Patch Changes
