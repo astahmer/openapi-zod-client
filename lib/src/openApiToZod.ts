@@ -20,10 +20,12 @@ type ConversionArgs = {
  * @see https://github.com/colinhacks/zod
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: ConversionArgs): CodeMeta {
-    if (!schema) {
+export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, options }: ConversionArgs): CodeMeta {
+    if (!$schema) {
         throw new Error("Schema is required");
     }
+
+    const schema = options?.schemaRefiner?.($schema, inheritedMeta) ?? $schema;
     const code = new CodeMeta(schema, ctx, inheritedMeta);
     const meta = {
         parent: code.inherit(inheritedMeta?.parent),
