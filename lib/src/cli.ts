@@ -61,6 +61,11 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "Use strict validation for objects so we don't allow unknown keys. Defaults to false.",
         { default: false }
     )
+    .option(
+        "--add-nullish-to-partial",
+        "Adds `null` and `undefined` to the type of all properties in partial objects. Defaults to false.",
+        { default: false }
+    )
     .action(async (input, options) => {
         console.log("Retrieving OpenAPI document from", input);
         const openApiDoc = (await SwaggerParser.bundle(input)) as OpenAPIObject;
@@ -92,6 +97,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 allReadonly: options.allReadonly,
                 strictObjects: options.strictObjects,
                 additionalPropertiesDefaultValue,
+                addNullishToPartial: options.addNullishToPartial,
             },
         });
         console.log(`Done generating <${distPath}> !`);

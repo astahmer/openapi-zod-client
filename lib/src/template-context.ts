@@ -403,4 +403,14 @@ export type TemplateContextOptions = {
      * If 2 schemas have the same name but different types, export subsequent names with numbers appended
      */
     exportAllNamedSchemas?: boolean;
+
+    /**
+     * When true, adds .nullish() to all .partial() schemas
+     * For example, if a schema is defined as z.object({ foo: z.string() }).partial(), it will be
+     * exported as z.object({ foo: z.string().nullish() }).partial()
+     *
+     * This is a workaround for a bug in zod where .partial() schemas do not allow null values
+     * https://github.com/colinhacks/zod/issues/2893
+     */
+    addNullishToPartial?: boolean;
 };

@@ -268,7 +268,7 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
 
                 const propCode =
                     getZodSchema({ schema: propSchema, ctx, meta: propMetadata, options }) +
-                    getZodChain({ schema: propActualSchema as SchemaObject, meta: propMetadata, options });
+                    getZodChain({ schema: propActualSchema as SchemaObject, meta: propMetadata, isPartial, options });
 
                 return [prop, propCode.toString()];
             });
@@ -290,9 +290,9 @@ export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: Conv
     throw new Error(`Unsupported schema type: ${schemaType}`);
 }
 
-type ZodChainArgs = { schema: SchemaObject; meta?: CodeMetaData; options?: TemplateContext["options"] };
+type ZodChainArgs = { schema: SchemaObject; meta?: CodeMetaData; isPartial?: boolean; options?: TemplateContext["options"] };
 
-export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
+export const getZodChain = ({ schema, meta, isPartial, options }: ZodChainArgs) => {
     const chains: string[] = [];
 
     match(schema.type)
@@ -307,6 +307,10 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
         } else {
             chains.push(`describe("${schema.description}")`);
         }
+    }
+
+    if (isPartial && options?.addNullishToPartial) {
+        chains.push("nullish()");
     }
 
     const output = chains
