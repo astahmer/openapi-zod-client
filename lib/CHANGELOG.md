@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.17.0
+
+### Minor Changes
+
+-   [#283](https://github.com/astahmer/openapi-zod-client/pull/283) [`3ec4915`](https://github.com/astahmer/openapi-zod-client/commit/3ec491572e56fc40e3b49cefb58cb6f08600190f) Thanks [@dgadelha](https://github.com/dgadelha)! - Add `schemaRefiner` option to allow refining the OpenAPI schema before its converted to a Zod schema
+
 ## 1.16.4
 
 ### Patch Changes
