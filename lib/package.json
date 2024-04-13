@@ -1,6 +1,6 @@
 {
     "name": "openapi-zod-client",
-    "version": "1.16.2",
+    "version": "1.17.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/astahmer/openapi-zod-client.git"

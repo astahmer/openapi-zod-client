@@ -1,5 +1,23 @@
 # openapi-zod-client
 
+## 1.17.0
+
+### Minor Changes
+
+-   [#283](https://github.com/astahmer/openapi-zod-client/pull/283) [`3ec4915`](https://github.com/astahmer/openapi-zod-client/commit/3ec491572e56fc40e3b49cefb58cb6f08600190f) Thanks [@dgadelha](https://github.com/dgadelha)! - Add `schemaRefiner` option to allow refining the OpenAPI schema before its converted to a Zod schema
+
+## 1.16.4
+
+### Patch Changes
+
+-   [#279](https://github.com/astahmer/openapi-zod-client/pull/279) [`f3ee25e`](https://github.com/astahmer/openapi-zod-client/commit/f3ee25efc191d0be97231498924fe50fd977fb88) Thanks [@dgadelha](https://github.com/dgadelha)! - Fix multiline descriptions when `describe` is enabled
+
+## 1.16.3
+
+### Patch Changes
+
+-   [#276](https://github.com/astahmer/openapi-zod-client/pull/276) [`aa4c7a3`](https://github.com/astahmer/openapi-zod-client/commit/aa4c7a3668c6d96492bcd319ccd940f0b735b029) Thanks [@tankers746](https://github.com/tankers746)! - Fixed bug which was excluding falsy default values
+
 ## 1.16.2
 
 ### Patch Changes

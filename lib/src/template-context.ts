@@ -1,4 +1,4 @@
-import type { OpenAPIObject, OperationObject, PathItemObject, SchemaObject } from "openapi3-ts";
+import type { OpenAPIObject, OperationObject, PathItemObject, ReferenceObject, SchemaObject } from "openapi3-ts";
 import { sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
 import { ts } from "tanu";
 import { match } from "ts-pattern";
@@ -11,6 +11,7 @@ import { getTypescriptFromOpenApi } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
 import { topologicalSort } from "./topologicalSort";
 import { asComponentSchema, normalizeString } from "./utils";
+import type { CodeMetaData } from "./CodeMeta";
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -408,4 +409,9 @@ export type TemplateContextOptions = {
      * If 2 schemas have the same name but different types, export subsequent names with numbers appended
      */
     exportAllNamedSchemas?: boolean;
+
+    /**
+     * A function that runs in the schema conversion process to refine the schema before it's converted to a Zod schema.
+     */
+    schemaRefiner?: <T extends SchemaObject | ReferenceObject>(schema: T, parentMeta?: CodeMetaData) => T;
 };

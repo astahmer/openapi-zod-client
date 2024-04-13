@@ -20,10 +20,12 @@ type ConversionArgs = {
  * @see https://github.com/colinhacks/zod
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity
-export function getZodSchema({ schema, ctx, meta: inheritedMeta, options }: ConversionArgs): CodeMeta {
-    if (!schema) {
+export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, options }: ConversionArgs): CodeMeta {
+    if (!$schema) {
         throw new Error("Schema is required");
     }
+
+    const schema = options?.schemaRefiner?.($schema, inheritedMeta) ?? $schema;
     const code = new CodeMeta(schema, ctx, inheritedMeta);
     const meta = {
         parent: code.inherit(inheritedMeta?.parent),
@@ -302,7 +304,11 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
         .otherwise(() => void 0);
 
     if (typeof schema.description === "string" && schema.description !== "" && options?.withDescription) {
-        chains.push(`describe("${schema.description}")`);
+        if (["\n", "\r", "\r\n"].some((c) => String.prototype.includes.call(schema.description, c))) {
+            chains.push(`describe(\`${schema.description}\`)`);
+        } else {
+            chains.push(`describe("${schema.description}")`);
+        }
     }
 
     const output = chains
@@ -341,7 +347,7 @@ const unwrapQuotesIfNeeded = (value: string | number) => {
 };
 
 const getZodChainableDefault = (schema: SchemaObject) => {
-    if (schema.default) {
+    if (schema.default !== undefined) {
         const value = match(schema.type)
             .with("number", "integer", () => unwrapQuotesIfNeeded(schema.default))
             .otherwise(() => JSON.stringify(schema.default));
