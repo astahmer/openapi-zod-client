@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.18.0
+
+### Minor Changes
+
+-   [#275](https://github.com/astahmer/openapi-zod-client/pull/275) [`ed50076`](https://github.com/astahmer/openapi-zod-client/commit/ed500762c6998fb2976e8ad43a88a3a09d928f2c) Thanks [@senecolas](https://github.com/senecolas)! - Add `withDocs` option and `--with-docs` flag that adds JSDoc to generated code
+
 ## 1.17.0
 
 ### Minor Changes
