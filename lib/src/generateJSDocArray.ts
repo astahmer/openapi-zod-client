@@ -7,8 +7,9 @@ export default function generateJSDocArray(schema: SchemaObject, withTypesAndFor
         description: (value: string) => `${value}`,
         example: (value: any) => `@example ${JSON.stringify(value)}`,
         examples: (value: any[]) =>
-            value.map((example, index) => `@example Example ${index + 1}: ${JSON.stringify(example)}`).join("\n"),
+            value.map((example, index) => `@example Example ${index + 1}: ${JSON.stringify(example)}`),
         deprecated: (value: boolean) => (value ? "@deprecated" : ""),
+        default: (value: any) => `@default ${JSON.stringify(value)}`,
         externalDocs: (value: { url: string }) => `@see ${value.url}`,
         // Additional attributes that depend on `withTypesAndFormat`
         type: withTypesAndFormat
