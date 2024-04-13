@@ -294,8 +294,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 throw new Error("Name is required to convert an object schema to a type reference");
             }
 
-            const base = t.type(inheritedMeta.name, doWrapReadOnly(objectType));
-            if (!isPartial) return base;
+            if (!isPartial) return t.type(inheritedMeta.name, doWrapReadOnly(objectType));
 
             return t.type(inheritedMeta.name, t.reference("Partial", [doWrapReadOnly(objectType)]));
         }
@@ -305,7 +304,13 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         throw new Error(`Unsupported schema type: ${schemaType}`);
     };
 
-    const tsResult = getTs();
+    let tsResult = getTs();
+
+    // If the schema is not a reference object, we can refine the type definition
+    if (options?.typescriptDefinitionRefiner && !isReferenceObject(schema)) {
+        tsResult = options.typescriptDefinitionRefiner(getTs(), schema);
+    }
+
     return canBeWrapped
         ? wrapTypeIfInline({ isInline, name: inheritedMeta?.name, typeDef: tsResult as TypeDefinition })
         : tsResult;
