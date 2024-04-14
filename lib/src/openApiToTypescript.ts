@@ -313,17 +313,6 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
                     const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
                     const hasDefault = "default" in propSchema ? propSchema.default !== undefined : false;
-                    console.log(
-                        "Schema",
-                        propSchema,
-                        prop,
-                        "propType",
-                        propType,
-                        "isRequired",
-                        isRequired,
-                        "hasDefault",
-                        hasDefault
-                    );
                     return [
                         `${wrapWithQuotesIfNeeded(prop)}`,
                         isRequired && !hasDefault ? propType : t.optional(propType),
@@ -332,7 +321,6 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             );
 
             const objectType = additionalProperties ? t.intersection([props, additionalProperties]) : props;
-            console.log("inline", isInline, objectType);
 
             if (isInline) {
                 const buffer = isPartial
@@ -359,14 +347,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         throw new Error(`Unsupported schema type: ${schemaType}`);
     };
 
-    console.log("Node", schema);
     let tsResult = getTs();
-    console.log("TSR", tsResult);
 
     // Add JSDoc comments
     if (options?.withDocs && !isReferenceObject(schema)) {
         const jsDocComments = generateJSDocArray(schema);
-        console.log("JSD", jsDocComments);
 
         if (
             jsDocComments.length > 0 &&
@@ -374,7 +359,6 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             tsResult.kind !== ts.SyntaxKind.TypeAliasDeclaration
         ) {
             tsResult = t.comment(tsResult, jsDocComments);
-            console.log("Commented", tsResult);
         }
     }
 
