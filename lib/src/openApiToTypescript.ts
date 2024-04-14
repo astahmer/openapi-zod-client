@@ -83,8 +83,9 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 return t.reference(schemaName);
             }
 
+            let actualSchema: SchemaObject | undefined;
             if (!result) {
-                const actualSchema = ctx.resolver.getSchemaByRef(schema.$ref);
+                actualSchema = ctx.resolver.getSchemaByRef(schema.$ref);
                 if (!actualSchema) {
                     throw new Error(`Schema ${schema.$ref} not found`);
                 }
@@ -97,7 +98,9 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 schemaName = ctx.resolver.resolveRef(schema.$ref)?.normalized;
             }
 
-            return t.reference(schemaName);
+            return actualSchema?.nullable
+                ? t.union([t.reference(schemaName), t.reference("null")])
+                : t.reference(schemaName);
         }
 
         if (Array.isArray(schema.type)) {
@@ -215,20 +218,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             }
 
             if (schemaType === "string")
-                return handleDefaultValue(
-                    schema,
-                    schema.nullable ? t.union([t.string(), t.reference("null")]) : t.string()
-                );
+                return schema.nullable ? t.union([t.string(), t.reference("null")]) : t.string();
             if (schemaType === "boolean")
-                return handleDefaultValue(
-                    schema,
-                    schema.nullable ? t.union([t.boolean(), t.reference("null")]) : t.boolean()
-                );
+                return schema.nullable ? t.union([t.boolean(), t.reference("null")]) : t.boolean();
             if (schemaType === "number" || schemaType === "integer")
-                return handleDefaultValue(
-                    schema,
-                    schema.nullable ? t.union([t.number(), t.reference("null")]) : t.number()
-                );
+                return schema.nullable ? t.union([t.number(), t.reference("null")]) : t.number();
         }
 
         if (schemaType === "array") {
@@ -319,17 +313,32 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
 
                     const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
                     const hasDefault = "default" in propSchema ? propSchema.default !== undefined : false;
+                    console.log(
+                        "Schema",
+                        propSchema,
+                        prop,
+                        "propType",
+                        propType,
+                        "isRequired",
+                        isRequired,
+                        "hasDefault",
+                        hasDefault
+                    );
                     return [
                         `${wrapWithQuotesIfNeeded(prop)}`,
-                        isRequired || hasDefault ? propType : t.optional(propType),
+                        isRequired && !hasDefault ? propType : t.optional(propType),
                     ];
                 })
             );
 
             const objectType = additionalProperties ? t.intersection([props, additionalProperties]) : props;
+            console.log("inline", isInline, objectType);
 
             if (isInline) {
-                return isPartial ? t.reference("Partial", [doWrapReadOnly(objectType)]) : doWrapReadOnly(objectType);
+                const buffer = isPartial
+                    ? t.reference("Partial", [doWrapReadOnly(objectType)])
+                    : doWrapReadOnly(objectType);
+                return schema.nullable ? t.union([buffer, t.reference("null")]) : buffer;
             }
 
             if (!inheritedMeta?.name) {
@@ -340,7 +349,9 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 return t.type(inheritedMeta.name, doWrapReadOnly(objectType));
             }
 
-            return t.type(inheritedMeta.name, t.reference("Partial", [doWrapReadOnly(objectType)]));
+            return schema.nullable
+                ? t.union([t.type(inheritedMeta.name, doWrapReadOnly(objectType)), t.reference("null")])
+                : t.type(inheritedMeta.name, t.reference("Partial", [doWrapReadOnly(objectType)]));
         }
 
         if (!schemaType) return t.unknown();
@@ -348,11 +359,14 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         throw new Error(`Unsupported schema type: ${schemaType}`);
     };
 
+    console.log("Node", schema);
     let tsResult = getTs();
+    console.log("TSR", tsResult);
 
     // Add JSDoc comments
     if (options?.withDocs && !isReferenceObject(schema)) {
         const jsDocComments = generateJSDocArray(schema);
+        console.log("JSD", jsDocComments);
 
         if (
             jsDocComments.length > 0 &&
@@ -360,6 +374,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             tsResult.kind !== ts.SyntaxKind.TypeAliasDeclaration
         ) {
             tsResult = t.comment(tsResult, jsDocComments);
+            console.log("Commented", tsResult);
         }
     }
 
