@@ -47,6 +47,10 @@ const wrapReadOnly =
         return theType;
     };
 
+const handleDefaultValue = (schema: SchemaObject, node: ts.TypeNode | TypeDefinitionObject | string) => {
+    return schema.default !== undefined ? t.union([node, t.reference("undefined")]) : node;
+};
+
 export const getTypescriptFromOpenApi = ({
     schema,
     meta: inheritedMeta,
@@ -116,7 +120,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     }) as TypeDefinition
             );
 
-            return schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types);
+            return handleDefaultValue(
+                schema,
+                schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types)
+            );
         }
 
         if (schema.type === "null") {
@@ -132,7 +139,10 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 (prop) => getTypescriptFromOpenApi({ schema: prop, ctx, meta, options }) as TypeDefinition
             );
 
-            return schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types);
+            return handleDefaultValue(
+                schema,
+                schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types)
+            );
         }
 
         // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
@@ -147,9 +157,12 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 )
             );
 
-            return schema.nullable
-                ? t.union([oneOf, doWrapReadOnly(t.array(oneOf)), t.reference("null")])
-                : t.union([oneOf, doWrapReadOnly(t.array(oneOf))]);
+            return handleDefaultValue(
+                schema,
+                schema.nullable
+                    ? t.union([oneOf, doWrapReadOnly(t.array(oneOf)), t.reference("null")])
+                    : t.union([oneOf, doWrapReadOnly(t.array(oneOf))])
+            );
         }
 
         if (schema.allOf) {
@@ -177,29 +190,45 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 );
             }
 
-            return schema.nullable ? t.union([t.intersection(types), t.reference("null")]) : t.intersection(types);
+            return handleDefaultValue(
+                schema,
+                schema.nullable ? t.union([t.intersection(types), t.reference("null")]) : t.intersection(types)
+            );
         }
 
         const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
         if (schemaType && isPrimitiveType(schemaType)) {
             if (schema.enum) {
                 if (schemaType !== "string" && schema.enum.some((e) => typeof e === "string")) {
-                    return schema.nullable ? t.union([t.never(), t.reference("null")]) : t.never();
+                    return handleDefaultValue(
+                        schema,
+                        schema.nullable ? t.union([t.never(), t.reference("null")]) : t.never()
+                    );
                 }
 
                 const hasNull = schema.enum.includes(null);
                 const withoutNull = schema.enum.filter((f) => f !== null);
-                return schema.nullable || hasNull
-                    ? t.union([...withoutNull, t.reference("null")])
-                    : t.union(withoutNull);
+                return handleDefaultValue(
+                    schema,
+                    schema.nullable || hasNull ? t.union([...withoutNull, t.reference("null")]) : t.union(withoutNull)
+                );
             }
 
             if (schemaType === "string")
-                return schema.nullable ? t.union([t.string(), t.reference("null")]) : t.string();
+                return handleDefaultValue(
+                    schema,
+                    schema.nullable ? t.union([t.string(), t.reference("null")]) : t.string()
+                );
             if (schemaType === "boolean")
-                return schema.nullable ? t.union([t.boolean(), t.reference("null")]) : t.boolean();
+                return handleDefaultValue(
+                    schema,
+                    schema.nullable ? t.union([t.boolean(), t.reference("null")]) : t.boolean()
+                );
             if (schemaType === "number" || schemaType === "integer")
-                return schema.nullable ? t.union([t.number(), t.reference("null")]) : t.number();
+                return handleDefaultValue(
+                    schema,
+                    schema.nullable ? t.union([t.number(), t.reference("null")]) : t.number()
+                );
         }
 
         if (schemaType === "array") {
@@ -215,19 +244,25 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     arrayOfType = t.reference(arrayOfType);
                 }
 
-                return schema.nullable
-                    ? t.union([doWrapReadOnly(t.array(arrayOfType)), t.reference("null")])
-                    : doWrapReadOnly(t.array(arrayOfType));
+                return handleDefaultValue(
+                    schema,
+                    schema.nullable
+                        ? t.union([doWrapReadOnly(t.array(arrayOfType)), t.reference("null")])
+                        : doWrapReadOnly(t.array(arrayOfType))
+                );
             }
 
-            return schema.nullable
-                ? t.union([doWrapReadOnly(t.array(t.any())), t.reference("null")])
-                : doWrapReadOnly(t.array(t.any()));
+            return handleDefaultValue(
+                schema,
+                schema.nullable
+                    ? t.union([doWrapReadOnly(t.array(t.any())), t.reference("null")])
+                    : doWrapReadOnly(t.array(t.any()))
+            );
         }
 
         if (schemaType === "object" || schema.properties || schema.additionalProperties) {
             if (!schema.properties) {
-                return {};
+                return handleDefaultValue(schema, schema.nullable ? t.union([{}, t.reference("null")]) : {});
             }
 
             canBeWrapped = false;
@@ -283,7 +318,11 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                     }
 
                     const isRequired = Boolean(isPartial ? true : schema.required?.includes(prop));
-                    return [`${wrapWithQuotesIfNeeded(prop)}`, isRequired ? propType : t.optional(propType)];
+                    const hasDefault = "default" in propSchema ? propSchema.default !== undefined : false;
+                    return [
+                        `${wrapWithQuotesIfNeeded(prop)}`,
+                        isRequired || hasDefault ? propType : t.optional(propType),
+                    ];
                 })
             );
 
