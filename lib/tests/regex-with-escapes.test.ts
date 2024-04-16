@@ -8,11 +8,11 @@ test("regex-with-escapes", () => {
             properties: {
                 str: { 
                     type: "string",
-                    pattern: "^\/$"
+                    pattern: "^/$"
                 },
             }
         }})
     ).toMatchInlineSnapshot(
-        '"z.object({ str: z.string().regex(/^\/$/) }).partial().passthrough()"'
+        '"z.object({ str: z.string().regex(/^\\/$/) }).partial().passthrough()"'
     );
 });
