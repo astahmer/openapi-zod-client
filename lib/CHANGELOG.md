@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.18.1
+
+### Patch Changes
+
+-   [#288](https://github.com/astahmer/openapi-zod-client/pull/288) [`3799ae3`](https://github.com/astahmer/openapi-zod-client/commit/3799ae33b9cbee028918e92d49e7d8bed68bfb5e) Thanks [@mjperrone](https://github.com/mjperrone)! - Fix escaping of forward slash `/` in pattern regex so the output code will be `/\//`. This change also breaks escaping of unnecessarily escaped forward slash `\/` in pattern regex, such that the output code will be `/\\//`.
+
 ## 1.18.0
 
 ### Minor Changes
