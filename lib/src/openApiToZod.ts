@@ -213,7 +213,15 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
     if (schemaType === "array") {
         if (schema.items) {
             return code.assign(
-                `z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})${readonly}`
+                `z.array(${
+                    getZodSchema({ schema: schema.items, ctx, meta, options }).toString()
+                }${
+                    getZodChain({
+                        schema: schema.items as SchemaObject,
+                        meta: { ...meta, isRequired: true },
+                        options,
+                    })
+                })${readonly}`
             );
         }
 
