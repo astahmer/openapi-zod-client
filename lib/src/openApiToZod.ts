@@ -99,9 +99,15 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                 .join(", ")}])
             `);
         }
-
+        const chain = getZodChain({
+            schema,
+            meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+            options,
+        });
         return code.assign(
-            `z.union([${schema.oneOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ")}])`
+            `z.union([${schema.oneOf
+                .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
+                .join(", ")}])${chain}`
         );
     }
 
@@ -129,8 +135,12 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                 return type.toString();
             })
             .join(", ");
-
-        return code.assign(`z.union([${types}])`);
+        const chain = getZodChain({
+            schema,
+            meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+            options,
+        });
+        return code.assign(`z.union([${types}])${chain}`);
     }
 
     if (schema.allOf) {
@@ -167,17 +177,24 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
     const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
     if (schemaType && isPrimitiveType(schemaType)) {
+        const chain = getZodChain({
+            schema,
+            meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+            options,
+        });
         if (schema.enum) {
             if (schemaType === "string") {
                 if (schema.enum.length === 1) {
                     const value = schema.enum[0];
                     const valueString = value === null ? "null" : `"${value}"`;
-                    return code.assign(`z.literal(${valueString})`);
+                    return code.assign(`z.literal(${valueString})${chain}`);
                 }
 
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 return code.assign(
-                    `z.enum([${schema.enum.map((value) => (value === null ? "null" : `"${value}"`)).join(", ")}])`
+                    `z.enum([${schema.enum
+                        .map((value) => (value === null ? "null" : `"${value}"`))
+                        .join(", ")}])${chain}`
                 );
             }
 
@@ -187,37 +204,42 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
             if (schema.enum.length === 1) {
                 const value = schema.enum[0];
-                return code.assign(`z.literal(${value === null ? "null" : value})`);
+                return code.assign(`z.literal(${value === null ? "null" : value})${chain}`);
             }
-
             return code.assign(
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
-                `z.union([${schema.enum.map((value) => `z.literal(${value === null ? "null" : value})`).join(", ")}])`
+                `z.union([${schema.enum
+                    .map((value) => `z.literal(${value === null ? "null" : value})`)
+                    .join(", ")}])${chain}`
             );
         }
 
-        return code.assign(
-            match(schemaType)
-                .with("integer", () => "z.number()")
-                .with("string", () =>
-                    match(schema.format)
-                        .with("binary", () => "z.instanceof(File)")
-                        .otherwise(() => "z.string()")
-                )
-                .otherwise((type) => `z.${type}()`)
-        );
+        const type = match(schemaType)
+            .with("integer", () => "z.number()")
+            .with("string", () =>
+                match(schema.format)
+                    .with("binary", () => "z.instanceof(File)")
+                    .otherwise(() => "z.string()")
+            )
+            .otherwise((type) => `z.${type}()`);
+        return code.assign(type + chain);
     }
 
     const readonly = options?.allReadonly ? ".readonly()" : "";
 
     if (schemaType === "array") {
+        const chain = getZodChain({
+            schema,
+            meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+            options,
+        });
         if (schema.items) {
             return code.assign(
-                `z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})${readonly}`
+                `z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()})${readonly}${chain}`
             );
         }
 
-        return code.assign(`z.array(z.any())${readonly}`);
+        return code.assign(`z.array(z.any())${readonly}${chain}`);
     }
 
     if (schemaType === "object" || schema.properties || schema.additionalProperties) {
@@ -231,15 +253,18 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
         const additionalPropsSchema = additionalProps === false ? "" : ".passthrough()";
 
         if (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length > 0) {
+            const chain = getZodChain({
+                schema,
+                meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+                options,
+            });
             return code.assign(
-                `z.record(${(
-                    getZodSchema({ schema: schema.additionalProperties, ctx, meta, options }) +
-                    getZodChain({
-                        schema: schema.additionalProperties as SchemaObject,
-                        meta: { ...meta, isRequired: true },
-                        options,
-                    })
-                ).toString()})`
+                `z.record(${getZodSchema({
+                    schema: schema.additionalProperties,
+                    ctx,
+                    meta,
+                    options,
+                }).toString()})${chain}`
             );
         }
 
@@ -259,20 +284,17 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                     name: prop,
                 } as CodeMetaData;
 
-                let propActualSchema = propSchema;
-
+                const zodSchema = getZodSchema({ schema: propSchema, ctx, meta: propMetadata, options });
                 if (isReferenceObject(propSchema) && ctx?.resolver) {
-                    propActualSchema = ctx.resolver.getSchemaByRef(propSchema.$ref);
-                    if (!propActualSchema) {
-                        throw new Error(`Schema ${propSchema.$ref} not found`);
-                    }
+                    const chain = getZodChain({
+                        schema,
+                        meta: propMetadata,
+                        options,
+                    });
+                    return [prop, zodSchema + chain];
                 }
 
-                const propCode =
-                    getZodSchema({ schema: propSchema, ctx, meta: propMetadata, options }) +
-                    getZodChain({ schema: propActualSchema as SchemaObject, meta: propMetadata, options });
-
-                return [prop, propCode.toString()];
+                return [prop, zodSchema.toString()];
             });
 
             properties =
@@ -283,10 +305,20 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
         const partial = isPartial ? ".partial()" : "";
         const strict = options?.strictObjects ? ".strict()" : "";
-        return code.assign(`z.object(${properties})${partial}${strict}${additionalPropsSchema}${readonly}`);
+        const chain = getZodChain({
+            schema,
+            meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+            options,
+        });
+        return code.assign(`z.object(${properties})${partial}${strict}${additionalPropsSchema}${readonly}${chain}`);
     }
 
-    if (!schemaType) return code.assign("z.unknown()");
+    const chain = getZodChain({
+        schema,
+        meta: { ...code.meta, isRequired: code.meta.isRequired ?? true },
+        options,
+    });
+    if (!schemaType) return code.assign(`z.unknown()${chain}`);
 
     // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
     throw new Error(`Unsupported schema type: ${schemaType}`);

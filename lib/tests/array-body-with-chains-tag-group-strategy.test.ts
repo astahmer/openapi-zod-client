@@ -56,7 +56,10 @@ test("array-body-with-chains-tag-group-strategy", async () => {
           "Test": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
-      const putTest_Body = z.array(z.object({ testItem: z.string() }).partial());
+      const putTest_Body = z
+        .array(z.object({ testItem: z.string() }).partial())
+        .min(1)
+        .max(10);
 
       export const schemas = {
         putTest_Body,
@@ -72,7 +75,7 @@ test("array-body-with-chains-tag-group-strategy", async () => {
             {
               name: "body",
               type: "Body",
-              schema: putTest_Body.min(1).max(10),
+              schema: putTest_Body,
             },
           ],
           response: z.void(),
