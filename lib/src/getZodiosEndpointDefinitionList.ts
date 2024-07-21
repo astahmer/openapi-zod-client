@@ -17,7 +17,7 @@ import type { CodeMeta, ConversionTypeContext } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import { isReferenceObject } from "./isReferenceObject";
 import { makeSchemaResolver } from "./makeSchemaResolver";
-import { getZodChain, getZodSchema } from "./openApiToZod";
+import { getZodSchema } from "./openApiToZod";
 import { getSchemaComplexity } from "./schema-complexity";
 import type { TemplateContext } from "./template-context";
 import {
@@ -202,14 +202,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         name: "body",
                         type: "Body",
                         description: requestBody.description!,
-                        schema:
-                            getZodVarName(bodyCode, operationName + "_Body") +
-                            getZodChain({
-                                schema: isReferenceObject(bodySchema)
-                                    ? ctx.resolver.getSchemaByRef(bodySchema.$ref)
-                                    : bodySchema,
-                                meta: bodyCode.meta,
-                            }),
+                        schema: getZodVarName(bodyCode, operationName + "_Body"),
                     });
                 }
             }
@@ -275,13 +268,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                             .with("query", () => "Query")
                             .with("path", () => "Path")
                             .run() as "Header" | "Query" | "Path",
-                        schema: getZodVarName(
-                            paramCode.assign(
-                                paramCode.toString() +
-                                    getZodChain({ schema: paramSchema, meta: paramCode.meta, options })
-                            ),
-                            paramItem.name
-                        ),
+                        schema: getZodVarName(paramCode.assign(paramCode.toString()), paramItem.name),
                     });
                 }
             }
@@ -307,14 +294,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                 if (maybeSchema) {
                     schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
-                    schemaString =
-                        (schema.ref ? getZodVarName(schema) : schema.toString()) +
-                        getZodChain({
-                            schema: isReferenceObject(maybeSchema)
-                                ? ctx.resolver.getSchemaByRef(maybeSchema.$ref)
-                                : maybeSchema,
-                            meta: schema.meta,
-                        });
+                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
                 }
 
                 if (endpointDefinition.responses !== undefined) {
@@ -363,14 +343,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
 
                 if (maybeSchema) {
                     schema = getZodSchema({ schema: maybeSchema, ctx, meta: { isRequired: true }, options });
-                    schemaString =
-                        (schema.ref ? getZodVarName(schema) : schema.toString()) +
-                        getZodChain({
-                            schema: isReferenceObject(maybeSchema)
-                                ? ctx.resolver.getSchemaByRef(maybeSchema.$ref)
-                                : maybeSchema,
-                            meta: schema.meta,
-                        });
+                    schemaString = schema.ref ? getZodVarName(schema) : schema.toString();
                 }
 
                 if (schemaString) {
