@@ -15,7 +15,7 @@ test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "boolean" })).toMatchInlineSnapshot('"z.boolean()"');
     expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
     expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number()"');
-    expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.number()"');
+    expect(getSchemaAsZodString({ type: "integer" })).toMatchInlineSnapshot('"z.number().int()"');
     // expect(getSchemaAsZodString({ type: "string", format: "date-time" })).toMatchInlineSnapshot('"z.string().datetime()"');
     // expect(getSchemaAsZodString({ type: "number", nullable: true, minimum: 0 })).toMatchInlineSnapshot('"z.number().nullable().gte(0)"');
 
@@ -161,8 +161,8 @@ test("getSchemaAsZodString", () => {
                                     type: "string",
                                 },
                             },
-                        }
-                    ]
+                        },
+                    ],
                 },
                 {
                     type: "object",
@@ -180,11 +180,10 @@ test("getSchemaAsZodString", () => {
                                 },
                             },
                         },
-                    ]
-                }
+                    ],
+                },
             ],
             discriminator: { propertyName: "type" },
-
         })
     ).toMatchInlineSnapshot(`
     "
@@ -226,7 +225,7 @@ test("getSchemaAsZodString", () => {
                                 },
                             },
                         },
-                    ]
+                    ],
                 },
                 {
                     type: "object",
@@ -257,13 +256,14 @@ test("getSchemaAsZodString", () => {
                                 },
                             },
                         },
-                    ]
-                }
+                    ],
+                },
             ],
             discriminator: { propertyName: "type" },
-
         })
-    ).toMatchInlineSnapshot('"z.union([z.object({ type: z.literal("a"), a: z.string() }).passthrough().and(z.object({ type: z.literal("c"), c: z.string() }).passthrough()), z.object({ type: z.literal("b"), b: z.string() }).passthrough().and(z.object({ type: z.literal("d"), d: z.string() }).passthrough())])"');
+    ).toMatchInlineSnapshot(
+        '"z.union([z.object({ type: z.literal("a"), a: z.string() }).passthrough().and(z.object({ type: z.literal("c"), c: z.string() }).passthrough()), z.object({ type: z.literal("b"), b: z.string() }).passthrough().and(z.object({ type: z.literal("d"), d: z.string() }).passthrough())])"'
+    );
 
     expect(
         getSchemaAsZodString({
@@ -272,9 +272,7 @@ test("getSchemaAsZodString", () => {
                 anyOfExample: { anyOf: [{ type: "string" }, { type: "number" }] },
             },
         })
-    ).toMatchInlineSnapshot(
-        '"z.object({ anyOfExample: z.union([z.string(), z.number()]) }).partial().passthrough()"'
-    );
+    ).toMatchInlineSnapshot('"z.object({ anyOfExample: z.union([z.string(), z.number()]) }).partial().passthrough()"');
 
     expect(
         getSchemaAsZodString({
@@ -296,14 +294,14 @@ test("getSchemaAsZodString", () => {
 });
 
 test("getSchemaWithChainableAsZodString", () => {
-    expect(getSchemaAsZodString({ type: "string", nullable: true })).toMatchInlineSnapshot('"z.string()"');
+    expect(getSchemaAsZodString({ type: "string", nullable: true })).toMatchInlineSnapshot('"z.string().nullable()"');
     expect(getSchemaAsZodString({ type: "string", nullable: false })).toMatchInlineSnapshot('"z.string()"');
 
     expect(getSchemaAsZodString({ type: "string", nullable: false }, { isRequired: true })).toMatchInlineSnapshot(
         '"z.string()"'
     );
     expect(getSchemaAsZodString({ type: "string", nullable: true }, { isRequired: true })).toMatchInlineSnapshot(
-        '"z.string()"'
+        '"z.string().nullable()"'
     );
 });
 

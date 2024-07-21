@@ -56,13 +56,13 @@ test("allOf-single-ref", async () => {
       import { z } from "zod";
 
       const MyComponent = z.enum(["one", "two", "three"]);
-      const allOf_ref_param = MyComponent.optional();
-      
+      const allOf_ref_param = MyComponent;
+
       export const schemas = {
         MyComponent,
         allOf_ref_param,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "get",
@@ -88,9 +88,9 @@ test("allOf-single-ref", async () => {
           response: z.void(),
         },
       ]);
-      
+
       export const api = new Zodios(endpoints);
-      
+
       export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
         return new Zodios(baseUrl, endpoints, options);
       }

@@ -103,13 +103,13 @@ describe("export-all-types", () => {
 
         expect(data).toEqual({
             schemas: {
-                Settings: "z.object({ theme_color: z.string(), features: Features.min(1) }).partial().passthrough()",
-                Author: "z.object({ name: z.union([z.string(), z.number()]).nullable(), title: Title.min(1).max(30), id: Id, mail: z.string(), settings: Settings }).partial().passthrough()",
-                Features: "z.array(z.string())",
+                Settings: "z.object({ theme_color: z.string(), features: Features }).partial().passthrough()",
+                Author: "z.object({ name: z.union([z.string().nullable(), z.number()]).nullable(), title: Title, id: Id, mail: z.string(), settings: Settings }).partial().passthrough()",
+                Features: "z.array(z.string()).min(1)",
                 Song: "z.object({ name: z.string(), duration: z.number() }).partial().passthrough()",
                 Playlist:
                     "z.object({ name: z.string(), author: Author, songs: z.array(Song) }).partial().passthrough().and(Settings)",
-                Title: "z.string()",
+                Title: "z.string().min(1).max(30)",
                 Id: "z.number()",
             },
             endpoints: [
@@ -198,17 +198,17 @@ describe("export-all-types", () => {
             duration: number;
           }>;
 
-          const Title = z.string();
+          const Title = z.string().min(1).max(30);
           const Id = z.number();
-          const Features = z.array(z.string());
+          const Features = z.array(z.string()).min(1);
           const Settings: z.ZodType<Settings> = z
-            .object({ theme_color: z.string(), features: Features.min(1) })
+            .object({ theme_color: z.string(), features: Features })
             .partial()
             .passthrough();
           const Author: z.ZodType<Author> = z
             .object({
-              name: z.union([z.string(), z.number()]).nullable(),
-              title: Title.min(1).max(30),
+              name: z.union([z.string().nullable(), z.number()]).nullable(),
+              title: Title,
               id: Id,
               mail: z.string(),
               settings: Settings,
