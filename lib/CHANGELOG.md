@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.18.2
+
+### Patch Changes
+
+-   [#294](https://github.com/astahmer/openapi-zod-client/pull/294) [`ca81272`](https://github.com/astahmer/openapi-zod-client/commit/ca812725e369d7e04405a8aa88004e39ccbd6b14) Thanks [@QuentinJanuel](https://github.com/QuentinJanuel)! - Fix format validation for string items in arrays. Previously, format specifications (such as `date-time`) were ignored for array items, resulting in loose validation. This change ensures that the specified formats are now correctly applied to all string items within arrays.
+
 ## 1.18.1
 
 ### Patch Changes
