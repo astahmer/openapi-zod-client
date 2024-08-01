@@ -112,7 +112,7 @@ test("enum-null", async () => {
       import { z } from "zod";
 
       type Compound = Partial<{
-        field: Null1 | Null2 | Null3 | Null4 | string;
+        field: Null1 | Null2 | (Null3 | null) | (Null4 | null) | string;
       }>;
       type Null1 = null;
       type Null2 = "a" | null;

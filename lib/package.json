@@ -13,7 +13,7 @@
         "openapi-zod-client": "./bin.js"
     },
     "scripts": {
-        "test": "vitest",
+        "test": "export NODE_OPTIONS=$(echo '$NODE_OPTIONS' | sed 's/--openssl-legacy-provider//') vitest",
         "test:ci": "vitest run",
         "lint:ts": "tsc --noEmit",
         "lint": "eslint -c .eslintrc.build.js './src/**/*.ts' --cache --format=pretty",
