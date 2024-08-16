@@ -102,11 +102,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
             const isCircularDiscriminatedUnion = discriminatedUnionOptions.some((t) => t.ref === circularRef);
 
             if (isCircularDiscriminatedUnion) {
-                circularRef = "";
-                return code.assign(`z.lazy(() => z.discriminatedUnion("${propertyName}", [${discriminatedUnionOptions.join(
-                    ", "
-                )}])
-                    )`);
+                return code.assign(`z.union([${discriminatedUnionOptions.join(", ")}])`);
             }
 
             return code.assign(`

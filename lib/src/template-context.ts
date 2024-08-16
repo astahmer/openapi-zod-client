@@ -41,7 +41,7 @@ export const getZodClientTemplateContext = (
 
     const wrapWithLazyIfNeeded = (schemaName: string) => {
         const [code, ref] = [result.zodSchemaByName[schemaName]!, result.resolver.resolveSchemaName(schemaName)?.ref];
-        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref) && !code.includes("z.lazy");
+        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         if (isCircular) {
             data.circularTypeByName[schemaName] = true;
         }
