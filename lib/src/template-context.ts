@@ -137,13 +137,25 @@ export const getZodClientTemplateContext = (
             const dependencies = dependenciesByGroupName.get(groupName)!;
 
             const addDependencyIfNeeded = (schemaName: string) => {
-                console.log(schemaName)
                 if (!schemaName) return;
-                if (schemaName.startsWith("z.")) return;
+                // Responses can refer to both z chaining methods and models
+                // To be able to import them we need to extract them from the raw zod expression.
+                // E.g: `z.array(z.union([FooBar.and(Bar).and(Foo), z.union([FooBar, Bar, Foo])]))`
+                if (schemaName.includes("z.")) {
+                    for (const name in result.zodSchemaByName) {
+                        // Matching whole word to avoid false positive e.g: avoid macthing `Foo` with `FooBar`
+                        const regex = new RegExp(String.raw`\b(${name})\b`);
+
+                        if (regex.test(schemaName)) {
+                            dependencies.add(name);
+                        }
+                    }
+
+                    return
+                }
                 // Sometimes the schema includes a chain that should be removed from the dependency
-                // const [normalizedSchemaName] = schemaName.split(".");
-                // console.log({normalizedSchemaName})
-                dependencies.add(schemaName!);
+                const [normalizedSchemaName] = schemaName.split(".");
+                dependencies.add(normalizedSchemaName!);
             };
 
             addDependencyIfNeeded(endpoint.response);
