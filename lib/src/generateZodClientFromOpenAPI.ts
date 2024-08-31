@@ -43,7 +43,6 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     : string
 > => {
     const data = getZodClientTemplateContext(openApiDoc, options);
-    // console.log(data)
     const groupStrategy = options?.groupStrategy ?? "none";
 
     if (!templatePath) {
@@ -84,7 +83,6 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
         const commonTemplate = hbs.compile(commonSource);
         const commonSchemaNames = [...(data.commonSchemaNames ?? [])];
 
-        console.log({ commonSchemaNames })
         if (commonSchemaNames.length > 0) {
             const commonOutput = maybePretty(
                 commonTemplate({

@@ -161,7 +161,6 @@ export const getZodClientTemplateContext = (
             addDependencyIfNeeded(endpoint.response);
             endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
             endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
-            console.log(dependencies)
             dependencies.forEach((schemaName) => (group.schemas[schemaName] = data.schemas[schemaName]!));
 
             // reduce types/schemas for each group using prev computed deep dependencies
@@ -188,9 +187,6 @@ export const getZodClientTemplateContext = (
 
     data.endpoints = sortBy(data.endpoints, "path");
 
-    console.log(data)
-    console.log(data.endpointsGroups["controller_foo"])
-    // Should this be handled above ?? before this parse
     if (groupStrategy.includes("file")) {
         const dependenciesCount = new Map<string, number>();
         dependenciesByGroupName.forEach((deps) => {
