@@ -73,14 +73,14 @@ test("allOf-infer-required-only-item", async () => {
     "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
     import { z } from "zod";
     
+    type user = Partial<{
+      name: string;
+      email: string;
+    }>;
     type userResponse = Partial<{
       user: user & {
         name: string;
       };
-    }>;
-    type user = Partial<{
-      name: string;
-      email: string;
     }>;
     
     const user: z.ZodType<user> = z

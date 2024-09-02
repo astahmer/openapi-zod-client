@@ -1,8 +1,6 @@
 import { describe, test, expect } from "vitest";
 import { z } from "zod";
-import { makeSchemaResolver } from "../src/makeSchemaResolver.js";
 import { getZodSchema } from "../src/openApiToZod.js";
-import { asComponentSchema } from "../src/utils.js";
 import { CodeMeta } from "../src/CodeMeta.js";
 import { OpenAPIObject } from "openapi3-ts";
 import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI.js";

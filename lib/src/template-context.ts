@@ -53,15 +53,18 @@ export const getZodClientTemplateContext = (
         data.schemas[normalizeString(name)] = wrapWithLazyIfNeeded(name);
     }
 
-    for (const ref in depsGraphs.deepDependencyGraph) {
-        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
-        const ctx: TsConversionContext = { nodeByRef: {}, resolver: result.resolver, visitedsRefs: {} };
-
-        // Specifically check isCircular if shouldExportAllTypes is false. Either should cause shouldGenerateType to be true.
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        const shouldGenerateType = options?.shouldExportAllTypes || isCircular;
-        const schemaName = shouldGenerateType ? result.resolver.resolveRef(ref).normalized : undefined;
-        if (shouldGenerateType && schemaName && !data.types[schemaName]) {
+    const getTypescript = ({
+        ctx,
+        ref,
+        shouldGenerateType,
+        schemaName,
+    }: {
+        ctx: TsConversionContext;
+        ref?: string;
+        shouldGenerateType: boolean;
+        schemaName?: string | undefined;
+    }) => {
+        if (ref && shouldGenerateType && schemaName && !data.types[schemaName]) {
             const node = getTypescriptFromOpenApi({
                 schema: result.resolver.getSchemaByRef(ref),
                 ctx,
@@ -92,6 +95,35 @@ export const getZodClientTemplateContext = (
                 }
             }
         }
+    };
+
+    for (const schema in data.schemas) {
+        const ctx: TsConversionContext = { nodeByRef: {}, resolver: result.resolver, visitedsRefs: {} };
+        const shouldGenerateType = !!options?.shouldExportAllTypes;
+        const { ref, normalized } = result.resolver.resolveSchemaName(schema) ?? {};
+        const schemaName = shouldGenerateType ? normalized : undefined;
+        getTypescript({
+            ctx,
+            ref,
+            shouldGenerateType,
+            schemaName,
+        });
+    }
+
+    for (const ref in depsGraphs.deepDependencyGraph) {
+        const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
+        const ctx: TsConversionContext = { nodeByRef: {}, resolver: result.resolver, visitedsRefs: {} };
+
+        // Specifically check isCircular if shouldExportAllTypes is false. Either should cause shouldGenerateType to be true.
+        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+        const shouldGenerateType = !!(options?.shouldExportAllTypes || isCircular);
+        const schemaName = shouldGenerateType ? result.resolver.resolveRef(ref).normalized : undefined;
+        getTypescript({
+            ctx,
+            ref,
+            shouldGenerateType,
+            schemaName,
+        });
     }
 
     // TODO
