@@ -3,6 +3,7 @@ import { sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/ser
 import { ts } from "tanu";
 import { match } from "ts-pattern";
 
+import type { CodeMetaData } from "./CodeMeta";
 import { getOpenApiDependencyGraph } from "./getOpenApiDependencyGraph";
 import type { EndpointDefinitionWithRefs } from "./getZodiosEndpointDefinitionList";
 import { getZodiosEndpointDefinitionList } from "./getZodiosEndpointDefinitionList";
@@ -11,7 +12,6 @@ import { getTypescriptFromOpenApi } from "./openApiToTypescript";
 import { getZodSchema } from "./openApiToZod";
 import { topologicalSort } from "./topologicalSort";
 import { asComponentSchema, normalizeString } from "./utils";
-import type { CodeMetaData } from "./CodeMeta";
 
 const file = ts.createSourceFile("", "", ts.ScriptTarget.ESNext, true);
 const printer = ts.createPrinter({ newLine: ts.NewLineKind.LineFeed });
@@ -137,16 +137,19 @@ export const getZodClientTemplateContext = (
             const dependencies = dependenciesByGroupName.get(groupName)!;
 
             const addDependencyIfNeeded = (schemaName: string) => {
+                console.log(schemaName)
                 if (!schemaName) return;
                 if (schemaName.startsWith("z.")) return;
                 // Sometimes the schema includes a chain that should be removed from the dependency
-                const [normalizedSchemaName] = schemaName.split(".");
-                dependencies.add(normalizedSchemaName!);
+                // const [normalizedSchemaName] = schemaName.split(".");
+                // console.log({normalizedSchemaName})
+                dependencies.add(schemaName!);
             };
 
             addDependencyIfNeeded(endpoint.response);
             endpoint.parameters.forEach((param) => addDependencyIfNeeded(param.schema));
             endpoint.errors.forEach((param) => addDependencyIfNeeded(param.schema));
+            console.log(dependencies)
             dependencies.forEach((schemaName) => (group.schemas[schemaName] = data.schemas[schemaName]!));
 
             // reduce types/schemas for each group using prev computed deep dependencies
@@ -173,6 +176,9 @@ export const getZodClientTemplateContext = (
 
     data.endpoints = sortBy(data.endpoints, "path");
 
+    console.log(data)
+    console.log(data.endpointsGroups["controller_foo"])
+    // Should this be handled above ?? before this parse
     if (groupStrategy.includes("file")) {
         const dependenciesCount = new Map<string, number>();
         dependenciesByGroupName.forEach((deps) => {
