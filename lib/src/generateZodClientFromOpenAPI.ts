@@ -17,13 +17,13 @@ type GenerateZodClientFromOpenApiArgs<TOptions extends TemplateContext["options"
     options?: TOptions;
     handlebars?: ReturnType<typeof getHandlebars>;
 } & (
-        | {
-            distPath?: never;
-            /** when true, will only return the result rather than writing it to a file, mostly used for easier testing purpose */
-            disableWriteToFile: true;
-        }
-        | { distPath: string; disableWriteToFile?: false }
-    );
+    | {
+          distPath?: never;
+          /** when true, will only return the result rather than writing it to a file, mostly used for easier testing purpose */
+          disableWriteToFile: true;
+      }
+    | { distPath: string; disableWriteToFile?: false }
+);
 
 export const generateZodClientFromOpenAPI = async <TOptions extends TemplateContext["options"]>({
     openApiDoc,
@@ -35,12 +35,12 @@ export const generateZodClientFromOpenAPI = async <TOptions extends TemplateCont
     handlebars,
 }: GenerateZodClientFromOpenApiArgs<TOptions>): Promise<
     TOptions extends NonNullable<TemplateContext["options"]>
-    ? undefined extends TOptions["groupStrategy"]
-    ? string
-    : TOptions["groupStrategy"] extends "none" | "tag" | "method"
-    ? string
-    : Record<string, string>
-    : string
+        ? undefined extends TOptions["groupStrategy"]
+            ? string
+            : TOptions["groupStrategy"] extends "none" | "tag" | "method"
+            ? string
+            : Record<string, string>
+        : string
 > => {
     const data = getZodClientTemplateContext(openApiDoc, options);
     const groupStrategy = options?.groupStrategy ?? "none";

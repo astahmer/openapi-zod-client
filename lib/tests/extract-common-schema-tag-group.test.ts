@@ -4,20 +4,23 @@ import { generateZodClientFromOpenAPI } from "../src";
 
 describe("Tag file group strategy resolve common schema import from zod expression responses", () => {
     type GetMultiTagOpenApiDocArgs = {
-        responseSchema?: SchemaObject | ReferenceObject
-        parameters?: Array<ParameterObject | ReferenceObject>
-    }
+        responseSchema?: SchemaObject | ReferenceObject;
+        parameters?: Array<ParameterObject | ReferenceObject>;
+    };
     const getMultiTagOpenApiDoc = ({ parameters, responseSchema: schema }: GetMultiTagOpenApiDocArgs) => {
-        const responses = schema != undefined ? {
-            "200": {
-                description: "Success",
-                content: {
-                    "application/json": {
-                        schema
-                    }
-                },
-            },
-        } : undefined;
+        const responses =
+            schema != undefined
+                ? {
+                      "200": {
+                          description: "Success",
+                          content: {
+                              "application/json": {
+                                  schema,
+                              },
+                          },
+                      },
+                  }
+                : undefined;
 
         const openApiDoc: OpenAPIObject = {
             openapi: "3.0.0",
@@ -29,7 +32,7 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                         description: "Foo",
                         tags: ["controller-foo"],
                         responses,
-                        parameters
+                        parameters,
                     },
                 },
                 "/bar": {
@@ -38,7 +41,7 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                         description: "Bar",
                         tags: ["controller-bar"],
                         responses,
-                        parameters
+                        parameters,
                     },
                 },
             },
@@ -70,38 +73,36 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                         type: "object",
                         properties: {
                             bar: {
-                                type: "string"
-                            }
-                        }
+                                type: "string",
+                            },
+                        },
                     },
                     Foo: {
                         type: "object",
                         properties: {
                             foo: {
-                                type: 'boolean'
-                            }
-                        }
-                    }
+                                type: "boolean",
+                            },
+                        },
+                    },
                 },
             },
             tags: [],
         };
-        return openApiDoc
-    }
+        return openApiDoc;
+    };
 
     test("SchemaObject referring to ReferencedObject response body should import related common schema", async () => {
-        const openApiDoc = getMultiTagOpenApiDoc(
-            {
-                responseSchema: {
-                    type: "object",
-                    properties: {
-                        fooBar: {
-                            "$ref": "#/components/schemas/FooBar"
-                        },
-                    }
-                }
-            }
-        )
+        const openApiDoc = getMultiTagOpenApiDoc({
+            responseSchema: {
+                type: "object",
+                properties: {
+                    fooBar: {
+                        $ref: "#/components/schemas/FooBar",
+                    },
+                },
+            },
+        });
 
         const output = await generateZodClientFromOpenAPI({
             disableWriteToFile: true,
@@ -169,12 +170,12 @@ describe("Tag file group strategy resolve common schema import from zod expressi
     test("Array of $refs response body should import related common schema", async () => {
         const openApiDoc = getMultiTagOpenApiDoc({
             responseSchema: {
-                "type": "array",
+                type: "array",
                 items: {
-                    "$ref": "#/components/schemas/FooBar"
-                }
-            }
-        })
+                    $ref: "#/components/schemas/FooBar",
+                },
+            },
+        });
         const output = await generateZodClientFromOpenAPI({
             disableWriteToFile: true,
             openApiDoc,
@@ -241,49 +242,49 @@ describe("Tag file group strategy resolve common schema import from zod expressi
     test("Complex nested intersections response body should import related common schema", async () => {
         const openApiDoc = getMultiTagOpenApiDoc({
             responseSchema: {
-                "type": "array",
+                type: "array",
                 items: {
-                    "oneOf": [
+                    oneOf: [
                         {
-                            "allOf": [
+                            allOf: [
                                 {
-                                    "$ref": "#/components/schemas/FooBar"
+                                    $ref: "#/components/schemas/FooBar",
                                 },
                                 {
-                                    "$ref": "#/components/schemas/Bar"
+                                    $ref: "#/components/schemas/Bar",
                                 },
                                 {
-                                    "$ref": "#/components/schemas/Foo"
-                                }
-                            ]
+                                    $ref: "#/components/schemas/Foo",
+                                },
+                            ],
                         },
                         {
-                            "oneOf": [
+                            oneOf: [
                                 {
-                                    "$ref": "#/components/schemas/FooBar"
+                                    $ref: "#/components/schemas/FooBar",
                                 },
                                 {
-                                    "$ref": "#/components/schemas/Bar"
+                                    $ref: "#/components/schemas/Bar",
                                 },
                                 {
-                                    "$ref": "#/components/schemas/Foo"
-                                }
-                            ]
+                                    $ref: "#/components/schemas/Foo",
+                                },
+                            ],
                         },
                         {
-                            "anyOf": [
+                            anyOf: [
                                 {
-                                    "$ref": "#/components/schemas/FooBar"
+                                    $ref: "#/components/schemas/FooBar",
                                 },
                                 {
-                                    "$ref": "#/components/schemas/Foo"
-                                }
-                            ]
+                                    $ref: "#/components/schemas/Foo",
+                                },
+                            ],
                         },
-                    ]
-                }
-            }
-        })
+                    ],
+                },
+            },
+        });
 
         const output = await generateZodClientFromOpenAPI({
             disableWriteToFile: true,
@@ -387,8 +388,8 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                         default: ["one", "two"],
                     },
                 },
-            ]
-        })
+            ],
+        });
 
         const output = await generateZodClientFromOpenAPI({
             disableWriteToFile: true,
@@ -502,22 +503,22 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                                 content: {
                                     "application/json": {
                                         schema: {
-                                            "type": "array",
+                                            type: "array",
                                             items: {
                                                 allOf: [
                                                     {
-                                                        "$ref": "#/components/schemas/FooBar"
+                                                        $ref: "#/components/schemas/FooBar",
                                                     },
                                                     {
-                                                        "$ref": "#/components/schemas/Bar"
+                                                        $ref: "#/components/schemas/Bar",
                                                     },
                                                     {
-                                                        "$ref": "#/components/schemas/Foo"
-                                                    }
-                                                ]
-                                            }
-                                        }
-                                    }
+                                                        $ref: "#/components/schemas/Foo",
+                                                    },
+                                                ],
+                                            },
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -532,20 +533,20 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                                 content: {
                                     "application/json": {
                                         schema: {
-                                            "type": "object",
+                                            type: "object",
                                             oneOf: [
                                                 {
-                                                    "$ref": "#/components/schemas/FooBar"
+                                                    $ref: "#/components/schemas/FooBar",
                                                 },
                                                 {
-                                                    "$ref": "#/components/schemas/Bar"
+                                                    $ref: "#/components/schemas/Bar",
                                                 },
                                                 {
-                                                    "$ref": "#/components/schemas/Foo"
-                                                }
-                                            ]
-                                        }
-                                    }
+                                                    $ref: "#/components/schemas/Foo",
+                                                },
+                                            ],
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -560,17 +561,17 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                                 content: {
                                     "application/json": {
                                         schema: {
-                                            "type": "object",
+                                            type: "object",
                                             oneOf: [
                                                 {
-                                                    "$ref": "#/components/schemas/FooBar"
+                                                    $ref: "#/components/schemas/FooBar",
                                                 },
                                                 {
-                                                    "$ref": "#/components/schemas/Foo"
-                                                }
-                                            ]
-                                        }
-                                    }
+                                                    $ref: "#/components/schemas/Foo",
+                                                },
+                                            ],
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -605,18 +606,18 @@ describe("Tag file group strategy resolve common schema import from zod expressi
                         type: "object",
                         properties: {
                             bar: {
-                                type: "string"
-                            }
-                        }
+                                type: "string",
+                            },
+                        },
                     },
                     Foo: {
                         type: "object",
                         properties: {
                             foo: {
-                                type: 'boolean'
-                            }
-                        }
-                    }
+                                type: "boolean",
+                            },
+                        },
+                    },
                 },
             },
             tags: [],
@@ -700,4 +701,4 @@ describe("Tag file group strategy resolve common schema import from zod expressi
           }
         `);
     });
-})
+});
