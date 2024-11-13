@@ -66,7 +66,7 @@ test("missing-zod-chains", async () => {
         .passthrough();
       const nulltype = z.object({}).partial().passthrough();
       const anyOfType = z.union([
-        z.object({}).partial().passthrough(),
+        z.object({}).partial().passthrough().nullable(),
         z.object({ foo: z.string() }).partial().passthrough(),
       ]);
 
