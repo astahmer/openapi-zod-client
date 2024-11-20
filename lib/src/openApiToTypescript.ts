@@ -206,21 +206,22 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             const itemSchema = schema.items;
 
             if (!itemSchema) {
-                return t.array(t.any());
+                return t.reference("Array", [t.any()]);
             }
 
             // Check if items have anyOf
             if (itemSchema && "anyOf" in itemSchema) {
-                const types = itemSchema.anyOf.map((subSchema) =>
-                    getTypescriptFromOpenApi({ schema: subSchema, ctx, meta, options }) as ts.TypeNode
-                ) ;
-                const unionType = ts.factory.createUnionTypeNode(types);
-                return ts.factory.createArrayTypeNode(unionType);
+                const types = itemSchema.anyOf.map(
+                    (subSchema) =>
+                        getTypescriptFromOpenApi({ schema: subSchema, ctx, meta, options }) as ts.TypeNode
+                );
+                const unionType = t.union(types);
+                return t.reference("Array", [unionType]);
             }
 
             // Existing item type handling
             const itemType = getTypescriptFromOpenApi({ schema: itemSchema, ctx, meta, options }) as ts.TypeNode;
-            return ts.factory.createArrayTypeNode(itemType);
+            return t.reference("Array", [itemType]);
         }
 
         if (schemaType === "object" || schema.properties || schema.additionalProperties) {

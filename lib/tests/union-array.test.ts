@@ -50,7 +50,7 @@ test("union-array", async () => {
     import { z } from "zod";
 
     type Union = Partial<{
-      unionArray: (Foo | Bar)[];
+      unionArray: Array<Foo | Bar>;
     }>;
     type Foo = Partial<{
       foo: 1 | 2;
