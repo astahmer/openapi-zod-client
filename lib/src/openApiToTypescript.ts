@@ -206,7 +206,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             const itemSchema = schema.items;
 
             if (!itemSchema) {
-                return t.reference("Array", [t.any()]);
+                return doWrapReadOnly(t.reference("Array", [t.any()]));
             }
 
             // Check if items have anyOf
@@ -216,12 +216,12 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                         getTypescriptFromOpenApi({ schema: subSchema, ctx, meta, options }) as ts.TypeNode
                 );
                 const unionType = t.union(types);
-                return t.reference("Array", [unionType]);
+                return doWrapReadOnly(t.reference("Array", [unionType]));
             }
 
             // Existing item type handling
             const itemType = getTypescriptFromOpenApi({ schema: itemSchema, ctx, meta, options }) as ts.TypeNode;
-            return t.reference("Array", [itemType]);
+            return doWrapReadOnly(t.reference("Array", [itemType]));
         }
 
         if (schemaType === "object" || schema.properties || schema.additionalProperties) {
