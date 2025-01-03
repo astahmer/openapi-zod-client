@@ -1,4 +1,4 @@
-import type { OpenAPIObject, OperationObject, PathItemObject, ReferenceObject, SchemaObject } from "openapi3-ts";
+import type { OpenAPIObject, OperationObject, PathItemObject, ReferenceObject, SchemaObject } from "openapi3-ts/oas31";
 import { sortBy, sortListFromRefArray, sortObjKeysFromArray } from "pastable/server";
 import { ts } from "tanu";
 import { match } from "ts-pattern";

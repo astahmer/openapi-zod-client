@@ -1,5 +1,5 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
-import type { OpenAPIObject, SchemasObject } from "openapi3-ts";
+import type { OpenAPIObject, SchemasObject } from "openapi3-ts/oas31";
 import { beforeAll, describe, expect, test } from "vitest";
 import { generateZodClientFromOpenAPI } from "./generateZodClientFromOpenAPI";
 import { getZodClientTemplateContext } from "./template-context";

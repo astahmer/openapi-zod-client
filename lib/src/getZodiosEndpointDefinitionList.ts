@@ -8,7 +8,7 @@ import type {
     RequestBodyObject,
     ResponseObject,
     SchemaObject,
-} from "openapi3-ts";
+} from "openapi3-ts/oas31";
 import type { ObjectLiteral } from "pastable";
 import { match, P } from "ts-pattern";
 import { sync } from "whence";

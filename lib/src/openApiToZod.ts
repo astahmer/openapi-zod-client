@@ -1,4 +1,4 @@
-import { isSchemaObject, type ReferenceObject, type SchemaObject } from "openapi3-ts";
+import { isSchemaObject, type ReferenceObject, type SchemaObject } from "openapi3-ts/oas31";
 import { match } from "ts-pattern";
 
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";

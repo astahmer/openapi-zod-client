@@ -1,6 +1,6 @@
 import {getTypescriptFromOpenApi, TsConversionContext} from "./openApiToTypescript";
 
-import type {SchemaObject, SchemasObject} from "openapi3-ts";
+import type {SchemaObject, SchemasObject} from "openapi3-ts/oas31";
 import {ts} from "tanu";
 import {describe, expect, test} from "vitest";
 import {makeSchemaResolver} from "./makeSchemaResolver";

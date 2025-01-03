@@ -4,7 +4,7 @@ import { makeSchemaResolver } from "../src/makeSchemaResolver.js";
 import { getZodSchema } from "../src/openApiToZod.js";
 import { asComponentSchema } from "../src/utils.js";
 import { CodeMeta } from "../src/CodeMeta.js";
-import { OpenAPIObject } from "openapi3-ts";
+import { OpenAPIObject } from "openapi3-ts/oas31";
 import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI.js";
 
 // the schemas and fixtures used in these tests are modified from examples here: https://swagger.io/docs/specification/data-models/oneof-anyof-allof-not/#anyof

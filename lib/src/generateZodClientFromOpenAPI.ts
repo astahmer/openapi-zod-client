@@ -1,6 +1,6 @@
 import path from "node:path";
 
-import type { OpenAPIObject } from "openapi3-ts";
+import type { OpenAPIObject } from "openapi3-ts/oas31";
 import { capitalize, pick } from "pastable/server";
 import type { Options } from "prettier";
 import { match } from "ts-pattern";

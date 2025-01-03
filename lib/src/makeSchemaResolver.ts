@@ -1,4 +1,4 @@
-import type { OpenAPIObject, SchemaObject } from "openapi3-ts";
+import type { OpenAPIObject, SchemaObject } from "openapi3-ts/oas31";
 import { get } from "pastable/server";
 
 import { normalizeString } from "./utils";

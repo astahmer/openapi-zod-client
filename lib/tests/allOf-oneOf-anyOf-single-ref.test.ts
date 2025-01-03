@@ -1,4 +1,4 @@
-import type { OpenAPIObject } from "openapi3-ts";
+import type { OpenAPIObject } from "openapi3-ts/oas31";
 import { expect, test } from "vitest";
 import { generateZodClientFromOpenAPI } from "../src";
 
@@ -57,12 +57,12 @@ test("allOf-single-ref", async () => {
 
       const MyComponent = z.enum(["one", "two", "three"]);
       const allOf_ref_param = MyComponent.optional();
-      
+
       export const schemas = {
         MyComponent,
         allOf_ref_param,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "get",
@@ -88,9 +88,9 @@ test("allOf-single-ref", async () => {
           response: z.void(),
         },
       ]);
-      
+
       export const api = new Zodios(endpoints);
-      
+
       export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
         return new Zodios(baseUrl, endpoints, options);
       }

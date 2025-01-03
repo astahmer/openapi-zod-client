@@ -6,7 +6,7 @@
         "gen:basic": "tsx ./petstore-generator.ts"
     },
     "devDependencies": {
-        "openapi3-ts": "3.1.0",
+        "openapi3-ts": "4.4.0",
         "tsx": "^3.11.0",
         "typescript": "^4.8.4"
     },

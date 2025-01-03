@@ -1,4 +1,4 @@
-import type { SchemaObject, SchemasObject } from "openapi3-ts";
+import type { SchemaObject, SchemasObject } from "openapi3-ts/oas31";
 import { describe, expect, test } from "vitest";
 import { generateZodClientFromOpenAPI } from "../src/generateZodClientFromOpenAPI";
 import { getZodClientTemplateContext } from "../src/template-context";

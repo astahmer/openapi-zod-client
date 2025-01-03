@@ -1,4 +1,4 @@
-import { type SchemaObject, type ReferenceObject, isReferenceObject } from "openapi3-ts";
+import { type SchemaObject, type ReferenceObject, isReferenceObject } from "openapi3-ts/oas31";
 import type { DocumentResolver } from "./makeSchemaResolver";
 
 const isBrokenAllOfItem = (item: SchemaObject | ReferenceObject): item is SchemaObject => {

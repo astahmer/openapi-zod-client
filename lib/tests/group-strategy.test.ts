@@ -1,4 +1,4 @@
-import { OpenAPIObject, SchemaObject } from "openapi3-ts";
+import { OpenAPIObject, SchemaObject } from "openapi3-ts/oas31";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { expect, test } from "vitest";
 import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "../src";
@@ -594,20 +594,20 @@ test("group-strategy: tag-file with modified petstore schema", async () => {
       ",
           "pet": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-      
+
       import { Pet } from "./common";
       import { Category } from "./common";
       import { Tag } from "./common";
-      
+
       const ApiResponse = z
         .object({ code: z.number().int(), type: z.string(), message: z.string() })
         .partial()
         .passthrough();
-      
+
       export const schemas = {
         ApiResponse,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "put",
@@ -814,20 +814,20 @@ test("group-strategy: tag-file with modified petstore schema", async () => {
           response: ApiResponse,
         },
       ]);
-      
+
       export const PetApi = new Zodios(endpoints);
-      
+
       export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
         return new Zodios(baseUrl, endpoints, options);
       }
       ",
           "store": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-      
+
       import { Pet } from "./common";
       import { Category } from "./common";
       import { Tag } from "./common";
-      
+
       const Order = z
         .object({
           id: z.number().int(),
@@ -840,11 +840,11 @@ test("group-strategy: tag-file with modified petstore schema", async () => {
         })
         .partial()
         .passthrough();
-      
+
       export const schemas = {
         Order,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "get",
@@ -927,16 +927,16 @@ test("group-strategy: tag-file with modified petstore schema", async () => {
           ],
         },
       ]);
-      
+
       export const StoreApi = new Zodios(endpoints);
-      
+
       export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
         return new Zodios(baseUrl, endpoints, options);
       }
       ",
           "user": "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
-      
+
       const User = z
         .object({
           id: z.number().int(),
@@ -950,11 +950,11 @@ test("group-strategy: tag-file with modified petstore schema", async () => {
         })
         .partial()
         .passthrough();
-      
+
       export const schemas = {
         User,
       };
-      
+
       const endpoints = makeApi([
         {
           method: "post",
@@ -1088,9 +1088,9 @@ test("group-strategy: tag-file with modified petstore schema", async () => {
           ],
         },
       ]);
-      
+
       export const UserApi = new Zodios(endpoints);
-      
+
       export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
         return new Zodios(baseUrl, endpoints, options);
       }

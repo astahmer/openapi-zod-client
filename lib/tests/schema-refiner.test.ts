@@ -1,4 +1,4 @@
-import { isReferenceObject } from "openapi3-ts";
+import { isReferenceObject } from "openapi3-ts/oas31";
 import { getZodSchema } from "../src/openApiToZod";
 import { test, expect } from "vitest";
 
