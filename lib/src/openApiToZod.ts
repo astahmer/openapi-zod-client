@@ -167,6 +167,11 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
     const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
     if (schemaType && isPrimitiveType(schemaType)) {
+        if (schema.const) {
+            if (schemaType === "string") {
+                return code.assign(`z.literal("${schema.const}")`);
+            }
+        }
         if (schema.enum) {
             if (schemaType === "string") {
                 if (schema.enum.length === 1) {
