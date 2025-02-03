@@ -613,6 +613,7 @@ const optionNameToCliOptionName = {
     noWithAlias: "--no-with-alias",
     baseUrl: "--base-url",
     apiClientName: "--api-client-name",
+    apiClientConstructorName: "--api-client-constructor-name",
     isErrorStatus: "--error-expr",
     isMainResponseStatus: "--success-expr",
     shouldExportAllSchemas: "--export-schemas",

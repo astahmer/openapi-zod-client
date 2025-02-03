@@ -27,6 +27,10 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         "--api-client-name <name>",
         "when using the default `template.hbs`, allow customizing the `export const {apiClientName}`"
     )
+    .option(
+        "--api-client-constructor-name <name>",
+        "when using the default `template.hbs`, allow customizing the `export const {apiClientConstructorName}`"
+    )
     .option("--error-expr <expr>", "Pass an expression to determine if a response status is an error")
     .option("--success-expr <expr>", "Pass an expression to determine which response status is the main success status")
     .option("--media-type-expr <expr>", "Pass an expression to determine which response content should be allowed")
@@ -79,6 +83,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 withAlias,
                 baseUrl: options.baseUrl,
                 apiClientName: options.apiClientName,
+                apiClientConstructorName: options.apiClientConstructorName,
                 isErrorStatus: options.errorExpr,
                 isMainResponseStatus: options.successExpr,
                 shouldExportAllSchemas: options.exportSchemas,
