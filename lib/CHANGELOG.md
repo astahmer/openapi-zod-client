@@ -1,5 +1,11 @@
 # openapi-zod-client
 
+## 1.18.3
+
+### Patch Changes
+
+-   [#322](https://github.com/astahmer/openapi-zod-client/pull/322) [`068531e`](https://github.com/astahmer/openapi-zod-client/commit/068531effec10e83356de4e65f58acd7f7357413) Thanks [@pauljamescleary](https://github.com/pauljamescleary)! - Append unicode flag for schema regular expression patterns when the pattern includes common unicode escape classes
+
 ## 1.18.2
 
 ### Patch Changes
