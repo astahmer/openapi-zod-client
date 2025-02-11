@@ -143,13 +143,13 @@ type ComplexObject = Partial<{
    * @minimum 0
    * @maximum 10
    */
-  manyTagsNum: number;
+  manyTagsNum: number | undefined;
   /**
    * A boolean
    *
    * @default true
    */
-  bool: boolean;
+  bool: boolean | undefined;
   ref: SimpleObject;
   /**
    * An array of SimpleObject
