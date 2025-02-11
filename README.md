@@ -64,6 +64,7 @@ Options:
   --no-with-alias                   With alias as api client methods (default: true)
   -a, --with-alias                  With alias as api client methods (default: true)
   --api-client-name <name>          when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
+  --api-client-constructor-name <name>          when using the default `template.hbs`, allow customizing the `export const {apiClientName}`
   --error-expr <expr>               Pass an expression to determine if a response status is an error
   --success-expr <expr>             Pass an expression to determine which response status is the main success status
   --media-type-expr <expr>          Pass an expression to determine which response content should be allowed
@@ -71,7 +72,7 @@ Options:
   --implicit-required               When true, will make all properties of an object required by default (rather than the current opposite), unless an explicitly `required` array is set
   --with-deprecated                 when true, will keep deprecated endpoints in the api output
   --with-description                when true, will add z.describe(xxx)
-  --with-docs                       when true, will add jsdoc comments to generated types 
+  --with-docs                       when true, will add jsdoc comments to generated types
   --group-strategy                  groups endpoints by a given strategy, possible values are: 'none' | 'tag' | 'method' | 'tag-file' | 'method-file'
   --complexity-threshold            schema complexity threshold to determine which one (using less than `<` operator) should be assigned to a variable
   --default-status                  when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared

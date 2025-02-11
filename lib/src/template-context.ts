@@ -272,6 +272,13 @@ export type TemplateContextOptions = {
      * @default "api"
      */
     apiClientName?: string;
+
+    /**
+     * when using the default `template.hbs`, allow customizing the `export const {apiClientConstructorName}`
+     *
+     * @default "createApiClient"
+     */
+    apiClientConstructorName?: string;
     /**
      * when defined, will be used to pick which endpoint to use as the main one and set to `ZodiosEndpointDefinition["response"]`
      * will use `default` status code as fallback
