@@ -12,39 +12,39 @@ test("enum-null", async () => {
         },
         components: {
             schemas: {
-                "Null1": {
+                Null1: {
                     type: "string",
                     enum: [null],
                 },
-                "Null2": {
+                Null2: {
                     type: "string",
                     enum: ["a", null],
                 },
-                "Null3": {
+                Null3: {
                     type: "string",
                     enum: ["a", null],
-                    nullable: true
+                    nullable: true,
                 },
-                "Null4": {
+                Null4: {
                     type: "string",
                     enum: [null],
-                    nullable: true
+                    nullable: true,
                 },
-                "Compound": {
+                Compound: {
                     type: "object",
                     properties: {
-                        "field": {
+                        field: {
                             oneOf: [
-                                { $ref: '#/components/schemas/Null1' },
-                                { $ref: '#/components/schemas/Null2' },
-                                { $ref: '#/components/schemas/Null3' },
-                                { $ref: '#/components/schemas/Null4' },
-                                { type: "string" }
-                            ]
-                        }
-                    }
-                }
-            }
+                                { $ref: "#/components/schemas/Null1" },
+                                { $ref: "#/components/schemas/Null2" },
+                                { $ref: "#/components/schemas/Null3" },
+                                { $ref: "#/components/schemas/Null4" },
+                                { type: "string" },
+                            ],
+                        },
+                    },
+                },
+            },
         },
         paths: {
             "/sample": {
@@ -56,9 +56,9 @@ test("enum-null", async () => {
                                 "application/json": {
                                     schema: {
                                         $ref: "#/components/schemas/Null1",
-                                    }
-                                }
-                            }
+                                    },
+                                },
+                            },
                         },
                         "400": {
                             description: "null with a string",
@@ -66,9 +66,9 @@ test("enum-null", async () => {
                                 "application/json": {
                                     schema: {
                                         $ref: "#/components/schemas/Null2",
-                                    }
-                                }
-                            }
+                                    },
+                                },
+                            },
                         },
                         "401": {
                             description: "null with a string and nullable",
@@ -76,9 +76,9 @@ test("enum-null", async () => {
                                 "application/json": {
                                     schema: {
                                         $ref: "#/components/schemas/Null3",
-                                    }
-                                }
-                            }
+                                    },
+                                },
+                            },
                         },
                         "402": {
                             description: "null with nullable",
@@ -86,9 +86,9 @@ test("enum-null", async () => {
                                 "application/json": {
                                     schema: {
                                         $ref: "#/components/schemas/Null4",
-                                    }
-                                }
-                            }
+                                    },
+                                },
+                            },
                         },
                         "403": {
                             description: "object that references null",
@@ -96,9 +96,9 @@ test("enum-null", async () => {
                                 "application/json": {
                                     schema: {
                                         $ref: "#/components/schemas/Compound",
-                                    }
-                                }
-                            }
+                                    },
+                                },
+                            },
                         },
                     },
                 },
@@ -106,23 +106,27 @@ test("enum-null", async () => {
         },
     };
 
-    const output = await generateZodClientFromOpenAPI({ disableWriteToFile: true, openApiDoc, options: { shouldExportAllTypes: true } });
+    const output = await generateZodClientFromOpenAPI({
+        disableWriteToFile: true,
+        openApiDoc,
+        options: { shouldExportAllTypes: true },
+    });
     expect(output).toMatchInlineSnapshot(`
       "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
-      type Compound = Partial<{
-        field: Null1 | Null2 | Null3 | Null4 | string;
-      }>;
       type Null1 = null;
       type Null2 = "a" | null;
       type Null3 = "a" | null;
       type Null4 = null;
+      type Compound = Partial<{
+        field: Null1 | Null2 | Null3 | Null4 | string;
+      }>;
 
-      const Null1 = z.literal(null);
-      const Null2 = z.enum(["a", null]);
-      const Null3 = z.enum(["a", null]);
-      const Null4 = z.literal(null);
+      const Null1: z.ZodType<Null1> = z.literal(null);
+      const Null2: z.ZodType<Null2> = z.enum(["a", null]);
+      const Null3: z.ZodType<Null3> = z.enum(["a", null]);
+      const Null4: z.ZodType<Null4> = z.literal(null);
       const Compound: z.ZodType<Compound> = z
         .object({ field: z.union([Null1, Null2, Null3, Null4, z.string()]) })
         .partial()
