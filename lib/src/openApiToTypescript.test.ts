@@ -583,7 +583,7 @@ describe("getSchemaAsTsString with context", () => {
         expect(printTs(result)).toMatchInlineSnapshot(`
           "export type Root = Partial<{
               user: User | Member;
-              users: Array<(User | Member) | Array<User | Member>>;
+              users: Array<User | Member>;
               basic: number;
           }>;"
         `);

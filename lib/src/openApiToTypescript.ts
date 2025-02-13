@@ -202,27 +202,26 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 return schema.nullable ? t.union([t.number(), t.reference("null")]) : t.number();
         }
 
-        if (schemaType === "array") {
-            if (schema.items) {
-                let arrayOfType = getTypescriptFromOpenApi({
-                    schema: schema.items,
-                    ctx,
-                    meta,
-                    options,
-                }) as TypeDefinition;
-                if (typeof arrayOfType === "string") {
-                    if (!ctx) throw new Error("Context is required for circular $ref (recursive schemas)");
-                    arrayOfType = t.reference(arrayOfType);
-                }
+        if (schema.type === "array") {
+            const itemSchema = schema.items;
 
-                return schema.nullable
-                    ? t.union([doWrapReadOnly(t.array(arrayOfType)), t.reference("null")])
-                    : doWrapReadOnly(t.array(arrayOfType));
+            if (!itemSchema) {
+                return doWrapReadOnly(t.reference("Array", [t.any()]));
             }
 
-            return schema.nullable
-                ? t.union([doWrapReadOnly(t.array(t.any())), t.reference("null")])
-                : doWrapReadOnly(t.array(t.any()));
+            // Check if items have anyOf
+            if (itemSchema && "anyOf" in itemSchema) {
+                const types = itemSchema.anyOf.map(
+                    (subSchema) =>
+                        getTypescriptFromOpenApi({ schema: subSchema, ctx, meta, options }) as ts.TypeNode
+                );
+                const unionType = t.union(types);
+                return doWrapReadOnly(t.reference("Array", [unionType]));
+            }
+
+            // Existing item type handling
+            const itemType = getTypescriptFromOpenApi({ schema: itemSchema, ctx, meta, options }) as ts.TypeNode;
+            return doWrapReadOnly(t.reference("Array", [itemType]));
         }
 
         if (schemaType === "object" || schema.properties || schema.additionalProperties) {
@@ -305,7 +304,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         }
 
         if (!schemaType) return t.unknown();
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
         throw new Error(`Unsupported schema type: ${schemaType}`);
     };
 
