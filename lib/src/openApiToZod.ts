@@ -194,6 +194,38 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                 // eslint-disable-next-line sonarjs/no-nested-template-literals
                 `z.union([${schema.enum.map((value) => `z.literal(${value === null ? "null" : value})`).join(", ")}])`
             );
+        } else if (schema["x-extensible-enum"]) {
+            const extensibleEnum = schema["x-extensible-enum"] as any[];
+            if (schemaType === "string") {
+                if (extensibleEnum.length === 1) {
+                    const value = extensibleEnum[0];
+                    const valueString = value === null ? "null" : `"${value}"`;
+                    return code.assign(`z.literal(${valueString})`);
+                }
+
+                // eslint-disable-next-line sonarjs/no-nested-template-literals
+                return code.assign(
+                    `z.enum([${extensibleEnum
+                        .map((value) => (value === null ? "null" : `"${value}"`))
+                        .join(", ")}]).catch("${extensibleEnum[0]}")`
+                );
+            }
+
+            if (extensibleEnum.some((e) => typeof e === "string")) {
+                return code.assign("z.never()");
+            }
+
+            if (extensibleEnum.length === 1) {
+                const value = extensibleEnum[0];
+                return code.assign(`z.literal(${value === null ? "null" : value})`);
+            }
+
+            return code.assign(
+                // eslint-disable-next-line sonarjs/no-nested-template-literals
+                `z.union([${extensibleEnum
+                    .map((value) => `z.literal(${value === null ? "null" : value})`)
+                    .join(", ")}]).catch(${extensibleEnum[0]})`
+            );
         }
 
         return code.assign(

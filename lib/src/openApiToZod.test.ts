@@ -12,6 +12,7 @@ const getSchemaAsZodString = (schema: SchemaObject, meta?: CodeMetaData | undefi
 test("getSchemaAsZodString", () => {
     expect(getSchemaAsZodString({ type: "null" })).toMatchInlineSnapshot('"z.null()"');
     expect(getSchemaAsZodString({ type: "null", enum: ["Dogs", "Cats", "Mice"] })).toMatchInlineSnapshot('"z.null()"');
+    expect(getSchemaAsZodString({ type: "null", "x-extensible-enum": ["Dogs", "Cats", "Mice"] })).toMatchInlineSnapshot('"z.null()"');
     expect(getSchemaAsZodString({ type: "boolean" })).toMatchInlineSnapshot('"z.boolean()"');
     expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
     expect(getSchemaAsZodString({ type: "number" })).toMatchInlineSnapshot('"z.number()"');
@@ -293,6 +294,15 @@ test("getSchemaAsZodString", () => {
     );
     expect(getSchemaAsZodString({ type: "number", enum: [1] })).toMatchInlineSnapshot('"z.literal(1)"');
     expect(getSchemaAsZodString({ type: "string", enum: ["aString"] })).toMatchInlineSnapshot('"z.literal("aString")"');
+
+    expect(getSchemaAsZodString({ type: "string", "x-extensible-enum": ["aaa", "bbb", "ccc"] })).toMatchInlineSnapshot(
+        '"z.enum(["aaa", "bbb", "ccc"]).catch("aaa")"'
+    );
+    expect(getSchemaAsZodString({ type: "number", "x-extensible-enum": [1, 2, 3, null] })).toMatchInlineSnapshot(
+        '"z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(null)]).catch(1)"'
+    );
+    expect(getSchemaAsZodString({ type: "number", "x-extensible-enum": [1] })).toMatchInlineSnapshot('"z.literal(1)"');
+    expect(getSchemaAsZodString({ type: "string", "x-extensible-enum": ["aString"] })).toMatchInlineSnapshot('"z.literal("aString")"');
 });
 
 test("getSchemaWithChainableAsZodString", () => {
