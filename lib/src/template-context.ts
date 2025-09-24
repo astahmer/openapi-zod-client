@@ -89,6 +89,10 @@ export const getZodClientTemplateContext = (
                     if (options?.shouldExportAllTypes && nodeSchema.type === "object") {
                         data.emittedType[depSchemaName] = true;
                     }
+                    // Also set emittedType for enum dependencies of circular schemas to ensure proper type annotations
+                    if (nodeSchema.type === "string" && nodeSchema.enum) {
+                        data.emittedType[depSchemaName] = true;
+                    }
                 }
             }
         }
