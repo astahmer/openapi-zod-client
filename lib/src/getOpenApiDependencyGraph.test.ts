@@ -351,3 +351,44 @@ test("recursive relations along with some basics schemas", () => {
       ]
     `);
 });
+
+test("union type array dependencies", () => {
+    const schemas = {
+        Parent: {
+            type: "object",
+            properties: {
+                children: {
+                    type: ["array", "null"], // Union type with array - this was causing the bug
+                    items: { $ref: "Child" }
+                }
+            }
+        },
+        Child: {
+            type: "object",
+            properties: {
+                name: { type: "string" }
+            }
+        }
+    } as Record<string, SchemaObject>;
+
+    const getSchemaByRef = (ref: string) => schemas[ref]!;
+    const { refsDependencyGraph, deepDependencyGraph } = getOpenApiDependencyGraph(
+        Object.keys(schemas),
+        getSchemaByRef
+    );
+
+    expect(refsDependencyGraph).toMatchInlineSnapshot(`
+      {
+          "Parent": Set {
+              "Child",
+          },
+      }
+    `);
+    expect(deepDependencyGraph).toMatchInlineSnapshot(`
+      {
+          "Parent": Set {
+              "Child",
+          },
+      }
+    `);
+});

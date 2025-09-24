@@ -50,7 +50,7 @@ export const getOpenApiDependencyGraph = (
             return;
         }
 
-        if (schema.type === "array") {
+        if (schema.type === "array" || (Array.isArray(schema.type) && schema.type.includes("array"))) {
             if (!schema.items) return;
             return void visit(schema.items, fromRef);
         }
