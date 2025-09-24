@@ -459,3 +459,15 @@ test("CodeMeta with nested refs", () => {
       }
     `);
 });
+
+test("binary string format with maxLength should not add max validation", () => {
+    // This prevents "Property 'max' does not exist on type 'ZodType<File, ZodTypeDef, File>'" errors
+    expect(
+        getSchemaAsZodString({ type: "object", properties: { file: { type: "string", format: "binary", maxLength: 20480 } } })
+    ).toMatchInlineSnapshot('"z.object({ file: z.instanceof(File) }).partial().passthrough()"');
+
+    // For comparison: regular string with maxLength should have .max()
+    expect(
+        getSchemaAsZodString({ type: "object", properties: { text: { type: "string", maxLength: 20480 } } })
+    ).toMatchInlineSnapshot('"z.object({ text: z.string().max(20480) }).partial().passthrough()"');
+});
