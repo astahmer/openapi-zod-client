@@ -52,6 +52,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
     )
     .option("--all-readonly", "when true, all generated objects and arrays will be readonly")
     .option("--export-types", "When true, will defined types for all object schemas in `#/components/schemas`")
+    .option("--with-default-values", "When true, will generate default values. Default to true" )
     .option(
         "--additional-props-default-value",
         "Set default value when additionalProperties is not provided. Default to true.",
@@ -69,6 +70,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
         const distPath = options.output || input + ".client.ts";
         const withAlias = toBoolean(options.withAlias, true);
         const additionalPropertiesDefaultValue = toBoolean(options.additionalPropsDefaultValue, true);
+        const withDefaultValues = toBoolean(options.withDefaultValues, true)
 
         await generateZodClientFromOpenAPI({
             openApiDoc,
@@ -93,6 +95,7 @@ cli.command("<input>", "path/url to OpenAPI/Swagger document as json/yaml")
                 withDescription: options.withDescription,
                 allReadonly: options.allReadonly,
                 strictObjects: options.strictObjects,
+                withDefaultValues,
                 additionalPropertiesDefaultValue,
             },
         });

@@ -77,7 +77,8 @@ Options:
   --default-status                  when defined as `auto-correct`, will automatically use `default` as fallback for `response` when no status code was declared
   --all-readonly                    when true, all generated objects and arrays will be readonly
   --export-types                    When true, will defined types for all object schemas in `#/components/schemas`
-  --additional-props-default-value  Set default value when additionalProperties is not provided. Default to true. (default: true)
+  --with-default-values             When true, will generate default values. Defaults to true. (default: true)
+  --additional-props-default-value  Set default value when additionalProperties is not provided. Defaults to true. (default: true)
   --strict-objects                  Use strict validation for objects so we don't allow unknown keys. Defaults to false. (default: false)
   -v, --version                     Display version number
   -h, --help                        Display this message
