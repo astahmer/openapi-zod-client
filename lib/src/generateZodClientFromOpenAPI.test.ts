@@ -3816,6 +3816,7 @@ test("with optional, partial, all required objects", async () => {
           "emittedType": {
               "Nested2": true,
               "Root2": true,
+              "VeryDeeplyNested": true,
           },
           "endpoints": [
               {
@@ -3916,7 +3917,11 @@ test("with optional, partial, all required objects", async () => {
         requiredProp: string;
       };
 
-      const VeryDeeplyNested = z.enum(["aaa", "bbb", "ccc"]);
+      const VeryDeeplyNested: z.ZodType<VeryDeeplyNested> = z.enum([
+        "aaa",
+        "bbb",
+        "ccc",
+      ]);
       const DeeplyNested = z.array(VeryDeeplyNested);
       const PartialObject = z
         .object({ something: z.string(), another: z.number() })
