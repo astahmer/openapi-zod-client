@@ -104,7 +104,7 @@ describe("export-all-types", () => {
         expect(data).toEqual({
             schemas: {
                 Settings: "z.object({ theme_color: z.string(), features: Features.min(1) }).partial().passthrough()",
-                Author: "z.object({ name: z.union([z.string(), z.number()]).nullable(), title: Title.min(1).max(30), id: Id, mail: z.string(), settings: Settings }).partial().passthrough()",
+                Author: "z.object({ name: z.union([z.string().nullable(), z.number()]).nullable(), title: Title.min(1).max(30), id: Id, mail: z.string(), settings: Settings }).partial().passthrough()",
                 Features: "z.array(z.string())",
                 Song: "z.object({ name: z.string(), duration: z.number() }).partial().passthrough()",
                 Playlist:
@@ -207,7 +207,7 @@ describe("export-all-types", () => {
             .passthrough();
           const Author: z.ZodType<Author> = z
             .object({
-              name: z.union([z.string(), z.number()]).nullable(),
+              name: z.union([z.string().nullable(), z.number()]).nullable(),
               title: Title.min(1).max(30),
               id: Id,
               mail: z.string(),

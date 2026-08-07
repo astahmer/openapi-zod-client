@@ -84,7 +84,12 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
     if (schema.oneOf) {
         if (schema.oneOf.length === 1) {
             const type = getZodSchema({ schema: schema.oneOf[0]!, ctx, meta, options });
-            return code.assign(type.toString());
+            const chain = getZodChain({
+                schema: type.schema as SchemaObject,
+                meta: { ...meta, isRequired: true },
+                options
+            });
+            return code.assign(`${type.toString()}${chain}`);
         }
 
         /* when there are multiple allOf we are unable to use a discriminatedUnion as this library adds an
@@ -101,7 +106,15 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
         }
 
         return code.assign(
-            `z.union([${schema.oneOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ")}])`
+            `z.union([${schema.oneOf.map((prop) => {
+                const type = getZodSchema({ schema: prop, ctx, meta, options });
+                const chain = getZodChain({
+                    schema: prop as SchemaObject, 
+                    meta: { ...meta, isRequired: true }, 
+                    options
+                });
+                return `${type.toString()}${chain}`;
+            }).join(", ")}])`
         );
     }
 
@@ -109,24 +122,23 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
     if (schema.anyOf) {
         if (schema.anyOf.length === 1) {
             const type = getZodSchema({ schema: schema.anyOf[0]!, ctx, meta, options });
-            return code.assign(type.toString());
+            const chain = getZodChain({
+                schema: type.schema as SchemaObject,
+                meta: { ...meta, isRequired: true },
+                options
+            });
+            return code.assign(`${type.toString()}${chain}`);
         }
 
         const types = schema.anyOf
             .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
             .map((type) => {
-                let isObject = true;
-
-                if ("type" in type.schema) {
-                    if (Array.isArray(type.schema.type)) {
-                        isObject = false;
-                    } else {
-                        const schemaType = type.schema.type.toLowerCase() as NonNullable<typeof schema.type>;
-                        isObject = !isPrimitiveType(schemaType);
-                    }
-                }
-
-                return type.toString();
+                const chain = getZodChain({
+                    schema: type.schema as SchemaObject,
+                    meta: { ...meta, isRequired: true },
+                    options
+                });
+                return `${type.toString()}${chain}`;
             })
             .join(", ");
 
@@ -136,7 +148,12 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
     if (schema.allOf) {
         if (schema.allOf.length === 1) {
             const type = getZodSchema({ schema: schema.allOf[0]!, ctx, meta, options });
-            return code.assign(type.toString());
+            const chain = getZodChain({
+                schema: type.schema as SchemaObject,
+                meta: { ...meta, isRequired: true },
+                options
+            });
+            return code.assign(`${type.toString()}${chain}`);
         }
         const { patchRequiredSchemaInLoop, noRequiredOnlyAllof, composedRequiredSchema } = inferRequiredSchema(schema);
 
@@ -159,10 +176,22 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
         const first = types.at(0)!;
         const rest = types
             .slice(1)
-            .map((type) => `and(${type.toString()})`)
+            .map((type) => {
+                const chain = getZodChain({
+                    schema: type.schema as SchemaObject,
+                    meta: { ...meta, isRequired: true },
+                    options,
+                });
+                return `and(${type.toString()}${chain})`;
+            })
             .join(".");
 
-        return code.assign(`${first.toString()}.${rest}`);
+        const firstChain = getZodChain({
+            schema: first.schema as SchemaObject,
+            meta: { ...meta, isRequired: true },
+            options,
+        });
+        return code.assign(`${first.toString()}${firstChain}.${rest}`);
     }
 
     const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
