@@ -48,6 +48,102 @@ test("description-in-zod", async () => {
                             },
                             description: "      ", // spaces only description
                         },
+                        {
+                            in: "query",
+                            name: "multilineBackticks",
+                            schema: {
+                                type: "string",
+                            },
+                            description: "`Multiline`\n with \n`backticks`\n",
+                        },
+                        {
+                            in: "query",
+                            name: "singleLineBackticks",
+                            schema: {
+                                type: "string",
+                            },
+                            description: "`Single line` with `backticks`",
+                        },
+                        {
+                            in: "query",
+                            name: "multiLineDoubleQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: '"Multiline"\n with \n"double quotes"\n',
+                        },
+                        {
+                            in: "query",
+                            name: "singleLineDoubleQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: '"Single line" with "double quotes"',
+                        },
+                        {
+                            in: "query",
+                            name: "multilineMixedQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: 'Multiline with `backticks`\n and "double quotes"\n',
+                        },
+                        {
+                            in: "query",
+                            name: "singleLineMixedQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: 'Single line with `backticks` and "double quotes"',
+                        },
+                        {
+                            in: "query",
+                            name: "carriageReturnBackticks",
+                            schema: {
+                                type: "string",
+                            },
+                            description: "Carrige return with `backticks`\r",
+                        },
+                        {
+                            in: "query",
+                            name: "carriageReturnDoubleQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: 'Carrige return with "double quotes"\r',
+                        },
+                        {
+                            in: "query",
+                            name: "carriageReturnMixedQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: 'Carrige return with `backticks` and "double quotes"\r',
+                        },
+                        {
+                            in: "query",
+                            name: "windowsStyleNewlineWithBackticks",
+                            schema: {
+                                type: "string",
+                            },
+                            description: "Windows style newline with `backticks`\r\n",
+                        },
+                        {
+                            in: "query",
+                            name: "windowsStyleNewlineWithDoubleQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: 'Windows style newline with "double quotes"\r\n',
+                        },
+                        {
+                            in: "query",
+                            name: "windowsStyleNewlineWithMixedQuotes",
+                            schema: {
+                                type: "string",
+                            },
+                            description: 'Windows style newline with `backticks` and "double quotes"\r\n',
+                        },
                     ],
                     responses: {
                         "200": {
@@ -96,7 +192,9 @@ test("description-in-zod", async () => {
               schema: z
                 .union([z.literal(1.3), z.literal(34.1), z.literal(-57.89)])
                 .describe(
-                  \`baz\nmultiline\ndescription\`
+                  \`baz
+      multiline
+      description\`
                 )
                 .optional(),
             },
@@ -104,6 +202,115 @@ test("description-in-zod", async () => {
               name: "qux",
               type: "Query",
               schema: z.string().optional(),
+            },
+            {
+              name: "multilineBackticks",
+              type: "Query",
+              schema: z
+                .string()
+                .describe(
+                  \`\\\`Multiline\\\`
+       with 
+      \\\`backticks\\\`\`
+                )
+                .optional(),
+            },
+            {
+              name: "singleLineBackticks",
+              type: "Query",
+              schema: z
+                .string()
+                .describe("\`Single line\` with \`backticks\`")
+                .optional(),
+            },
+            {
+              name: "multiLineDoubleQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe(
+                  \`"Multiline"
+       with 
+      "double quotes"\`
+                )
+                .optional(),
+            },
+            {
+              name: "singleLineDoubleQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe('"Single line" with "double quotes"')
+                .optional(),
+            },
+            {
+              name: "multilineMixedQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe(
+                  \`Multiline with \\\`backticks\\\`
+       and "double quotes"\`
+                )
+                .optional(),
+            },
+            {
+              name: "singleLineMixedQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe('Single line with \`backticks\` and "double quotes"')
+                .optional(),
+            },
+            {
+              name: "carriageReturnBackticks",
+              type: "Query",
+              schema: z
+                .string()
+                .describe("Carrige return with \`backticks\`")
+                .optional(),
+            },
+            {
+              name: "carriageReturnDoubleQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe('Carrige return with "double quotes"')
+                .optional(),
+            },
+            {
+              name: "carriageReturnMixedQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe('Carrige return with \`backticks\` and "double quotes"')
+                .optional(),
+            },
+            {
+              name: "windowsStyleNewlineWithBackticks",
+              type: "Query",
+              schema: z
+                .string()
+                .describe("Windows style newline with \`backticks\`")
+                .optional(),
+            },
+            {
+              name: "windowsStyleNewlineWithDoubleQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe('Windows style newline with "double quotes"')
+                .optional(),
+            },
+            {
+              name: "windowsStyleNewlineWithMixedQuotes",
+              type: "Query",
+              schema: z
+                .string()
+                .describe(
+                  'Windows style newline with \`backticks\` and "double quotes"'
+                )
+                .optional(),
             },
           ],
           response: z.void(),
