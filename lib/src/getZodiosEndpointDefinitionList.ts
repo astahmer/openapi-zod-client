@@ -8,7 +8,7 @@ import type {
     RequestBodyObject,
     ResponseObject,
     SchemaObject,
-} from "openapi3-ts";
+} from "openapi3-ts/oas31";
 import type { ObjectLiteral } from "pastable";
 import { match, P } from "ts-pattern";
 import { sync } from "whence";
@@ -255,8 +255,8 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                     // resolve ref if needed, and fallback to default (unknown) value if needed
                     paramSchema = paramSchema
                         ? (isReferenceObject(paramSchema)
-                              ? ctx.resolver.getSchemaByRef(paramSchema.$ref)
-                              : paramSchema)!
+                            ? ctx.resolver.getSchemaByRef(paramSchema.$ref)
+                            : paramSchema)!
                         : {};
 
                     const paramCode = getZodSchema({
@@ -278,7 +278,7 @@ export const getZodiosEndpointDefinitionList = (doc: OpenAPIObject, options?: Te
                         schema: getZodVarName(
                             paramCode.assign(
                                 paramCode.toString() +
-                                    getZodChain({ schema: paramSchema, meta: paramCode.meta, options })
+                                getZodChain({ schema: paramSchema, meta: paramCode.meta, options })
                             ),
                             paramItem.name
                         ),

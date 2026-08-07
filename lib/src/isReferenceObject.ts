@@ -3,7 +3,7 @@
 // to avoid the runtime dependency on `openapi3-ts`
 // which itself depends on `yaml` import (which use CJS `require` and thus can't be imported in a ESM module)
 
-import type { ReferenceObject } from "openapi3-ts";
+import type { ReferenceObject } from "openapi3-ts/oas31";
 
 /**
  * A type guard to check if the given value is a `ReferenceObject`.

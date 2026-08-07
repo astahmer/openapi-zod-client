@@ -1,4 +1,4 @@
-import type { SchemaObject } from "openapi3-ts";
+import type { SchemaObject } from "openapi3-ts/oas31";
 
 export default function generateJSDocArray(schema: SchemaObject, withTypesAndFormat = false): string[] {
     const comments: string[] = [];

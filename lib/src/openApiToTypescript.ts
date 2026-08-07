@@ -1,4 +1,4 @@
-import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+import type { ReferenceObject, SchemaObject } from "openapi3-ts/oas31";
 import { t, ts } from "tanu";
 import type { TypeDefinition, TypeDefinitionObject } from "tanu/dist/type";
 
@@ -26,26 +26,26 @@ export type TsConversionContext = {
 type MaybeWrapReadOnlyType =
     | ts.TypeNode
     | {
-          [k: string]:
-              | number
-              | bigint
-              | boolean
-              | TypeDefinitionObject
-              | ts.TypeNode
-              | ts.TypeAliasDeclaration
-              | ts.InterfaceDeclaration
-              | ts.EnumDeclaration;
-      };
+        [k: string]:
+        | number
+        | bigint
+        | boolean
+        | TypeDefinitionObject
+        | ts.TypeNode
+        | ts.TypeAliasDeclaration
+        | ts.InterfaceDeclaration
+        | ts.EnumDeclaration;
+    };
 
 const wrapReadOnly =
     (options: TemplateContext["options"]) =>
-    (theType: MaybeWrapReadOnlyType): MaybeWrapReadOnlyType => {
-        if (options?.allReadonly) {
-            return t.readonly(theType);
-        }
+        (theType: MaybeWrapReadOnlyType): MaybeWrapReadOnlyType => {
+            if (options?.allReadonly) {
+                return t.readonly(theType);
+            }
 
-        return theType;
-    };
+            return theType;
+        };
 
 export const getTypescriptFromOpenApi = ({
     schema,
@@ -53,7 +53,7 @@ export const getTypescriptFromOpenApi = ({
     ctx,
     options,
 }: // eslint-disable-next-line sonarjs/cognitive-complexity
-TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
+    TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
     const meta = {} as TsConversionArgs["meta"];
     const isInline = !inheritedMeta?.name;
 

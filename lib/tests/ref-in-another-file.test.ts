@@ -1,5 +1,5 @@
 import SwaggerParser from "@apidevtools/swagger-parser";
-import { OpenAPIObject } from "openapi3-ts";
+import { OpenAPIObject } from "openapi3-ts/oas31";
 import { resolve } from "path";
 import { getZodiosEndpointDefinitionList } from "../src";
 import { expect, test } from "vitest";

@@ -1,4 +1,4 @@
-import type { ReferenceObject, SchemaObject } from "openapi3-ts";
+import type { ReferenceObject, SchemaObject } from "openapi3-ts/oas31";
 import { getSum } from "pastable/server";
 import { match } from "ts-pattern";
 

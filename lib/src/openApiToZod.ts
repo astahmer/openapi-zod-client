@@ -1,4 +1,4 @@
-import { isSchemaObject, type ReferenceObject, type SchemaObject } from "openapi3-ts";
+import { isSchemaObject, type ReferenceObject, type SchemaObject } from "openapi3-ts/oas31";
 import { match } from "ts-pattern";
 
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
@@ -95,8 +95,8 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
             return code.assign(`
                 z.discriminatedUnion("${propertyName}", [${schema.oneOf
-                .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
-                .join(", ")}])
+                    .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
+                    .join(", ")}])
             `);
         }
 
@@ -196,6 +196,17 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
             );
         }
 
+        if (schema.const) {
+            const value = schema.const;
+            let valueString = "";
+            if (schemaType === "string") {
+                valueString = value === null ? "null" : `"${value}"`;
+            } else {
+                valueString = value === null ? "null" : value;
+            }
+            return code.assign(`z.literal(${valueString})`);
+        }
+
         return code.assign(
             match(schemaType)
                 .with("integer", () => "z.number()")
@@ -213,14 +224,12 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
     if (schemaType === "array") {
         if (schema.items) {
             return code.assign(
-                `z.array(${
-                    getZodSchema({ schema: schema.items, ctx, meta, options }).toString()
-                }${
-                    getZodChain({
-                        schema: schema.items as SchemaObject,
-                        meta: { ...meta, isRequired: true },
-                        options,
-                    })
+                `z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()
+                }${getZodChain({
+                    schema: schema.items as SchemaObject,
+                    meta: { ...meta, isRequired: true },
+                    options,
+                })
                 })${readonly}`
             );
         }
@@ -262,8 +271,8 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                     isRequired: isPartial
                         ? true
                         : hasRequiredArray
-                        ? schema.required?.includes(prop)
-                        : options?.withImplicitRequiredProps,
+                            ? schema.required?.includes(prop)
+                            : options?.withImplicitRequiredProps,
                     name: prop,
                 } as CodeMetaData;
 

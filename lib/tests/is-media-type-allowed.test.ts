@@ -1,6 +1,6 @@
 import { getZodiosEndpointDefinitionList } from "../src";
 import { expect, test } from "vitest";
-import { OpenAPIObject } from "openapi3-ts";
+import { OpenAPIObject } from "openapi3-ts/oas31";
 
 test("is-media-type-allowed", () => {
     const doc: OpenAPIObject = {

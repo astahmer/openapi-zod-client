@@ -1,4 +1,4 @@
-import type { SchemaObject } from "openapi3-ts";
+import type { SchemaObject } from "openapi3-ts/oas31";
 import { expect, test } from "vitest";
 import { getZodSchema } from "./openApiToZod";
 import type { CodeMetaData, ConversionTypeContext } from "./CodeMeta";
@@ -293,17 +293,18 @@ test("getSchemaAsZodString", () => {
     );
     expect(getSchemaAsZodString({ type: "number", enum: [1] })).toMatchInlineSnapshot('"z.literal(1)"');
     expect(getSchemaAsZodString({ type: "string", enum: ["aString"] })).toMatchInlineSnapshot('"z.literal("aString")"');
+    expect(getSchemaAsZodString({ type: "string", const: "aString" })).toMatchInlineSnapshot('"z.literal("aString")"');
 });
 
 test("getSchemaWithChainableAsZodString", () => {
-    expect(getSchemaAsZodString({ type: "string", nullable: true })).toMatchInlineSnapshot('"z.string()"');
-    expect(getSchemaAsZodString({ type: "string", nullable: false })).toMatchInlineSnapshot('"z.string()"');
+    expect(getSchemaAsZodString({ type: ["string", "null"] })).toMatchInlineSnapshot('"z.union([z.string(), z.null()])"');
+    expect(getSchemaAsZodString({ type: "string" })).toMatchInlineSnapshot('"z.string()"');
 
-    expect(getSchemaAsZodString({ type: "string", nullable: false }, { isRequired: true })).toMatchInlineSnapshot(
+    expect(getSchemaAsZodString({ type: "string" }, { isRequired: true })).toMatchInlineSnapshot(
         '"z.string()"'
     );
-    expect(getSchemaAsZodString({ type: "string", nullable: true }, { isRequired: true })).toMatchInlineSnapshot(
-        '"z.string()"'
+    expect(getSchemaAsZodString({ type: ["string", "null"] }, { isRequired: true })).toMatchInlineSnapshot(
+        '"z.union([z.string(), z.null()])"'
     );
 });
 

@@ -1,4 +1,4 @@
-import type { SchemaObject } from "openapi3-ts";
+import type { SchemaObject } from "openapi3-ts/oas31";
 import { capitalize, kebabToCamel, snakeToCamel } from "pastable/server";
 import { match, P } from "ts-pattern";
 
