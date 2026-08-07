@@ -1,4 +1,4 @@
-import { OpenAPIObject, SchemaObject } from "openapi3-ts";
+import type { OpenAPIObject, SchemaObject } from "openapi3-ts";
 import SwaggerParser from "@apidevtools/swagger-parser";
 import { expect, test } from "vitest";
 import { generateZodClientFromOpenAPI, getZodClientTemplateContext } from "../src";
@@ -225,7 +225,7 @@ test("group-strategy", async () => {
         options: { groupStrategy: "tag" },
     });
     expect(resultGroupedByTag).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const petEndpoints = makeApi([
@@ -257,6 +257,10 @@ test("group-strategy", async () => {
 
       export const petApi = new Zodios(petEndpoints);
 
+      export function createPetApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, petEndpoints, options);
+      }
+
       const storeEndpoints = makeApi([
         {
           method: "get",
@@ -273,6 +277,10 @@ test("group-strategy", async () => {
       ]);
 
       export const storeApi = new Zodios(storeEndpoints);
+
+      export function createStoreApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, storeEndpoints, options);
+      }
 
       const userEndpoints = makeApi([
         {
@@ -303,6 +311,10 @@ test("group-strategy", async () => {
 
       export const userApi = new Zodios(userEndpoints);
 
+      export function createUserApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, userEndpoints, options);
+      }
+
       const DefaultEndpoints = makeApi([
         {
           method: "get",
@@ -320,8 +332,11 @@ test("group-strategy", async () => {
 
       export const DefaultApi = new Zodios(DefaultEndpoints);
 
-      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-        return new Zodios(baseUrl, endpoints, options);
+      export function createDefaultApiClient(
+        baseUrl: string,
+        options?: ZodiosOptions
+      ) {
+        return new Zodios(baseUrl, DefaultEndpoints, options);
       }
       "
     `);
@@ -459,7 +474,7 @@ test("group-strategy", async () => {
     });
 
     expect(resultGroupedByMethod).toMatchInlineSnapshot(`
-      "import { makeApi, Zodios } from "@zodios/core";
+      "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
       const getEndpoints = makeApi([
@@ -503,6 +518,10 @@ test("group-strategy", async () => {
 
       export const getApi = new Zodios(getEndpoints);
 
+      export function createGetApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, getEndpoints, options);
+      }
+
       const putEndpoints = makeApi([
         {
           method: "put",
@@ -544,8 +563,8 @@ test("group-strategy", async () => {
 
       export const putApi = new Zodios(putEndpoints);
 
-      export function createApiClient(baseUrl: string, options?: ZodiosOptions) {
-        return new Zodios(baseUrl, endpoints, options);
+      export function createPutApiClient(baseUrl: string, options?: ZodiosOptions) {
+        return new Zodios(baseUrl, putEndpoints, options);
       }
       "
     `);
