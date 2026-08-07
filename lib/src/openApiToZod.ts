@@ -240,7 +240,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
         if (typeof schema.additionalProperties === "object" && Object.keys(schema.additionalProperties).length > 0) {
             return code.assign(
-                `z.record(${(
+                `z.record(z.string(), ${(
                     getZodSchema({ schema: schema.additionalProperties, ctx, meta, options }) +
                     getZodChain({
                         schema: schema.additionalProperties as SchemaObject,
@@ -398,6 +398,7 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
             .with("hostname", () => "url()")
             .with("uri", () => "url()")
             .with("uuid", () => "uuid()")
+            .with("guid", () => "guid()")
             .with("date-time", () => "datetime({ offset: true })")
             .otherwise(() => "");
 

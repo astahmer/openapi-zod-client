@@ -873,7 +873,7 @@ test("petstore.yaml", async () => {
                   "parameters": [],
                   "path": "/store/inventory",
                   "requestFormat": "json",
-                  "response": "z.record(z.number().int())",
+                  "response": "z.record(z.string(), z.number().int())",
               },
               {
                   "description": "Place a new order in the store",

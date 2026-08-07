@@ -229,7 +229,7 @@ test("getZodClientTemplateContext", async () => {
                   "parameters": [],
                   "path": "/store/inventory",
                   "requestFormat": "json",
-                  "response": "z.record(z.number().int())",
+                  "response": "z.record(z.string(), z.number().int())",
               },
               {
                   "description": "Place a new order in the store",
@@ -737,7 +737,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number().int()),
+              response: z.record(z.string(), z.number().int()),
             },
             {
               method: "post",
@@ -1239,7 +1239,7 @@ describe("generateZodClientFromOpenAPI", () => {
               alias: "getInventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number().int()),
+              response: z.record(z.string(), z.number().int()),
             },
             {
               method: "post",
@@ -1742,7 +1742,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number().int()),
+              response: z.record(z.string(), z.number().int()),
             },
             {
               method: "post",
@@ -2249,7 +2249,7 @@ describe("generateZodClientFromOpenAPI", () => {
               alias: "getInventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number().int()),
+              response: z.record(z.string(), z.number().int()),
             },
             {
               method: "post",
@@ -2754,7 +2754,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number().int()),
+              response: z.record(z.string(), z.number().int()),
             },
             {
               method: "post",
@@ -3246,7 +3246,7 @@ describe("generateZodClientFromOpenAPI", () => {
               path: "/store/inventory",
               description: \`Returns a map of status codes to quantities\`,
               requestFormat: "json",
-              response: z.record(z.number().int()),
+              response: z.record(z.string(), z.number().int()),
             },
             {
               method: "post",
@@ -4224,7 +4224,7 @@ test('getZodClientTemplateContext with allReadonly', async () => {
                   "parameters": [],
                   "path": "/store/inventory",
                   "requestFormat": "json",
-                  "response": "z.record(z.number().int())",
+                  "response": "z.record(z.string(), z.number().int())",
               },
               {
                   "description": "Place a new order in the store",

@@ -14,7 +14,7 @@ test("withImplicitRequired-option", () => {
                 },
             },
         })
-    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nested: z.record(z.number()) }).partial().passthrough()"');
+    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nested: z.record(z.string(), z.number()) }).partial().passthrough()"');
     expect(
         getZodSchema({
             schema: {
@@ -30,5 +30,5 @@ test("withImplicitRequired-option", () => {
                 withImplicitRequiredProps: true,
             },
         })
-    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nested: z.record(z.number()) }).passthrough()"');
+    ).toMatchInlineSnapshot('"z.object({ str: z.string(), nested: z.record(z.string(), z.number()) }).passthrough()"');
 });

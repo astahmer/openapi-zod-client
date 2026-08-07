@@ -463,7 +463,7 @@ describe("samples-generator", async () => {
                           schema: z.string().default("oa_citations"),
                       },
                   ],
-                  response: z.array(z.record(z.object({}).partial().passthrough())),
+                  response: z.array(z.record(z.string(), z.object({}).partial().passthrough())),
                   errors: [
                       {
                           status: 404,

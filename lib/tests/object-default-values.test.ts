@@ -111,7 +111,7 @@ test("object-default-values", async () => {
               name: "ref-object",
               type: "Query",
               schema: z
-                .record(MyComponent)
+                .record(z.string(), MyComponent)
                 .optional()
                 .default({ id: 1, name: "foo" }),
             },
