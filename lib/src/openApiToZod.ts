@@ -212,16 +212,17 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
     if (schemaType === "array") {
         if (schema.items) {
+            const arrayValidations = getZodChainableArrayValidations(schema);
+            const arrayChain = arrayValidations ? `.${arrayValidations}` : '';
+
             return code.assign(
-                `z.array(${
-                    getZodSchema({ schema: schema.items, ctx, meta, options }).toString()
-                }${
-                    getZodChain({
-                        schema: schema.items as SchemaObject,
-                        meta: { ...meta, isRequired: true },
-                        options,
-                    })
-                })${readonly}`
+                `z.array(${getZodSchema({ schema: schema.items, ctx, meta, options }).toString()
+                }${getZodChain({
+                    schema: schema.items as SchemaObject,
+                    meta: { ...meta, isRequired: true },
+                    options,
+                })
+                })${arrayChain}${readonly}`
             );
         }
 
@@ -308,7 +309,6 @@ export const getZodChain = ({ schema, meta, options }: ZodChainArgs) => {
     match(schema.type)
         .with("string", () => chains.push(getZodChainableStringValidations(schema)))
         .with("number", "integer", () => chains.push(getZodChainableNumberValidations(schema)))
-        .with("array", () => chains.push(getZodChainableArrayValidations(schema)))
         .otherwise(() => void 0);
 
     if (typeof schema.description === "string" && schema.description !== "" && options?.withDescription) {
@@ -459,5 +459,9 @@ const getZodChainableArrayValidations = (schema: SchemaObject) => {
         validations.push(`max(${schema.maxItems})`);
     }
 
+
+    if (schema.uniqueItems === true) {
+        validations.push(`refine((arr) => { const unique: any[] = []; for (const item of arr) { if (unique.some(u => isEqual(u, item))) { return false; } unique.push(item); } return true; }, { message: "Items must be unique" })`);
+    }
     return validations.join(".");
 };
