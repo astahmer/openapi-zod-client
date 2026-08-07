@@ -383,7 +383,7 @@ const getZodChainableStringValidations = (schema: SchemaObject) => {
             validations.push(`min(${schema.minLength})`);
         }
 
-        if (schema.maxLength !== undefined) {
+        if (schema.maxLength !== undefined && schema.format !== "binary") {
             validations.push(`max(${schema.maxLength})`);
         }
     }
