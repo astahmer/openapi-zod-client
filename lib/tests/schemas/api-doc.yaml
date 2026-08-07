@@ -1,0 +1,886 @@
+openapi: 3.0.3
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: OpenAPI specification
+paths:
+  /api/auth/login/:
+    post:
+      operationId: authLoginCreate
+      description: Authenticate with username/email and password to obtain access
+        tokens. Returns user details along with JWT access and refresh tokens with
+        expiration times. Authentication cookies are set automatically for secure
+        token storage.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Login'
+          description: ''
+  /api/auth/logout/:
+    post:
+      operationId: authLogoutCreate
+      description: Logout user and invalidate authentication tokens. Blacklists JWT
+        refresh tokens to prevent further use. Clears authentication cookies from
+        the browser. Requires authentication to ensure only valid sessions can be
+        logged out.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JWTLogoutRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JWTLogoutRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JWTLogoutRequest'
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JWTLogout'
+          description: ''
+  /api/auth/password/change/:
+    post:
+      operationId: authPasswordChangeCreate
+      description: 'Change the current user''s password. Requires authentication. '
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordChangeRequest'
+        required: true
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordChange'
+          description: ''
+  /api/auth/password/reset/:
+    post:
+      operationId: authPasswordResetCreate
+      description: Send password reset instructions to the provided email address.
+        If the email is registered, a secure reset link will be sent. The link expires
+        after a limited time for security.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordReset'
+          description: ''
+  /api/auth/password/reset/confirm/:
+    post:
+      operationId: authPasswordResetConfirmCreate
+      description: Complete the password reset process using the token from the reset
+        email. Requires the UID and token from the email along with the new password.
+        The token is single-use and expires for security.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+        required: true
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PasswordResetConfirm'
+          description: ''
+  /api/auth/registration/:
+    post:
+      operationId: authRegistrationCreate
+      description: Register a new user account. Users must verify their email address
+        before the account is fully activated.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Register'
+          description: ''
+  /api/auth/registration/resend-email/:
+    post:
+      operationId: authRegistrationResendEmailCreate
+      description: Send a new email verification message to unverified email addresses.
+        Only works for email addresses that are registered but not yet verified.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResendEmailVerificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResendEmailVerificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResendEmailVerificationRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResendEmailVerification'
+          description: ''
+  /api/auth/registration/verify-email/:
+    get:
+      operationId: authRegistrationVerifyEmailRetrieve
+      description: GET method not allowed for email verification.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      security:
+      - {}
+      responses:
+        '405':
+          description: Method not allowed
+    post:
+      operationId: authRegistrationVerifyEmailCreate
+      description: Confirm email address using the verification key sent via email.
+        This activates the user account and allows login access.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerifyEmailRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerifyEmail'
+          description: ''
+  /api/auth/social/accounts/:
+    get:
+      operationId: authSocialAccountsList
+      description: List all social accounts connected to the current user. Shows account
+        details including provider, UID, and connection dates.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      - name: limit
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: offset
+        required: false
+        in: query
+        description: The initial index from which to return the results.
+        schema:
+          type: integer
+      tags:
+      - auth
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSocialAccountList'
+          description: ''
+  /api/auth/social/accounts/{id}/:
+    delete:
+      operationId: authSocialAccountsDestroy
+      description: Disconnect a social account from the current user. Removes the
+        social account connection and prevents future logins via that provider. Requires
+        authentication and the account must belong to the current user.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this social account.
+        required: true
+      tags:
+      - auth
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '204':
+          description: No response body
+  /api/auth/token/refresh/:
+    post:
+      operationId: authTokenRefreshCreate
+      description: Generate new JWT access tokens using refresh tokens. Refresh tokens
+        can be provided in request data or extracted automatically from HTTP cookies.
+        Returns new access tokens with updated expiration times. New tokens are automatically
+        set in HTTP cookies for secure storage.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CookieTokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CookieTokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CookieTokenRefreshRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CookieTokenRefresh'
+          description: ''
+  /api/auth/token/verify/:
+    post:
+      operationId: authTokenVerifyCreate
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenVerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: No response body
+  /api/auth/user/:
+    get:
+      operationId: authUserRetrieve
+      description: Retrieve the authenticated user's profile information including
+        username, email, first name, and last name. Password fields are excluded.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: ''
+    put:
+      operationId: authUserUpdate
+      description: Update the authenticated user's profile information. Allows modification
+        of username, first name, and last name. Email field is read-only for security.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserDetailsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserDetailsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserDetailsRequest'
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: ''
+    patch:
+      operationId: authUserPartialUpdate
+      description: Partially update the authenticated user's profile information.
+        Only provided fields will be updated. Email field is read-only.
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserDetailsRequest'
+      security:
+      - JWTAuthentication: []
+        JWTCookieAuthentication: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+          description: ''
+  /api/status/:
+    get:
+      operationId: statusRetrieve
+      parameters:
+      - in: header
+        name: accept-language
+        schema:
+          type: string
+        description: Language code, such as 'vi-VN'. The default value is en
+      tags:
+      - status
+      security:
+      - {}
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    CookieTokenRefresh:
+      type: object
+      description: JWT token refresh with cookie and request data support.
+      properties:
+        access:
+          type: string
+          readOnly: true
+        accessExpiration:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - access
+      - accessExpiration
+    CookieTokenRefreshRequest:
+      type: object
+      description: JWT token refresh with cookie and request data support.
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          description: Will override cookie.
+    JWTLogout:
+      type: object
+      description: JWT logout with refresh token blacklisting.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    JWTLogoutRequest:
+      type: object
+      description: JWT logout with refresh token blacklisting.
+      properties:
+        refresh:
+          type: string
+          writeOnly: true
+          minLength: 1
+    Login:
+      type: object
+      description: User authentication with credentials response.
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+          readOnly: true
+        accessExpiration:
+          type: string
+          format: date-time
+          readOnly: true
+        refreshExpiration:
+          type: string
+          format: date-time
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserDetails'
+          readOnly: true
+      required:
+      - access
+      - accessExpiration
+      - refresh
+      - refreshExpiration
+      - user
+    LoginRequest:
+      type: object
+      description: User authentication with credentials response.
+      properties:
+        email:
+          type: string
+          format: email
+          writeOnly: true
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    PaginatedSocialAccountList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=400&limit=100
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?offset=200&limit=100
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/SocialAccount'
+    PasswordChange:
+      type: object
+      description: Password change for authenticated users.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    PasswordChangeRequest:
+      type: object
+      description: Password change for authenticated users.
+      properties:
+        newPassword1:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        newPassword2:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+      required:
+      - newPassword1
+      - newPassword2
+    PasswordReset:
+      type: object
+      description: Password reset request with email verification.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    PasswordResetConfirm:
+      type: object
+      description: Password reset confirmation with new password.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    PasswordResetConfirmRequest:
+      type: object
+      description: Password reset confirmation with new password.
+      properties:
+        newPassword1:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        newPassword2:
+          type: string
+          writeOnly: true
+          minLength: 1
+          maxLength: 128
+        uid:
+          type: string
+          writeOnly: true
+          minLength: 1
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - newPassword1
+      - newPassword2
+      - token
+      - uid
+    PasswordResetRequest:
+      type: object
+      description: Password reset request with email verification.
+      properties:
+        email:
+          type: string
+          format: email
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+    PatchedUserDetailsRequest:
+      type: object
+      description: User profile information and updates.
+      properties:
+        firstName:
+          type: string
+          maxLength: 150
+        lastName:
+          type: string
+          maxLength: 150
+    Register:
+      type: object
+      description: User registration with email verification.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    RegisterRequest:
+      type: object
+      description: User registration with email verification.
+      properties:
+        email:
+          type: string
+          format: email
+          writeOnly: true
+          minLength: 1
+        password1:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password2:
+          type: string
+          writeOnly: true
+          minLength: 1
+        firstName:
+          type: string
+          writeOnly: true
+        lastName:
+          type: string
+          writeOnly: true
+      required:
+      - email
+      - password1
+      - password2
+    ResendEmailVerification:
+      type: object
+      description: Request new email verification message.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    ResendEmailVerificationRequest:
+      type: object
+      description: Request new email verification message.
+      properties:
+        email:
+          type: string
+          format: email
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+    SocialAccount:
+      type: object
+      description: |-
+        Serializer for SocialAccount instances.
+
+        Provides a REST API representation of django-allauth SocialAccount
+        objects, including provider information and connection metadata.
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        provider:
+          type: string
+          maxLength: 200
+        uid:
+          type: string
+          maxLength: 191
+        lastLogin:
+          type: string
+          format: date-time
+          readOnly: true
+        dateJoined:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - dateJoined
+      - id
+      - lastLogin
+      - provider
+      - uid
+    TokenVerifyRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - token
+    UserDetails:
+      type: object
+      description: User profile information and updates.
+      properties:
+        pk:
+          type: integer
+          readOnly: true
+          title: ID
+        email:
+          type: string
+          format: email
+          readOnly: true
+          title: Email address
+        firstName:
+          type: string
+          maxLength: 150
+        lastName:
+          type: string
+          maxLength: 150
+      required:
+      - email
+      - pk
+    UserDetailsRequest:
+      type: object
+      description: User profile information and updates.
+      properties:
+        firstName:
+          type: string
+          maxLength: 150
+        lastName:
+          type: string
+          maxLength: 150
+    VerifyEmail:
+      type: object
+      description: Email address verification with confirmation key.
+      properties:
+        detail:
+          type: string
+          readOnly: true
+      required:
+      - detail
+    VerifyEmailRequest:
+      type: object
+      description: Email address verification with confirmation key.
+      properties:
+        key:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - key
+  securitySchemes:
+    JWTAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    JWTCookieAuthentication:
+      type: apiKey
+      in: cookie
+      name: auth-jwt

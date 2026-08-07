@@ -111,18 +111,18 @@ test("enum-null", async () => {
       "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
       import { z } from "zod";
 
-      type Compound = Partial<{
-        field: Null1 | Null2 | Null3 | Null4 | string;
-      }>;
       type Null1 = null;
       type Null2 = "a" | null;
       type Null3 = "a" | null;
       type Null4 = null;
+      type Compound = Partial<{
+        field: Null1 | Null2 | Null3 | Null4 | string;
+      }>;
 
-      const Null1 = z.literal(null);
-      const Null2 = z.enum(["a", null]);
-      const Null3 = z.enum(["a", null]);
-      const Null4 = z.literal(null);
+      const Null1: z.ZodType<Null1> = z.literal(null);
+      const Null2: z.ZodType<Null2> = z.enum(["a", null]);
+      const Null3: z.ZodType<Null3> = z.enum(["a", null]);
+      const Null4: z.ZodType<Null4> = z.literal(null);
       const Compound: z.ZodType<Compound> = z
         .object({ field: z.union([Null1, Null2, Null3, Null4, z.string()]) })
         .partial()

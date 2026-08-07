@@ -53,7 +53,8 @@ export const getZodClientTemplateContext = (
         data.schemas[normalizeString(name)] = wrapWithLazyIfNeeded(name);
     }
 
-    for (const ref in depsGraphs.deepDependencyGraph) {
+    for (const [name] of Object.entries(docSchemas)) {
+        const ref = asComponentSchema(name);
         const isCircular = ref && depsGraphs.deepDependencyGraph[ref]?.has(ref);
         const ctx: TsConversionContext = { nodeByRef: {}, resolver: result.resolver, visitedsRefs: {} };
 

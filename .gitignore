@@ -36,3 +36,6 @@ yarn-error.log*
 dist
 .eslintcache
 /.idea/
+
+lib/tests/test-generation/*-output.ts
+lib/tests/test-generation/*-output
