@@ -89,7 +89,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
 
         /* when there are multiple allOf we are unable to use a discriminatedUnion as this library adds an
          *   'z.and' to the schema that it creates which breaks type inference */
-        const hasMultipleAllOf = schema.oneOf?.some((obj) => isSchemaObject(obj) && (obj?.allOf || []).length > 1);
+        const hasMultipleAllOf = schema.oneOf?.some((obj) => isSchemaObject(obj) && (obj?.allOf ?? []).length > 1);
         if (schema.discriminator && !hasMultipleAllOf) {
             const propertyName = schema.discriminator.propertyName;
 
@@ -101,7 +101,15 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
         }
 
         return code.assign(
-            `z.union([${schema.oneOf.map((prop) => getZodSchema({ schema: prop, ctx, meta, options })).join(", ")}])`
+            `z.union([${schema.oneOf
+                .map(
+                    (prop) =>
+                        getZodSchema({ schema: prop, ctx, meta, options }) +
+                        (isReferenceObject(prop)
+                            ? ""
+                            : getZodChain({ schema: prop, meta: { ...meta, isRequired: true }, options }))
+                )
+                .join(", ")}])`
         );
     }
 
@@ -138,6 +146,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
             const type = getZodSchema({ schema: schema.allOf[0]!, ctx, meta, options });
             return code.assign(type.toString());
         }
+
         const { patchRequiredSchemaInLoop, noRequiredOnlyAllof, composedRequiredSchema } = inferRequiredSchema(schema);
 
         const types = noRequiredOnlyAllof.map((prop) => {
@@ -146,7 +155,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
             return zodSchema;
         });
 
-        if (composedRequiredSchema.required.length) {
+        if (composedRequiredSchema.required.length > 0) {
             types.push(
                 getZodSchema({
                     schema: composedRequiredSchema,
@@ -156,6 +165,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                 })
             );
         }
+
         const first = types.at(0)!;
         const rest = types
             .slice(1)
@@ -175,8 +185,8 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
                     return code.assign(`z.literal(${valueString})`);
                 }
 
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
                 return code.assign(
+                    // eslint-disable-next-line sonarjs/no-nested-template-literals
                     `z.enum([${schema.enum.map((value) => (value === null ? "null" : `"${value}"`)).join(", ")}])`
                 );
             }
