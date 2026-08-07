@@ -132,3 +132,71 @@ test("refine-default-endpoint-callback", () => {
       }
     `);
 });
+
+test("refine-default-endpoint-callback preserves optional security alternatives", () => {
+    const result = getZodiosEndpointDefinitionList(
+        {
+            openapi: "3.1.0",
+            info: { version: "1.0", title: "Xquik API" },
+            paths: {
+                "/api/v1/x/tweets/search": {
+                    get: {
+                        operationId: "searchTweets",
+                        parameters: [
+                            {
+                                name: "q",
+                                in: "query",
+                                required: true,
+                                schema: { type: "string" },
+                            },
+                        ],
+                        responses: {
+                            "200": {
+                                description: "OK",
+                                content: {
+                                    "application/json": {
+                                        schema: {
+                                            type: "object",
+                                            properties: {
+                                                data: {
+                                                    type: "array",
+                                                    items: {
+                                                        type: "object",
+                                                        properties: {
+                                                            id: { type: "string" },
+                                                            text: { type: "string" },
+                                                        },
+                                                        required: ["id", "text"],
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        security: [{ apiKey: [] }, { oauthBearer: [] }, {}],
+                    },
+                },
+            },
+            components: {
+                securitySchemes: {
+                    apiKey: { type: "apiKey", in: "header", name: "x-api-key" },
+                    oauthBearer: { type: "http", scheme: "bearer" },
+                },
+            },
+        },
+        {
+            endpointDefinitionRefiner: (defaultDefinition, operation) => ({
+                ...defaultDefinition,
+                security: operation.security,
+            }),
+        }
+    );
+
+    expect(result.endpoints[0]).toMatchObject({
+        method: "get",
+        path: "/api/v1/x/tweets/search",
+        security: [{ apiKey: [] }, { oauthBearer: [] }, {}],
+    });
+});
