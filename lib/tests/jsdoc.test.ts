@@ -98,6 +98,9 @@ test("jsdoc", async () => {
     expect(output).toMatchInlineSnapshot(`"import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
 import { z } from "zod";
 
+type SimpleObject = Partial<{
+  str: string;
+}>;
 type ComplexObject = Partial<{
   /**
    * A string with example tag
@@ -155,9 +158,6 @@ type ComplexObject = Partial<{
    * An array of SimpleObject
    */
   refArray: Array<SimpleObject>;
-}>;
-type SimpleObject = Partial<{
-  str: string;
 }>;
 
 const SimpleObject: z.ZodType<SimpleObject> = z

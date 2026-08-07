@@ -152,9 +152,12 @@ describe("export-all-types", () => {
             endpointsGroups: {},
             emittedType: {
                 Author: true,
+                Features: true,
+                Id: true,
                 Settings: true,
                 Playlist: true,
                 Song: true,
+                Title: true,
             },
             options: {
                 withAlias: false,
@@ -173,12 +176,13 @@ describe("export-all-types", () => {
           "import { makeApi, Zodios, type ZodiosOptions } from "@zodios/core";
           import { z } from "zod";
 
-          type Playlist = Partial<{
-            name: string;
-            author: Author;
-            songs: Array<Song>;
-          }> &
-            Settings;
+          type Title = string;
+          type Id = number;
+          type Features = Array<string>;
+          type Settings = Partial<{
+            theme_color: string;
+            features: Features;
+          }>;
           type Author = Partial<{
             name: (string | null) | number | null;
             title: Title;
@@ -186,21 +190,20 @@ describe("export-all-types", () => {
             mail: string;
             settings: Settings;
           }>;
-          type Title = string;
-          type Id = number;
-          type Settings = Partial<{
-            theme_color: string;
-            features: Features;
-          }>;
-          type Features = Array<string>;
           type Song = Partial<{
             name: string;
             duration: number;
           }>;
+          type Playlist = Partial<{
+            name: string;
+            author: Author;
+            songs: Array<Song>;
+          }> &
+            Settings;
 
-          const Title = z.string();
-          const Id = z.number();
-          const Features = z.array(z.string());
+          const Title: z.ZodType<Title> = z.string();
+          const Id: z.ZodType<Id> = z.number();
+          const Features: z.ZodType<Features> = z.array(z.string());
           const Settings: z.ZodType<Settings> = z
             .object({ theme_color: z.string(), features: Features.min(1) })
             .partial()
