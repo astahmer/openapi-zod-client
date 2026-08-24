@@ -2,3 +2,6 @@ packages:
   - "lib"
   - "playground"
   - "examples/*"
+allowBuilds:
+  esbuild: false 
+  unrs-resolver: false 
