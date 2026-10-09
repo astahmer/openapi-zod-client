@@ -135,7 +135,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
             return schema.nullable ? t.union([...types, t.reference("null")]) : t.union(types);
         }
 
-        // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
+        // anyOf accepts a value matching at least one branch; it does not imply an array.
         if (schema.anyOf) {
             if (schema.anyOf.length === 1) {
                 return getTypescriptFromOpenApi({ schema: schema.anyOf[0]!, ctx, meta, options });
@@ -147,9 +147,7 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
                 )
             );
 
-            return schema.nullable
-                ? t.union([oneOf, doWrapReadOnly(t.array(oneOf)), t.reference("null")])
-                : t.union([oneOf, doWrapReadOnly(t.array(oneOf))]);
+            return schema.nullable ? t.union([oneOf, t.reference("null")]) : oneOf;
         }
 
         if (schema.allOf) {
@@ -183,15 +181,14 @@ TsConversionArgs): ts.Node | TypeDefinitionObject | string => {
         const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
         if (schemaType && isPrimitiveType(schemaType)) {
             if (schema.enum) {
-                if (schemaType !== "string" && schema.enum.some((e) => typeof e === "string")) {
-                    return schema.nullable ? t.union([t.never(), t.reference("null")]) : t.never();
-                }
-
+                const primitiveType = schemaType === "integer" ? "number" : schemaType;
                 const hasNull = schema.enum.includes(null);
-                const withoutNull = schema.enum.filter((f) => f !== null);
+                const withoutNull = schema.enum.filter((value) => typeof value === primitiveType);
                 return schema.nullable || hasNull
                     ? t.union([...withoutNull, t.reference("null")])
-                    : t.union(withoutNull);
+                    : withoutNull.length > 0
+                    ? t.union(withoutNull)
+                    : t.never();
             }
 
             if (schemaType === "string")

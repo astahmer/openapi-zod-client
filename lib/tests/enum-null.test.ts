@@ -119,10 +119,10 @@ test("enum-null", async () => {
       type Null3 = "a" | null;
       type Null4 = null;
 
-      const Null1 = z.literal(null);
-      const Null2 = z.enum(["a", null]);
-      const Null3 = z.enum(["a", null]);
-      const Null4 = z.literal(null);
+      const Null1 = z.null();
+      const Null2 = z.literal("a").nullable();
+      const Null3 = z.literal("a").nullable();
+      const Null4 = z.null();
       const Compound: z.ZodType<Compound> = z
         .object({ field: z.union([Null1, Null2, Null3, Null4, z.string()]) })
         .partial()
@@ -141,22 +141,22 @@ test("enum-null", async () => {
           method: "get",
           path: "/sample",
           requestFormat: "json",
-          response: z.literal(null),
+          response: z.null(),
           errors: [
             {
               status: 400,
               description: \`null with a string\`,
-              schema: z.enum(["a", null]),
+              schema: z.literal("a").nullable(),
             },
             {
               status: 401,
               description: \`null with a string and nullable\`,
-              schema: z.enum(["a", null]).nullable(),
+              schema: z.literal("a").nullable().nullable(),
             },
             {
               status: 402,
               description: \`null with nullable\`,
-              schema: z.literal(null).nullable(),
+              schema: z.null().nullable(),
             },
             {
               status: 403,

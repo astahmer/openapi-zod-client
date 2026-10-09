@@ -232,7 +232,7 @@ test("getSchemaAsTsString", () => {
     ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
 
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
-        '"(string | number) | Array<string | number> | null"'
+        '"(string | number) | null"'
     );
     expect(getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
         '"string | number | null"'
@@ -248,28 +248,28 @@ test("getSchemaAsTsString", () => {
         getSchemaAsTsString({ nullable: true, allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" })
     ).toMatchInlineSnapshot('"export type StringAndNumber = (string & number) | null;"');
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] })).toMatchInlineSnapshot(
-        '"(string | number) | Array<string | number> | null"'
+        '"(string | number) | null"'
     );
     expect(
         getSchemaAsTsString(
             { anyOf: [{ type: "string" }, { type: "number" }] },
-            { name: "StringAndNumberMaybeMultiple" }
+            { name: "StringOrNumber" }
         )
-    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | Array<string | number>;"');
+    ).toMatchInlineSnapshot('"export type StringOrNumber = string | number;"');
 
     expect(
         getSchemaAsTsString(
             {
                 type: "object",
                 properties: {
-                    unionOrArrayOfUnion: { anyOf: [{ type: "string" }, { type: "number" }] },
+                    union: { anyOf: [{ type: "string" }, { type: "number" }] },
                 },
             },
-            { name: "ObjectWithArrayUnion" }
+            { name: "ObjectWithUnion" }
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithArrayUnion = Partial<{
-          unionOrArrayOfUnion: (string | number) | Array<string | number>;
+      "export type ObjectWithUnion = Partial<{
+          union: string | number;
       }>;"
     `);
 
@@ -583,7 +583,7 @@ describe("getSchemaAsTsString with context", () => {
         expect(printTs(result)).toMatchInlineSnapshot(`
           "export type Root = Partial<{
               user: User | Member;
-              users: Array<(User | Member) | Array<User | Member>>;
+              users: Array<User | Member>;
               basic: number;
           }>;"
         `);
@@ -817,7 +817,7 @@ test("getSchemaAsTsString with readonly", () => {
     ).toMatchInlineSnapshot('"export type StringAndNumber = string & number;"');
 
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
-        '"(string | number) | Readonly<Array<string | number>> | null"'
+        '"(string | number) | null"'
     );
     expect(getSchemaAsTsString({ nullable: true, oneOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
         '"string | number | null"'
@@ -833,30 +833,30 @@ test("getSchemaAsTsString with readonly", () => {
         getSchemaAsTsString({ nullable: true, allOf: [{ type: "string" }, { type: "number" }] }, { name: "StringAndNumber" }, options)
     ).toMatchInlineSnapshot('"export type StringAndNumber = (string & number) | null;"');
     expect(getSchemaAsTsString({ nullable: true, anyOf: [{ type: "string" }, { type: "number" }] }, undefined, options)).toMatchInlineSnapshot(
-        '"(string | number) | Readonly<Array<string | number>> | null"'
+        '"(string | number) | null"'
     );
     expect(
         getSchemaAsTsString(
             { anyOf: [{ type: "string" }, { type: "number" }] },
-            { name: "StringAndNumberMaybeMultiple" },
+            { name: "StringOrNumber" },
             options
         )
-    ).toMatchInlineSnapshot('"export type StringAndNumberMaybeMultiple = (string | number) | Readonly<Array<string | number>>;"');
+    ).toMatchInlineSnapshot('"export type StringOrNumber = string | number;"');
 
     expect(
         getSchemaAsTsString(
             {
                 type: "object",
                 properties: {
-                    unionOrArrayOfUnion: { anyOf: [{ type: "string" }, { type: "number" }] },
+                    union: { anyOf: [{ type: "string" }, { type: "number" }] },
                 },
             },
-            { name: "ObjectWithArrayUnion" },
+            { name: "ObjectWithUnion" },
             options
         )
     ).toMatchInlineSnapshot(`
-      "export type ObjectWithArrayUnion = Partial<Readonly<{
-          unionOrArrayOfUnion: (string | number) | Readonly<Array<string | number>>;
+      "export type ObjectWithUnion = Partial<Readonly<{
+          union: string | number;
       }>>;"
     `);
 
