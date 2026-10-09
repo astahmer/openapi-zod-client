@@ -105,7 +105,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
         );
     }
 
-    // anyOf = oneOf but with 1 or more = `T extends oneOf ? T | T[] : never`
+    // anyOf accepts a value matching at least one branch; it does not imply an array.
     if (schema.anyOf) {
         if (schema.anyOf.length === 1) {
             const type = getZodSchema({ schema: schema.anyOf[0]!, ctx, meta, options });
@@ -113,21 +113,7 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
         }
 
         const types = schema.anyOf
-            .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }))
-            .map((type) => {
-                let isObject = true;
-
-                if ("type" in type.schema) {
-                    if (Array.isArray(type.schema.type)) {
-                        isObject = false;
-                    } else {
-                        const schemaType = type.schema.type.toLowerCase() as NonNullable<typeof schema.type>;
-                        isObject = !isPrimitiveType(schemaType);
-                    }
-                }
-
-                return type.toString();
-            })
+            .map((prop) => getZodSchema({ schema: prop, ctx, meta, options }).toString())
             .join(", ");
 
         return code.assign(`z.union([${types}])`);
@@ -168,32 +154,22 @@ export function getZodSchema({ schema: $schema, ctx, meta: inheritedMeta, option
     const schemaType = schema.type ? (schema.type.toLowerCase() as NonNullable<typeof schema.type>) : undefined;
     if (schemaType && isPrimitiveType(schemaType)) {
         if (schema.enum) {
-            if (schemaType === "string") {
-                if (schema.enum.length === 1) {
-                    const value = schema.enum[0];
-                    const valueString = value === null ? "null" : `"${value}"`;
-                    return code.assign(`z.literal(${valueString})`);
-                }
-
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
-                return code.assign(
-                    `z.enum([${schema.enum.map((value) => (value === null ? "null" : `"${value}"`)).join(", ")}])`
-                );
+            const primitiveType = schemaType === "integer" ? "number" : schemaType;
+            const values = schema.enum.filter((value) => typeof value === primitiveType);
+            const hasNull = schema.enum.includes(null);
+            if (values.length === 0) {
+                return code.assign(hasNull ? "z.null()" : "z.never()");
             }
 
-            if (schema.enum.some((e) => typeof e === "string")) {
-                return code.assign("z.never()");
-            }
-
-            if (schema.enum.length === 1) {
-                const value = schema.enum[0];
-                return code.assign(`z.literal(${value === null ? "null" : value})`);
-            }
-
-            return code.assign(
-                // eslint-disable-next-line sonarjs/no-nested-template-literals
-                `z.union([${schema.enum.map((value) => `z.literal(${value === null ? "null" : value})`).join(", ")}])`
-            );
+            const literals = values.map((value) => JSON.stringify(value));
+            const literalSchemas = literals.map((value) => `z.literal(${value})`);
+            const enumSchema =
+                values.length === 1
+                    ? `z.literal(${literals[0]})`
+                    : schemaType === "string"
+                    ? `z.enum([${literals.join(", ")}])`
+                    : `z.union([${literalSchemas.join(", ")}])`;
+            return code.assign(`${enumSchema}${hasNull ? ".nullable()" : ""}`);
         }
 
         return code.assign(
